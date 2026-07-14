@@ -1,0 +1,15 @@
+{
+  "id": 1363,
+  "title": "#02 Session",
+  "slug": "02-session",
+  "excerpt": "Diese Session wird in Kürze announced.",
+  "contentHtml": "Diese Session wird in Kürze announced.",
+  "speakerIds": [
+    411
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-07-06 14:04:24"
+}

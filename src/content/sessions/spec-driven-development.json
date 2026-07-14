@@ -1,0 +1,20 @@
+{
+  "id": 629,
+  "title": "18:00 - 18:45 Uhr | Spec Driven Development - Braucht es bald keine Entwickler mehr? Warum KI Programmieren übernimmt – und Denken zur Kernkompetenz wird",
+  "slug": "spec-driven-development",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/thomas-schoenherr-squared.jpeg",
+    "alt": "18:00 - 18:45 Uhr | Spec Driven Development - Braucht es bald keine Entwickler mehr? Warum KI Programmieren übernimmt – und Denken zur Kernkompetenz wird"
+  },
+  "startTime": "18:00",
+  "time": "18:00",
+  "endTime": "18:45",
+  "speakerIds": [
+    190
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-01-05 10:46:32"
+}

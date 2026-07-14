@@ -1,0 +1,25 @@
+{
+  "id": 1249,
+  "title": "18:00 - 18:45 Data Culture - Was ist das und wenn ja wie viele? Erfahrungen aus der Praxis.",
+  "slug": "data-culture-was-ist-das-und-wenn-ja-wie-viele-erfahrungen-aus-der-praxis",
+  "excerpt": "In diesem Vortrag gibt Florian Fuchs einen praxisnahen Einblick in das Thema Data Culture und zeigt, warum datengetriebenes Arbeiten weit mehr bedeutet als die Einführung neuer Technologien oder Dashboards. Im Mittelpunkt steht die Frage, was Data Culture eigentlich ausmacht, welche unterschiedlichen Dimensionen sie umfasst und wie Unternehmen eine nachhaltige datenbasierte Zusammenarbeit etablieren können. Anhand konkreter…",
+  "contentHtml": "In diesem Vortrag gibt Florian Fuchs einen praxisnahen Einblick in das Thema Data Culture und zeigt, warum datengetriebenes Arbeiten weit mehr bedeutet als die Einführung neuer Technologien oder Dashboards. Im Mittelpunkt steht die Frage, was Data Culture eigentlich ausmacht, welche unterschiedlichen Dimensionen sie umfasst und wie Unternehmen eine nachhaltige datenbasierte Zusammenarbeit etablieren können.\nAnhand konkreter Erfahrungen aus Transformationsprojekten beleuchtet der Vortrag Erfolgsfaktoren, typische Stolpersteine und praxisnahe Learnings aus der Umsetzung. Dabei wird deutlich, wie Unternehmen Daten nicht nur verfügbar machen, sondern als festen Bestandteil von Entscheidungen, Zusammenarbeit und Unternehmenskultur verankern können.\n<ul>\n <li>Verstehen, warum Data Culture die Grundlage für datengetriebene Entscheidungen und den erfolgreichen Einsatz von KI ist</li>\n <li>Einblick in die zentralen Dimensionen einer wirksamen Datenkultur – von Leadership bis Data Literacy</li>\n <li>Konkrete Erfolgsfaktoren und typische Stolpersteine aus Transformationsprojekten kennenlernen</li>\n</ul>",
+  "image": {
+    "src": "/wp-content/uploads/2026/05/Florian-Fuchs-Cropped-scaled.jpg",
+    "alt": "18:00 - 18:45 Data Culture - Was ist das und wenn ja wie viele? Erfahrungen aus der Praxis."
+  },
+  "startTime": "18:00",
+  "time": "18:00",
+  "endTime": "18:45",
+  "speakerSlugs": [
+    "florian-fuchs"
+  ],
+  "speakerIds": [
+    1246
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-05-16 14:41:09"
+}

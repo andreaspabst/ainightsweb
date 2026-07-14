@@ -1,0 +1,106 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const sponsors = await getCollection('sponsor');
+  return sponsors.map((s) => ({ params: { slug: s.data.slug }, props: { s } }));
+}
+
+const { s } = Astro.props;
+const d = s.data;
+const tierLabels: Record<string, string> = { platin: 'Platin', gold: 'Gold', silver: 'Silver', bronce: 'Bronze' };
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `${d.title} — Sponsor der AI Nights`}
+  description={d.seo?.description ?? d.excerpt ?? `${d.title} unterstützt die AI Nights als Sponsor.`}
+  path={`/sponsor/${d.slug}/`}
+  image={d.logo?.src ?? d.image?.src}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: d.title,
+    url: d.website,
+    logo: (d.logo?.src ?? d.image?.src) ? `https://ainights.ai${d.logo?.src ?? d.image?.src}` : undefined,
+  }}
+>
+  <Header lang="de" />
+  <main class="container detail section">
+    <a href="/de/sponsors/" class="back">← Alle Sponsoren</a>
+    <div class="card head">
+      <div class="logo">
+        <img src={d.logo?.src ?? d.image?.src} alt={d.title} />
+      </div>
+      <div class="info">
+        {d.tier && <span class="tier">{tierLabels[d.tier] ?? d.tier} Sponsor</span>}
+        <h1 class="display-font">{d.title}</h1>
+        {d.website && <a href={d.website} target="_blank" rel="noopener" class="btn btn-primary web">Website besuchen</a>}
+      </div>
+    </div>
+
+    {d.contentHtml && <div class="prose" set:html={d.contentHtml} />}
+    {!d.contentHtml && d.excerpt && <p class="prose lead">{d.excerpt}</p>}
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .detail {
+    max-width: 800px;
+    padding-block: 2.5rem 3rem;
+  }
+  .back {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .back:hover {
+    color: var(--magenta-bright);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    align-items: center;
+    padding: 2rem;
+    margin: 1.5rem 0 2.5rem;
+  }
+  .logo {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 3 / 2;
+  }
+  .logo img {
+    max-width: 100%;
+    max-height: 90px;
+    object-fit: contain;
+  }
+  .tier {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--magenta-bright);
+    margin-bottom: 0.5rem;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 1.2rem;
+  }
+  .lead {
+    font-size: 1.15rem;
+  }
+  @media (max-width: 560px) {
+    .head {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

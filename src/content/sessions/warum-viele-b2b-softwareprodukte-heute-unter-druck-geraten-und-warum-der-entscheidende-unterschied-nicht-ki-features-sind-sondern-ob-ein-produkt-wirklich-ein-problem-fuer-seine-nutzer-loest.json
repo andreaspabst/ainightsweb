@@ -1,0 +1,23 @@
+{
+  "id": 1001,
+  "title": "20:00 - 20:45 Uhr | (inkl. 15 Min Diskussionsrunde) Warum viele B2B-Softwareprodukte heute unter Druck geraten – und warum der entscheidende Unterschied nicht KI-Features sind, sondern ob ein Produkt wirklich ein Problem für seine Nutzer löst",
+  "slug": "warum-viele-b2b-softwareprodukte-heute-unter-druck-geraten-und-warum-der-entscheidende-unterschied-nicht-ki-features-sind-sondern-ob-ein-produkt-wirklich-ein-problem-fuer-seine-nutzer-loest",
+  "image": {
+    "src": "/wp-content/uploads/2026/03/IMG_9583.jpeg",
+    "alt": "Alex Key"
+  },
+  "startTime": "20:00",
+  "time": "20:00",
+  "endTime": "20:45",
+  "speakerSlugs": [
+    "alex-key"
+  ],
+  "speakerIds": [
+    999
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-03-12 09:41:55"
+}

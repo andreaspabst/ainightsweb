@@ -1,0 +1,301 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  lang?: 'de' | 'en';
+  /** Pfad dieser Seite ohne Domain, mit führendem und abschließendem Slash, z. B. "/de/tickets/" */
+  path?: string;
+  /** hreflang-Alternativen: { de: "/de/tickets/", en: "/en/tickets/" } */
+  alternates?: Partial<Record<'de' | 'en', string>>;
+  image?: string;
+  /** OG-Typ, z. B. "website", "article", "profile" */
+  ogType?: string;
+  /** Optionales JSON-LD (als Objekt) */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const site = 'https://ainights.ai';
+const {
+  title = 'AI Nights — KI-Events in Nürnberg & München',
+  description = 'AI Nights: Die Event-Reihe rund um Künstliche Intelligenz in Nürnberg und München. Talks, Sessions, Speaker und Community — verständlich, nahbar, praxisnah.',
+  lang = 'de',
+  path = '/',
+  alternates,
+  image = '/wp-content/uploads/2026/01/01_ainights_inspire.png',
+  ogType = 'website',
+  jsonLd,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(path, site).href;
+const ogImage = image.startsWith('http') ? image : new URL(image, site).href;
+const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" type="image/png" sizes="32x32" href="/wp-content/uploads/2026/01/cropped-apple-touch-icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/wp-content/uploads/2026/01/cropped-apple-touch-icon-192x192.png" />
+    <link rel="apple-touch-icon" href="/wp-content/uploads/2026/01/cropped-apple-touch-icon-180x180.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* hreflang */}
+    {
+      alternates &&
+        Object.entries(alternates).map(([l, p]) => (
+          <link rel="alternate" hreflang={l} href={new URL(p, site).href} />
+        ))
+    }
+    {alternates?.de && <link rel="alternate" hreflang="x-default" href={new URL(alternates.de, site).href} />}
+
+    {/* OpenGraph / Twitter */}
+    <meta property="og:site_name" content="AI Nights" />
+    <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {jsonLdArray.map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+    <style is:global>
+      :root {
+        /* AI-Nights-Branding: Magenta + Blau auf dunklem Violett */
+        --bg-base: #0a0118;
+        --bg-elevated: #140a2a;
+        --bg-glass: rgba(24, 14, 48, 0.55);
+        --border: rgba(220, 39, 119, 0.16);
+        --border-strong: rgba(220, 39, 119, 0.4);
+        --text-primary: #f7f4fb;
+        --text-secondary: #c7bfd8;
+        --text-muted: #8a83a3;
+        --magenta: #dc2777;
+        --magenta-bright: #ff2d7a;
+        --blue: #326bff;
+        --blue-bright: #2ea3f2;
+        --violet: #6d28d9;
+        --orange: #ff8154;
+        --gradient-accent: linear-gradient(135deg, #ff2d7a 0%, #6d28d9 50%, #326bff 100%);
+        --gradient-text: linear-gradient(120deg, #ff2d7a 0%, #2ea3f2 100%);
+        --gradient-hot: linear-gradient(135deg, #dc2777 0%, #ff8154 100%);
+        --glow-magenta: 0 0 40px rgba(255, 45, 122, 0.4);
+        --glow-blue: 0 0 60px rgba(50, 107, 255, 0.35);
+
+        --maxw: 1180px;
+        --radius: 18px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-family:
+          'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        background: var(--bg-base);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(ellipse 80% 60% at 15% 0%, rgba(50, 107, 255, 0.16), transparent 60%),
+          radial-gradient(ellipse 70% 50% at 85% 15%, rgba(220, 39, 119, 0.16), transparent 60%),
+          radial-gradient(ellipse 60% 40% at 50% 95%, rgba(109, 40, 217, 0.16), transparent 60%),
+          var(--bg-base);
+        background-attachment: fixed;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: var(--magenta-bright);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      a:hover {
+        color: var(--blue-bright);
+      }
+
+      h1, h2, h3, h4 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      p {
+        margin: 0;
+        line-height: 1.65;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      ::selection {
+        background: rgba(255, 45, 122, 0.35);
+        color: #fff;
+      }
+
+      .display-font {
+        font-family: 'Space Grotesk', 'Inter', sans-serif;
+      }
+
+      /* Layout-Helfer */
+      .container {
+        width: 100%;
+        max-width: var(--maxw);
+        margin-inline: auto;
+        padding-inline: 1.5rem;
+      }
+      .section {
+        padding-block: clamp(3.5rem, 8vw, 7rem);
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      .gradient-text {
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.6rem;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.98rem;
+        border: 1px solid transparent;
+        transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: var(--gradient-accent);
+        color: #fff;
+        box-shadow: var(--glow-magenta);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        color: #fff;
+      }
+      .btn-ghost {
+        background: var(--bg-glass);
+        color: var(--text-primary);
+        border-color: var(--border-strong);
+      }
+      .btn-ghost:hover {
+        color: var(--text-primary);
+        border-color: var(--magenta-bright);
+      }
+      .card {
+        background: var(--bg-glass);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        backdrop-filter: blur(12px);
+      }
+
+      /* Gerenderte Inhalte (aus WordPress migriertes HTML) */
+      .prose {
+        color: var(--text-secondary);
+        font-size: 1.06rem;
+        line-height: 1.75;
+      }
+      .prose > *:first-child {
+        margin-top: 0;
+      }
+      .prose p,
+      .prose ul,
+      .prose ol {
+        margin: 0 0 1.2rem;
+      }
+      .prose h2 {
+        font-size: 1.6rem;
+        margin: 2rem 0 0.9rem;
+        color: var(--text-primary);
+      }
+      .prose h3 {
+        font-size: 1.25rem;
+        margin: 1.6rem 0 0.7rem;
+        color: var(--text-primary);
+      }
+      .prose ul,
+      .prose ol {
+        padding-left: 1.3rem;
+      }
+      .prose li {
+        margin-bottom: 0.4rem;
+      }
+      .prose a {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .prose img {
+        border-radius: var(--radius);
+        margin: 1.5rem 0;
+        border: 1px solid var(--border);
+      }
+      .prose strong {
+        color: var(--text-primary);
+      }
+      .prose blockquote {
+        border-left: 3px solid var(--magenta);
+        padding-left: 1.2rem;
+        margin: 1.5rem 0;
+        color: var(--text-primary);
+        font-style: italic;
+      }
+      .prose iframe {
+        max-width: 100%;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        height: auto;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        margin: 1.5rem 0;
+      }
+    </style>
+  </body>
+</html>

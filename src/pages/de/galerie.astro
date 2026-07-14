@@ -1,0 +1,148 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import galleryData from '../../data/gallery.json';
+
+type Group = { num: string; event: string; images: string[] };
+const groups = galleryData as Group[];
+
+// Event-Metadaten (Titel/Datum) zum Verlinken auflösen
+const events = await getCollection('events');
+const eventBySlug = new Map(events.map((e) => [e.data.slug, e.data]));
+
+function fmtDate(d?: string) {
+  if (!d) return null;
+  const p = new Date(d);
+  if (isNaN(p.getTime())) return null;
+  return p.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+}
+
+const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
+---
+
+<Layout
+  lang="de"
+  title="Bildergalerie — AI Nights"
+  description="Impressionen von den AI Nights Afterworks in Nürnberg – nach Event sortiert. Momente, Menschen und Gespräche rund um Künstliche Intelligenz."
+  path="/de/galerie/"
+  image={groups[0]?.images[0]}
+>
+  <Header lang="de" />
+  <main class="container archive section">
+    <p class="eyebrow">Ein Abend. Viele Gespräche.</p>
+    <h1 class="display-font">Impressionen</h1>
+    <p class="sub">{totalImages} Fotos aus {groups.length} AI&nbsp;Nights Events – Momente von unseren Afterwork-Abenden.</p>
+
+    {
+      groups.map((g) => {
+        const ev = eventBySlug.get(g.event);
+        const title = ev?.title ?? `AI Nights Nürnberg #${g.num}`;
+        const date = fmtDate(ev?.eventDate);
+        return (
+          <section class="event-gallery">
+            <div class="gal-head">
+              <div>
+                <span class="marker">// AI Night Nürnberg {g.num}</span>
+                <h2 class="display-font">{title}</h2>
+                {date && <p class="gal-date">{date} · {g.images.length} Fotos</p>}
+              </div>
+              <a href={`/events/${g.event}/`} class="btn btn-ghost">Zum Event</a>
+            </div>
+            <div class="masonry">
+              {g.images.map((src) => (
+                <a href={src} class="tile" target="_blank" rel="noopener">
+                  <img src={src} alt={`Impression ${title}`} loading="lazy" />
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+
+    <div class="center"><a href="/de/tickets/" class="btn btn-primary">Beim nächsten Mal live dabei sein</a></div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.6rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-size: 1.05rem;
+  }
+  .event-gallery {
+    margin-bottom: 4rem;
+  }
+  .gal-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .marker {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gal-head h2 {
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+    margin: 0.4rem 0 0.3rem;
+  }
+  .gal-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .masonry {
+    columns: 4;
+    column-gap: 0.8rem;
+  }
+  .tile {
+    display: block;
+    margin-bottom: 0.8rem;
+    break-inside: avoid;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .tile img {
+    width: 100%;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .tile:hover img {
+    transform: scale(1.04);
+  }
+  .center {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  @media (max-width: 900px) {
+    .masonry {
+      columns: 3;
+    }
+  }
+  @media (max-width: 600px) {
+    .masonry {
+      columns: 2;
+    }
+  }
+</style>

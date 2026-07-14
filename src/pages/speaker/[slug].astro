@@ -1,0 +1,194 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const speakers = await getCollection('speaker');
+  return speakers.map((s) => ({ params: { slug: s.data.slug }, props: { s } }));
+}
+
+const { s } = Astro.props;
+const d = s.data;
+
+// Sessions dieses Speakers
+const allSessions = await getCollection('sessions');
+const sessions = allSessions.filter(
+  (se) => se.data.speakerSlugs?.includes(d.slug) || (d.id && se.data.speakerIds?.includes(d.id)),
+);
+
+const socialLinks = [
+  d.socials?.instagram && ['Instagram', d.socials.instagram.startsWith('http') ? d.socials.instagram : `https://instagram.com/${d.socials.instagram.replace('@', '')}`],
+  d.socials?.tiktok && ['TikTok', d.socials.tiktok.startsWith('http') ? d.socials.tiktok : `https://tiktok.com/@${d.socials.tiktok.replace('@', '')}`],
+  d.socials?.x && ['X', d.socials.x.startsWith('http') ? d.socials.x : `https://x.com/${d.socials.x.replace('@', '')}`],
+  d.socials?.linkedin && ['LinkedIn', d.socials.linkedin],
+  d.socials?.website && ['Website', d.socials.website],
+].filter(Boolean) as [string, string][];
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `${d.title} — AI Nights Speaker`}
+  description={d.seo?.description ?? d.excerpt ?? `${d.title}${d.jobTitle ? `, ${d.jobTitle}` : ''} — Speaker bei den AI Nights.`}
+  path={`/speaker/${d.slug}/`}
+  image={d.image?.src}
+  ogType="profile"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: d.title,
+    jobTitle: d.jobTitle,
+    description: d.excerpt,
+    image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
+    url: `https://ainights.ai/speaker/${d.slug}/`,
+  }}
+>
+  <Header lang="de" />
+  <main class="container detail">
+    <a href="/speaker/" class="back">← Alle Speaker</a>
+    <div class="head">
+      {d.image?.src && (
+        <div class="portrait">
+          <img src={d.image.src} alt={d.image.alt ?? d.title} width="480" height="480" />
+        </div>
+      )}
+      <div class="intro">
+        <p class="eyebrow">Speaker</p>
+        <h1 class="display-font">{d.title}</h1>
+        {d.jobTitle && <p class="role">{d.jobTitle}</p>}
+        {socialLinks.length > 0 && (
+          <div class="socials">
+            {socialLinks.map(([label, href]) => (
+              <a href={href} target="_blank" rel="noopener">{label}</a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    {d.bioHtml && <div class="prose" set:html={d.bioHtml} />}
+
+    {sessions.length > 0 && (
+      <section class="talks">
+        <h2 class="display-font">Sessions</h2>
+        <ul>
+          {sessions.map((se) => (
+            <li>
+              <a href={`/sessions/${se.data.slug}/`}>{se.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <div class="cta-mini">
+      <a href="/de/tickets/" class="btn btn-primary">Ticket sichern & live erleben</a>
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .detail {
+    padding-block: 2.5rem 3rem;
+    max-width: 860px;
+  }
+  .back {
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .back:hover {
+    color: var(--magenta-bright);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+  }
+  .portrait img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: 0.4rem 0 0.6rem;
+  }
+  .role {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .socials {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .socials a {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .socials a:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+  .prose {
+    color: var(--text-secondary);
+    font-size: 1.08rem;
+    line-height: 1.75;
+  }
+  .prose :global(p) {
+    margin-bottom: 1.2rem;
+  }
+  .talks {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .talks h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .talks ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .talks a {
+    color: var(--text-primary);
+  }
+  .talks a:hover {
+    color: var(--magenta-bright);
+  }
+  .cta-mini {
+    margin-top: 3rem;
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    .head {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .portrait {
+      max-width: 240px;
+    }
+  }
+</style>

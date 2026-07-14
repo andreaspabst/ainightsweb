@@ -1,0 +1,85 @@
+---
+export interface Props {
+  slug: string;
+  name: string;
+  jobTitle?: string;
+  image?: { src?: string; alt?: string };
+  excerpt?: string;
+}
+const { slug, name, jobTitle, image, excerpt } = Astro.props;
+const placeholder = '/wp-content/uploads/2026/01/speaker01-4043248_avatar_female_portrait_woman_icon-1.png';
+---
+
+<a href={`/speaker/${slug}/`} class="speaker-card card">
+  <div class="photo">
+    <img src={image?.src ?? placeholder} alt={image?.alt ?? name} loading="lazy" width="400" height="400" />
+  </div>
+  <div class="body">
+    <h3>{name}</h3>
+    {jobTitle && <p class="role">{jobTitle}</p>}
+    {excerpt && <p class="bio">{excerpt}</p>}
+    <span class="more">Profil ansehen →</span>
+  </div>
+</a>
+
+<style>
+  .speaker-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .speaker-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+    color: inherit;
+  }
+  .photo {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--bg-elevated);
+  }
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .speaker-card:hover .photo img {
+    transform: scale(1.05);
+  }
+  .body {
+    padding: 1.1rem 1.2rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+  }
+  h3 {
+    font-size: 1.12rem;
+    color: var(--text-primary);
+  }
+  .role {
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .more {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--magenta-bright);
+  }
+</style>

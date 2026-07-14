@@ -1,0 +1,22 @@
+{
+  "id": 1353,
+  "title": "Wenn KI Strom- und Wassernetze absichert und gleichzeitig zum Angriffsziel wird",
+  "slug": "1800-1845-inkl-15-min-diskussionsrunde-2",
+  "excerpt": "Kritische Infrastrukturen — Stromversorgung, Wasserwerke, Energieversorgung — laufen auf IT-Systemen, bei denen ein Ausfall keine Unannehmlichkeit ist, sondern ein ernstes Problem. KI verändert dieses Umfeld auf zwei Seiten gleichzeitig: Sie kann dabei helfen, Ausfälle früher zu erkennen und Systeme widerstandsfähiger zu machen. Gleichzeitig entstehen neue Angriffsvektoren — von Datenabfluss bis hin zu KI-gestützten Angriffen auf…",
+  "contentHtml": "<p>Kritische Infrastrukturen — Stromversorgung, Wasserwerke, Verkehrsnetze — laufen auf IT-Systemen, bei denen ein Ausfall keine Unannehmlichkeit ist, sondern ein ernstes Problem. KI verändert dieses Umfeld auf zwei Seiten gleichzeitig: Sie kann dabei helfen, Ausfälle früher zu erkennen und Systeme widerstandsfähiger zu machen. Gleichzeitig entstehen neue Angriffsvektoren: von automatisiertem Datenabfluss bis hin zu KI-gestützten Angriffen auf sensible Ziele.</p>\n<p>Martin zeigt in diesem Vortrag, warum Service-Visibilität die entscheidende Grundlage ist, um in diesem Spannungsfeld handlungsfähig zu bleiben und wie KRITIS-Betreiber KI nicht nur als Risiko, sondern als Werkzeug für mehr Resilienz einsetzen können.</p>\n<ul>\n <li>Verstehen, warum KI für kritische Infrastrukturen Chance und Risiko zugleich ist</li>\n <li>Einblick, wie Predictive Maintenance und Anomalie-Erkennung konkret zur Resilienz beitragen können</li>\n <li>Warum Service-Visibilität die wichtigste Metrik zur Erkennung von Angriffsmustern ist</li>\n</ul>",
+  "image": {
+    "src": "/wp-content/uploads/2026/06/WhatsApp-Bild-2025-11-26-um-22.49.20_75edfa15-scaled.jpg",
+    "alt": "Speaker AI Nights Martin Hofmann"
+  },
+  "speakerSlugs": [
+    "martin-hofmann"
+  ],
+  "speakerIds": [
+    1351
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-06-27 09:01:56"
+}

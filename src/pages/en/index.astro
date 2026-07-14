@@ -1,0 +1,371 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import SpeakerCard from '../../components/SpeakerCard.astro';
+import EventCard from '../../components/EventCard.astro';
+import SponsorTiers from '../../components/SponsorTiers.astro';
+
+const speakers = (await getCollection('speaker'))
+  .filter((s) => !s.data.slug.startsWith('ai-nights-speaker') && s.data.slug !== 'der-pabst')
+  .filter((s) => s.data.image?.src)
+  .sort((a, b) => (b.data.homeFeatured ? 1 : 0) - (a.data.homeFeatured ? 1 : 0))
+  .slice(0, 8);
+
+const now = new Date('2026-07-14');
+const upcoming = (await getCollection('events'))
+  .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= now)
+  .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime())
+  .slice(0, 3);
+
+const cities = await getCollection('stadt');
+
+const benefits = [
+  ['Real World Insights', 'You hear from people who actually use AI – with successes, detours and honest learnings.'],
+  ['New Perspectives', 'Engineering, business, organisation. AI is viewed from several angles – not just one.'],
+  ['Live-Demos & Use Cases', 'No theory. Just examples that show how ideas work in reality.'],
+  ['Hands On and Q&A', 'Ask questions, bring topics, join the discussion. This is not about listening – it is about thinking further.'],
+  ['Exchange with Experts', 'Meet developers, decision-makers, founders and the curious – in a relaxed atmosphere.'],
+  ['Good conversations', 'With drinks and snacks included, deliberate breaks and time to talk after the talks.'],
+];
+
+const stats = [
+  ['80+', 'Avg. attendees per afterwork'],
+  ['100k', 'Content reach'],
+  ['100%', 'AI focus for the evening'],
+  ['3', 'Cities planned'],
+];
+
+const testimonials = [
+  'Very entertaining and strong knowledge. There is real experience on stage here.',
+  'Relaxed atmosphere, great location and interesting presentations. You immediately feel at home and welcomed.',
+  'The mix of diverse presentations and live demonstrations was excellent.',
+];
+
+const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
+  (n) => `/wp-content/uploads/2026/01/${n}-ianight-${n}-scaled.jpg`,
+);
+---
+
+<Layout
+  lang="en"
+  title="AI Nights — AI Events & Afterworks in Nuremberg, Munich & Erlangen"
+  description="The AI Nights are a local event series around Artificial Intelligence. Four times a year: afterwork evenings with talks, live demos, speakers and community – live and hands-on."
+  path="/en/"
+  alternates={{ de: '/de/', en: '/en/' }}
+  image="/wp-content/uploads/2026/01/01_ainights_inspire.png"
+>
+  <Header lang="en" />
+  <main>
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="container hero-inner">
+        <p class="eyebrow">AI Nights — Your AI Stage</p>
+        <h1 class="display-font">Live Events.<br /><span class="gradient-text">Community.</span> Exchange.</h1>
+        <p class="lead">
+          The AI Nights are more than a single evening – they are a local event series. Four times a year,
+          afterwork evenings bring together people from Nuremberg, Munich, Erlangen and the surrounding region
+          to talk about AI, share questions and exchange perspectives – live, after work.
+        </p>
+        <div class="hero-cta">
+          <a href="/de/tickets/" class="btn btn-primary">Get tickets</a>
+          <a href="/events/" class="btn btn-ghost">See all events</a>
+        </div>
+        <div class="hero-stats">
+          {stats.map(([num, label]) => (
+            <div><strong class="display-font gradient-text">{num}</strong><span>{label}</span></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">How AI Nights feels</p>
+        <h2 class="display-font sec-title">Next AI&nbsp;Nights Afterwork Events</h2>
+        <div class="events-grid">
+          {upcoming.map((e) => (
+            <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} />
+          ))}
+        </div>
+        <div class="cities-row">
+          <span>AI Nights in more cities:</span>
+          {cities.map((c) => <a href={`/stadt/${c.data.slug}/`} class="city-pill">{c.data.title}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section why">
+      <div class="container">
+        <p class="eyebrow">Why should you join?</p>
+        <h2 class="display-font sec-title">
+          Because AI is the global revolution right now!<br />
+          <span class="gradient-text">There is no simple answer.</span>
+        </h2>
+        <div class="benefits-grid">
+          {benefits.map(([title, text], i) => (
+            <div class="benefit card">
+              <span class="benefit-num display-font">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Live on our stages…</p>
+        <h2 class="display-font sec-title">Learn from industry experts & thought leaders</h2>
+        <div class="speaker-grid">
+          {speakers.map((s) => (
+            <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
+          ))}
+        </div>
+        <div class="center"><a href="/speaker/" class="btn btn-ghost">See all speakers</a></div>
+      </div>
+    </section>
+
+    <section class="section sponsors">
+      <div class="container">
+        <p class="eyebrow">AI Nights Sponsors</p>
+        <h2 class="display-font sec-title">The companies that make AI&nbsp;Nights possible</h2>
+        <SponsorTiers lang="en" />
+        <div class="center"><a href="/en/become-sponsor/" class="btn btn-ghost">Become a sponsor</a></div>
+      </div>
+    </section>
+
+    <section class="section concept">
+      <div class="container concept-inner">
+        <p class="eyebrow">Our concept</p>
+        <h2 class="display-font">One Vision. <span class="gradient-text">One Format.</span></h2>
+        <p>
+          The AI Nights are a series of regular afterwork evenings. They grew out of the wish to create a place
+          where AI is not just explained, but understood together. At the centre is always the same idea:
+          bringing together people who encounter AI in everyday life and at work – and who want to talk about it.
+          Live, on site and without a lecture-only programme.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Voices from the community</p>
+        <h2 class="display-font sec-title">What comes out of it</h2>
+        <div class="testi-grid">
+          {testimonials.map((quote) => (
+            <blockquote class="testi card"><p>„{quote}"</p></blockquote>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">One evening. Many conversations.</p>
+        <h2 class="display-font sec-title">AI&nbsp;Nights Moments</h2>
+        <div class="gallery">
+          {impressions.map((src) => <img src={src} alt="AI Nights moment" loading="lazy" />)}
+        </div>
+        <div class="center"><a href="/de/galerie/" class="btn btn-ghost">To the gallery</a></div>
+      </div>
+    </section>
+
+    <section class="section final-cta">
+      <div class="container">
+        <div class="cta-box card">
+          <h2 class="display-font">Are you ready for your next AI-Level?</h2>
+          <p>Bring a question that is on your mind right now. The AI Nights are made exactly for these moments – an evening to listen, think along or simply have the conversations that often fall short in everyday life.</p>
+          <a href="/de/tickets/" class="btn btn-primary">Get your ticket</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer lang="en" />
+</Layout>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(4rem, 12vw, 8rem) clamp(3rem, 8vw, 6rem);
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 70% 20%, rgba(255, 45, 122, 0.18), transparent 45%),
+      radial-gradient(circle at 20% 60%, rgba(50, 107, 255, 0.16), transparent 45%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 5rem);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+  .lead {
+    max-width: 62ch;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+    font-size: 1.12rem;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3.5rem;
+  }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 760px;
+    margin-inline: auto;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .hero-stats div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .hero-stats strong {
+    font-size: 2.2rem;
+  }
+  .hero-stats span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .sec-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: 2rem;
+  }
+  .center {
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .cities-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .city-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .city-pill:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .benefit {
+    padding: 1.6rem;
+  }
+  .benefit-num {
+    color: var(--magenta);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .benefit h3 {
+    font-size: 1.15rem;
+    margin: 0.7rem 0 0.5rem;
+  }
+  .benefit p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+  .speaker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .concept-inner {
+    max-width: 760px;
+    text-align: center;
+  }
+  .concept-inner h2 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.5rem 0 1.5rem;
+  }
+  .concept-inner p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .testi {
+    padding: 1.8rem;
+    margin: 0;
+  }
+  .testi p {
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    font-style: italic;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+  .gallery img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .cta-box {
+    text-align: center;
+    padding: clamp(2.5rem, 6vw, 4.5rem);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 45, 122, 0.12), transparent 60%), var(--bg-glass);
+  }
+  .cta-box h2 {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    max-width: 22ch;
+    margin: 0 auto 1.2rem;
+  }
+  .cta-box p {
+    max-width: 56ch;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+  }
+  @media (max-width: 780px) {
+    .hero-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .gallery {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

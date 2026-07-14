@@ -1,0 +1,22 @@
+{
+  "id": 630,
+  "title": "20:00 - 20:45 Uhr | KI zwischen Innovation und Regulierung - Wie Gesetze den Einsatz von KI beeinflussen und was das konkret für dein Unternehmen bedeutet",
+  "slug": "innovation-und-regulierung",
+  "excerpt": "KI scheitert selten an der Technik – sondern an Regeln, Unsicherheit und Bürokratie. Dr. Konrad Körner gibt Einblicke, wie Politik, Recht und KI zusammenhängen und was sich ändern muss, damit Innovation im Business nicht ausgebremst wird.",
+  "contentHtml": "KI scheitert selten an der Technik – sondern an Regeln, Unsicherheit und Bürokratie. Dr. Konrad Körner gibt Einblicke, wie Politik, Recht und KI zusammenhängen und was sich ändern muss, damit Innovation im Business nicht ausgebremst wird.",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/dr-konrad-koerner-ainights.jpeg",
+    "alt": "dr-konrad-koerner-ainights"
+  },
+  "startTime": "20:00",
+  "time": "20:00",
+  "endTime": "20:45",
+  "speakerIds": [
+    188
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-01-05 10:46:39"
+}

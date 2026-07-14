@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import EventCard from '../../components/EventCard.astro';
+
+export async function getStaticPaths() {
+  const cities = await getCollection('stadt');
+  return cities.map((c) => ({ params: { slug: c.data.slug }, props: { c } }));
+}
+
+const { c } = Astro.props;
+const d = c.data;
+const cityName = d.title;
+
+const today = new Date('2026-07-14');
+const events = (await getCollection('events')).filter(
+  (e) => e.data.city && e.data.city.toLowerCase() === cityName.toLowerCase(),
+);
+const upcoming = events
+  .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= today)
+  .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime());
+const past = events
+  .filter((e) => !e.data.eventDate || new Date(e.data.eventDate) < today)
+  .sort((a, b) => new Date(b.data.eventDate ?? 0).getTime() - new Date(a.data.eventDate ?? 0).getTime());
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `AI Nights ${cityName} — KI-Afterworks in ${cityName}`}
+  description={d.seo?.description ?? d.excerpt ?? `AI Nights in ${cityName}: Afterwork-Abende rund um Künstliche Intelligenz mit Talks, Live-Demos und Community.`}
+  path={`/stadt/${d.slug}/`}
+  image={d.image?.src}
+>
+  <Header lang="de" />
+  <main>
+    <section class="hero">
+      {d.image?.src && <img class="hero-bg" src={d.image.src} alt={d.image.alt ?? cityName} />}
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
+        <p class="eyebrow">AI Nights vor Ort</p>
+        <h1 class="display-font">AI&nbsp;Nights <span class="gradient-text">{cityName}</span></h1>
+        {d.excerpt && <p class="lead">{d.excerpt}</p>}
+        <a href="/de/tickets/" class="btn btn-primary">Tickets für {cityName}</a>
+      </div>
+    </section>
+
+    <div class="container section">
+      {d.contentHtml && <div class="prose city-content" set:html={d.contentHtml} />}
+
+      {upcoming.length > 0 && (
+        <>
+          <h2 class="group display-font">Kommende Events in {cityName}</h2>
+          <div class="grid">
+            {upcoming.map((e) => (
+              <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {past.length > 0 && (
+        <>
+          <h2 class="group display-font">Vergangene Events in {cityName}</h2>
+          <div class="grid">
+            {past.map((e) => (
+              <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {events.length === 0 && (
+        <p class="empty">Termine für {cityName} werden bald bekanntgegeben. <a href="/de/newsletter/">Newsletter abonnieren</a> und nichts verpassen.</p>
+      )}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(4rem, 10vw, 7rem);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.55), var(--bg-base));
+  }
+  .hero-inner {
+    position: relative;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin: 0.5rem 0 1rem;
+  }
+  .lead {
+    max-width: 56ch;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+  .city-content {
+    max-width: 760px;
+    margin-bottom: 3rem;
+  }
+  .group {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1.3rem;
+    color: var(--text-primary);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .empty {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+  }
+</style>

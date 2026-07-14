@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const items = await getCollection('assistants');
+---
+
+<Layout
+  lang="de"
+  title="KI-Assistenten — AI Nights"
+  description="Die KI-Assistenten der AI Nights: kleine, praktische GPTs zum Ausprobieren – vom Cooking Coach bis zum Social Script Creator."
+  path="/ai-assistants/"
+  alternates={{ de: '/ai-assistants/' }}
+>
+  <Header lang="de" />
+  <main class="container archive section">
+    <p class="eyebrow">Zum Ausprobieren</p>
+    <h1 class="display-font">KI-Assistenten</h1>
+    <p class="sub">Kleine, praktische KI-Helfer, die bei den AI Nights entstanden sind – einfach ausprobieren.</p>
+    <div class="grid">
+      {items.map((a) => (
+        <a href={`/ai-assistants/${a.data.slug}/`} class="card item">
+          {a.data.image?.src && <img src={a.data.image.src} alt={a.data.image.alt ?? a.data.title} loading="lazy" />}
+          <div class="body">
+            <h3>{a.data.title}</h3>
+            {a.data.excerpt && <p>{a.data.excerpt}</p>}
+            <span class="more">Ansehen →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  .item {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .item:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+  }
+  .item img {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    width: 100%;
+  }
+  .body {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  .body h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+  .body p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .more {
+    margin-top: auto;
+    color: var(--magenta-bright);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  return events.map((e) => ({ params: { slug: e.data.slug }, props: { e } }));
+}
+
+const { e } = Astro.props;
+const d = e.data;
+
+function fmtDate(dt?: string) {
+  if (!dt) return null;
+  const p = new Date(dt);
+  if (isNaN(p.getTime())) return dt;
+  return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+}
+const dateLabel = fmtDate(d.eventDate);
+const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `${d.title} — AI Nights`}
+  description={d.seo?.description ?? d.excerpt ?? `${d.title} — ein AI Nights Afterwork-Event${d.city ? ` in ${d.city}` : ''}.`}
+  path={`/events/${d.slug}/`}
+  image={d.image?.src}
+  ogType="event"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: d.title,
+    startDate: d.eventDate,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: d.locationName
+      ? { '@type': 'Place', name: d.locationName, address: d.locationAddress ?? d.city }
+      : undefined,
+    image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
+    description: d.excerpt,
+    organizer: { '@type': 'Organization', name: 'AI Nights', url: 'https://ainights.ai' },
+  }}
+>
+  <Header lang="de" />
+  <main>
+    <section class="hero">
+      {d.image?.src && <img class="hero-bg" src={d.image.src} alt={d.image.alt ?? d.title} />}
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
+        <a href="/events/" class="back">← Alle Events</a>
+        <div class="badges">
+          {d.city && <span class="badge">{d.city}</span>}
+          {isPast && <span class="badge past">Vergangenes Event</span>}
+        </div>
+        <h1 class="display-font">{d.title}</h1>
+        <div class="meta">
+          {dateLabel && <span>📅 {dateLabel}</span>}
+          {d.startTime && <span>🕕 {d.startTime} Uhr</span>}
+          {d.locationName && <span>📍 {d.locationName}</span>}
+        </div>
+        {d.ticketUrl && !isPast && <a href={d.ticketUrl} class="btn btn-primary">Tickets sichern</a>}
+      </div>
+    </section>
+
+    <div class="container body">
+      {d.contentHtml && <div class="prose" set:html={d.contentHtml} />}
+      {!d.contentHtml && d.excerpt && <p class="prose">{d.excerpt}</p>}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(3rem, 8vw, 6rem);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.28;
+    filter: saturate(1.1);
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.5), var(--bg-base));
+  }
+  .hero-inner {
+    position: relative;
+  }
+  .back {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  .badges {
+    display: flex;
+    gap: 0.6rem;
+    margin: 1.5rem 0 1rem;
+  }
+  .badge {
+    background: var(--gradient-accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+  }
+  .badge.past {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    max-width: 20ch;
+    margin-bottom: 1.2rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+    margin-bottom: 1.8rem;
+  }
+  .body {
+    max-width: 800px;
+    padding-block: 3rem 2rem;
+  }
+</style>

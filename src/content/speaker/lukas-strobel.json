@@ -1,0 +1,15 @@
+{
+  "id": 827,
+  "title": "Lukas Strobel",
+  "slug": "lukas-strobel",
+  "jobTitle": "Specialist KI",
+  "excerpt": "Lukas Strobel ist über sein Geographie-Studium zur Künstlichen Intelligenz gekommen. Von klassischen Machine-Learning-Verfahren bis hin zu selbst trainierten Convolutional Neural Networks arbeitet er seit Jahren an KI-Projekten – beruflich wie privat. In seiner Bachelorarbeit sagte er Schneeverwehungen auf satellitenähnlichen Bildern voraus und verkürzte Prozesse, die früher Tage dauerten, auf wenige Minuten. Ohne klassischen IT-Background entwickelt…",
+  "bioHtml": "<p>Lukas Strobel ist über sein Geographie-Studium zur Künstlichen Intelligenz gekommen. Von klassischen Machine-Learning-Verfahren bis hin zu selbst trainierten Convolutional Neural Networks arbeitet er seit Jahren an KI-Projekten – beruflich wie privat. In seiner Bachelorarbeit sagte er Schneeverwehungen auf satellitenähnlichen Bildern voraus und verkürzte Prozesse, die früher Tage dauerten, auf wenige Minuten. Ohne klassischen IT-Background entwickelt und programmiert Lukas praxisnahe KI-Lösungen und setzt dabei unter anderem auf Mistral, Codex und OCR-Modelle. Sein Fokus liegt darauf, wie KI als Werkzeug sinnvoll eingesetzt wird – und wie Teams sie wirklich annehmen.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/lukas-strobel.png",
+    "alt": "Lukas Strobel"
+  },
+  "homeFeatured": true,
+  "date": "2026-01-24 20:22:01",
+  "modified": "2026-03-12 09:59:21"
+}

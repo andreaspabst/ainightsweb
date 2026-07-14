@@ -1,0 +1,20 @@
+{
+  "id": 631,
+  "title": "19:00 - 19:45 Uhr | \"Let's Talk\" - Kommunikatives Situationstraining bei der Baden Württembergischen Polizei + ein konkretes Architekturbeispiel, das sich auf nahezu jedes Unternehmen und Trainingsszenario übertragen lässt",
+  "slug": "lets-talk-kommunikatives-situationstraining-bei-der-baden-wuerttembergischen-polizei",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/Julian-B.-Schulze.png",
+    "alt": "Julian B. Schulze"
+  },
+  "startTime": "19:00",
+  "time": "19:00",
+  "endTime": "19:45",
+  "speakerIds": [
+    192
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-01-05 10:46:52"
+}

@@ -1,0 +1,15 @@
+{
+  "id": 190,
+  "title": "Thomas Schönherr",
+  "slug": "thomas-schoenherr",
+  "jobTitle": "CTO Seobility GmbH",
+  "excerpt": "Als CTO von Seobility arbeitet Thomas Schönherr täglich an Software, die stark von Automatisierung und KI geprägt ist. Sein Fokus liegt darauf, wie sich Softwareentwicklung verändert, wenn KI nicht mehr nur unterstützt, sondern aktiv Code erzeugt. Bei den AI Nights zeigt er, warum Programmieren mit KI vor allem bedeutet, Anforderungen, Architektur und Design sauber zu denken…",
+  "bioHtml": "<p>Als CTO von Seobility arbeitet Thomas Schönherr täglich an Software, die stark von Automatisierung und KI geprägt ist. Sein Fokus liegt darauf, wie sich Softwareentwicklung verändert, wenn KI nicht mehr nur unterstützt, sondern aktiv Code erzeugt. Bei den AI Nights zeigt er, warum Programmieren mit KI vor allem bedeutet, <strong>Anforderungen, Architektur und Design sauber zu denken</strong> – und wie Spezifikationen zur eigentlichen Grundlage moderner Entwicklung werden.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/thomas-schoenherr-seobility-squared.jpeg",
+    "alt": "Thomas Schönherr"
+  },
+  "homeFeatured": true,
+  "date": "2026-01-01 20:43:47",
+  "modified": "2026-01-14 12:24:21"
+}

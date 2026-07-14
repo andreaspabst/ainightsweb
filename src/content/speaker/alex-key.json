@@ -1,0 +1,15 @@
+{
+  "id": 999,
+  "title": "Alex Key",
+  "slug": "alex-key",
+  "jobTitle": "AI-Engineer und Produktmanagement-Coach",
+  "excerpt": "Alex ist AI-Engineer und Produktmanagement-Coach. Er hilft B2B-Softwareunternehmen beim Übergang in die nächste Generation von AI-nativer Business-Software und arbeitet direkt mit CEOs und CTOs daran, traditionelle SaaS-Produkte in agent-native Anwendungen zu verwandeln - nicht durch aufgesetzte Chatbots, sondern durch ein Neudenken des Produkts.",
+  "bioHtml": "<p>Alex ist AI-Engineer und Produktmanagement-Coach. Er hilft B2B-Softwareunternehmen beim Übergang in die nächste Generation von AI-nativer Business-Software und arbeitet direkt mit CEOs und CTOs daran, traditionelle SaaS-Produkte in agent-native Anwendungen zu verwandeln - nicht durch aufgesetzte Chatbots, sondern durch ein Neudenken des Produkts.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/03/IMG_9583.jpeg",
+    "alt": "Alex Key"
+  },
+  "homeFeatured": true,
+  "date": "2026-03-08 08:36:12",
+  "modified": "2026-03-12 09:38:45"
+}

@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+
+export interface Props {
+  lang?: 'de' | 'en';
+}
+const { lang = 'de' } = Astro.props;
+
+const sponsors = await getCollection('sponsor');
+const tierOrder = ['platin', 'gold', 'silver', 'bronce'];
+const labels: Record<string, Record<string, string>> = {
+  de: { platin: 'Platin Sponsoren', gold: 'Gold Sponsoren', silver: 'Silver Sponsoren', bronce: 'Bronze Sponsoren' },
+  en: { platin: 'Platinum Sponsors', gold: 'Gold Sponsors', silver: 'Silver Sponsors', bronce: 'Bronze Sponsors' },
+};
+const groups = tierOrder
+  .map((tier) => ({ tier, label: labels[lang][tier], items: sponsors.filter((s) => s.data.tier === tier) }))
+  .filter((g) => g.items.length);
+---
+
+<div class="tiers">
+  {groups.map((group) => (
+    <div class="tier">
+      <h2 class="tier-label">{group.label}</h2>
+      <div class="row">
+        {group.items.map((s) => (
+          <a href={`/sponsor/${s.data.slug}/`} class="logo card" title={s.data.title}>
+            <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+          </a>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .tier {
+    margin-bottom: 2.8rem;
+  }
+  .tier-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.6rem 2rem;
+    min-width: 190px;
+    min-height: 110px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .logo:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+  .logo img {
+    max-height: 56px;
+    max-width: 160px;
+    object-fit: contain;
+  }
+</style>

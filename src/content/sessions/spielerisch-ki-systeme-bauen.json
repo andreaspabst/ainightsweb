@@ -1,0 +1,22 @@
+{
+  "id": 1441,
+  "title": "Spielerisch KI Systeme bauen... (tbd)",
+  "slug": "spielerisch-ki-systeme-bauen",
+  "excerpt": "Tim Junge & Markus Utomo KI-Projekte scheitern selten an der Technologie – sie scheitern an Menschen, die nicht mitgenommen werden, an Komplexität, die niemand greifen kann, und an Konzepten, die auf Folien gut aussehen, aber im Alltag nicht landen. Was wäre, wenn wir KI-Systeme nicht nur bauen, sondern erspielen? Tim Junge ist Associate Partner bei…",
+  "contentHtml": "<p><em>Tim Junge & Markus Utomo</em></p>\n<p>KI-Projekte scheitern selten an der Technologie – sie scheitern an Menschen, die nicht mitgenommen werden, an Komplexität, die niemand greifen kann, und an Konzepten, die auf Folien gut aussehen, aber im Alltag nicht landen. Was wäre, wenn wir KI-Systeme nicht nur bauen, sondern <em>erspielen</em>?</p>\n<p><strong>Tim Junge</strong> ist <strong>Associate Partner bei IBM</strong> und treibt dort KI und Automatisierung für einen modernen und resilienten öffentlichen Sektor in DACH voran. Über 15 Jahre Erfahrung in der Technologiebranche, davon acht mit Fokus auf KI – von komplexen Transformationsprogrammen bis zur Go-to-Market-Strategie. <strong>Markus Utomo</strong> ist Diplom-<strong>Spiel- und Lerndesigner</strong>, <strong>TEDx-Speaker</strong> und natürlich <strong>Chief Playing Officer</strong>: Er entwickelt Spiele für Marken, Hotels und Consulting-Unternehmen, die Wissen erlebbar machen und Menschen nachhaltig verbinden.</p>\n<p>Gemeinsam zeigen die beiden, wie spielerische Ansätze helfen, KI-Systeme zu konzipieren, zu verstehen und im Unternehmen zu verankern: Wie Game Design Komplexität zähmt, wie Teams über Spielmechaniken echte KI-Kompetenz aufbauen – und warum der Weg zum funktionierenden KI-System mit einem Augenzwinkern schneller ans Ziel führt.</p>\n<p>Enterprise-Erfahrung von IBM trifft Spieltrieb. Strategische Tiefe trifft Lernfreude. Und ihr nehmt Ansätze mit, die ihr direkt am nächsten Tag ausprobieren könnt.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/07/tim-und-markus.png",
+    "alt": "Spielerisch KI Systeme bauen... (tbd)"
+  },
+  "speakerSlugs": [
+    "tim-junge-markus-utomo"
+  ],
+  "speakerIds": [
+    1442
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-07-09 22:22:17"
+}

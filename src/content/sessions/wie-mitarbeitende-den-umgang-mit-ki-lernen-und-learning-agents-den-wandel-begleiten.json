@@ -1,0 +1,25 @@
+{
+  "id": 1245,
+  "title": "20:00 - 20:45 Uhr | (inkl. 15 Min Diskussionsrunde) Wie Mitarbeitende den Umgang mit KI lernen und Learning Agents in der Holding der Schwan-STABILO Gruppe den Wandel begleiten",
+  "slug": "wie-mitarbeitende-den-umgang-mit-ki-lernen-und-learning-agents-den-wandel-begleiten",
+  "excerpt": "Der Hype ist groß: AI‑Tools werden immer leistungsfähiger, neue Use Cases entstehen, das Momentum ist da. Doch ob AI im Unternehmen wirklich ankommt, entscheidet sich nicht in der Technik, sondern im Alltag der Kolleg*innen – zwischen ganz menschlichen Themen wie Zeitdruck, Unsicherheit oder Qualitätsfragen. In unserer Keynote zeigen wir, warum „AI-Readiness“ aus unserer Perspektive vor…",
+  "contentHtml": "Der Hype ist groß: AI‑Tools werden immer leistungsfähiger, neue Use Cases entstehen, das Momentum ist da. Doch ob AI im Unternehmen wirklich ankommt, entscheidet sich nicht in der Technik, sondern im Alltag der Kolleg*innen – zwischen ganz menschlichen Themen wie Zeitdruck, Unsicherheit oder Qualitätsfragen.\nIn unserer Keynote zeigen wir, warum „AI-Readiness“ aus unserer Perspektive vor allem „Human Rediness“ bedeutet, und wie wir in unserer Rolle als Learning Agents bei Schwan-STABILO dazu beitragen, Mitarbeitende mitzunehmen, zu befähigen und ins Ausprobieren zu bringen.\nWas nehmt ihr mit? Konkrete, gut adaptierbare Ansätze um Hürden zu minimieren, Leitplanken für die verantwortungsvolle Nutzung mitzudenken und Kolleg*innen zu Multiplikator*innen zu machen.\nDenn wir sind sicher: AI ist kein reines Technologie- sondern vielmehr ein Transformations- und Kulturthema!",
+  "image": {
+    "src": "/wp-content/uploads/2026/05/Learning-Agents-scaled.jpg",
+    "alt": "Katharina Rohrmeier (Group Risk & Compliance Manager), Lisa Mahlein (Assistant to the CFO) und Sabrina Grünthanner (Internal Communications Manager)"
+  },
+  "startTime": "20:00",
+  "time": "20:00",
+  "endTime": "20:45",
+  "speakerSlugs": [
+    "katharina-rohrmeier-lisa-mahlein-sabrina-gruenthanner"
+  ],
+  "speakerIds": [
+    1242
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-05-12 08:17:33"
+}

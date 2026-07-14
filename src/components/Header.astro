@@ -1,0 +1,251 @@
+---
+export interface Props {
+  lang?: 'de' | 'en';
+}
+const { lang = 'de' } = Astro.props;
+
+const t = {
+  de: {
+    home: '/de/',
+    events: 'Events',
+    cities: 'Städte',
+    speaker: 'Speaker',
+    sponsors: 'Sponsoren',
+    gallery: 'Galerie',
+    tickets: 'Tickets',
+    nuernberg: 'AI Nights Nürnberg',
+    muenchen: 'AI Nights München',
+    erlangen: 'AI Nights Erlangen',
+    ticketsHref: '/de/tickets/',
+    sponsorsHref: '/de/sponsors/',
+    galleryHref: '/de/galerie/',
+    switchLabel: 'EN',
+    switchHref: '/en/',
+  },
+  en: {
+    home: '/en/',
+    events: 'Events',
+    cities: 'Cities',
+    speaker: 'Speaker',
+    sponsors: 'Sponsors',
+    gallery: 'Gallery',
+    tickets: 'Tickets',
+    nuernberg: 'AI Nights Nuremberg',
+    muenchen: 'AI Nights Munich',
+    erlangen: 'AI Nights Erlangen',
+    ticketsHref: '/de/tickets/',
+    sponsorsHref: '/en/our-sponsors/',
+    galleryHref: '/de/galerie/',
+    switchLabel: 'DE',
+    switchHref: '/de/',
+  },
+}[lang];
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a href={t.home} class="logo" aria-label="AI Nights">
+      <img src="/wp-content/uploads/2026/01/Logo_w.svg" alt="AI Nights" width="132" height="34" />
+    </a>
+
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="/events/">{t.events}</a>
+      <div class="dropdown">
+        <button type="button" class="drop-btn" aria-haspopup="true" aria-expanded="false">
+          {t.cities}
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="drop-menu">
+          <a href="/stadt/nuernberg/">{t.nuernberg}</a>
+          <a href="/stadt/muenchen/">{t.muenchen}</a>
+          <a href="/stadt/erlangen/">{t.erlangen}</a>
+        </div>
+      </div>
+      <a href="/speaker/">{t.speaker}</a>
+      <a href={t.sponsorsHref}>{t.sponsors}</a>
+      <a href={t.galleryHref}>{t.gallery}</a>
+    </nav>
+
+    <div class="actions">
+      <a href={t.switchHref} class="lang" aria-label="Sprache wechseln">{t.switchLabel}</a>
+      <a href={t.ticketsHref} class="btn btn-primary tickets">{t.tickets}</a>
+      <button type="button" class="burger" aria-label="Menü" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" hidden>
+    <a href="/events/">{t.events}</a>
+    <a href="/stadt/nuernberg/">{t.nuernberg}</a>
+    <a href="/stadt/muenchen/">{t.muenchen}</a>
+    <a href="/stadt/erlangen/">{t.erlangen}</a>
+    <a href="/speaker/">{t.speaker}</a>
+    <a href={t.sponsorsHref}>{t.sponsors}</a>
+    <a href={t.galleryHref}>{t.gallery}</a>
+    <a href={t.ticketsHref} class="btn btn-primary">{t.tickets}</a>
+    <a href={t.switchHref}>{lang === 'de' ? 'English' : 'Deutsch'}</a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 1, 24, 0.72);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 68px;
+  }
+  .logo img {
+    height: 32px;
+    width: auto;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    margin-inline: auto;
+  }
+  .nav > a,
+  .drop-btn {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0;
+  }
+  .nav > a:hover,
+  .drop-btn:hover {
+    color: var(--text-primary);
+  }
+  .dropdown {
+    position: relative;
+  }
+  .drop-menu {
+    position: absolute;
+    top: calc(100% + 0.9rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 210px;
+    padding: 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.18s ease;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  }
+  .dropdown:hover .drop-menu,
+  .dropdown:focus-within .drop-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .drop-menu a {
+    padding: 0.55rem 0.75rem;
+    border-radius: 9px;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+  }
+  .drop-menu a:hover {
+    background: var(--bg-glass);
+    color: var(--text-primary);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .lang {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+  }
+  .lang:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .tickets {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  .burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 6px;
+  }
+  .burger span {
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: 0.2s;
+  }
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem 1.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-base);
+  }
+  .mobile-menu a {
+    color: var(--text-secondary);
+    padding: 0.7rem 0.4rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  .mobile-menu a.btn {
+    justify-content: center;
+    margin-top: 0.6rem;
+    color: #fff;
+    border-bottom: none;
+  }
+
+  @media (max-width: 900px) {
+    .nav,
+    .tickets {
+      display: none;
+    }
+    .burger {
+      display: flex;
+    }
+    .mobile-menu[data-open='true'] {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector('.burger');
+  const menu = document.querySelector('.mobile-menu');
+  burger?.addEventListener('click', () => {
+    const open = menu?.getAttribute('data-open') === 'true';
+    menu?.setAttribute('data-open', String(!open));
+    if (menu) menu.hidden = open;
+    burger.setAttribute('aria-expanded', String(!open));
+  });
+</script>

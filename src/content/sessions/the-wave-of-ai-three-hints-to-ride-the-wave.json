@@ -1,0 +1,25 @@
+{
+  "id": 986,
+  "title": "19:00 - 19:45 Uhr | (inkl. 15 Min Diskussionsrunde) Die KI-Welle ist da und warum Haltung, Ausprobieren und Zusammenarbeit entscheidend sind, um sie zu nutzen statt von ihr überrollt zu werden",
+  "slug": "the-wave-of-ai-three-hints-to-ride-the-wave",
+  "excerpt": "Die KI-Welle ist da – und sie wird nicht kleiner. Die Frage ist: Werden wir von ihr überrollt oder lernen wir, sie zu nutzen? In diesem Talk geht es um konkrete Erfahrungen aus der Praxis: was beim Einsatz von KI wirklich funktioniert, welche Fehler häufig passieren und warum Offenheit, Experimentieren und Zusammenarbeit entscheidend sind.",
+  "contentHtml": "Die KI-Welle ist da – und sie wird nicht kleiner. Die Frage ist: Werden wir von ihr überrollt oder lernen wir, sie zu nutzen? In diesem Talk geht es um konkrete Erfahrungen aus der Praxis: was beim Einsatz von KI wirklich funktioniert, welche Fehler häufig passieren und warum Offenheit, Experimentieren und Zusammenarbeit entscheidend sind.",
+  "image": {
+    "src": "/wp-content/uploads/2026/02/florian-pruefer-squared.jpeg",
+    "alt": "19:00 - 19:45 Uhr | (inkl. 15 Min Diskussionsrunde) Die KI-Welle ist da und warum Haltung, Ausprobieren und Zusammenarbeit entscheidend sind, um sie zu nutzen statt von ihr überrollt zu werden"
+  },
+  "startTime": "19:00",
+  "time": "19:00",
+  "endTime": "19:45",
+  "speakerSlugs": [
+    "florian-pruefer"
+  ],
+  "speakerIds": [
+    984
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-02-12 10:36:32"
+}

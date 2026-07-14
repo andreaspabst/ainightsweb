@@ -1,0 +1,124 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const sessions = await getCollection('sessions');
+  return sessions.map((se) => ({ params: { slug: se.data.slug }, props: { se } }));
+}
+
+const { se } = Astro.props;
+const d = se.data;
+
+// Speaker auflösen (über Slug oder ID)
+const allSpeakers = await getCollection('speaker');
+const speakers = allSpeakers.filter(
+  (s) => d.speakerSlugs?.includes(s.data.slug) || (s.data.id && d.speakerIds?.includes(s.data.id)),
+);
+
+const timeLabel = d.time ?? (d.startTime && d.endTime ? `${d.startTime} – ${d.endTime}` : d.startTime);
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `${d.title} — AI Nights Session`}
+  description={d.seo?.description ?? d.excerpt ?? `${d.title} — Session bei den AI Nights.`}
+  path={`/sessions/${d.slug}/`}
+  image={d.image?.src ?? speakers[0]?.data.image?.src}
+  ogType="article"
+>
+  <Header lang="de" />
+  <main class="container detail section">
+    <p class="eyebrow">Session</p>
+    <h1 class="display-font">{d.title}</h1>
+    <div class="meta">
+      {timeLabel && <span>🕕 {timeLabel}</span>}
+      {d.room && <span>🎤 {d.room}</span>}
+      {d.level && <span>📊 {d.level}</span>}
+      {d.duration && <span>⏱ {typeof d.duration === 'number' ? `${d.duration} Min.` : d.duration}</span>}
+    </div>
+
+    {speakers.length > 0 && (
+      <div class="speakers">
+        {speakers.map((s) => (
+          <a href={`/speaker/${s.data.slug}/`} class="sp">
+            {s.data.image?.src && <img src={s.data.image.src} alt={s.data.title} width="56" height="56" />}
+            <span>
+              <strong>{s.data.title}</strong>
+              {s.data.jobTitle && <small>{s.data.jobTitle}</small>}
+            </span>
+          </a>
+        ))}
+      </div>
+    )}
+
+    {d.contentHtml && <div class="prose" set:html={d.contentHtml} />}
+    {!d.contentHtml && d.excerpt && <p class="prose">{d.excerpt}</p>}
+
+    <div class="cta-mini">
+      <a href="/de/tickets/" class="btn btn-primary">Beim nächsten Afterwork dabei sein</a>
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .detail {
+    max-width: 800px;
+    padding-block: 3rem 3rem;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4.5vw, 3rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+  .speakers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .sp {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem 0.4rem 0.4rem;
+  }
+  .sp:hover {
+    border-color: var(--magenta-bright);
+  }
+  .sp img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .sp span {
+    display: flex;
+    flex-direction: column;
+  }
+  .sp strong {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+  }
+  .sp small {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+  .cta-mini {
+    margin-top: 3rem;
+    text-align: center;
+  }
+</style>

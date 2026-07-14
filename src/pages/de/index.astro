@@ -1,0 +1,535 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import SpeakerCard from '../../components/SpeakerCard.astro';
+import EventCard from '../../components/EventCard.astro';
+
+// --- Daten ---
+const speakers = (await getCollection('speaker'))
+  .filter((s) => !s.data.slug.startsWith('ai-nights-speaker') && s.data.slug !== 'der-pabst')
+  .filter((s) => s.data.image?.src)
+  .sort((a, b) => (b.data.homeFeatured ? 1 : 0) - (a.data.homeFeatured ? 1 : 0))
+  .slice(0, 8);
+
+const now = new Date('2026-07-14');
+const allEvents = await getCollection('events');
+const upcoming = allEvents
+  .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= now)
+  .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime())
+  .slice(0, 3);
+
+const sponsors = await getCollection('sponsor');
+const tierOrder = ['platin', 'gold', 'silver', 'bronce'];
+const tierLabels: Record<string, string> = {
+  platin: 'Platin Sponsoren',
+  gold: 'Gold Sponsoren',
+  silver: 'Silver Sponsoren',
+  bronce: 'Bronze Sponsoren',
+};
+const sponsorsByTier = tierOrder
+  .map((tier) => ({ tier, label: tierLabels[tier], items: sponsors.filter((s) => s.data.tier === tier) }))
+  .filter((g) => g.items.length);
+
+const cities = await getCollection('stadt');
+
+const benefits = [
+  ['Echte Einblicke aus der Praxis', 'Du hörst von Menschen, die KI tatsächlich nutzen – mit Erfolgen, Umwegen und ehrlichen Learnings.'],
+  ['Unterschiedliche Perspektiven', 'Entwicklung, Business, Organisation. KI wird aus mehreren Blickwinkeln betrachtet – nicht nur aus einem.'],
+  ['Live-Demos & konkrete Use Cases', 'Keine Theorie. Sondern Beispiele, die zeigen, wie Ideen in der Realität funktionieren.'],
+  ['Mitmachen & Ausprobieren', 'Stell Fragen, bring Themen ein, diskutiere mit. Hier geht es nicht ums Zuhören, sondern ums Weiterdenken.'],
+  ['Austausch auf Augenhöhe', 'Triff Entwickler:innen, Entscheider:innen, Gründer:innen und Neugierige – in entspannter Atmosphäre.'],
+  ['Raum für Gespräche', 'Mit Drinks und Snacks inklusive, bewusst eingeplanten Pausen und Zeit, auch nach den Talks miteinander ins Gespräch zu kommen.'],
+];
+
+const stats = [
+  ['80+', 'Ø Teilnehmende bei den Afterworks'],
+  ['100k', 'Content Reichweite'],
+  ['100%', 'KI-Fokus am Abend'],
+  ['3', 'Städte geplant'],
+];
+
+const testimonials = [
+  ['Sehr unterhaltsam und fachlich stark. Man merkt, dass hier echte Erfahrung auf der Bühne steht.'],
+  ['Lockere Atmosphäre, starke Location und interessante Vorträge. Man fühlt sich sofort abgeholt und willkommen.'],
+  ['Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.'],
+];
+
+const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
+  (n) => `/wp-content/uploads/2026/01/${n}-ianight-${n}-scaled.jpg`,
+);
+---
+
+<Layout
+  lang="de"
+  title="AI Nights — KI-Events & Afterworks in Nürnberg, München & Erlangen"
+  description="Die AI Nights sind eine lokale Eventreihe rund um Künstliche Intelligenz. Viermal im Jahr: Afterwork-Abende mit Talks, Live-Demos, Speakern und Community – live, nahbar, praxisnah."
+  path="/de/"
+  alternates={{ de: '/de/', en: '/en/' }}
+  image="/wp-content/uploads/2026/01/01_ainights_inspire.png"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'AI Nights',
+    url: 'https://ainights.ai/de/',
+    logo: 'https://ainights.ai/wp-content/uploads/2026/01/Logo_w.svg',
+    description: 'Lokale Eventreihe rund um Künstliche Intelligenz in Nürnberg, München und Erlangen.',
+  }}
+>
+  <Header lang="de" />
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="container hero-inner">
+        <p class="eyebrow">AI Nights — Ort für Gespräche über KI</p>
+        <h1 class="display-font">Live Events.<br /><span class="gradient-text">Community.</span> Austausch.</h1>
+        <p class="lead">
+          Die AI Nights sind mehr als ein einzelner Abend – sie sind eine lokale Eventreihe. Viermal im Jahr
+          entstehen Afterwork-Abende, an denen Menschen aus Nürnberg, München, Erlangen und Umgebung über KI
+          sprechen, Fragen teilen und Perspektiven austauschen – live, nach der Arbeit.
+        </p>
+        <div class="hero-cta">
+          <a href="/de/tickets/" class="btn btn-primary">Tickets sichern</a>
+          <a href="/events/" class="btn btn-ghost">Alle Events ansehen</a>
+        </div>
+        <div class="hero-stats">
+          {stats.map(([num, label]) => (
+            <div><strong class="display-font gradient-text">{num}</strong><span>{label}</span></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- NÄCHSTE EVENTS -->
+    <section class="section" id="events">
+      <div class="container">
+        <p class="eyebrow">So fühlt sich AI Nights an</p>
+        <h2 class="display-font sec-title">Die nächsten AI&nbsp;Nights Afterworks</h2>
+        <div class="events-grid">
+          {upcoming.map((e) => (
+            <EventCard
+              slug={e.data.slug}
+              title={e.data.title}
+              city={e.data.city}
+              eventDate={e.data.eventDate}
+              locationName={e.data.locationName}
+              image={e.data.image}
+              excerpt={e.data.excerpt}
+              ticketUrl={e.data.ticketUrl}
+            />
+          ))}
+        </div>
+        <div class="cities-row">
+          <span>AI Nights in weiteren Städten:</span>
+          {cities.map((c) => <a href={`/stadt/${c.data.slug}/`} class="city-pill">{c.data.title}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- WARUM DABEI SEIN -->
+    <section class="section why">
+      <div class="container">
+        <p class="eyebrow">Warum solltest du dabei sein?</p>
+        <h2 class="display-font sec-title">
+          Weil KI gerade vieles verändert –<br />
+          <span class="gradient-text">und einfache Antworten nicht mehr reichen.</span>
+        </h2>
+        <p class="sec-sub">
+          Die AI Nights sind für Menschen, die KI nicht nur beobachten, sondern einordnen wollen. Für alle, die
+          merken: Zwischen Hype und Praxis fehlt oft der Raum für echte Orientierung.
+        </p>
+        <div class="benefits-grid">
+          {benefits.map(([title, text], i) => (
+            <div class="benefit card">
+              <span class="benefit-num display-font">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- NETWORKING -->
+    <section class="section networking">
+      <div class="container net-inner">
+        <div class="net-text">
+          <p class="eyebrow">Networking & Lokale Community</p>
+          <h2 class="display-font">Wachstum findet <span class="gradient-text">Offline</span> statt.</h2>
+          <p>
+            Die AI Nights bringen Menschen aus deiner Region zusammen, die ähnliche Fragen zu KI, Arbeit und
+            Zukunft beschäftigen. Ohne Pitches, ohne Visitenkarten-Zwang – dafür mit Zeit, zuzuhören,
+            nachzufragen und Kontakte entstehen zu lassen.
+          </p>
+          <a href="/de/tickets/" class="btn btn-primary">Sei beim nächsten Abend dabei</a>
+        </div>
+        <div class="net-imgs">
+          <img src="/wp-content/uploads/2026/01/17-ianight-17-scaled.jpg" alt="AI Nights Networking" loading="lazy" />
+          <img src="/wp-content/uploads/2026/01/27-ianight-27-scaled.jpg" alt="AI Nights Community" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SPEAKER -->
+    <section class="section" id="speaker">
+      <div class="container">
+        <p class="eyebrow">Auf unseren Bühnen…</p>
+        <h2 class="display-font sec-title">Lerne von Branchen-Expert:innen & Vordenkern</h2>
+        <div class="speaker-grid">
+          {speakers.map((s) => (
+            <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
+          ))}
+        </div>
+        <div class="center"><a href="/speaker/" class="btn btn-ghost">Alle Speaker ansehen</a></div>
+      </div>
+    </section>
+
+    <!-- SPONSOREN -->
+    <section class="section sponsors">
+      <div class="container">
+        <p class="eyebrow">Unsere Sponsoren</p>
+        <h2 class="display-font sec-title">Die Unternehmen, die AI&nbsp;Nights möglich machen</h2>
+        {sponsorsByTier.map((group) => (
+          <div class="tier">
+            <h3 class="tier-label">{group.label}</h3>
+            <div class="sponsor-row">
+              {group.items.map((s) => (
+                <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
+                  <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div class="center"><a href="/de/sponsoring/" class="btn btn-ghost">Selbst Sponsor werden</a></div>
+      </div>
+    </section>
+
+    <!-- KONZEPT -->
+    <section class="section concept">
+      <div class="container concept-inner">
+        <p class="eyebrow">Unser Konzept</p>
+        <h2 class="display-font">Ein Format. <span class="gradient-text">Eine Idee.</span></h2>
+        <p>
+          Die AI Nights sind eine Reihe regelmäßiger Afterwork-Abende. Sie entstehen aus dem Wunsch, einen Ort
+          zu schaffen, an dem KI nicht nur erklärt, sondern gemeinsam eingeordnet wird. Im Mittelpunkt steht
+          immer dasselbe: Menschen zusammenzubringen, die KI im Alltag und im Job begegnet – und die Lust haben,
+          darüber ins Gespräch zu kommen. Live, vor Ort und ohne Frontalprogramm.
+        </p>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Stimmen aus der Community</p>
+        <h2 class="display-font sec-title">Was daraus entsteht</h2>
+        <div class="testi-grid">
+          {testimonials.map(([quote]) => (
+            <blockquote class="testi card">
+              <p>„{quote}"</p>
+            </blockquote>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPRESSIONEN -->
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Ein Abend. Viele Gespräche.</p>
+        <h2 class="display-font sec-title">Momente von den AI&nbsp;Nights</h2>
+        <div class="gallery">
+          {impressions.map((src) => <img src={src} alt="AI Nights Impression" loading="lazy" />)}
+        </div>
+        <div class="center"><a href="/de/galerie/" class="btn btn-ghost">Zur Bildergalerie</a></div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section final-cta">
+      <div class="container">
+        <div class="cta-box card">
+          <h2 class="display-font">Bereit für Austausch, kurze Impulse und gute Gespräche über KI?</h2>
+          <p>
+            Bring eine Frage mit, die dich gerade beschäftigt. Die AI Nights sind genau für diese Momente
+            gedacht – ein Abend, an dem du zuhören, mitdenken oder einfach Gespräche führen kannst, die im Alltag
+            oft zu kurz kommen.
+          </p>
+          <a href="/de/tickets/" class="btn btn-primary">Jetzt Ticket sichern</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(4rem, 12vw, 8rem) clamp(3rem, 8vw, 6rem);
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 70% 20%, rgba(255, 45, 122, 0.18), transparent 45%),
+      radial-gradient(circle at 20% 60%, rgba(50, 107, 255, 0.16), transparent 45%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 5rem);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+  .lead {
+    max-width: 62ch;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+    font-size: 1.12rem;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3.5rem;
+  }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 760px;
+    margin-inline: auto;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .hero-stats div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .hero-stats strong {
+    font-size: 2.2rem;
+  }
+  .hero-stats span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .sec-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: 1rem;
+  }
+  .sec-sub {
+    max-width: 60ch;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .center {
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .cities-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .city-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .city-pill:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .benefit {
+    padding: 1.6rem;
+  }
+  .benefit-num {
+    color: var(--magenta);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .benefit h3 {
+    font-size: 1.15rem;
+    margin: 0.7rem 0 0.5rem;
+  }
+  .benefit p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .net-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .net-text h2 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin: 0.5rem 0 1.2rem;
+  }
+  .net-text p {
+    color: var(--text-secondary);
+    margin-bottom: 1.8rem;
+  }
+  .net-imgs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .net-imgs img {
+    border-radius: var(--radius);
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border: 1px solid var(--border);
+  }
+  .net-imgs img:nth-child(2) {
+    margin-top: 2rem;
+  }
+
+  .speaker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .tier {
+    margin-top: 2.5rem;
+  }
+  .tier-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .sponsor-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+  .sponsor-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 2rem;
+    min-width: 180px;
+    min-height: 100px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .sponsor-logo:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+  .sponsor-logo img {
+    max-height: 52px;
+    max-width: 150px;
+    object-fit: contain;
+  }
+
+  .concept-inner {
+    max-width: 760px;
+    text-align: center;
+  }
+  .concept-inner h2 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.5rem 0 1.5rem;
+  }
+  .concept-inner p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .testi {
+    padding: 1.8rem;
+    margin: 0;
+  }
+  .testi p {
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    font-style: italic;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+  .gallery img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .cta-box {
+    text-align: center;
+    padding: clamp(2.5rem, 6vw, 4.5rem);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 45, 122, 0.12), transparent 60%), var(--bg-glass);
+  }
+  .cta-box h2 {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    max-width: 22ch;
+    margin: 0 auto 1.2rem;
+  }
+  .cta-box p {
+    max-width: 56ch;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 780px) {
+    .hero-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .net-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .gallery {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

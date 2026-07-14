@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import SpeakerCard from '../../components/SpeakerCard.astro';
+
+const speakers = (await getCollection('speaker'))
+  .sort((a, b) => {
+    // Platzhalter (tbd) ans Ende
+    const pa = a.data.slug.startsWith('ai-nights-speaker') ? 1 : 0;
+    const pb = b.data.slug.startsWith('ai-nights-speaker') ? 1 : 0;
+    if (pa !== pb) return pa - pb;
+    return a.data.title.localeCompare(b.data.title, 'de');
+  });
+---
+
+<Layout
+  lang="de"
+  title="Speaker — AI Nights"
+  description="Alle Speaker der AI Nights: Branchen-Expert:innen und Vordenker:innen, die auf unseren Bühnen über KI aus Praxis, Business und Entwicklung sprechen."
+  path="/speaker/"
+  alternates={{ de: '/speaker/' }}
+>
+  <Header lang="de" />
+  <main class="container archive section">
+    <p class="eyebrow">Auf unseren Bühnen</p>
+    <h1 class="display-font">Speaker der AI&nbsp;Nights</h1>
+    <p class="sub">Lerne von Menschen, die KI tatsächlich einsetzen – mit Erfolgen, Umwegen und ehrlichen Learnings.</p>
+    <div class="grid">
+      {speakers.map((s) => (
+        <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
+      ))}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+</style>

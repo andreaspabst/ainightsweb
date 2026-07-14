@@ -1,0 +1,23 @@
+{
+  "id": 828,
+  "title": "18:00 - 18:45 (inkl. 15 Min Diskussionsrunde) | AI in HR: Eine Inhouse-KI bei LORENZ im Praxiseinsatz. Wie eine selbst entwickelte KI HR-Workflows automatisiert, wo sie an Grenzen stößt – und was andere Unternehmen daraus lernen können.",
+  "slug": "1800-1845-inkl-15-min-diskussionsrunde",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/lukas-strobel.png",
+    "alt": "18:00 - 18:45 (inkl. 15 Min Diskussionsrunde) | AI in HR: Eine Inhouse-KI bei LORENZ im Praxiseinsatz. Wie eine selbst entwickelte KI HR-Workflows automatisiert, wo sie an Grenzen stößt – und was andere Unternehmen daraus lernen können."
+  },
+  "startTime": "18:00",
+  "time": "18:00",
+  "endTime": "18:45",
+  "speakerSlugs": [
+    "lukas-strobel"
+  ],
+  "speakerIds": [
+    827
+  ],
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-01-24 20:30:00"
+}

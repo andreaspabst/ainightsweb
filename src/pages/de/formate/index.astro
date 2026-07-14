@@ -1,0 +1,88 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+
+const formats = [
+  {
+    title: 'AI Nights Afterwork',
+    desc: 'Unser Kernformat: viermal im Jahr Afterwork-Abende mit kurzen Talks, Live-Demos und viel Raum für Austausch – live, nach der Arbeit.',
+    href: '/events/',
+    cta: 'Zu den Events',
+  },
+  {
+    title: 'AI Barcamp Nürnberg',
+    desc: 'Das offene Mitmach-Format: Die Teilnehmenden gestalten die Sessions selbst. Wissen entsteht gemeinsam, auf Augenhöhe.',
+    href: '/de/formate/ai-barcamp-nuernberg/',
+    cta: 'Mehr erfahren',
+  },
+  {
+    title: 'Agentic Day Nürnberg',
+    desc: 'Ein ganzer Tag rund um AI-Agents – powered by AI Nights. Hands-on, praxisnah und für alle, die Agenten wirklich bauen wollen.',
+    href: '/de/formate/agentic-day-nuernberg/',
+    cta: 'Mehr erfahren',
+  },
+];
+---
+
+<Layout
+  lang="de"
+  title="Formate — AI Nights"
+  description="Die Formate der AI Nights: vom regelmäßigen Afterwork über das AI Barcamp bis zum Agentic Day in Nürnberg."
+  path="/de/formate/"
+>
+  <Header lang="de" />
+  <main class="container section">
+    <div class="head">
+      <p class="eyebrow">Ein Format. Eine Idee.</p>
+      <h1 class="display-font">Unsere Formate</h1>
+      <p class="sub">Verschiedene Wege, KI gemeinsam einzuordnen – vom entspannten Afterwork bis zum ganztägigen Deep-Dive.</p>
+    </div>
+    <div class="grid">
+      {formats.map((f) => (
+        <div class="card fmt">
+          <h2 class="display-font">{f.title}</h2>
+          <p>{f.desc}</p>
+          <a href={f.href} class="btn btn-ghost">{f.cta}</a>
+        </div>
+      ))}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .head {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.6rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin-inline: auto;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .fmt {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .fmt h2 {
+    font-size: 1.4rem;
+  }
+  .fmt p {
+    color: var(--text-secondary);
+    flex: 1;
+  }
+</style>

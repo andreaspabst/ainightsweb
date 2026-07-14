@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import EventCard from '../../components/EventCard.astro';
+
+const today = new Date('2026-07-14');
+const events = await getCollection('events');
+const sorted = events.sort((a, b) => new Date(b.data.eventDate ?? 0).getTime() - new Date(a.data.eventDate ?? 0).getTime());
+const upcoming = sorted
+  .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= today)
+  .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime());
+const past = sorted.filter((e) => !e.data.eventDate || new Date(e.data.eventDate) < today);
+---
+
+<Layout
+  lang="de"
+  title="Events — AI Nights Afterworks in Nürnberg, München & Erlangen"
+  description="Alle AI Nights Afterwork-Events im Überblick: kommende Termine und vergangene Abende mit Talks, Live-Demos und Community rund um Künstliche Intelligenz."
+  path="/events/"
+  alternates={{ de: '/events/' }}
+>
+  <Header lang="de" />
+  <main class="container archive section">
+    <p class="eyebrow">Live Events. Community. Austausch.</p>
+    <h1 class="display-font">AI&nbsp;Nights Events</h1>
+    <p class="sub">Viermal im Jahr entstehen Afterwork-Abende, an denen Menschen aus der Region über KI sprechen – live, nach der Arbeit.</p>
+
+    {upcoming.length > 0 && (
+      <>
+        <h2 class="group display-font">Kommende Events</h2>
+        <div class="grid">
+          {upcoming.map((e) => (
+            <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} />
+          ))}
+        </div>
+      </>
+    )}
+
+    {past.length > 0 && (
+      <>
+        <h2 class="group display-font">Vergangene Events</h2>
+        <div class="grid">
+          {past.map((e) => (
+            <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} />
+          ))}
+        </div>
+      </>
+    )}
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .group {
+    font-size: 1.4rem;
+    margin: 2.5rem 0 1.3rem;
+    color: var(--text-primary);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+</style>

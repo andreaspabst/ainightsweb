@@ -1,0 +1,232 @@
+---
+export interface Props {
+  lang?: 'de' | 'en';
+}
+const { lang = 'de' } = Astro.props;
+
+const year = new Date().getFullYear();
+
+const de = {
+  tagline: 'Die Event-Reihe rund um Künstliche Intelligenz in Nürnberg, München & Erlangen. Live, nahbar, praxisnah.',
+  cols: [
+    {
+      title: 'Events & Afterwork',
+      links: [
+        ['Tickets', '/de/tickets/'],
+        ['Bildergalerien', '/de/galerie/'],
+        ['Unsere Sponsoren', '/de/sponsors/'],
+        ['Alle Events', '/events/'],
+        ['Speaker', '/speaker/'],
+      ],
+    },
+    {
+      title: 'Unterstützung & Orga',
+      links: [
+        ['Speaker Bewerbung', '/de/speaker-application/'],
+        ['Volunteer werden', '/de/volunteer-bewerbung/'],
+      ],
+    },
+    {
+      title: 'Unternehmen & Business',
+      links: [
+        ['Sponsoring & Partnerschaft', '/de/sponsoring/'],
+        ['Socialmedia', '/de/socialmedia/'],
+        ['Newsletter abonnieren', '/de/newsletter/'],
+        ['Podcast', '/de/podcast/'],
+      ],
+    },
+    {
+      title: 'Recht & Datenschutz',
+      links: [
+        ['Impressum', '/de/legal-notice/'],
+        ['Datenschutzerklärung', '/de/data-protection/'],
+        ['Bedingungen und Regeln', '/de/bedingungen-und-regeln/'],
+      ],
+    },
+  ],
+  legal:
+    'Unsere Kunden sind B2B. Alle Preise zzgl. ortsüblicher USt. (DE 19%). Die Bezahlabwicklung findet über Digistore24 statt.',
+};
+
+const en = {
+  tagline: 'The event series about Artificial Intelligence in Nuremberg, Munich & Erlangen. Live, approachable, hands-on.',
+  cols: [
+    {
+      title: 'Events & Afterwork',
+      links: [
+        ['Tickets', '/de/tickets/'],
+        ['Galleries', '/de/galerie/'],
+        ['Our Sponsors', '/en/our-sponsors/'],
+        ['All Events', '/events/'],
+        ['Speaker', '/speaker/'],
+      ],
+    },
+    {
+      title: 'Support & Orga',
+      links: [
+        ['Speaker Application', '/de/speaker-application/'],
+        ['Become a Volunteer', '/de/volunteer-bewerbung/'],
+      ],
+    },
+    {
+      title: 'Business',
+      links: [
+        ['Become a Sponsor', '/en/become-sponsor/'],
+        ['Social Media', '/en/ai-nights-on-social-media-en/'],
+        ['Newsletter', '/de/newsletter/'],
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        ['Legal Notice', '/de/legal-notice/'],
+        ['Privacy Policy', '/de/data-protection/'],
+        ['Terms & Conditions', '/de/bedingungen-und-regeln/'],
+      ],
+    },
+  ],
+  legal:
+    'Our customers are B2B. All prices excl. local VAT. Payment is processed via Digistore24.',
+};
+
+const c = lang === 'de' ? de : en;
+const homeHref = lang === 'de' ? '/de/' : '/en/';
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="grid">
+      <div class="brand">
+        <a href={homeHref}><img src="/wp-content/uploads/2026/01/Logo_w.svg" alt="AI Nights" width="150" height="38" /></a>
+        <p>{c.tagline}</p>
+        <div class="socials">
+          <a href="https://www.instagram.com/ainights.ai/" aria-label="Instagram" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/" aria-label="Facebook" target="_blank" rel="noopener">Facebook</a>
+        </div>
+        <div class="lang-switch">
+          <a href="/de/" class={lang === 'de' ? 'active' : ''}>Deutsch</a>
+          <a href="/en/" class={lang === 'en' ? 'active' : ''}>English</a>
+        </div>
+      </div>
+
+      {
+        c.cols.map((col) => (
+          <div class="col">
+            <h4>{col.title}</h4>
+            <ul>
+              {col.links.map(([label, href]) => (
+                <li>
+                  <a href={href}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="bottom">
+      <p class="legal">{c.legal}</p>
+      <p class="copy">© {year} AI Nights · Andreas Pabst · <a href="https://axdn.io" target="_blank" rel="noopener">AXDN</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, transparent, rgba(20, 10, 42, 0.6));
+    padding-block: 4rem 2rem;
+    margin-top: 4rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(4, 1fr);
+    gap: 2.5rem;
+  }
+  .brand img {
+    height: 34px;
+    width: auto;
+    margin-bottom: 1rem;
+  }
+  .brand p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    max-width: 32ch;
+    margin-bottom: 1.2rem;
+  }
+  .socials {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .socials a {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .lang-switch {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .lang-switch a {
+    color: var(--text-muted);
+  }
+  .lang-switch a.active {
+    color: var(--magenta-bright);
+    font-weight: 600;
+  }
+  .col h4 {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  .col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .col a {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .col a:hover {
+    color: var(--text-primary);
+  }
+  .bottom {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .bottom p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+  .bottom .legal {
+    max-width: 60ch;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .brand {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 500px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

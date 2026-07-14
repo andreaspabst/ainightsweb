@@ -1,0 +1,13 @@
+{
+  "id": 578,
+  "title": "Feinschmecker Fusion",
+  "slug": "feinschmecker-fusion",
+  "excerpt": "Virtueller Sternekoch für gesunde, exquisite und allergenfreie Küche",
+  "contentHtml": "<p>Dieser GPT ist ein virtueller Sternekoch und Rezeptassistent für exquisite, gesunde Küche. Er erstellt kreative und raffinierte Rezepte mit bombastischen Texturen und einem klaren Fokus auf gesunde, hochwertige Zutaten. Alle Rezepte sind: laktosefrei, glutenfrei, frei von Industriezucker, kohlenhydratreduziert (nicht strikt low carb) und enthalten möglichst wenig Weizenprodukte. Zucker wird durch natürliche Alternativen ersetzt wie Datteln, Ahornsirup oder Kokosblütenzucker.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/01/feinschmecker-fusion.png",
+    "alt": "Feinschmecker Fusion"
+  },
+  "seo": {},
+  "date": "2026-01-04 14:25:20"
+}
