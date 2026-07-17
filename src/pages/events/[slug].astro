@@ -38,11 +38,25 @@ const resolve = (ids: number[] | undefined, m: Map<number, any>) =>
 
 const speakers = resolve(d.speakerIds, spMap);
 const moderators = resolve(d.moderatorIds, spMap);
-// Pausen o.ä. ohne Titel-Substanz aus dem Programm filtern
-const sessions = resolve(d.sessionIds, seMap).filter(
-  (s) => !/^\d{1,2}\s*min/i.test(s.data.title) && !/pause/i.test(s.data.title),
-);
+// Komplettes Programm inkl. Pausen — wie im Original; Pausen werden schlanker dargestellt
+const sessions = resolve(d.sessionIds, seMap);
+const isBreak = (s: any) => /pause|break/i.test(s.data.title);
+const talkCount = sessions.filter((s) => !isBreak(s)).length;
 const sponsors = resolve(d.sponsorIds, spoMap);
+
+// Meta-Badges einer Session (Zeit, Dauer, Bühne, Level)
+function sessionMeta(s: any) {
+  const m: string[] = [];
+  if (s.data.startTime && s.data.endTime) m.push(`${s.data.startTime}–${s.data.endTime} Uhr`);
+  if (s.data.duration) m.push(`${s.data.duration} min`);
+  if (s.data.room) m.push(s.data.room);
+  if (s.data.level) m.push(String(s.data.level).charAt(0).toUpperCase() + String(s.data.level).slice(1));
+  return m;
+}
+
+// Hero-Hintergrund: echtes Eventfoto statt des Branding-Bilds (das enthält
+// eingebrannten Titeltext und kollidiert sonst mit der H1). Fallback: Publikumsfoto.
+const heroBg = eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
 
 function fmtDate(dt?: string) {
   if (!dt) return null;
@@ -88,7 +102,7 @@ const facts = [
   <Header lang="de" />
   <main>
     <section class="hero">
-      {d.image?.src && <img class="hero-bg" src={d.image.src} alt={d.image.alt ?? d.title} />}
+      <img class="hero-bg" src={heroBg} alt="" role="presentation" />
       <div class="hero-overlay"></div>
       <div class="container hero-inner">
         <a href="/events/" class="back">← Alle Events</a>
@@ -149,8 +163,22 @@ const facts = [
           <div class="program">
             {sessions.map((s) => {
               const sp = (s.data.speakerIds ?? []).map((id: number) => spMap.get(id)).filter(Boolean);
+              const meta = sessionMeta(s);
+              if (isBreak(s)) {
+                return (
+                  <article class="talk card break">
+                    <h3>☕ {s.data.title}</h3>
+                    {s.data.duration && <span class="chip">{s.data.duration} min</span>}
+                  </article>
+                );
+              }
               return (
                 <article class="talk card">
+                  {meta.length > 0 && (
+                    <p class="talk-meta">
+                      {meta.map((m) => <span class="chip">{m}</span>)}
+                    </p>
+                  )}
                   <h3><a href={`/sessions/${s.data.slug}/`}>{s.data.title}</a></h3>
                   {sp.length > 0 && (
                     <p class="talk-sp">{sp.map((x: any) => x.data.title).join(', ')}</p>
@@ -403,6 +431,37 @@ const facts = [
   }
   .talk h3 a:hover {
     color: var(--magenta-bright);
+  }
+  .talk-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.7rem;
+  }
+  .chip {
+    display: inline-block;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .talk.break {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.5rem;
+    background: transparent;
+  }
+  .talk.break h3 {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 600;
   }
   .talk-sp {
     color: var(--blue-bright);
