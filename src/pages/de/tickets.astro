@@ -1,0 +1,281 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// Kommende Events wie auf der Original-Tickets-Seite: chronologisch aufsteigend
+const today = new Date('2026-07-14');
+const events = await getCollection('events');
+const upcoming = events
+  .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= today)
+  .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime());
+
+// Beziehungen (Post-IDs) zu Namen auflösen — wie auf der Event-Detailseite
+const speakerColl = await getCollection('speaker');
+const sponsorColl = await getCollection('sponsor');
+const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [x.data.id, x]));
+const spMap = byId(speakerColl);
+const spoMap = byId(sponsorColl);
+const names = (ids: number[] | undefined, m: Map<number, any>) =>
+  (ids ?? []).map((id) => m.get(id)?.data.title).filter(Boolean) as string[];
+
+function joinNames(list: string[]) {
+  return list.join(', ');
+}
+
+function fmtDate(dt?: string) {
+  if (!dt) return null;
+  const p = new Date(dt);
+  if (isNaN(p.getTime())) return dt;
+  return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+const cards = upcoming.map((e) => {
+  const d = e.data;
+  return {
+    slug: d.slug,
+    title: d.title,
+    excerpt: d.excerpt,
+    image: d.image,
+    city: d.city,
+    locationName: d.locationName,
+    dateLabel: fmtDate(d.eventDate),
+    timeLabel: d.startTime ? `${d.startTime} Uhr` : null,
+    speakers: joinNames(names(d.speakerIds, spMap)),
+    sponsors: names(d.sponsorIds, spoMap).join(', '),
+  };
+});
+---
+
+<Layout
+  lang="de"
+  title="Tickets - AI Nights"
+  description="Holt euch eure Tickets für AI Nights Events und werdet Teil unserer großartigen Community. Alle kommenden Afterwork-Meetups in Nürnberg und München im Überblick."
+  path="/de/tickets/"
+  alternates={{ de: '/de/tickets/' }}
+>
+  <Header lang="de" />
+  <main>
+    <section class="hero section">
+      <div class="container">
+        <p class="eyebrow">Jetzt dabei sein</p>
+        <h1 class="display-font">Tickets</h1>
+        <p class="sub">Holt euch eure Tickets für AI&nbsp;Nights Events und werdet Teil unserer großartigen Community.</p>
+        <a href="#eventlist" class="btn btn-primary">Unsere kommenden Events…</a>
+      </div>
+    </section>
+
+    <section id="eventlist" class="meetups section">
+      <div class="container">
+        <h2 class="display-font">Kommende Meetups</h2>
+        <p class="sub center">Nimm an unseren regelmäßigen Afterwork Meetups und Events teil und bau dein Netzwerk auf.</p>
+
+        <div class="grid">
+          {cards.map((c) => (
+            <article class="ticket-card card">
+              <a href={`/events/${c.slug}/`} class="cover">
+                {c.image?.src && <img src={c.image.src} alt={c.image.alt ?? c.title} loading="lazy" width="640" height="400" />}
+                {c.city && <span class="city-badge">{c.city}</span>}
+              </a>
+              <div class="body">
+                <h3><a href={`/events/${c.slug}/`}>{c.title}</a></h3>
+                {c.excerpt && <p class="excerpt">{c.excerpt}</p>}
+
+                <ul class="meta">
+                  {c.dateLabel && (
+                    <li>
+                      <span class="icon">📅</span>
+                      <span>{c.dateLabel}</span>
+                    </li>
+                  )}
+                  {c.timeLabel && (
+                    <li>
+                      <span class="icon">🕐</span>
+                      <span>Einlass ab {c.timeLabel}</span>
+                    </li>
+                  )}
+                  {(c.city || c.locationName) && (
+                    <li>
+                      <span class="icon">📍</span>
+                      <span>
+                        {c.city && <strong>{c.city}</strong>}
+                        {c.city && c.locationName && <br />}
+                        {c.locationName}
+                      </span>
+                    </li>
+                  )}
+                  {c.speakers && (
+                    <li>
+                      <span class="icon">🎤</span>
+                      <span>
+                        <strong>Speaker</strong>
+                        <br />
+                        {c.speakers}
+                      </span>
+                    </li>
+                  )}
+                  {c.sponsors && (
+                    <li>
+                      <span class="icon">✨</span>
+                      <span>
+                        <strong>Sponsoren</strong>
+                        <br />
+                        {c.sponsors}
+                      </span>
+                    </li>
+                  )}
+                </ul>
+
+                <a href={`/events/${c.slug}/`} class="secure">Platz sichern&nbsp;→</a>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div class="all-events">
+          <a href="/events/" class="btn btn-ghost">Alle Events ansehen</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    text-align: center;
+    padding-block: 4.5rem 3.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .hero .sub {
+    margin-inline: auto;
+    margin-bottom: 2rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    font-size: 1.05rem;
+  }
+  .meetups {
+    padding-block: 1rem 4.5rem;
+  }
+  .meetups h2 {
+    text-align: center;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin-bottom: 0.8rem;
+  }
+  .sub.center {
+    text-align: center;
+    margin: 0 auto 2.5rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .ticket-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .ticket-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+  }
+  .cover {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--bg-elevated);
+    display: block;
+    overflow: hidden;
+  }
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .city-badge {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+  }
+  .body {
+    padding: 1.4rem 1.5rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    flex: 1;
+  }
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+  h3 a {
+    color: var(--text-primary);
+  }
+  h3 a:hover {
+    color: var(--magenta-bright);
+  }
+  .excerpt {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .meta {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .meta li {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .meta .icon {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    font-size: 0.9rem;
+  }
+  .meta strong {
+    color: var(--text-primary);
+  }
+  .secure {
+    margin-top: auto;
+    padding-top: 0.4rem;
+    font-weight: 700;
+    color: var(--magenta-bright);
+  }
+  .secure:hover {
+    color: var(--blue-bright);
+  }
+  .all-events {
+    text-align: center;
+    margin-top: 2.8rem;
+  }
+</style>
