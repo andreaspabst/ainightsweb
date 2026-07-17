@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { marked } from 'marked';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -11,6 +12,13 @@ export async function getStaticPaths() {
 
 const { a } = Astro.props;
 const d = a.data;
+
+const md = (s?: string) => (s ? marked.parse(s, { async: false }) : '');
+const catLabels: Record<string, string> = {
+  marketing: 'Marketing',
+  kochen: 'Kochen',
+  bildung: 'Bildung',
+};
 ---
 
 <Layout
@@ -27,13 +35,52 @@ const d = a.data;
     <div class="head">
       {d.image?.src && <img class="icon" src={d.image.src} alt={d.image.alt ?? d.title} width="120" height="120" />}
       <div>
-        <p class="eyebrow">KI-Assistent</p>
+        <p class="eyebrow">KI-Assistent{d.category ? ` · ${catLabels[d.category] ?? d.category}` : ''}</p>
         <h1 class="display-font">{d.title}</h1>
         {d.excerpt && <p class="tagline">{d.excerpt}</p>}
         {d.link && <a href={d.link} target="_blank" rel="noopener" class="btn btn-primary">Assistent öffnen</a>}
       </div>
     </div>
-    {d.contentHtml && <div class="prose" set:html={d.contentHtml} />}
+
+    {!d.excerpt && d.contentHtml && <div class="prose" set:html={d.contentHtml} />}
+
+    {d.requiredInput && (
+      <section class="block">
+        <h2 class="display-font">Erforderliche Eingabe</h2>
+        <div class="prose" set:html={md(d.requiredInput)} />
+      </section>
+    )}
+
+    {d.contextKnowledge && (
+      <section class="block">
+        <h2 class="display-font">Kontextwissen</h2>
+        <div class="prose" set:html={md(d.contextKnowledge)} />
+      </section>
+    )}
+
+    {d.exampleOutput && (
+      <section class="block">
+        <h2 class="display-font">Beispiel-Ausgabe</h2>
+        <div class="prose table-scroll" set:html={md(d.exampleOutput)} />
+      </section>
+    )}
+
+    {d.systemPrompt && (
+      <section class="block">
+        <details class="sysprompt card">
+          <summary><span class="display-font">System Prompt</span><span class="hint">anzeigen</span></summary>
+          <div class="prose" set:html={md(d.systemPrompt)} />
+        </details>
+      </section>
+    )}
+
+    <section class="try card">
+      <p class="eyebrow">Assistenten ausprobieren</p>
+      <h2 class="display-font">Direkt loslegen</h2>
+      <p>Alle AI&nbsp;Nights KI-Assistenten kannst du kostenlos in ChatGPT ausprobieren.</p>
+      {d.link && <a href={d.link} target="_blank" rel="noopener" class="btn btn-primary">{d.title} öffnen</a>}
+      <a href="/ai-assistants/" class="btn btn-ghost">Alle Assistenten</a>
+    </section>
   </main>
   <Footer lang="de" />
 </Layout>
@@ -73,5 +120,82 @@ const d = a.data;
     font-size: 1.1rem;
     margin-bottom: 1.2rem;
     max-width: 50ch;
+  }
+  .block {
+    margin-top: 2.5rem;
+  }
+  .block > h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .table-scroll {
+    overflow-x: auto;
+  }
+  .table-scroll :global(table) {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.9rem;
+  }
+  .table-scroll :global(th),
+  .table-scroll :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .table-scroll :global(th) {
+    background: var(--bg-glass);
+    color: var(--text-primary);
+  }
+  .sysprompt {
+    padding: 0;
+    overflow: hidden;
+  }
+  .sysprompt summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .sysprompt summary::-webkit-details-marker {
+    display: none;
+  }
+  .sysprompt summary span:first-child {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  .sysprompt .hint {
+    font-size: 0.85rem;
+    color: var(--magenta-bright);
+  }
+  .sysprompt[open] .hint::after {
+    content: ' –';
+  }
+  .sysprompt .prose {
+    padding: 0 1.5rem 1.5rem;
+    font-size: 0.92rem;
+  }
+  .try {
+    margin-top: 3rem;
+    padding: 2.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .try h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+  }
+  .try p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    max-width: 46ch;
+  }
+  .try .btn {
+    margin: 0.2rem;
   }
 </style>

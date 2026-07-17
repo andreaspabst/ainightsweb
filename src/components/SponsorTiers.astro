@@ -23,8 +23,14 @@ const groups = tierOrder
       <h2 class="tier-label">{group.label}</h2>
       <div class="row">
         {group.items.map((s) => (
-          <a href={`/sponsor/${s.data.slug}/`} class="logo card" title={s.data.title}>
-            <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+          <a href={`/sponsor/${s.data.slug}/`} class="sponsor card" title={s.data.title}>
+            <div class="logo">
+              <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+            </div>
+            <div class="txt">
+              <strong>{s.data.title}</strong>
+              {s.data.excerpt && <span>{s.data.excerpt}</span>}
+            </div>
           </a>
         ))}
       </div>
@@ -50,22 +56,42 @@ const groups = tierOrder
     justify-content: center;
     gap: 1.25rem;
   }
+  .sponsor {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .sponsor:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
   .logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.6rem 2rem;
-    min-width: 190px;
-    min-height: 110px;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-  }
-  .logo:hover {
-    transform: translateY(-3px);
-    border-color: var(--border-strong);
+    height: 72px;
+    margin-bottom: 1rem;
   }
   .logo img {
     max-height: 56px;
-    max-width: 160px;
+    max-width: 170px;
     object-fit: contain;
+  }
+  .txt {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    text-align: center;
+  }
+  .txt strong {
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  .txt span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
   }
 </style>

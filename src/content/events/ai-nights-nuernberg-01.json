@@ -13,5 +13,7 @@
   "locationName": "Design Offices Nürnberg Hauptbahnhof, Nürnberg",
   "city": "Nürnberg",
   "ticketUrl": "https://www.eventbrite.com/e/ai-nights-inspire-01-premiere-night-tickets-1529744730669?aff=oddtdtcreator",
-  "date": "2025-08-03 12:54:04"
+  "date": "2025-08-03 12:54:04",
+  "speakerIds": [430, 429, 428],
+  "moderatorIds": [257]
 }

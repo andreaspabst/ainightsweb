@@ -13,5 +13,9 @@
   "locationName": "Design Offices Nürnberg City",
   "city": "Nürnberg",
   "ticketUrl": "https://www.checkout-ds24.com/product/643740/",
-  "date": "2026-01-03 11:33:03"
+  "date": "2026-01-03 11:33:03",
+  "speakerIds": [827, 984, 999],
+  "sessionIds": [728, 828, 977, 986, 1009, 1001],
+  "sponsorIds": [331, 328, 989, 325, 304, 815],
+  "moderatorIds": [257]
 }

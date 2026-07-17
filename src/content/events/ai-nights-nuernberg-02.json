@@ -13,5 +13,9 @@
   "locationName": "Design Offices Nürnberg City, Königstorgraben 11, 5.OG",
   "city": "Nürnberg",
   "ticketUrl": "https://www.checkout-ds24.com/product/643739",
-  "date": "2026-01-01 20:52:04"
+  "date": "2026-01-01 20:52:04",
+  "speakerIds": [188, 192, 190],
+  "sessionIds": [728, 629, 631, 630],
+  "sponsorIds": [304],
+  "moderatorIds": [257]
 }

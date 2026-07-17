@@ -14,6 +14,8 @@ const { c } = Astro.props;
 const d = c.data;
 const cityName = d.title;
 
+const otherCities = (await getCollection('stadt')).filter((x) => x.data.slug !== d.slug);
+
 const today = new Date('2026-07-14');
 const events = (await getCollection('events')).filter(
   (e) => e.data.city && e.data.city.toLowerCase() === cityName.toLowerCase(),
@@ -74,6 +76,22 @@ const past = events
       {events.length === 0 && (
         <p class="empty">Termine für {cityName} werden bald bekanntgegeben. <a href="/de/newsletter/">Newsletter abonnieren</a> und nichts verpassen.</p>
       )}
+
+      {otherCities.length > 0 && (
+        <div class="other-cities">
+          <span>AI Nights in anderen Städten:</span>
+          {otherCities.map((x) => (
+            <a href={`/stadt/${x.data.slug}/`} class="city-pill">AI Events in {x.data.title}</a>
+          ))}
+        </div>
+      )}
+
+      <section class="host card">
+        <p class="eyebrow">Du suchst eine andere Location?</p>
+        <h2 class="display-font">Hol dir deine eigene AI&nbsp;Night!</h2>
+        <p>Wir unterstützen dich mit Branding, Organisation, Reichweite, Speaker-Management und mehr. Schreib uns – und gemeinsam machen wir den nächsten Schritt Richtung AI&nbsp;Nights in deiner Stadt.</p>
+        <a href="/de/sponsoring/" class="btn btn-primary">Eigenes Event anfragen</a>
+      </section>
     </div>
   </main>
   <Footer lang="de" />
@@ -130,5 +148,39 @@ const past = events
   .empty {
     color: var(--text-secondary);
     font-size: 1.05rem;
+  }
+  .other-cities {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .city-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .city-pill:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+  .host {
+    margin-top: 3rem;
+    padding: 3rem;
+    text-align: center;
+  }
+  .host h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .host p {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin: 0 auto 1.5rem;
   }
 </style>

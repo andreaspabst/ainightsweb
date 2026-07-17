@@ -13,5 +13,9 @@
   "locationName": "ZOLLHOF Tech Incubator Nürnberg",
   "city": "Nürnberg",
   "ticketUrl": "https://ainights.ai",
-  "date": "2026-05-17 09:36:16"
+  "date": "2026-05-17 09:36:16",
+  "speakerIds": [410, 411, 412],
+  "sessionIds": [728, 1009, 977],
+  "sponsorIds": [331, 328, 989, 325, 304, 815],
+  "moderatorIds": [257]
 }

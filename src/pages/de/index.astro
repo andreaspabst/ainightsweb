@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import SpeakerCard from '../../components/SpeakerCard.astro';
 import EventCard from '../../components/EventCard.astro';
+import SponsorTiers from '../../components/SponsorTiers.astro';
 
 // --- Daten ---
 const speakers = (await getCollection('speaker'))
@@ -19,18 +20,6 @@ const upcoming = allEvents
   .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= now)
   .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime())
   .slice(0, 3);
-
-const sponsors = await getCollection('sponsor');
-const tierOrder = ['platin', 'gold', 'silver', 'bronce'];
-const tierLabels: Record<string, string> = {
-  platin: 'Platin Sponsoren',
-  gold: 'Gold Sponsoren',
-  silver: 'Silver Sponsoren',
-  bronce: 'Bronze Sponsoren',
-};
-const sponsorsByTier = tierOrder
-  .map((tier) => ({ tier, label: tierLabels[tier], items: sponsors.filter((s) => s.data.tier === tier) }))
-  .filter((g) => g.items.length);
 
 const cities = await getCollection('stadt');
 
@@ -191,18 +180,7 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
       <div class="container">
         <p class="eyebrow">Unsere Sponsoren</p>
         <h2 class="display-font sec-title">Die Unternehmen, die AI&nbsp;Nights möglich machen</h2>
-        {sponsorsByTier.map((group) => (
-          <div class="tier">
-            <h3 class="tier-label">{group.label}</h3>
-            <div class="sponsor-row">
-              {group.items.map((s) => (
-                <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
-                  <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
-                </a>
-              ))}
-            </div>
-          </div>
-        ))}
+        <SponsorTiers lang="de" />
         <div class="center"><a href="/de/sponsoring/" class="btn btn-ghost">Selbst Sponsor werden</a></div>
       </div>
     </section>

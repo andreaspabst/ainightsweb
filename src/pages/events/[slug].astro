@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import galleryData from '../../data/gallery.json';
 
 export async function getStaticPaths() {
   const events = await getCollection('events');
@@ -12,6 +13,37 @@ export async function getStaticPaths() {
 const { e } = Astro.props;
 const d = e.data;
 
+// Foto-Rückblick dieses Events (falls vorhanden)
+const galleryGroup = (galleryData as { event: string; images: string[] }[]).find((g) => g.event === d.slug);
+const eventPhotos = galleryGroup?.images.slice(0, 24) ?? [];
+
+// Community-Stimmen (wie auf der Startseite)
+const testimonials = [
+  'Sehr unterhaltsam und fachlich stark. Man merkt, dass hier echte Erfahrung auf der Bühne steht.',
+  'Lockere Atmosphäre, starke Location und interessante Vorträge. Man fühlt sich sofort abgeholt und willkommen.',
+  'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
+];
+
+// Beziehungen (Post-IDs) zu Collection-Einträgen auflösen
+const speakerColl = await getCollection('speaker');
+const sessionColl = await getCollection('sessions');
+const sponsorColl = await getCollection('sponsor');
+const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [x.data.id, x]));
+const spMap = byId(speakerColl);
+const seMap = byId(sessionColl);
+const spoMap = byId(sponsorColl);
+
+const resolve = (ids: number[] | undefined, m: Map<number, any>) =>
+  (ids ?? []).map((id) => m.get(id)).filter(Boolean);
+
+const speakers = resolve(d.speakerIds, spMap);
+const moderators = resolve(d.moderatorIds, spMap);
+// Pausen o.ä. ohne Titel-Substanz aus dem Programm filtern
+const sessions = resolve(d.sessionIds, seMap).filter(
+  (s) => !/^\d{1,2}\s*min/i.test(s.data.title) && !/pause/i.test(s.data.title),
+);
+const sponsors = resolve(d.sponsorIds, spoMap);
+
 function fmtDate(dt?: string) {
   if (!dt) return null;
   const p = new Date(dt);
@@ -20,6 +52,14 @@ function fmtDate(dt?: string) {
 }
 const dateLabel = fmtDate(d.eventDate);
 const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
+
+const facts = [
+  `${speakers.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}`,
+  '100% KI-Fokus',
+  sessions.length ? `${sessions.length} Sessions` : 'Kurze Impuls-Sessions',
+  'Zeit für Gespräche & Austausch',
+  'Inklusive Drinks & Snacks',
+];
 ---
 
 <Layout
@@ -41,6 +81,7 @@ const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : fa
       : undefined,
     image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
     description: d.excerpt,
+    performer: speakers.map((s) => ({ '@type': 'Person', name: s.data.title })),
     organizer: { '@type': 'Organization', name: 'AI Nights', url: 'https://ainights.ai' },
   }}
 >
@@ -55,6 +96,7 @@ const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : fa
           {d.city && <span class="badge">{d.city}</span>}
           {isPast && <span class="badge past">Vergangenes Event</span>}
         </div>
+        <p class="kicker">Afterwork Event{dateLabel ? ` am ${new Date(d.eventDate!).toLocaleDateString('de-DE')}` : ''}</p>
         <h1 class="display-font">{d.title}</h1>
         <div class="meta">
           {dateLabel && <span>📅 {dateLabel}</span>}
@@ -66,8 +108,134 @@ const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : fa
     </section>
 
     <div class="container body">
-      {d.contentHtml && <div class="prose" set:html={d.contentHtml} />}
-      {!d.contentHtml && d.excerpt && <p class="prose">{d.excerpt}</p>}
+      {(d.excerpt || d.contentHtml) && (
+        <div class="intro prose">
+          {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
+        </div>
+      )}
+
+      {/* Fakten */}
+      <section class="facts card">
+        <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
+        <ul>
+          {facts.map((f) => <li>{f}</li>)}
+        </ul>
+      </section>
+
+      {/* Speaker-Lineup */}
+      {speakers.length > 0 && (
+        <section class="sec">
+          <p class="eyebrow">Wer dich durch den Abend begleitet</p>
+          <h2 class="display-font sec-h">Speakerauswahl des Abends</h2>
+          <div class="people">
+            {speakers.map((s) => (
+              <a href={`/speaker/${s.data.slug}/`} class="person card">
+                {s.data.image?.src && <img src={s.data.image.src} alt={s.data.title} loading="lazy" />}
+                <div class="p-body">
+                  <strong>{s.data.title}</strong>
+                  {s.data.jobTitle && <span>{s.data.jobTitle}</span>}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Programm */}
+      {sessions.length > 0 && (
+        <section class="sec">
+          <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
+          <h2 class="display-font sec-h">Die Themen des Abends</h2>
+          <div class="program">
+            {sessions.map((s) => {
+              const sp = (s.data.speakerIds ?? []).map((id: number) => spMap.get(id)).filter(Boolean);
+              return (
+                <article class="talk card">
+                  <h3><a href={`/sessions/${s.data.slug}/`}>{s.data.title}</a></h3>
+                  {sp.length > 0 && (
+                    <p class="talk-sp">{sp.map((x: any) => x.data.title).join(', ')}</p>
+                  )}
+                  {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
+                  {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
+                    <details class="talk-detail">
+                      <summary>Mehr anzeigen</summary>
+                      <div class="prose" set:html={s.data.contentHtml} />
+                    </details>
+                  )}
+                  <a href={`/sessions/${s.data.slug}/`} class="talk-more">Zur Session →</a>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Moderation */}
+      {moderators.length > 0 && (
+        <section class="sec">
+          <p class="eyebrow">Moderation</p>
+          <h2 class="display-font sec-h">Wer dich durch den Abend führt</h2>
+          {moderators.map((s) => (
+            <a href={`/speaker/${s.data.slug}/`} class="moderator card">
+              {s.data.image?.src && <img src={s.data.image.src} alt={s.data.title} loading="lazy" />}
+              <div class="m-body">
+                <strong>{s.data.title}</strong>
+                {s.data.jobTitle && <span class="m-role">{s.data.jobTitle}</span>}
+                {s.data.excerpt && <p>{s.data.excerpt}</p>}
+              </div>
+            </a>
+          ))}
+        </section>
+      )}
+
+      {/* Sponsoren */}
+      {sponsors.length > 0 && (
+        <section class="sec">
+          <p class="eyebrow">Möglich gemacht von</p>
+          <h2 class="display-font sec-h">Sponsoren dieses Events</h2>
+          <div class="sponsor-row">
+            {sponsors.map((s) => (
+              <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
+                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Foto-Rückblick vergangener Events */}
+      {eventPhotos.length > 0 && (
+        <section class="sec">
+          <p class="eyebrow">AI Nights Rückblick</p>
+          <h2 class="display-font sec-h">Impressionen von diesem Event</h2>
+          <div class="photos">
+            {eventPhotos.map((src) => (
+              <a href={src} target="_blank" rel="noopener" class="photo">
+                <img src={src} alt={`Impression ${d.title}`} loading="lazy" />
+              </a>
+            ))}
+          </div>
+          <a href="/de/galerie/" class="btn btn-ghost gal-link">Zur ganzen Galerie</a>
+        </section>
+      )}
+
+      {/* Stimmen aus der Community */}
+      <section class="sec">
+        <p class="eyebrow">Was Besucher über die AI Nights sagen</p>
+        <h2 class="display-font sec-h">Stimmen aus der Community</h2>
+        <div class="testi-grid">
+          {testimonials.map((q) => (
+            <blockquote class="testi card"><p>„{q}"</p></blockquote>
+          ))}
+        </div>
+      </section>
+
+      <section class="cta card">
+        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : 'Sichere dir deinen Platz'}</h2>
+        <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">
+          {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+        </a>
+      </section>
     </div>
   </main>
   <Footer lang="de" />
@@ -87,7 +255,6 @@ const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : fa
     height: 100%;
     object-fit: cover;
     opacity: 0.28;
-    filter: saturate(1.1);
   }
   .hero-overlay {
     position: absolute;
@@ -121,6 +288,14 @@ const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : fa
     border: 1px solid var(--border);
     color: var(--text-muted);
   }
+  .kicker {
+    color: var(--blue-bright);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.6rem;
+  }
   h1 {
     font-size: clamp(2rem, 5vw, 3.4rem);
     max-width: 20ch;
@@ -135,7 +310,229 @@ const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : fa
     margin-bottom: 1.8rem;
   }
   .body {
-    max-width: 800px;
+    max-width: 860px;
     padding-block: 3rem 2rem;
+  }
+  .intro {
+    margin-bottom: 2.5rem;
+  }
+  .facts {
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+  .facts h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .facts ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.7rem;
+  }
+  .facts li {
+    padding-left: 1.6rem;
+    position: relative;
+    color: var(--text-secondary);
+  }
+  .facts li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--magenta-bright);
+    font-weight: 700;
+  }
+  .sec {
+    margin-bottom: 3rem;
+  }
+  .sec-h {
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    margin: 0.3rem 0 1.5rem;
+  }
+  .people {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .person {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.7rem;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .person:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+  }
+  .person img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .p-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .p-body strong {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+  }
+  .p-body span {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+  .program {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .talk {
+    padding: 1.5rem;
+  }
+  .talk h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
+  }
+  .talk h3 a {
+    color: var(--text-primary);
+  }
+  .talk h3 a:hover {
+    color: var(--magenta-bright);
+  }
+  .talk-sp {
+    color: var(--blue-bright);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .talk-ex {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.7rem;
+  }
+  .talk-more {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .talk-detail {
+    margin: 0.4rem 0 0.9rem;
+  }
+  .talk-detail summary {
+    cursor: pointer;
+    color: var(--magenta-bright);
+    font-size: 0.88rem;
+    font-weight: 600;
+    list-style: none;
+  }
+  .talk-detail summary::-webkit-details-marker {
+    display: none;
+  }
+  .talk-detail[open] summary {
+    margin-bottom: 0.8rem;
+  }
+  .talk-detail .prose {
+    font-size: 0.95rem;
+  }
+  .moderator {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.5rem;
+    transition: border-color 0.2s ease;
+  }
+  .moderator:hover {
+    border-color: var(--border-strong);
+  }
+  .moderator img {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .m-body strong {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+  }
+  .m-role {
+    display: block;
+    color: var(--blue-bright);
+    font-size: 0.85rem;
+    margin: 0.2rem 0 0.5rem;
+  }
+  .m-body p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+  }
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.7rem;
+  }
+  .photo {
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .photo:hover img {
+    transform: scale(1.05);
+  }
+  .gal-link {
+    margin-top: 1.5rem;
+  }
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .testi {
+    padding: 1.6rem;
+    margin: 0;
+  }
+  .testi p {
+    color: var(--text-primary);
+    font-style: italic;
+  }
+  .sponsor-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .sponsor-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem 1.6rem;
+    min-width: 150px;
+    min-height: 84px;
+  }
+  .sponsor-logo:hover {
+    border-color: var(--border-strong);
+  }
+  .sponsor-logo img {
+    max-height: 44px;
+    max-width: 130px;
+    object-fit: contain;
+  }
+  .cta {
+    padding: 2.5rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .cta h2 {
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    margin-bottom: 1.2rem;
   }
 </style>

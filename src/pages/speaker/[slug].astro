@@ -82,9 +82,22 @@ const socialLinks = [
       </section>
     )}
 
-    <div class="cta-mini">
-      <a href="/de/tickets/" class="btn btn-primary">Ticket sichern & live erleben</a>
-    </div>
+    <section class="value">
+      <p class="eyebrow">AI Nights Speaker</p>
+      <h2 class="display-font">Speaker bei den AI&nbsp;Nights</h2>
+      <div class="value-grid">
+        <div class="v"><strong>Ausgezeichnete Fachexpertise</strong><span>Menschen, die KI wirklich einsetzen – mit echter Praxis statt Buzzwords.</span></div>
+        <div class="v"><strong>Unterhaltsamer Vortragsstil</strong><span>Kurze, pointierte Sessions, die informieren und Spaß machen.</span></div>
+        <div class="v"><strong>Topaktuelles Wissen</strong><span>Frische Perspektiven auf die Themen, die gerade wirklich zählen.</span></div>
+      </div>
+    </section>
+
+    <section class="become card">
+      <p class="eyebrow">Gemeinsam mehr Wert liefern</p>
+      <h2 class="display-font">Speaker werden</h2>
+      <p>Du hast ein spannendes Thema und möchtest selbst auf der AI&nbsp;Nights Bühne stehen?</p>
+      <a href="/de/speaker-application/" class="btn btn-primary">Jetzt Speaker werden</a>
+    </section>
   </main>
   <Footer lang="de" />
 </Layout>
@@ -178,9 +191,45 @@ const socialLinks = [
   .talks a:hover {
     color: var(--magenta-bright);
   }
-  .cta-mini {
-    margin-top: 3rem;
+  .value {
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+  }
+  .value h2 {
+    font-size: 1.5rem;
+    margin: 0.4rem 0 1.5rem;
+  }
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+  }
+  .value .v {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .value .v strong {
+    color: var(--text-primary);
+    font-size: 1.02rem;
+  }
+  .value .v span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .become {
+    margin-top: 2.5rem;
+    padding: 2.5rem;
     text-align: center;
+  }
+  .become h2 {
+    font-size: 1.8rem;
+    margin: 0.3rem 0 0.8rem;
+  }
+  .become p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
   }
   @media (max-width: 640px) {
     .head {

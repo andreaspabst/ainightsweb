@@ -13,5 +13,9 @@
   "locationName": "Design Offices Nürnberg City",
   "city": "Nürnberg",
   "ticketUrl": "https://ainights.ai",
-  "date": "2026-05-17 09:54:56"
+  "date": "2026-05-17 09:54:56",
+  "speakerIds": [410, 411, 412],
+  "sessionIds": [728, 1009, 977],
+  "sponsorIds": [331, 328, 989, 325, 304, 815],
+  "moderatorIds": [257]
 }
