@@ -1,0 +1,362 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const FORM_URL = 'https://airtable.com/embed/appiiUytKG0IcB1Gn/pagOcSDVtOCczuA2X/form';
+
+const benefits = [
+  {
+    img: '/wp-content/uploads/2026/01/1-82-300x240.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Sichtbarkeit erhöhen',
+    text: 'Präsentiere dein Expertise vor einem vielfältigen Publikum von KI-Profis, Forschern und Enthusiasten in mehreren deutschen Städten.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-106-300x240.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Netzwerk erweitern',
+    text: 'Vernetze dich mit anderen KI-Experten, potenziellen Kollaborateuren und Branchenführern, die deine Leidenschaft für künstliche Intelligenz teilen.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-128-300x240.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Live-Demos & konkrete Use Cases',
+    text: 'Keine Theorie. Sondern Beispiele, die zeigen, wie Ideen in der Realität funktionieren.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-68-300x240.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Ruf aufbauen',
+    text: 'Etabliere dich als Vordenker in der KI-Community und gewinne Anerkennung für dein Expertise und deine Beiträge.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-97.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Von anderen lernen',
+    text: 'Gewinne Einblicke von anderen Speakern und Teilnehmern, bleibe auf dem Laufenden über die neuesten KI-Trends und entdecke neue Perspektiven.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-21-300x240.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Raum für Gespräche',
+    text: 'Mit Drinks und Snacks inklusive, bewusst eingeplanten Pausen und Zeit, auch nach den Talks miteinander ins Gespräch zu kommen.',
+  },
+];
+
+const audience = [
+  'C-Level & Management',
+  'Startup-Gründer',
+  'Projektleiter',
+  'IT-Entscheider',
+  'Marketing-Entscheider',
+  'HR-Verantwortliche',
+];
+
+const topics = [
+  {
+    title: 'KI-Anwendungen',
+    text: 'Echte KI-Implementierungen, Fallstudien und praktische Anwendungen in verschiedenen Branchen.',
+  },
+  {
+    title: 'Aufstrebende Technologien',
+    text: 'Cutting-edge KI-Forschung, neue Technologien und zukünftige Trends in der künstlichen Intelligenz.',
+  },
+  {
+    title: 'Machine Learning',
+    text: 'Deep Learning, neuronale Netze und fortschrittliche ML-Algorithmen und ihre Anwendungen.',
+  },
+  {
+    title: 'KI-Ethik & Governance',
+    text: 'Ethische Überlegungen, verantwortungsvolle KI-Entwicklung und Governance-Rahmenwerke.',
+  },
+];
+
+const support = [
+  {
+    img: '/wp-content/uploads/2026/01/1-32.jpg',
+    title: 'Technische Unterstützung',
+    text: 'Vollständige technische Einrichtung und Unterstützung für deine Präsentation, einschließlich Audio-Video-Equipment und Präsentationssoftware.',
+    text2:
+      'An unseren Events selbst stehen hochauflösende Beamer zur Verfügung, Audioequipment von bester Qualität inkl. Headset, Handmikrofon etc. und eine professionelle Bühnenbeleuchtung für das richtige Ambiente eines Afterwork Events.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-26.jpg',
+    title: 'Event-Promotion',
+    text: 'Wir bewerben deine Session in unserem Netzwerk, in sozialen Medien und über Partner-Kanäle, um deine Reichweite und Wirkung zu maximieren.',
+    text2:
+      'Wenn Du uns im Vorfeld Material lieferst, bauen wir zielgruppengerechten Content und sorgen dafür, dass deine Message bei den richtigen Adressaten landet.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-54.jpg',
+    title: 'Speaker-Feedback',
+    text: 'Erhalte konstruktives Feedback von Teilnehmern und Organisatoren, um deine Präsentationsfähigkeiten zu verbessern.',
+    text2: 'Wenn Du möchtest, erhältst Du Zugang zu unseren Fotodatenbanken, Feedback Formularen und Vorschlägen zur Optimierung.',
+  },
+];
+---
+
+<Layout
+  lang="de"
+  title="Speaker Bewerbung - AI Nights"
+  description="Teile dein KI-Expertise bei AI Nights: Werde Speaker bei unseren Afterwork-Meetups in Nürnberg und München. Jetzt bewerben und die KI-Community inspirieren."
+  path="/de/speaker-application/"
+  alternates={{ de: '/de/speaker-application/' }}
+>
+  <Header lang="de" />
+  <main>
+    <section class="hero section">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Speakerbewerbung</p>
+          <h1 class="display-font">Speaker werden bei AI&nbsp;Nights Events</h1>
+          <p class="sub">
+            Teile dein KI-Expertise und inspiriere die nächste Generation von KI-Profis! Schließe dich unserem Netzwerk von
+            Speakern an und präsentiere bei AI&nbsp;Nights Meetups in ganz Deutschland. Wir suchen leidenschaftliche Speaker,
+            die Einblicke, Fallstudien und praktisches Wissen über künstliche Intelligenz teilen können.
+          </p>
+          <a href="#signup-form" class="btn btn-primary">Als Speaker bewerben</a>
+        </div>
+        <figure class="hero-media card">
+          <img src="/wp-content/uploads/2026/01/1-34-publikum.jpg" alt="Publikum bei AI Nights Nürnberg" loading="eager" width="800" height="533" />
+          <figcaption>
+            <h2 class="display-font">AI Enthusiasten</h2>
+            <p>
+              Erreiche Projektleiter, IT-Entscheider, C-Level, Startup-Gründer, Marketing- und HR-Verantwortliche an einem
+              Abend. Positioniere dein Unternehmen als Innovationsführer in der KI-Community.
+            </p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <p class="eyebrow">Warum bei AI Nights sprechen?</p>
+        <h2 class="display-font">Vorteile für Speaker</h2>
+        <p class="sub center">
+          Das Sprechen bei AI&nbsp;Nights bietet zahlreiche Möglichkeiten für berufliches Wachstum, Networking und das Teilen
+          deines Expertises mit einer leidenschaftlichen KI-Community.
+        </p>
+        <div class="grid three">
+          {benefits.map((b) => (
+            <article class="card benefit">
+              <img src={b.img} alt={b.alt} loading="lazy" width="300" height="240" />
+              <div class="body">
+                <h3>{b.title}</h3>
+                <p>{b.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Deine Zielgruppe wartet</h2>
+        <p class="sub center">Unsere Events ziehen Entscheider aus allen Branchen an – alle mit technischem Interesse und Innovationsgeist.</p>
+        <ul class="chips">
+          {audience.map((a) => (
+            <li>{a}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Teile dein Expertise</h2>
+        <p class="sub center">
+          Wir begrüßen Präsentationen zu einer breiten Palette von KI-Themen. Ob du Experte für Machine Learning, praktische
+          KI-Anwendungen oder aufstrebende Technologien bist – wir möchten von dir hören.
+        </p>
+        <div class="grid four">
+          {topics.map((t) => (
+            <article class="card topic">
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <p class="eyebrow">Speaker Unterstützung</p>
+        <h2 class="display-font">Wir unterstützen unsere Speaker</h2>
+        <p class="sub center">
+          Wir bieten umfassende Unterstützung, um sicherzustellen, dass unsere Speaker alles haben, was sie für herausragende
+          Präsentationen benötigen.
+        </p>
+        <div class="grid three">
+          {support.map((s) => (
+            <article class="card benefit">
+              <img src={s.img} alt={s.title} loading="lazy" width="640" height="427" />
+              <div class="body">
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+                <p>{s.text2}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="signup-form" class="section form-section">
+      <div class="container center-head">
+        <p class="eyebrow">Bewirb Dich jetzt</p>
+        <h2 class="display-font">Bereit, deine Expertise zu teilen?</h2>
+        <p class="sub center">
+          Schließe dich unserem Netzwerk von KI-Speakern an und inspiriere die nächste Generation von KI-Profis. Bewirb dich
+          jetzt, um bei kommenden AI&nbsp;Nights Events zu sprechen.
+        </p>
+        <div class="form-embed card">
+          <iframe src={FORM_URL} title="Formular Speakerbewerbung" loading="lazy"></iframe>
+        </div>
+        <a href={FORM_URL} target="_blank" rel="noopener" class="btn btn-ghost">Jetzt in neuem Tab öffnen</a>
+      </div>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    padding-block: 4rem 3rem;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (max-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+  }
+  .hero-copy .sub {
+    margin-bottom: 2rem;
+  }
+  .hero-media {
+    overflow: hidden;
+  }
+  .hero-media img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-media figcaption {
+    padding: 1.4rem 1.5rem 1.6rem;
+  }
+  .hero-media h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+  }
+  .hero-media p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .section {
+    padding-block: 2.5rem;
+  }
+  .center-head {
+    text-align: center;
+  }
+  .center-head h2 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub.center {
+    margin: 0 auto 2.2rem;
+  }
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    text-align: left;
+  }
+  .grid.three {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .grid.four {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .benefit {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .benefit img {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .benefit .body {
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .benefit h3,
+  .topic h3 {
+    font-size: 1.1rem;
+  }
+  .benefit p,
+  .topic p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .topic {
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .chips {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .chips li {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.55rem 1.2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .form-section {
+    padding-bottom: 4.5rem;
+  }
+  .form-embed {
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .form-embed iframe {
+    width: 100%;
+    height: 900px;
+    border: 0;
+    display: block;
+    background: transparent;
+  }
+</style>

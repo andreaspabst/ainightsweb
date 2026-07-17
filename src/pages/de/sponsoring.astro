@@ -1,0 +1,487 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const CALL_URL = 'https://tidycal.com/andreaspabstcom/ainights-sponsoring';
+
+const stats = [
+  { value: '110', label: 'Ø Teilnehmende bei den Afterworks' },
+  { value: '100k', label: 'Content Reichweite' },
+  { value: '100%', label: 'KI-Fokus am Abend' },
+  { value: '4', label: 'Städte geplant' },
+];
+
+const audience = [
+  'C-Level & Management',
+  'Startup-Gründer',
+  'Projektleiter',
+  'IT-Entscheider',
+  'Marketing-Entscheider',
+  'HR-Verantwortliche',
+];
+
+const benefits = [
+  {
+    title: 'Hochwertige Marketingmaterialien',
+    text: 'Roll-Up Displays vor Ort, Logo-Projektoren, prominent auf der Website und allen Werbematerialien.',
+  },
+  {
+    title: 'Stoff-Lanyards mit deinem Logo',
+    text: 'Beim größten Sponsoring-Paket: Alle Teilnehmer tragen dein Branding den ganzen Abend.',
+  },
+  {
+    title: 'Tailored für dich',
+    text: 'Anhand deiner Needs erarbeiten wir das perfekte Sponsoring-Konzept für dein Unternehmen.',
+  },
+  {
+    title: 'Volle Flexibilität',
+    text: 'Vom Stand über Flyer, Vorträge, Branding bis Social Media - alles ist möglich!',
+  },
+  {
+    title: 'Social Media Präsenz',
+    text: 'Dein Logo auf allen Social-Media-Kanälen, Website und sämtlichen Werbematerialien.',
+  },
+  {
+    title: 'Digitale Goodie Bag',
+    text: 'Per E-Mail an alle Teilnehmer - dein Produkt oder Angebot direkt in den Posteingang.',
+  },
+  {
+    title: 'Produkt-Integration',
+    text: 'Wir bauen dein Produkt gern in den Abend ein - als Showcase, Demo oder interaktive Session.',
+  },
+  {
+    title: 'Content für dich',
+    text: 'Auf Wunsch erstellen wir Social-Media-Content streamlined für dein Produkt/Unternehmen.',
+  },
+];
+
+const reasons = [
+  {
+    title: 'Direkter Zugang zu Entscheidern',
+    text: 'Mittleres Management und C-Level sind regelmäßig vor Ort. Knüpfe wertvolle Kontakte in entspannter Atmosphäre.',
+  },
+  {
+    title: 'Community statt Einmal-Event',
+    text: 'AI ist zu schnelllebig für nur ein Event. Werde Teil einer wachsenden Community mit regelmäßigen Touchpoints.',
+  },
+  {
+    title: 'Attraktivität durch 100% KI-Fokus',
+    text: 'Unterstreiche deinen Stellenwert und zeige: KI ist uns wichtig. Durch ein Sponsoring der AI Nights, erstrahlt deine Brand im KI-Kontext.',
+  },
+  {
+    title: 'Jede Menge weitere Vorteile',
+    text: 'Von Social Media über digitale Goodie Bags bis zu maßgeschneiderten Produktintegrationen - wir finden das perfekte Paket für dich.',
+  },
+];
+
+// Impressionen (aus dem WordPress-Original übernommen)
+const impressions = [
+  '1-128', '1-106', '1-107', '1-36', '1-112', '1-34-publikum', '1-8', '1-113',
+  '1-9', '1-22', '1-20', '1-111', '1-105', '1-104', '1-110', '1-21',
+].map((n) => `/wp-content/uploads/2026/01/${n}.jpg`);
+
+const community = [
+  '1-62', '1-73', '1-74', '1-60', '1-89', '1-76', '1-63', '1-77',
+  '1-88', '1-98', '1-67', '1-66', '1-72', '1-99', '1-29', '1-58',
+].map((n) => `/wp-content/uploads/2026/01/${n}.jpg`);
+---
+
+<Layout
+  lang="de"
+  title="Sponsoring - AI Nights"
+  description="Werde Sponsor der AI Nights: Erreiche Entscheider, IT-Profis und die KI-Community bei unseren Afterwork-Events in Nürnberg und München. Flexible Pakete für jeden Bedarf."
+  path="/de/sponsoring/"
+  alternates={{ de: '/de/sponsoring/' }}
+>
+  <Header lang="de" />
+  <main>
+    <section class="hero section">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Afterwork Events &amp; Meetups</p>
+          <h1 class="display-font">Werde Teil der KI&#8209;Revolution</h1>
+          <p class="sub">
+            Nimm an erstklassigen Meetups zum Thema KI teil. Kurzweilige, unterhaltsame und lehrreiche Vorträge erwarten dich!
+            Vernetze dich mit Experten, lerne von Branchenführern und entdecke die Zukunft der künstlichen Intelligenz.
+          </p>
+          <div class="hero-actions">
+            <a href={CALL_URL} target="_blank" rel="noopener" class="btn btn-primary">Kostenfreies Erstgespräch</a>
+            <a href="#kontakt" class="btn btn-ghost">Sponsor werden</a>
+          </div>
+        </div>
+        <figure class="hero-media card">
+          <img src="/wp-content/uploads/2026/01/1-34-publikum.jpg" alt="Publikum bei AI Nights Nürnberg" loading="eager" width="800" height="533" />
+          <figcaption>
+            <h2 class="display-font">AI Enthusiasten</h2>
+            <p>
+              Erreiche Projektleiter, IT-Entscheider, C-Level, Startup-Gründer, Marketing- und HR-Verantwortliche an einem
+              Abend. Positioniere dein Unternehmen als Innovationsführer in der KI-Community.
+            </p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <dl class="stats">
+          {stats.map((s) => (
+            <div class="stat card">
+              <dt>{s.label}</dt>
+              <dd class="display-font">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container narrow">
+        <h2 class="display-font">Was ist AI Nights?</h2>
+        <div class="prose-like">
+          <p>
+            <strong>AI Nights</strong> ist die Eventreihe für alle, die KI nicht nur verstehen, sondern
+            <strong>aktiv nutzen</strong> wollen. Gestartet <strong>2025 in Nürnberg</strong>, bringen wir
+            <strong>Entwickler, Ingenieure, Juristen, Studierende, Marketing- und HR-Profis</strong> zusammen – alle, die
+            technisches Interesse haben und die Zukunft mitgestalten wollen.
+          </p>
+          <p>
+            Unsere Events sind <strong>100% KI-fokussiert</strong>: Showcases, Praxis-Demos, interaktive Sessions. Keine
+            langweiligen Vorträge, sondern <strong>lockere Afterwork-Atmosphäre</strong> mit
+            <strong>Free Drinks und kleinen Snacks</strong>.
+          </p>
+          <p>
+            Das Besondere: <strong>AI ist zu schnelllebig für nur ein einziges Event</strong>. Deshalb setzen wir auf den
+            <strong>Community-Gedanken</strong> – regelmäßige Treffen, bei denen man sich austauscht, vernetzt und gemeinsam
+            lernt.
+          </p>
+          <p>
+            Unsere <strong>Premiere war bereits ein voller Erfolg: Über 50 Tickets verkauft!</strong> Mit
+            <strong>Top-Speakern aus unterschiedlichen Branchen, Unternehmen und Nationen</strong> bieten wir hochkarätigen
+            Content für <strong>mittleres Management und C-Level</strong>.
+          </p>
+          <p>
+            Geplant sind <strong>Workshops, Sessions und Hackathons</strong> – und wir wollen
+            <strong>Unternehmen mit wertvollen Produkten an Bord holen</strong>, die unsere Vision teilen:
+            <strong>Menschen zusammenbringen</strong> und die KI-Revolution gemeinsam gestalten.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Impressionen unserer Events</h2>
+        <div class="gallery">
+          {impressions.map((src) => (
+            <img src={src} alt="AI Nights Impressionen" loading="lazy" width="400" height="284" />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Deine Zielgruppe wartet</h2>
+        <p class="sub center">Unsere Events ziehen Entscheider aus allen Branchen an – alle mit technischem Interesse und Innovationsgeist.</p>
+        <ul class="chips">
+          {audience.map((a) => (
+            <li>{a}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Deine Vorteile als Sponsor</h2>
+        <p class="sub center">Maximale Sichtbarkeit und flexible Pakete für jeden Bedarf</p>
+        <div class="grid four">
+          {benefits.map((b) => (
+            <article class="card topic">
+              <h3>{b.title}</h3>
+              <p>{b.text}</p>
+            </article>
+          ))}
+        </div>
+        <a href="#kontakt" class="btn btn-primary big-cta">Sponsoring Pitchdeck anfragen [PDF]</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Die AI Nights Community</h2>
+        <div class="gallery">
+          {community.map((src) => (
+            <img src={src} alt="Die AI Nights Community" loading="lazy" width="400" height="284" />
+          ))}
+        </div>
+        <a href="/de/galerie/" class="btn btn-ghost">Zur kompletten Galerie</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Warum AI Nights sponsern?</h2>
+        <div class="grid two reasons">
+          {reasons.map((r) => (
+            <article class="card reason">
+              <span class="check">✓</span>
+              <div>
+                <h3>{r.title}</h3>
+                <p>{r.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <p class="eyebrow">So fühlt sich AI Nights an</p>
+        <h2 class="display-font">Ein Abend bei den AI Nights</h2>
+        <div class="video card">
+          <iframe
+            src="https://www.youtube.com/embed/U-F1GZmbzJE"
+            title="Ein Abend bei den AI Nights"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section id="kontakt" class="section cta-section">
+      <div class="container center-head">
+        <p class="eyebrow">Das perfekte Paket für Dich</p>
+        <h2 class="display-font">Bereit, Teil der AI Nights zu werden?</h2>
+        <p class="sub center">Lass uns gemeinsam das perfekte Sponsoring-Konzept für dein Unternehmen erarbeiten.</p>
+        <div class="cta-actions">
+          <a href={CALL_URL} target="_blank" rel="noopener" class="btn btn-primary">Kostenfreies Erstgespräch →</a>
+        </div>
+        <p class="cta-note">Im Erstgespräch erhältst du auch unser aktuelles Sponsoring-Pitchdeck als PDF.</p>
+      </div>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    padding-block: 4rem 2.5rem;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (max-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+  }
+  .hero-copy .sub {
+    margin-bottom: 2rem;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .hero-media {
+    overflow: hidden;
+  }
+  .hero-media img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-media figcaption {
+    padding: 1.4rem 1.5rem 1.6rem;
+  }
+  .hero-media h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+  }
+  .hero-media p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .section {
+    padding-block: 2.5rem;
+  }
+  .center-head {
+    text-align: center;
+  }
+  .center-head h2,
+  .narrow h2 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0.4rem 0 1.2rem;
+  }
+  .sub.center {
+    margin: 0 auto 2.2rem;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+    margin: 0;
+  }
+  .stat {
+    padding: 1.6rem 1.4rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.4rem;
+  }
+  .stat dd {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-weight: 700;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+  }
+  .stat dt {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+  .narrow {
+    max-width: 780px;
+  }
+  .prose-like p {
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 1.1rem;
+  }
+  .prose-like strong {
+    color: var(--text-primary);
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.9rem;
+    margin-bottom: 1.8rem;
+  }
+  .gallery img {
+    width: 100%;
+    aspect-ratio: 400 / 284;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border-strong);
+    display: block;
+  }
+  .chips {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .chips li {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.55rem 1.2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    text-align: left;
+  }
+  .grid.four {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .grid.two {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    max-width: 900px;
+    margin-inline: auto;
+  }
+  .topic {
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .topic h3,
+  .reason h3 {
+    font-size: 1.1rem;
+  }
+  .topic p,
+  .reason p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .big-cta {
+    margin-top: 2.2rem;
+  }
+  .reasons {
+    margin-top: 0.5rem;
+  }
+  .reason {
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .reason .check {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-weight: 700;
+  }
+  .reason h3 {
+    margin-bottom: 0.4rem;
+  }
+  .video {
+    overflow: hidden;
+    max-width: 860px;
+    margin-inline: auto;
+  }
+  .video iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    display: block;
+  }
+  .cta-section {
+    padding-bottom: 4.5rem;
+  }
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .cta-note {
+    margin-top: 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+</style>

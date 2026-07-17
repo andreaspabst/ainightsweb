@@ -1,0 +1,174 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const FORM_URL = 'https://airtable.com/embed/appiiUytKG0IcB1Gn/pagwZn8nOT2VxiHrQ/form';
+
+const benefits = [
+  {
+    img: '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-168.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Events erleben',
+    text: 'Events sind deine große Leidenschaft? Sei bei den AI Nights Events dabei!',
+  },
+  {
+    img: '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-154.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Food & Drinks for you',
+    text: 'Am Tag des Events erhältst Du Food & Drinks aufs Haus! Als Helping Hand bzw. Volunteer hast Du besonderen Zugang.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/28-ianight-28-scaled.jpg',
+    alt: 'AI Nights Nürnberg',
+    title: 'Connecte dich',
+    text: 'Du erlebst das Event mal von der anderen Seite! Unsere Speakerinnen und Speaker freuen sich schon darauf, dich kennen zu lernen!',
+  },
+];
+---
+
+<Layout
+  lang="de"
+  title="Volunteer Bewerbung - AI Nights"
+  description="Werde Volunteer bei den AI Nights Events: Blicke hinter die Kulissen, hilf bei Marketing, Technik und Einlass – und genieße Food & Drinks aufs Haus. Jetzt bewerben!"
+  path="/de/volunteer-bewerbung/"
+  alternates={{ de: '/de/volunteer-bewerbung/' }}
+>
+  <Header lang="de" />
+  <main>
+    <section class="hero section">
+      <div class="container">
+        <p class="eyebrow">Volunteer werden</p>
+        <h1 class="display-font">Sei bei den AI&nbsp;Nights Events dabei</h1>
+        <p class="sub">
+          Bei unseren Events gibt es immer jede Menge tolle Dinge zu tun und zu lernen!
+          <strong>Allen voran natürlich auch das Networking!</strong>
+        </p>
+        <h2 class="display-font sub-head">Event Volunteers</h2>
+        <p class="sub">Sei beim Marketing dabei, Eventtechnik, Einlass, Showtechnik, Bühnentechnik, Equipment oder den Vorbereitungen!</p>
+        <a href="#signup-form" class="btn btn-primary">Jetzt bewerben</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <p class="eyebrow">Warum Volunteer werden?</p>
+        <h2 class="display-font">Vorteile für Volunteers</h2>
+        <p class="sub center">
+          Wenn Du schon immer mal bei regelmäßigen, größeren Events dabei sein wolltest und hinter die Kulissen blicken
+          wolltest, dann ist dies der perfekte Moment für dich!
+        </p>
+        <div class="grid three">
+          {benefits.map((b) => (
+            <article class="card benefit">
+              <img src={b.img} alt={b.alt} loading="lazy" width="640" height="427" />
+              <div class="body">
+                <h3>{b.title}</h3>
+                <p>{b.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="signup-form" class="section form-section">
+      <div class="container center-head">
+        <p class="eyebrow">Bewirb Dich jetzt</p>
+        <h2 class="display-font">Bereit, das Event anders zu erleben?</h2>
+        <p class="sub center">Einfach das Formular ausfüllen und wir melden uns bei dir!</p>
+        <div class="form-embed card">
+          <iframe src={FORM_URL} title="Formular Volunteer Bewerbung" loading="lazy"></iframe>
+        </div>
+        <a href={FORM_URL} target="_blank" rel="noopener" class="btn btn-ghost">Jetzt in neuem Tab öffnen</a>
+      </div>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .hero {
+    text-align: center;
+    padding-block: 4rem 2.5rem;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+  .sub strong {
+    color: var(--text-primary);
+  }
+  .sub-head {
+    font-size: 1.3rem;
+    margin: 2rem 0 0.5rem;
+  }
+  .hero .btn {
+    margin-top: 2rem;
+  }
+  .section {
+    padding-block: 2.5rem;
+  }
+  .center-head {
+    text-align: center;
+  }
+  .center-head h2 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub.center {
+    margin: 0 auto 2.2rem;
+  }
+  .grid.three {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    text-align: left;
+  }
+  .benefit {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .benefit img {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .benefit .body {
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .benefit h3 {
+    font-size: 1.1rem;
+  }
+  .benefit p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .form-section {
+    padding-bottom: 4.5rem;
+  }
+  .form-embed {
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .form-embed iframe {
+    width: 100%;
+    height: 900px;
+    border: 0;
+    display: block;
+    background: transparent;
+  }
+</style>

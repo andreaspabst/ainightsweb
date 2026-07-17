@@ -17,6 +17,9 @@ const BESPOKE = new Set([
   '/en/our-sponsors/',
   '/de/tickets/',
   '/de/formate/',
+  '/de/speaker-application/',
+  '/de/sponsoring/',
+  '/de/volunteer-bewerbung/',
 ]);
 
 export async function getStaticPaths() {
@@ -29,6 +32,9 @@ export async function getStaticPaths() {
     '/en/our-sponsors/',
     '/de/tickets/',
     '/de/formate/',
+    '/de/speaker-application/',
+    '/de/sponsoring/',
+    '/de/volunteer-bewerbung/',
   ]);
   return Object.values(modules)
     .map((m: any) => m.default ?? m)
