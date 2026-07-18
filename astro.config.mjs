@@ -15,6 +15,9 @@ export default defineConfig({
     '/speaker/andreas-pabst/': '/speaker/der-pabst/',
     // Podcast-Seite wurde entfernt
     '/de/podcast/': '/de/',
+    // Alias für die Städte-Übersicht (kanonisch: /stadt/)
+    '/cities/': '/stadt/',
+    '/staedte/': '/stadt/',
   },
   integrations: [
     sitemap({

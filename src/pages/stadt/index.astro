@@ -1,0 +1,277 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { cityColor } from '../../lib/cities';
+
+// Marker-Positionen in % des Karten-SVGs (viewBox 680×520),
+// kalibriert über Länder-Geometrien + Geokoordinaten.
+type CityMarker = {
+  slug: string;
+  name: string;
+  status: 'active' | 'soon';
+  x: number;
+  y: number;
+  labelPos?: 'left' | 'right';
+};
+
+const cities: CityMarker[] = [
+  { slug: 'nuernberg', name: 'Nürnberg', status: 'active', x: 45.97, y: 66.38, labelPos: 'left' },
+  { slug: 'muenchen', name: 'München', status: 'active', x: 46.54, y: 69.48, labelPos: 'right' },
+  { slug: 'hamburg', name: 'Hamburg', status: 'soon', x: 44.74, y: 56.71, labelPos: 'right' },
+  { slug: 'bayreuth', name: 'Bayreuth', status: 'soon', x: 46.54, y: 64.9, labelPos: 'right' },
+  { slug: 'barcelona', name: 'Barcelona', status: 'soon', x: 33.2, y: 84.4, labelPos: 'right' },
+];
+
+const active = cities.filter((c) => c.status === 'active');
+const soon = cities.filter((c) => c.status === 'soon');
+---
+
+<Layout
+  lang="de"
+  title="Städte — AI Nights"
+  description="Die AI Nights Städte im Überblick: Afterwork-Events rund um Künstliche Intelligenz in Nürnberg und München — bald auch in Hamburg, Bayreuth und Barcelona."
+  path="/stadt/"
+  alternates={{ de: '/stadt/' }}
+>
+  <Header lang="de" />
+  <main class="container archive section">
+    <p class="eyebrow">Live vor Ort</p>
+    <h1 class="display-font">Unsere Städte</h1>
+    <p class="sub">
+      Die AI&nbsp;Nights sind eine wachsende Event-Reihe: gestartet in Nürnberg, inzwischen auch in München — und weitere
+      Städte stehen schon in den Startlöchern.
+    </p>
+
+    <div class="map-wrap card">
+      <div class="map">
+        <img src="/img/europe-map.svg" alt="Europakarte mit den AI Nights Städten" width="680" height="520" loading="eager" />
+        {cities.map((c) => (
+          <a
+            href={`/stadt/${c.slug}/`}
+            class={`marker ${c.status} label-${c.labelPos ?? 'right'}`}
+            style={`left: ${c.x}%; top: ${c.y}%; --dot-color: ${c.status === 'active' ? cityColor(c.name) : '#8b8b9e'}`}
+          >
+            <span class="dot"></span>
+            <span class="label">{c.name}</span>
+          </a>
+        ))}
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="dot active-dot"></span> Aktiv</span>
+        <span class="legend-item"><span class="dot soon-dot"></span> Bald</span>
+      </div>
+    </div>
+    <p class="map-credit">
+      Kartenbasis: <a href="https://commons.wikimedia.org/wiki/File:Blank_map_of_Europe_(without_disputed_regions).svg" target="_blank" rel="noopener">Blank map of Europe</a> (Wikimedia Commons, CC BY-SA 4.0)
+    </p>
+
+    <h2 class="group display-font">Hier sind wir aktiv</h2>
+    <div class="grid">
+      {active.map((c) => (
+        <a href={`/stadt/${c.slug}/`} class="city card">
+          <span class="city-badge" style={`background: ${cityColor(c.name)}`}>Aktiv</span>
+          <h3 class="display-font">{c.name}</h3>
+          <p>Regelmäßige Afterwork-Events mit Talks, Live-Demos und Community.</p>
+          <span class="more">Zur Stadt →</span>
+        </a>
+      ))}
+    </div>
+
+    <h2 class="group display-font">Bald am Start</h2>
+    <div class="grid">
+      {soon.map((c) => (
+        <a href={`/stadt/${c.slug}/`} class="city card soon-card">
+          <span class="city-badge soon-badge">Bald</span>
+          <h3 class="display-font">{c.name}</h3>
+          <p>Die AI&nbsp;Nights kommen — Termin wird noch bekanntgegeben.</p>
+          <span class="more">Mehr erfahren →</span>
+        </a>
+      ))}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .map-wrap {
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+  .map {
+    position: relative;
+  }
+  .map img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .marker {
+    /* Ankerpunkt = Dot-Mitte; das Label hängt seitlich dran */
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .marker .dot {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--dot-color);
+    display: block;
+    position: relative;
+  }
+  .marker .label {
+    position: absolute;
+    left: calc(100% + 0.4rem);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .marker.label-left .label {
+    left: auto;
+    right: calc(100% + 0.4rem);
+  }
+  .marker.active .dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--dot-color);
+    animation: pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(0.6);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
+  }
+  .marker.soon .dot {
+    opacity: 0.75;
+  }
+  .marker .label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 1px 4px rgba(10, 1, 24, 0.9);
+    white-space: nowrap;
+    left: calc(100% + 0.4rem);
+    top: 50%;
+  }
+  .marker.soon .label {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .marker:hover .label {
+    color: var(--magenta-bright);
+  }
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .legend .active-dot {
+    background: #e5484d;
+  }
+  .legend .soon-dot {
+    background: #8b8b9e;
+  }
+  .map-credit {
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .map-credit a {
+    color: var(--text-muted);
+    text-decoration: underline;
+  }
+  .group {
+    font-size: 1.4rem;
+    margin: 2.5rem 0 1.3rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .city {
+    padding: 1.6rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .city:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+  }
+  .city-badge {
+    align-self: flex-start;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+  }
+  .soon-badge {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+  }
+  .city h3 {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+  }
+  .city p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .soon-card {
+    opacity: 0.85;
+  }
+  .more {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--magenta-bright);
+  }
+  @media (max-width: 640px) {
+    .marker .label {
+      display: none;
+    }
+  }
+</style>
