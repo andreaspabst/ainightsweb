@@ -11,5 +11,17 @@
   },
   "homeFeatured": true,
   "date": "2026-03-08 08:36:12",
-  "modified": "2026-03-12 09:38:45"
+  "modified": "2026-03-12 09:38:45",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/keyalex/"
+  },
+  "topics": [
+    "Don't Panic: Warum Product Fundamentals auch im Zeitalter von AI gewinnen"
+  ],
+  "keyTakeaways": [
+    "„AI-powered“ Features scheitern oft, weil sie alle Einschränkungen des alten Systems erben",
+    "Großartige Produkte beginnen immer noch damit, das echte Problem des Nutzers zu verstehen – nicht mit der Technologie",
+    "Produktionsdaten und Observability sind keine Option mehr – sie sind die Grundlage, auf der man baut",
+    "Die Unternehmen, die schnell handeln und nah an ihren Nutzern bleiben, werden gewinnen – unabhängig von der Teamgröße"
+  ]
 }

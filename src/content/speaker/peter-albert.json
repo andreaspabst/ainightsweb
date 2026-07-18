@@ -6,5 +6,22 @@
   "bioHtml": "<p>Co. Founder von Viktor (formerly getviktor.com)</p>",
   "homeFeatured": false,
   "date": "2026-06-03 15:11:04",
-  "modified": "2026-06-03 15:11:12"
+  "modified": "2026-06-03 15:11:12",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/peter-k-albert/",
+    "website": "https://viktor.com"
+  },
+  "topics": [
+    "Die Entstehung von Viktor",
+    "E-Mail-AI und Jace als frühere Produktgenerationen",
+    "Falsche Annahmen, Produktiterationen und Wendepunkte",
+    "Der Weg vom AI-Tool zum AI Coworker",
+    "Vertrauen, wiederkehrende Nutzung und echte Arbeitsübergabe",
+    "AI-native Produktentwicklung"
+  ],
+  "keyTakeaways": [
+    "Konkrete Learnings aus dem Weg von E-Mail-AI über Jace bis Viktor",
+    "Wann man ein Produkt weiterentwickeln, neu positionieren oder konsequent verwerfen sollte",
+    "Wie aus einem AI-Experiment Schritt für Schritt ein Produkt entsteht, dem Kunden echte Arbeit anvertrauen"
+  ]
 }

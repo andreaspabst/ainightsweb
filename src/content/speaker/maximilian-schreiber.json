@@ -11,5 +11,17 @@
   },
   "homeFeatured": true,
   "date": "2026-05-16 18:06:44",
-  "modified": "2026-05-16 18:06:44"
+  "modified": "2026-05-16 18:06:44",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/maximilian-schreiber-a37612252"
+  },
+  "topics": [
+    "Benchmarking von KI-Modellen",
+    "Kosten/Nutzen-Analysen & Abwägungen zwischen KI-Modellen",
+    "Prompt-Routing und Multi-Modell-KI-Einsatz"
+  ],
+  "keyTakeaways": [
+    "Welche Unterschiede es zwischen KI-Modellen gibt und wie man diese erkennt & bewertet, um das beste Modell zu finden",
+    "Wie man unter Berücksichtigung von Qualitätsmerkmalen und Kosten die geeigneten KI-Modelle für die eigenen Bedürfnisse identifiziert"
+  ]
 }

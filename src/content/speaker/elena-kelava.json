@@ -11,5 +11,24 @@
   },
   "homeFeatured": true,
   "date": "2026-06-27 09:36:21",
-  "modified": "2026-06-27 09:36:21"
+  "modified": "2026-06-27 09:36:21",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/elena-kelava-expert-performance-seo-ai"
+  },
+  "topics": [
+    "KI im Performance Marketing und Kampagnenmanagement",
+    "Content-Erstellung zwischen Effizienz und Qualität",
+    "AI Workflows und Agenten im Marketing",
+    "SEO und AI Search",
+    "Daten, Personalisierung und Customer Journey",
+    "Welche Prozesse heute bereits sinnvoll automatisiert werden können",
+    "Wo menschliche Erfahrung weiterhin entscheidend bleibt"
+  ],
+  "keyTakeaways": [
+    "Praktische KI-Anwendungen für den Marketingalltag",
+    "Zeitersparnis durch AI Workflows und Automatisierung",
+    "Realistische Einschätzung von Chancen und Grenzen",
+    "Konkrete Beispiele aus Performance Marketing, SEO und Content",
+    "Ideen, die direkt im eigenen Unternehmen getestet werden können"
+  ]
 }

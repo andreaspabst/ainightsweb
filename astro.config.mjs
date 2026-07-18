@@ -11,6 +11,8 @@ export default defineConfig({
   },
   redirects: {
     '/': '/de/',
+    // Doppelter Speaker-Eintrag wurde in /speaker/der-pabst/ fusioniert
+    '/speaker/andreas-pabst/': '/speaker/der-pabst/',
   },
   integrations: [
     sitemap({

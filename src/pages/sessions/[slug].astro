@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
 
 export async function getStaticPaths() {
   const sessions = await getCollection('sessions');
@@ -14,9 +15,9 @@ const d = se.data;
 
 // Speaker auflösen (über Slug oder ID)
 const allSpeakers = await getCollection('speaker');
-const speakers = allSpeakers.filter(
-  (s) => d.speakerSlugs?.includes(s.data.slug) || (s.data.id && d.speakerIds?.includes(s.data.id)),
-);
+const speakers = allSpeakers
+  .filter((s) => d.speakerSlugs?.includes(s.data.slug) || (s.data.id && d.speakerIds?.includes(s.data.id)))
+  .filter((s) => !isPlaceholderSpeaker(s));
 
 const timeLabel = d.time ?? (d.startTime && d.endTime ? `${d.startTime} – ${d.endTime}` : d.startTime);
 ---

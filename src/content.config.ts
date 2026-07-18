@@ -42,6 +42,10 @@ const speaker = defineCollection({
     bioHtml: z.string().optional(),
     image,
     socials,
+    // Aus der Airtable-Speaker-Tabelle übernommene Felder
+    topics: z.array(z.string()).optional(),
+    keyTakeaways: z.array(z.string()).optional(),
+    links: z.array(z.object({ label: z.string(), url: z.string() })).optional(),
     homeFeatured: z.boolean().optional(),
     sortNumber: z.number().optional(),
     cities: z.array(z.string()).optional(),

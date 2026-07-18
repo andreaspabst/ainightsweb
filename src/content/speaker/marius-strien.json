@@ -11,5 +11,11 @@
   },
   "homeFeatured": true,
   "date": "2026-01-03 12:56:44",
-  "modified": "2026-01-04 13:29:31"
+  "modified": "2026-01-04 13:29:31",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/mariusstrien"
+  },
+  "topics": [
+    "Von Lilienthal zu den Wright Brothers: flAIght lessons aus dem Mittelstand"
+  ]
 }

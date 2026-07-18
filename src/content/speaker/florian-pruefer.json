@@ -11,5 +11,16 @@
   },
   "homeFeatured": true,
   "date": "2026-02-12 10:25:03",
-  "modified": "2026-03-16 20:30:43"
+  "modified": "2026-03-16 20:30:43",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/fpruefer/"
+  },
+  "topics": [
+    "The Wave of AI – Three hints to ride the wave"
+  ],
+  "keyTakeaways": [
+    "3 praktische Tipps: „Wie schafft man das selbst“ – persönlich und in der Organisation",
+    "Wie evo/Siemens 90 % Copilot-Adoption erreicht haben",
+    "Die Metapher des Surfens auf der KI-Welle"
+  ]
 }

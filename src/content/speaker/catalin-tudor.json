@@ -11,5 +11,15 @@
   },
   "homeFeatured": true,
   "date": "2026-01-03 12:56:21",
-  "modified": "2026-02-18 14:58:09"
+  "modified": "2026-02-18 14:58:09",
+  "topics": [
+    "LangExtract in Action – Turning Unstructured Text into Structured Insights",
+    "LangExtract: Structured Data from Text"
+  ],
+  "keyTakeaways": [
+    "How to define schemas and few-shot prompts for LangExtract",
+    "How to handle long documents efficiently",
+    "How to produce visual, verifiable outputs from LLMs",
+    "Example workflows integrating LangExtract with Python and modern LLMs"
+  ]
 }

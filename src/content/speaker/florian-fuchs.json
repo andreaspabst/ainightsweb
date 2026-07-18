@@ -11,5 +11,16 @@
   },
   "homeFeatured": true,
   "date": "2026-05-16 14:40:39",
-  "modified": "2026-05-16 17:54:36"
+  "modified": "2026-05-16 17:54:36",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/florian-flo-fuchs/"
+  },
+  "topics": [
+    "Data Culture – Was ist das und wenn ja wie viele? Erfahrungen aus der Praxis"
+  ],
+  "keyTakeaways": [
+    "Verstehen, welches Wissen und welche Fähigkeiten notwendig sind, um Daten im Arbeitsalltag und bei Entscheidungen sinnvoll nutzen zu können",
+    "Praktische Einblicke, wohin sich Organisationen entwickeln und wie datenbasierte Zusammenarbeit im Unternehmen gelebt werden kann",
+    "Orientierung, welche ersten Schritte und Verhaltensweisen eine erfolgreiche Data Culture fördern können"
+  ]
 }

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
 
 // Kommende Events wie auf der Original-Tickets-Seite: chronologisch aufsteigend
 const today = new Date('2026-07-14');
@@ -18,7 +19,10 @@ const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [
 const spMap = byId(speakerColl);
 const spoMap = byId(sponsorColl);
 const names = (ids: number[] | undefined, m: Map<number, any>) =>
-  (ids ?? []).map((id) => m.get(id)?.data.title).filter(Boolean) as string[];
+  (ids ?? [])
+    .map((id) => m.get(id))
+    .filter((s) => s && !isPlaceholderSpeaker(s))
+    .map((s) => s.data.title) as string[];
 
 function joinNames(list: string[]) {
   return list.join(', ');

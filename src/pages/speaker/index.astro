@@ -4,15 +4,11 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import SpeakerCard from '../../components/SpeakerCard.astro';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
 
 const speakers = (await getCollection('speaker'))
-  .sort((a, b) => {
-    // Platzhalter (tbd) ans Ende
-    const pa = a.data.slug.startsWith('ai-nights-speaker') ? 1 : 0;
-    const pb = b.data.slug.startsWith('ai-nights-speaker') ? 1 : 0;
-    if (pa !== pb) return pa - pb;
-    return a.data.title.localeCompare(b.data.title, 'de');
-  });
+  .filter((s) => !isPlaceholderSpeaker(s))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'de'));
 ---
 
 <Layout

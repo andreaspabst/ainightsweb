@@ -11,5 +11,11 @@
   },
   "homeFeatured": true,
   "date": "2026-01-24 20:22:01",
-  "modified": "2026-03-12 09:59:21"
+  "modified": "2026-03-12 09:59:21",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/lukas-strobel-695b5223b/"
+  },
+  "topics": [
+    "AI in HR – Presenting the Lorenz In-House AI"
+  ]
 }

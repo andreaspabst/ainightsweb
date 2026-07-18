@@ -5,8 +5,11 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
 export async function getStaticPaths() {
+  const { isPlaceholderSpeaker } = await import('../../lib/speakers');
   const speakers = await getCollection('speaker');
-  return speakers.map((s) => ({ params: { slug: s.data.slug }, props: { s } }));
+  return speakers
+    .filter((s) => !isPlaceholderSpeaker(s))
+    .map((s) => ({ params: { slug: s.data.slug }, props: { s } }));
 }
 
 const { s } = Astro.props;
@@ -24,6 +27,7 @@ const socialLinks = [
   d.socials?.x && ['X', d.socials.x.startsWith('http') ? d.socials.x : `https://x.com/${d.socials.x.replace('@', '')}`],
   d.socials?.linkedin && ['LinkedIn', d.socials.linkedin],
   d.socials?.website && ['Website', d.socials.website],
+  ...(d.links ?? []).map((l) => [l.label, l.url]),
 ].filter(Boolean) as [string, string][];
 ---
 
@@ -68,6 +72,24 @@ const socialLinks = [
     </div>
 
     {d.bioHtml && <div class="prose" set:html={d.bioHtml} />}
+
+    {(d.topics?.length ?? 0) > 0 && (
+      <section class="extra">
+        <h2 class="display-font">Themen &amp; Schwerpunkte</h2>
+        <ul class="topic-list">
+          {d.topics!.map((t) => <li>{t}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {(d.keyTakeaways?.length ?? 0) > 0 && (
+      <section class="extra">
+        <h2 class="display-font">Key Takeaways</h2>
+        <ul class="takeaways">
+          {d.keyTakeaways!.map((t) => <li>{t}</li>)}
+        </ul>
+      </section>
+    )}
 
     {sessions.length > 0 && (
       <section class="talks">
@@ -167,6 +189,45 @@ const socialLinks = [
   }
   .prose :global(p) {
     margin-bottom: 1.2rem;
+  }
+  .extra {
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .extra h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .topic-list,
+  .takeaways {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .topic-list li,
+  .takeaways li {
+    position: relative;
+    padding-left: 1.6rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .topic-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--blue-bright);
+    font-weight: 700;
+  }
+  .takeaways li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--magenta-bright);
+    font-weight: 700;
   }
   .talks {
     margin-top: 3rem;

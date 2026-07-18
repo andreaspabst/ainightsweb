@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import galleryData from '../../data/gallery.json';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
 
 export async function getStaticPaths() {
   const events = await getCollection('events');
@@ -36,7 +37,7 @@ const spoMap = byId(sponsorColl);
 const resolve = (ids: number[] | undefined, m: Map<number, any>) =>
   (ids ?? []).map((id) => m.get(id)).filter(Boolean);
 
-const speakers = resolve(d.speakerIds, spMap);
+const speakers = resolve(d.speakerIds, spMap).filter((s) => !isPlaceholderSpeaker(s));
 const moderators = resolve(d.moderatorIds, spMap);
 // Komplettes Programm inkl. Pausen — wie im Original; Pausen werden schlanker dargestellt
 const sessions = resolve(d.sessionIds, seMap);
@@ -162,7 +163,10 @@ const facts = [
           <h2 class="display-font sec-h">Die Themen des Abends</h2>
           <div class="program">
             {sessions.map((s) => {
-              const sp = (s.data.speakerIds ?? []).map((id: number) => spMap.get(id)).filter(Boolean);
+              const sp = (s.data.speakerIds ?? [])
+                .map((id: number) => spMap.get(id))
+                .filter(Boolean)
+                .filter((x: any) => !isPlaceholderSpeaker(x));
               const meta = sessionMeta(s);
               if (isBreak(s)) {
                 return (

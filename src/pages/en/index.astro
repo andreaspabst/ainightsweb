@@ -8,7 +8,7 @@ import EventCard from '../../components/EventCard.astro';
 import SponsorTiers from '../../components/SponsorTiers.astro';
 
 const speakers = (await getCollection('speaker'))
-  .filter((s) => !s.data.slug.startsWith('ai-nights-speaker') && s.data.slug !== 'der-pabst')
+  .filter((s) => !s.data.slug.startsWith('ai-nights-speaker'))
   .filter((s) => s.data.image?.src)
   .sort((a, b) => (b.data.homeFeatured ? 1 : 0) - (a.data.homeFeatured ? 1 : 0))
   .slice(0, 8);

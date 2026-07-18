@@ -11,5 +11,13 @@
   },
   "homeFeatured": true,
   "date": "2026-06-27 08:53:58",
-  "modified": "2026-06-27 09:14:35"
+  "modified": "2026-06-27 09:14:35",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/martin-hofmann-65201b49"
+  },
+  "topics": [
+    "KI als Chance, kritische Infrastrukturdienste sicherer zu gestalten – z. B. via Predictive Maintenance",
+    "Risiken durch Datenabfluss und dynamisierte, KI-getriebene Angriffe auf kritische Systeme",
+    "Visibilität von Services als wichtigste Metrik zur Erkennung von Mustern"
+  ]
 }

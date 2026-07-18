@@ -9,5 +9,16 @@
   },
   "homeFeatured": true,
   "date": "2026-07-06 13:03:46",
-  "modified": "2026-07-06 13:03:46"
+  "modified": "2026-07-06 13:03:46",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/tom-fischer-bb76811bb"
+  },
+  "bioHtml": "<p>Tom Fischer hat bei den Nürnberger Nachrichten als Werkstudent im Digital Transformation Management angefangen – und ist geblieben. Heute, vier Jahre später, ist er KI-Manager und fragt sich täglich, wie KI-Systeme wirklich im Alltag von Kolleg:innen und Kund:innen ankommen. Sein Master in Innovation &amp; Entrepreneurship an der Hochschule Ansbach hat ihm dabei eines beigebracht: Gute Ideen und Anwendungsfälle brauchen nicht nur Begeisterung, sondern auch jemanden, der sie konsequent voranbringt und hartnäckig bleibt.</p>",
+  "topics": [
+    "KI-gestützte Newsletterproduktion",
+    "KI-vertonte Artikel als Audio-Formate",
+    "Themenradar zur Story-Identifikation aus Ratsinformationssystemen",
+    "Aufbau eines dialogbasierten Pressearchivs als Wissensplattform",
+    "Leitplanken für Qualität, Glaubwürdigkeit und verantwortungsvollen KI-Einsatz im Journalismus"
+  ]
 }
