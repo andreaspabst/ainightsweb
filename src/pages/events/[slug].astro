@@ -37,7 +37,10 @@ const spoMap = byId(sponsorColl);
 const resolve = (ids: number[] | undefined, m: Map<number, any>) =>
   (ids ?? []).map((id) => m.get(id)).filter(Boolean);
 
-const speakers = resolve(d.speakerIds, spMap).filter((s) => !isPlaceholderSpeaker(s));
+const speakerSlots = resolve(d.speakerIds, spMap);
+const speakers = speakerSlots.filter((s) => !isPlaceholderSpeaker(s));
+// Noch unbesetzte Slots (Platzhalter) als „Wird noch bekanntgegeben“ zeigen
+const tbaCount = speakerSlots.length - speakers.length;
 const moderators = resolve(d.moderatorIds, spMap);
 // Komplettes Programm inkl. Pausen — wie im Original; Pausen werden schlanker dargestellt
 const sessions = resolve(d.sessionIds, seMap);
@@ -138,7 +141,7 @@ const facts = [
       </section>
 
       {/* Speaker-Lineup */}
-      {speakers.length > 0 && (
+      {(speakers.length > 0 || tbaCount > 0) && (
         <section class="sec">
           <p class="eyebrow">Wer dich durch den Abend begleitet</p>
           <h2 class="display-font sec-h">Speakerauswahl des Abends</h2>
@@ -151,6 +154,15 @@ const facts = [
                   {s.data.jobTitle && <span>{s.data.jobTitle}</span>}
                 </div>
               </a>
+            ))}
+            {Array.from({ length: tbaCount }).map(() => (
+              <div class="person card tba">
+                <div class="tba-avatar">✨</div>
+                <div class="p-body">
+                  <strong>Wird noch bekanntgegeben</strong>
+                  <span>Speaker folgt in Kürze</span>
+                </div>
+              </div>
             ))}
           </div>
         </section>
@@ -251,10 +263,17 @@ const facts = [
         </section>
       )}
 
-      {/* Stimmen aus der Community */}
+      {/* Stimmen aus der Community — Video-Testimonials wie im Original */}
       <section class="sec">
         <p class="eyebrow">Was Besucher über die AI Nights sagen</p>
         <h2 class="display-font sec-h">Stimmen aus der Community</h2>
+        <div class="testi-videos">
+          {['ALEX', 'BERND', 'ROLAND'].map((n) => (
+            <video controls preload="metadata" playsinline>
+              <source type="video/mp4" src={`/wp-content/uploads/2026/02/${n}-AINIGHTS-TESTIMONIAL.mp4`} />
+            </video>
+          ))}
+        </div>
         <div class="testi-grid">
           {testimonials.map((q) => (
             <blockquote class="testi card"><p>„{q}"</p></blockquote>
@@ -554,6 +573,36 @@ const facts = [
   }
   .gal-link {
     margin-top: 1.5rem;
+  }
+  .person.tba {
+    opacity: 0.75;
+  }
+  .tba-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border-strong);
+  }
+  .person.tba strong {
+    color: var(--text-secondary);
+  }
+  .testi-videos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .testi-videos video {
+    width: 100%;
+    border-radius: var(--radius, 12px);
+    border: 1px solid var(--border);
+    background: #000;
+    display: block;
   }
   .testi-grid {
     display: grid;

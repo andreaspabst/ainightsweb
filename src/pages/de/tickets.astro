@@ -18,11 +18,14 @@ const sponsorColl = await getCollection('sponsor');
 const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [x.data.id, x]));
 const spMap = byId(speakerColl);
 const spoMap = byId(sponsorColl);
-const names = (ids: number[] | undefined, m: Map<number, any>) =>
-  (ids ?? [])
-    .map((id) => m.get(id))
-    .filter((s) => s && !isPlaceholderSpeaker(s))
-    .map((s) => s.data.title) as string[];
+// Namen auflösen; Platzhalter-Slots werden zu „Wird noch bekanntgegeben“
+const names = (ids: number[] | undefined, m: Map<number, any>) => {
+  const slots = (ids ?? []).map((id) => m.get(id)).filter(Boolean);
+  const real = slots.filter((s) => !isPlaceholderSpeaker(s)).map((s) => s.data.title) as string[];
+  const tba = slots.length - real.length;
+  if (tba > 0) real.push(real.length > 0 ? 'weitere werden noch bekanntgegeben' : 'Wird noch bekanntgegeben');
+  return real;
+};
 
 function joinNames(list: string[]) {
   return list.join(', ');
