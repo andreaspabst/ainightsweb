@@ -50,7 +50,7 @@ const soon = cities.filter((c) => c.status === 'soon');
           <a
             href={`/stadt/${c.slug}/`}
             class={`marker ${c.status} label-${c.labelPos ?? 'right'}`}
-            style={`left: ${c.x}%; top: ${c.y}%; --dot-color: ${c.status === 'active' ? cityColor(c.name) : '#8b8b9e'}`}
+            style={`left: ${c.x}%; top: ${c.y}%; --dot-color: ${c.status === 'active' ? '#e5484d' : '#8b8b9e'}`}
           >
             <span class="dot"></span>
             <span class="label">{c.name}</span>
