@@ -1,0 +1,154 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { imgVariant } from '../../lib/images';
+
+const posts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+function fmtDate(d: Date) {
+  return d.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<Layout
+  lang="de"
+  title="Blog — AI Nights"
+  description="Der AI Nights Blog: Recaps unserer Afterwork-Events, KI-Themen aus den Sessions und Neuigkeiten aus der Community in Nürnberg und München."
+  path="/blog/"
+  alternates={{ de: '/blog/' }}
+>
+  <Header lang="de" />
+  <main class="container archive section">
+    <p class="eyebrow">Neues von den AI Nights</p>
+    <h1 class="display-font">Blog</h1>
+    <p class="sub">Event-Recaps, KI-Themen aus unseren Sessions und Neuigkeiten aus der Community.</p>
+
+    {posts.length === 0 && (
+      <div class="empty card">
+        <h2 class="display-font">Bald geht's los ✨</h2>
+        <p>Hier erscheinen in Kürze Recaps und Artikel rund um die AI&nbsp;Nights. Bis dahin: Schau bei unseren Events vorbei!</p>
+        <a href="/events/" class="btn btn-primary">Zu den Events</a>
+      </div>
+    )}
+
+    <div class="grid">
+      {posts.map((p) => (
+        <article class="post card">
+          <a href={`/blog/${p.id}/`} class="cover">
+            {p.data.image?.src && <img src={imgVariant(p.data.image.src, 640)} alt={p.data.image.alt ?? p.data.title} loading="lazy" width="640" height="400" />}
+          </a>
+          <div class="body">
+            <p class="date">{fmtDate(p.data.pubDate)}</p>
+            <h2><a href={`/blog/${p.id}/`}>{p.data.title}</a></h2>
+            <p class="excerpt">{p.data.description}</p>
+            {p.data.tags && p.data.tags.length > 0 && (
+              <p class="tags">{p.data.tags.map((t) => <span class="tag">#{t}</span>)}</p>
+            )}
+            <a href={`/blog/${p.id}/`} class="more">Weiterlesen →</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .empty {
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .empty h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .empty p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .post {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .post:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+  }
+  .cover {
+    display: block;
+    aspect-ratio: 16 / 10;
+    background: var(--bg-elevated);
+    overflow: hidden;
+  }
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .body {
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  .date {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--blue-bright);
+  }
+  h2 {
+    font-size: 1.2rem;
+  }
+  h2 a {
+    color: var(--text-primary);
+  }
+  h2 a:hover {
+    color: var(--magenta-bright);
+  }
+  .excerpt {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .more {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--magenta-bright);
+  }
+</style>

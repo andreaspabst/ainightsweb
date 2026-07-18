@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import galleryData from '../../data/gallery.json';
+import { imgVariant } from '../../lib/images';
 
 type Group = { num: string; event: string; images: string[] };
 const groups = galleryData as Group[];
@@ -20,6 +21,14 @@ function fmtDate(d?: string) {
 }
 
 const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
+
+// Max. Bilder pro Seite (pro Event); weitere Seiten per Pagination
+const PAGE_SIZE = 76;
+const chunk = <T,>(arr: T[], size: number): T[][] => {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+};
 ---
 
 <Layout
@@ -36,12 +45,13 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
     <p class="sub">{totalImages} Fotos aus {groups.length} AI&nbsp;Nights Events – Momente von unseren Afterwork-Abenden.</p>
 
     {
-      groups.map((g) => {
+      groups.map((g, gi) => {
         const ev = eventBySlug.get(g.event);
         const title = ev?.title ?? `AI Nights Nürnberg #${g.num}`;
         const date = fmtDate(ev?.eventDate);
+        const pages = chunk(g.images, PAGE_SIZE);
         return (
-          <section class="event-gallery">
+          <section class="event-gallery" data-gallery={gi}>
             <div class="gal-head">
               <div>
                 <span class="marker">// AI Night Nürnberg {g.num}</span>
@@ -50,13 +60,25 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
               </div>
               <a href={`/events/${g.event}/`} class="btn btn-ghost">Zum Event</a>
             </div>
-            <div class="masonry">
-              {g.images.map((src) => (
-                <a href={src} class="tile" target="_blank" rel="noopener">
-                  <img src={src} alt={`Impression ${title}`} loading="lazy" />
-                </a>
-              ))}
-            </div>
+            {pages.map((pageImages, pi) => (
+              <div class="masonry" data-page={pi} hidden={pi > 0}>
+                {pageImages.map((src, ii) => (
+                  <button type="button" class="tile" data-index={pi * PAGE_SIZE + ii} aria-label={`Foto ${pi * PAGE_SIZE + ii + 1} von ${title} vergrößern`}>
+                    <img src={imgVariant(src, 640)} data-full={imgVariant(src, 1600)} alt={`Impression ${title}`} loading="lazy" />
+                  </button>
+                ))}
+              </div>
+            ))}
+            {pages.length > 1 && (
+              <nav class="pager" aria-label={`Seiten der Galerie ${title}`}>
+                {pages.map((_, pi) => (
+                  <button type="button" class={`page-btn${pi === 0 ? ' active' : ''}`} data-page={pi}>
+                    {pi + 1}
+                  </button>
+                ))}
+                <span class="pager-info">{pages.length} Seiten</span>
+              </nav>
+            )}
           </section>
         );
       })
@@ -64,8 +86,79 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
 
     <div class="center"><a href="/de/tickets/" class="btn btn-primary">Beim nächsten Mal live dabei sein</a></div>
   </main>
+
+  <!-- Lightbox-Slideshow -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button type="button" class="lb-close" aria-label="Schließen">✕</button>
+    <button type="button" class="lb-prev" aria-label="Vorheriges Bild">‹</button>
+    <figure>
+      <img id="lb-img" src="" alt="Impression AI Nights" />
+      <figcaption id="lb-counter"></figcaption>
+    </figure>
+    <button type="button" class="lb-next" aria-label="Nächstes Bild">›</button>
+  </div>
+
   <Footer lang="de" />
 </Layout>
+
+<script>
+  // Pagination pro Event-Galerie
+  document.querySelectorAll<HTMLElement>('.event-gallery').forEach((gal) => {
+    const pages = gal.querySelectorAll<HTMLElement>('.masonry');
+    gal.querySelectorAll<HTMLButtonElement>('.page-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const p = Number(btn.dataset.page);
+        pages.forEach((pg) => (pg.hidden = Number(pg.dataset.page) !== p));
+        gal.querySelectorAll('.page-btn').forEach((b) => b.classList.toggle('active', b === btn));
+        gal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  });
+
+  // Lightbox-Slideshow (pro Event-Galerie, über Seitengrenzen hinweg)
+  const lightbox = document.getElementById('lightbox') as HTMLElement;
+  const lbImg = document.getElementById('lb-img') as HTMLImageElement;
+  const lbCounter = document.getElementById('lb-counter') as HTMLElement;
+  let currentImages: string[] = [];
+  let currentIndex = 0;
+
+  function show(i: number) {
+    currentIndex = (i + currentImages.length) % currentImages.length;
+    lbImg.src = currentImages[currentIndex];
+    lbCounter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+  }
+  function openLightbox(images: string[], i: number) {
+    currentImages = images;
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    show(i);
+  }
+  function closeLightbox() {
+    lightbox.hidden = true;
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  document.querySelectorAll<HTMLElement>('.event-gallery').forEach((gal) => {
+    const fulls = [...gal.querySelectorAll<HTMLImageElement>('.tile img')].map((im) => im.dataset.full ?? im.src);
+    gal.querySelectorAll<HTMLButtonElement>('.tile').forEach((tile) => {
+      tile.addEventListener('click', () => openLightbox(fulls, Number(tile.dataset.index)));
+    });
+  });
+
+  lightbox.querySelector('.lb-close')!.addEventListener('click', closeLightbox);
+  lightbox.querySelector('.lb-prev')!.addEventListener('click', () => show(currentIndex - 1));
+  lightbox.querySelector('.lb-next')!.addEventListener('click', () => show(currentIndex + 1));
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.hidden) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') show(currentIndex - 1);
+    if (e.key === 'ArrowRight') show(currentIndex + 1);
+  });
+</script>
 
 <style>
   .archive {
@@ -82,6 +175,7 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
   }
   .event-gallery {
     margin-bottom: 4rem;
+    scroll-margin-top: 5rem;
   }
   .gal-head {
     display: flex;
@@ -115,13 +209,20 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
     columns: 4;
     column-gap: 0.8rem;
   }
+  .masonry[hidden] {
+    display: none;
+  }
   .tile {
     display: block;
+    width: 100%;
+    padding: 0;
     margin-bottom: 0.8rem;
     break-inside: avoid;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--border);
+    background: none;
+    cursor: zoom-in;
   }
   .tile img {
     width: 100%;
@@ -131,9 +232,109 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
   .tile:hover img {
     transform: scale(1.04);
   }
+  .pager {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    min-width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+  .page-btn:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+  .page-btn.active {
+    background: var(--gradient-accent);
+    border-color: transparent;
+    color: #fff;
+  }
+  .pager-info {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-left: 0.4rem;
+  }
   .center {
     text-align: center;
     margin-top: 2rem;
+  }
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(10, 1, 24, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox[hidden] {
+    display: none;
+  }
+  .lightbox figure {
+    max-width: min(92vw, 1400px);
+    max-height: 88vh;
+    margin: 0;
+    text-align: center;
+  }
+  .lightbox img {
+    max-width: 100%;
+    max-height: 82vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+  }
+  .lightbox figcaption {
+    color: var(--text-muted);
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+  }
+  .lb-close,
+  .lb-prev,
+  .lb-next {
+    position: fixed;
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-strong);
+    color: #fff;
+    border-radius: 50%;
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s ease;
+  }
+  .lb-close:hover,
+  .lb-prev:hover,
+  .lb-next:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .lb-close {
+    top: 1.2rem;
+    right: 1.2rem;
+  }
+  .lb-prev {
+    left: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .lb-next {
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
   }
   @media (max-width: 900px) {
     .masonry {
@@ -143,6 +344,12 @@ const totalImages = groups.reduce((n, g) => n + g.images.length, 0);
   @media (max-width: 600px) {
     .masonry {
       columns: 2;
+    }
+    .lb-prev {
+      left: 0.4rem;
+    }
+    .lb-next {
+      right: 0.4rem;
     }
   }
 </style>

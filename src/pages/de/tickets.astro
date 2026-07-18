@@ -4,6 +4,8 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { cityColor } from '../../lib/cities';
+import { imgVariant } from '../../lib/images';
 
 // Kommende Events wie auf der Original-Tickets-Seite: chronologisch aufsteigend
 const today = new Date('2026-07-14');
@@ -53,6 +55,9 @@ const cards = upcoming.map((e) => {
     sponsors: names(d.sponsorIds, spoMap).join(', '),
   };
 });
+
+// Städte für die Filterleiste (in Reihenfolge der Events)
+const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[];
 ---
 
 <Layout
@@ -78,12 +83,23 @@ const cards = upcoming.map((e) => {
         <h2 class="display-font">Kommende Meetups</h2>
         <p class="sub center">Nimm an unseren regelmäßigen Afterwork Meetups und Events teil und bau dein Netzwerk auf.</p>
 
+        {cities.length > 1 && (
+          <div class="city-filter" role="group" aria-label="Nach Stadt filtern">
+            <button type="button" class="filter-btn active" data-city="alle">Alle Städte</button>
+            {cities.map((city) => (
+              <button type="button" class="filter-btn" data-city={city} style={`--city-color: ${cityColor(city)}`}>
+                {city}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div class="grid">
           {cards.map((c) => (
-            <article class="ticket-card card">
+            <article class="ticket-card card" data-city={c.city}>
               <a href={`/events/${c.slug}/`} class="cover">
-                {c.image?.src && <img src={c.image.src} alt={c.image.alt ?? c.title} loading="lazy" width="640" height="400" />}
-                {c.city && <span class="city-badge">{c.city}</span>}
+                {c.image?.src && <img src={imgVariant(c.image.src, 640)} alt={c.image.alt ?? c.title} loading="lazy" width="640" height="400" />}
+                {c.city && <span class="city-badge" style={`background: ${cityColor(c.city)}`}>{c.city}</span>}
               </a>
               <div class="body">
                 <h3><a href={`/events/${c.slug}/`}>{c.title}</a></h3>
@@ -149,6 +165,21 @@ const cards = upcoming.map((e) => {
   <Footer lang="de" />
 </Layout>
 
+<script>
+  // Städtefilter: blendet Event-Karten nach data-city ein/aus
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const eventCards = document.querySelectorAll<HTMLElement>('.ticket-card');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      buttons.forEach((b) => b.classList.toggle('active', b === btn));
+      const city = btn.dataset.city;
+      eventCards.forEach((card) => {
+        card.hidden = city !== 'alle' && card.dataset.city !== city;
+      });
+    });
+  });
+</script>
+
 <style>
   .hero {
     text-align: center;
@@ -179,12 +210,42 @@ const cards = upcoming.map((e) => {
     text-align: center;
     margin: 0 auto 2.5rem;
   }
+  .city-filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 2.2rem;
+  }
+  .filter-btn {
+    --city-color: var(--magenta-bright);
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-secondary);
+    border-radius: 999px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .filter-btn:hover {
+    border-color: var(--city-color);
+    color: var(--text-primary);
+  }
+  .filter-btn.active {
+    background: var(--city-color);
+    border-color: var(--city-color);
+    color: #fff;
+  }
+  .ticket-card[hidden] {
+    display: none;
+  }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-    max-width: 900px;
-    margin: 0 auto;
   }
   .ticket-card {
     display: flex;

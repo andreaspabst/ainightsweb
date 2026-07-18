@@ -5,6 +5,6 @@
   "seoTitle": "Socialmedia - AI Nights",
   "description": "",
   "heroSubtitle": "",
-  "contentHtml": "<p>Folge Uns!</p>\n<p>Bleibe mit uns in Verbindung! Folge unseren neuesten Updates, Event-Highlights, Speaker-Ankündigungen und KI-Trends auf allen Social-Media-Plattformen.</p>\n<p>Folge AI Nights auf allen Social-Media-Kanälen (Social-Media-Feed).</p>",
+  "contentHtml": "<p>Folge Uns!</p>\n<p>Bleibe mit uns in Verbindung! Folge unseren neuesten Updates, Event-Highlights, Speaker-Ankündigungen und KI-Trends auf allen Social-Media-Plattformen.</p>\n<p>Folge AI Nights auf allen Social-Media-Kanälen (Social-Media-Feed).</p>\n<link rel=\"stylesheet\" href=\"https://assets.juicer.io/embed.css\" media=\"all\" />\n<ul class=\"juicer-feed\" data-feed-id=\"ainights-ai\" data-per=\"15\"></ul>\n<script src=\"https://assets.juicer.io/embed.js\" async></script>",
   "images": []
 }

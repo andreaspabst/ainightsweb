@@ -9,5 +9,6 @@
   },
   "website": "https://vigoba.de/",
   "tier": "silver",
-  "date": "2026-01-14 14:41:03"
+  "date": "2026-01-14 14:41:03",
+  "contentHtml": "<p>ViGoBa ist eine Plattform für virtuelle Goodie Bags: digitale Geschenkpakete mit Gutscheinen, Downloads und anderen Inhalten, die Teilnehmern von Events, Messen oder Online-Kursen zugestellt werden. Die Lösung bietet A/B-Testing, Echtzeit-Auswertungen im Dashboard und Integrationen u. a. mit Stripe, PayPal, Eventbrite und Digistore24. Sie richtet sich an Event-Manager, Veranstalter und Anbieter digitaler Produkte und positioniert sich als nachhaltige Alternative zu physischen Goodie Bags. Betrieben wird ViGoBa aus Eckental bei Nürnberg.</p>"
 }

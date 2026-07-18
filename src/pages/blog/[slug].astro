@@ -1,0 +1,160 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { imgVariant } from '../../lib/images';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts
+    .filter((p) => !p.data.draft)
+    .map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+
+const { p } = Astro.props;
+const d = p.data;
+const { Content } = await render(p);
+
+function fmtDate(dt: Date) {
+  return dt.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<Layout
+  lang="de"
+  title={`${d.title} — AI Nights Blog`}
+  description={d.description}
+  path={`/blog/${p.id}/`}
+  image={d.image?.src}
+  ogType="article"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: d.title,
+    description: d.description,
+    datePublished: d.pubDate.toISOString(),
+    dateModified: (d.updatedDate ?? d.pubDate).toISOString(),
+    author: { '@type': 'Person', name: d.author },
+    image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
+    publisher: { '@type': 'Organization', name: 'AI Nights', url: 'https://ainights.ai' },
+  }}
+>
+  <Header lang="de" />
+  <main class="container detail section">
+    <a href="/blog/" class="back">← Alle Beiträge</a>
+    <article>
+      <header>
+        <p class="date">{fmtDate(d.pubDate)} · {d.author}</p>
+        <h1 class="display-font">{d.title}</h1>
+        <p class="lead">{d.description}</p>
+        {d.image?.src && (
+          <img class="hero-img" src={imgVariant(d.image.src, 1024)} alt={d.image.alt ?? d.title} width="1024" height="640" />
+        )}
+      </header>
+      <div class="prose">
+        <Content />
+      </div>
+      {d.tags && d.tags.length > 0 && (
+        <p class="tags">{d.tags.map((t) => <span class="tag">#{t}</span>)}</p>
+      )}
+    </article>
+
+    <section class="cta card">
+      <h2 class="display-font">Live dabei sein statt nur lesen?</h2>
+      <a href="/de/tickets/" class="btn btn-primary">Tickets für die nächste AI Night</a>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .detail {
+    max-width: 780px;
+    padding-block: 2.5rem 4rem;
+  }
+  .back {
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .back:hover {
+    color: var(--magenta-bright);
+  }
+  .date {
+    color: var(--blue-bright);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 0.8rem;
+  }
+  .lead {
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    margin-bottom: 1.8rem;
+  }
+  .hero-img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .prose {
+    color: var(--text-secondary);
+    font-size: 1.08rem;
+    line-height: 1.8;
+  }
+  .prose :global(h2),
+  .prose :global(h3) {
+    color: var(--text-primary);
+    margin: 2rem 0 0.8rem;
+  }
+  .prose :global(p) {
+    margin-bottom: 1.2rem;
+  }
+  .prose :global(a) {
+    color: var(--magenta-bright);
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.2rem 1.4rem;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4rem;
+  }
+  .prose :global(img) {
+    max-width: 100%;
+    border-radius: var(--radius);
+  }
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--magenta-bright);
+    padding-left: 1.2rem;
+    font-style: italic;
+    margin: 1.5rem 0;
+  }
+  .tags {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .tag {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .cta {
+    margin-top: 3rem;
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .cta h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+</style>

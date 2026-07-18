@@ -1,4 +1,7 @@
 ---
+import { cityColor } from '../lib/cities';
+import { imgVariant } from '../lib/images';
+
 export interface Props {
   slug: string;
   title: string;
@@ -22,8 +25,8 @@ const dateLabel = fmtDate(eventDate);
 
 <article class="event-card card">
   <a href={`/events/${slug}/`} class="cover">
-    {image?.src && <img src={image.src} alt={image.alt ?? title} loading="lazy" width="640" height="400" />}
-    {city && <span class="city-badge">{city}</span>}
+    {image?.src && <img src={imgVariant(image.src, 640)} alt={image.alt ?? title} loading="lazy" width="640" height="400" />}
+    {city && <span class="city-badge" style={`background: ${cityColor(city)}`}>{city}</span>}
   </a>
   <div class="body">
     {dateLabel && <p class="date">{dateLabel}</p>}

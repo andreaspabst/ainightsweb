@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import galleryData from '../../data/gallery.json';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { imgVariant } from '../../lib/images';
 
 export async function getStaticPaths() {
   const events = await getCollection('events');
@@ -106,7 +107,7 @@ const facts = [
   <Header lang="de" />
   <main>
     <section class="hero">
-      <img class="hero-bg" src={heroBg} alt="" role="presentation" />
+      <img class="hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" />
       <div class="hero-overlay"></div>
       <div class="container hero-inner">
         <a href="/events/" class="back">← Alle Events</a>
@@ -255,7 +256,7 @@ const facts = [
           <div class="photos">
             {eventPhotos.map((src) => (
               <a href={src} target="_blank" rel="noopener" class="photo">
-                <img src={src} alt={`Impression ${d.title}`} loading="lazy" />
+                <img src={imgVariant(src, 320)} alt={`Impression ${d.title}`} loading="lazy" />
               </a>
             ))}
           </div>

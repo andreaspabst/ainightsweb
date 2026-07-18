@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { imgVariant } from '../../lib/images';
 
 const FORM_URL = 'https://airtable.com/embed/appiiUytKG0IcB1Gn/pagwZn8nOT2VxiHrQ/form';
 
@@ -61,7 +62,7 @@ const benefits = [
         <div class="grid three">
           {benefits.map((b) => (
             <article class="card benefit">
-              <img src={b.img} alt={b.alt} loading="lazy" width="640" height="427" />
+              <img src={imgVariant(b.img, 640)} alt={b.alt} loading="lazy" width="640" height="427" />
               <div class="body">
                 <h3>{b.title}</h3>
                 <p>{b.text}</p>

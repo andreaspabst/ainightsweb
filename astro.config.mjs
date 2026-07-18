@@ -13,6 +13,8 @@ export default defineConfig({
     '/': '/de/',
     // Doppelter Speaker-Eintrag wurde in /speaker/der-pabst/ fusioniert
     '/speaker/andreas-pabst/': '/speaker/der-pabst/',
+    // Podcast-Seite wurde entfernt
+    '/de/podcast/': '/de/',
   },
   integrations: [
     sitemap({
