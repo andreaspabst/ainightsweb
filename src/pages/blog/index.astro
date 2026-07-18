@@ -5,8 +5,10 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { imgVariant } from '../../lib/images';
 
+// Drafts und geplante Beiträge (pubDate in der Zukunft) erscheinen nicht;
+// geplante Posts gehen mit dem nächsten Deploy nach ihrem Datum live.
 const posts = (await getCollection('blog'))
-  .filter((p) => !p.data.draft)
+  .filter((p) => !p.data.draft && p.data.pubDate.getTime() <= Date.now())
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
 function fmtDate(d: Date) {

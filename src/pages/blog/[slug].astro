@@ -8,7 +8,7 @@ import { imgVariant } from '../../lib/images';
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts
-    .filter((p) => !p.data.draft)
+    .filter((p) => !p.data.draft && p.data.pubDate.getTime() <= Date.now())
     .map((p) => ({ params: { slug: p.id }, props: { p } }));
 }
 
