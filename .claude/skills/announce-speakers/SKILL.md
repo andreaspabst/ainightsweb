@@ -38,6 +38,9 @@ schon einen Ankündigungspost unter `src/content/blog/`? Fehlende ergänzen.
 4. Fehlt etwas, in der Airtable-Basis „AI Nights“ nachsehen (Tabelle *Speaker*:
    Bio, Talk Description, Topics, Key Takeaways) — nur Status
    „Genehmigt“/„Aufgetreten“ verwenden, nichts erfinden.
+5. Ergänzend kurz im Netz recherchieren (Firmenwebsite, LinkedIn): Rolle,
+   Unternehmen und Fakten zum Speaker verifizieren und ggf. anreichern —
+   nur belegbare Fakten übernehmen, keine Superlative erfinden.
 
 ## Post-Format
 
