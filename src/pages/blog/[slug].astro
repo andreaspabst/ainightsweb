@@ -7,8 +7,10 @@ import { imgVariant } from '../../lib/images';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
+  // Im lokalen Dev-Server auch Drafts/geplante Beiträge rendern;
+  // im Production-Build (Forge) nur veröffentlichte.
   return posts
-    .filter((p) => !p.data.draft && p.data.pubDate.getTime() <= Date.now())
+    .filter((p) => import.meta.env.DEV || (!p.data.draft && p.data.pubDate.getTime() <= Date.now()))
     .map((p) => ({ params: { slug: p.id }, props: { p } }));
 }
 

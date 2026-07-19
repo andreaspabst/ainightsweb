@@ -5,11 +5,17 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { imgVariant } from '../../lib/images';
 
-// Drafts und geplante Beiträge (pubDate in der Zukunft) erscheinen nicht;
-// geplante Posts gehen mit dem nächsten Deploy nach ihrem Datum live.
+// Drafts und geplante Beiträge (pubDate in der Zukunft) erscheinen nicht im
+// Production-Build (Forge); geplante Posts gehen mit dem nächsten Deploy nach
+// ihrem Datum live. Im lokalen Dev-Server (npm run dev) sind sie sichtbar —
+// mit Badge markiert.
+const isDev = import.meta.env.DEV;
 const posts = (await getCollection('blog'))
-  .filter((p) => !p.data.draft && p.data.pubDate.getTime() <= Date.now())
+  .filter((p) => isDev || (!p.data.draft && p.data.pubDate.getTime() <= Date.now()))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const previewLabel = (p: (typeof posts)[number]) =>
+  p.data.draft ? 'Draft' : p.data.pubDate.getTime() > Date.now() ? `Geplant · ${p.data.pubDate.toLocaleDateString('de-DE')}` : null;
 
 function fmtDate(d: Date) {
   return d.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -44,7 +50,10 @@ function fmtDate(d: Date) {
             {p.data.image?.src && <img src={imgVariant(p.data.image.src, 640)} alt={p.data.image.alt ?? p.data.title} loading="lazy" width="640" height="400" />}
           </a>
           <div class="body">
-            <p class="date">{fmtDate(p.data.pubDate)}</p>
+            <p class="date">
+              {fmtDate(p.data.pubDate)}
+              {previewLabel(p) && <span class="preview-badge">{previewLabel(p)}</span>}
+            </p>
             <h2><a href={`/blog/${p.id}/`}>{p.data.title}</a></h2>
             <p class="excerpt">{p.data.description}</p>
             {p.data.tags && p.data.tags.length > 0 && (
@@ -122,6 +131,17 @@ function fmtDate(d: Date) {
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--blue-bright);
+  }
+  .preview-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    border: 1px dashed var(--magenta-bright);
+    color: var(--magenta-bright);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
   }
   h2 {
     font-size: 1.2rem;
