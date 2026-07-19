@@ -2,30 +2,12 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import { cityColor } from '../../lib/cities';
+import CityMap from '../../components/CityMap.astro';
+import { CITIES, cityColor } from '../../lib/cities';
 
-// Marker-Positionen in % des Karten-SVGs (viewBox 112 272 288 243 —
-// Ausschnitt Iberien bis Norddeutschland), kalibriert über
-// Länder-Geometrien + Geokoordinaten.
-type CityMarker = {
-  slug: string;
-  name: string;
-  status: 'active' | 'soon';
-  x: number;
-  y: number;
-  labelPos?: 'left' | 'right';
-};
-
-const cities: CityMarker[] = [
-  { slug: 'nuernberg', name: 'Nürnberg', status: 'active', x: 69.65, y: 30.12, labelPos: 'left' },
-  { slug: 'muenchen', name: 'München', status: 'active', x: 71.01, y: 36.75, labelPos: 'right' },
-  { slug: 'hamburg', name: 'Hamburg', status: 'soon', x: 66.74, y: 9.42, labelPos: 'left' },
-  { slug: 'bayreuth', name: 'Bayreuth', status: 'soon', x: 71.01, y: 26.95, labelPos: 'right' },
-  { slug: 'barcelona', name: 'Barcelona', status: 'soon', x: 37.2, y: 70.3, labelPos: 'right' },
-];
-
-const active = cities.filter((c) => c.status === 'active');
-const soon = cities.filter((c) => c.status === 'soon');
+const shown = CITIES.filter((c) => c.onOverview);
+const active = shown.filter((c) => c.status === 'active');
+const soon = shown.filter((c) => c.status === 'soon');
 ---
 
 <Layout
@@ -45,27 +27,9 @@ const soon = cities.filter((c) => c.status === 'soon');
     </p>
 
     <div class="map-wrap card">
-      <div class="map">
-        <img src="/img/europe-map.svg" alt="Europakarte mit den AI Nights Städten" width="680" height="520" loading="eager" />
-        {cities.map((c) => (
-          <a
-            href={`/stadt/${c.slug}/`}
-            class={`marker ${c.status} label-${c.labelPos ?? 'right'}`}
-            style={`left: ${c.x}%; top: ${c.y}%; --dot-color: ${c.status === 'active' ? '#e5484d' : '#8b8b9e'}`}
-          >
-            <span class="dot"></span>
-            <span class="label">{c.name}</span>
-          </a>
-        ))}
-      </div>
-      <div class="legend">
-        <span class="legend-item"><span class="dot active-dot"></span> Aktiv</span>
-        <span class="legend-item"><span class="dot soon-dot"></span> Bald</span>
-      </div>
+      <CityMap />
     </div>
-    <p class="map-credit">
-      Kartenbasis: <a href="https://commons.wikimedia.org/wiki/File:Blank_map_of_Europe_(without_disputed_regions).svg" target="_blank" rel="noopener">Blank map of Europe</a> (Wikimedia Commons, CC BY-SA 4.0)
-    </p>
+    <p class="map-credit">Kartenbasis: Natural Earth (Public Domain)</p>
 
     <h2 class="group display-font">Hier sind wir aktiv</h2>
     <div class="grid">
@@ -119,93 +83,6 @@ const soon = cities.filter((c) => c.status === 'soon');
     width: 100%;
     height: auto;
     display: block;
-  }
-  .marker {
-    /* Ankerpunkt = Dot-Mitte; das Label hängt seitlich dran */
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-  }
-  .marker .dot {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: var(--dot-color);
-    display: block;
-    position: relative;
-  }
-  .marker .label {
-    position: absolute;
-    left: calc(100% + 0.4rem);
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .marker.label-left .label {
-    left: auto;
-    right: calc(100% + 0.4rem);
-  }
-  .marker.active .dot::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 2px solid var(--dot-color);
-    animation: pulse 1.8s ease-out infinite;
-  }
-  @keyframes pulse {
-    0% {
-      transform: scale(0.6);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2.1);
-      opacity: 0;
-    }
-  }
-  .marker.soon .dot {
-    opacity: 0.75;
-  }
-  .marker .label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-shadow: 0 1px 4px rgba(10, 1, 24, 0.9);
-    white-space: nowrap;
-    left: calc(100% + 0.4rem);
-    top: 50%;
-  }
-  .marker.soon .label {
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-  .marker:hover .label {
-    color: var(--magenta-bright);
-  }
-  .legend {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-  }
-  .legend .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-  }
-  .legend .active-dot {
-    background: #e5484d;
-  }
-  .legend .soon-dot {
-    background: #8b8b9e;
   }
   .map-credit {
     margin-top: 0.6rem;
@@ -269,10 +146,5 @@ const soon = cities.filter((c) => c.status === 'soon');
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--magenta-bright);
-  }
-  @media (max-width: 640px) {
-    .marker .label {
-      display: none;
-    }
   }
 </style>

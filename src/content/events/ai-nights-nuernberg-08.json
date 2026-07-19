@@ -2,8 +2,8 @@
   "id": 1260,
   "title": "AI Nights Nürnberg | INSPIRE ✨ #08 - Spring!",
   "slug": "ai-nights-nuernberg-08",
-  "excerpt": "Ein neues Jahr liegt vor uns und ein vergangenes Jahr voller Power, inspirierender Abende, leckeren Drinks und Gespräche mit Substanz hinter uns. 🔥 Lass uns gemeinsam in der Relaunch 2027 Ausgabe der AI Nights Nürnberg aktuellen KI-Themen widmen mit entspanntem Austausch nach der Arbeit. Mit 3 Speakern, 3 kurzen 30-Minuten-Sessions, entspannten Pausen, Drinks & Snacks und genug Raum für Austausch. Kein Frontalprogramm. Sondern echte Gespräche, neue Perspektiven und direkter Kontakt mit den Speakern.",
-  "contentHtml": "<p>Ein neues Jahr liegt vor uns und ein vergangenes Jahr voller Power, inspirierender Abende, leckeren Drinks und Gespräche mit Substanz hinter uns. 🔥<br />Lass uns gemeinsam in der Relaunch 2027 Ausgabe der AI Nights Nürnberg aktuellen KI-Themen widmen mit entspanntem Austausch nach der Arbeit.</p>\n<p>Mit 3 Speakern, 3 kurzen 30-Minuten-Sessions, entspannten Pausen, Drinks & Snacks und genug Raum für Austausch. Kein Frontalprogramm. Sondern echte Gespräche, neue Perspektiven und direkter Kontakt mit den Speakern.</p>",
+  "excerpt": "Der Frühling bringt frische Energie – und frische KI-Themen! 🌸 Die Spring-Ausgabe der AI Nights Nürnberg schüttelt den Winter ab: längere Tage, neue Tools, neue Use Cases und ein Abend voller echter Gespräche nach der Arbeit. Mit 3 Speakern, 3 kurzen 30-Minuten-Sessions, entspannten Pausen, Drinks & Snacks und genug Raum für Austausch. Kein Frontalprogramm. Sondern echte Gespräche, neue Perspektiven und direkter Kontakt mit den Speakern.",
+  "contentHtml": "<p>Der Frühling bringt frische Energie – und frische KI-Themen! 🌸<br />Die Spring-Ausgabe der AI Nights Nürnberg schüttelt den Winter ab: längere Tage, neue Tools, neue Use Cases und ein Abend voller echter Gespräche nach der Arbeit.</p>\n<p>Mit 3 Speakern, 3 kurzen 30-Minuten-Sessions, entspannten Pausen, Drinks & Snacks und genug Raum für Austausch. Kein Frontalprogramm. Sondern echte Gespräche, neue Perspektiven und direkter Kontakt mit den Speakern.</p>",
   "image": {
     "src": "/wp-content/uploads/2026/05/08_ainights_inspire.png",
     "alt": "AI Nights Nürnberg | INSPIRE ✨ #08 - Spring!"
@@ -14,8 +14,25 @@
   "city": "Nürnberg",
   "ticketUrl": "https://ainights.ai",
   "date": "2026-05-17 09:54:56",
-  "speakerIds": [410, 411, 412],
-  "sessionIds": [728, 1009, 977],
-  "sponsorIds": [331, 328, 989, 325, 304, 815],
-  "moderatorIds": [257]
+  "speakerIds": [
+    410,
+    411,
+    412
+  ],
+  "sessionIds": [
+    728,
+    1009,
+    977
+  ],
+  "sponsorIds": [
+    331,
+    328,
+    989,
+    325,
+    304,
+    815
+  ],
+  "moderatorIds": [
+    257
+  ]
 }

@@ -1,0 +1,17 @@
+{
+  "id": 9101,
+  "title": "From Demo to Coworker – der Weg von einem AI-Experiment zu Viktor",
+  "slug": "from-demo-to-coworker-viktor-peter-albert",
+  "excerpt": "Peter Albert (Co-Founder von Zeta AI, ex-Meta-AI/Llama-2-Team) zeigt am Weg von E-Mail-AI über Jace zu Viktor, wie aus einem AI-Experiment Schritt für Schritt ein Produkt entsteht, dem Kunden echte Arbeit anvertrauen.",
+  "contentHtml": "<p>Eine starke AI-Demo ist noch kein Unternehmen. Peter Albert erzählt die Entstehung von <strong>Viktor</strong>, dem AI Coworker für reale Geschäftsprozesse – inklusive der früheren Produktgenerationen E-Mail-AI und Jace, falscher Annahmen, Produktiterationen und Wendepunkte.</p><p>Im Mittelpunkt: der Weg vom AI-Tool zum AI Coworker – Vertrauen, wiederkehrende Nutzung und echte Arbeitsübergabe – und was AI-native Produktentwicklung im Alltag bedeutet.</p><ul><li>Warum eine starke AI-Demo noch kein Unternehmen ist – und woran Startups echte Produktnachfrage erkennen</li><li>Wie falsche Annahmen, frühe Produkte und reale Nutzungssignale zu besseren Entscheidungen führen</li><li>Wie AI-Startups schneller validieren, fokussieren und den Weg zu einem belastbaren Geschäftsmodell finden</li></ul><p>Der Talk ist auf Deutsch geplant; Titel und gängige Fachbegriffe bleiben auf Englisch. Ca. 30 Minuten plus Q&amp;A.</p>",
+  "duration": 30,
+  "type": "talk",
+  "room": "Main Stage",
+  "level": "beginner",
+  "speakerIds": [
+    1345
+  ],
+  "eventSlug": "ai-nights-muenchen-01",
+  "city": "München",
+  "date": "2026-07-19 10:00:00"
+}

@@ -1,9 +1,9 @@
 {
   "id": 1345,
-  "title": "Peter Albert | Co-Founder Viktor",
+  "title": "Peter Albert",
   "slug": "peter-albert",
-  "excerpt": "Co. Founder von Viktor (formerly getviktor.com)",
-  "bioHtml": "<p>Co. Founder von Viktor (formerly getviktor.com)</p>",
+  "excerpt": "Peter Albert ist Co-Founder von Zeta AI, dem Unternehmen hinter Viktor – einem AI Coworker für reale Geschäftsprozesse. Vor der Gründung von Zeta im Jahr 2023 arbeitete er als Machine Learning Engineer bei Meta AI im Kernteam von Llama 2 – am Pre-Training und Post-Training. Heute arbeitet er an Produkt und Engineering von Viktor.",
+  "bioHtml": "<p>Peter Albert ist Co-Founder von Zeta AI, dem Unternehmen hinter <strong>Viktor</strong> – einem AI Coworker für reale Geschäftsprozesse. Vor der Gründung von Zeta im Jahr 2023 arbeitete er als Machine Learning Engineer bei Meta AI im Kernteam von Llama&nbsp;2 – am Pre-Training und Post-Training.</p><p>Heute arbeitet er an Produkt und Engineering von Viktor.</p>",
   "homeFeatured": false,
   "date": "2026-06-03 15:11:04",
   "modified": "2026-06-03 15:11:12",
@@ -23,5 +23,6 @@
     "Konkrete Learnings aus dem Weg von E-Mail-AI über Jace bis Viktor",
     "Wann man ein Produkt weiterentwickeln, neu positionieren oder konsequent verwerfen sollte",
     "Wie aus einem AI-Experiment Schritt für Schritt ein Produkt entsteht, dem Kunden echte Arbeit anvertrauen"
-  ]
+  ],
+  "jobTitle": "Co-Founder Viktor (Zeta AI)"
 }

@@ -73,7 +73,7 @@ const dateLabel = fmtDate(d.eventDate);
 const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
 
 const facts = [
-  `${speakers.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}`,
+  `${speakerSlots.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}`,
   '100% KI-Fokus',
   sessions.length ? `${sessions.length} Sessions` : 'Kurze Impuls-Sessions',
   'Zeit für Gespräche & Austausch',

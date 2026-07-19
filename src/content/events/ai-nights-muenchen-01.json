@@ -14,7 +14,18 @@
   "city": "München",
   "ticketUrl": "https://www.checkout-ds24.com/product/693468/",
   "date": "2026-05-17 10:21:06",
-  "speakerIds": [410, 411, 412],
-  "sessionIds": [728, 1009, 977],
-  "moderatorIds": [257]
+  "speakerIds": [
+    1345,
+    411,
+    412
+  ],
+  "sessionIds": [
+    728,
+    9101,
+    1009,
+    977
+  ],
+  "moderatorIds": [
+    257
+  ]
 }

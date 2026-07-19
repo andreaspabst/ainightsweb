@@ -1,0 +1,146 @@
+---
+import { CITIES, mapPosition, cityColor } from '../lib/cities';
+
+export interface Props {
+  /** Slug der hervorgehobenen Stadt (pink), z. B. auf Stadt-Detailseiten */
+  highlight?: string;
+  /** Legende anzeigen */
+  legend?: boolean;
+}
+const { highlight, legend = true } = Astro.props;
+
+// Übersichts-Städte plus (falls nicht enthalten) die hervorgehobene Stadt
+const shown = CITIES.filter((c) => c.onOverview || c.slug === highlight);
+const markers = shown.map((c) => {
+  const { x, y } = mapPosition(c.lat, c.lon);
+  const isHighlight = c.slug === highlight;
+  return {
+    ...c,
+    x,
+    y,
+    isHighlight,
+    color: isHighlight ? '#ff2d7a' : c.status === 'active' ? cityColor(c.name) : '#8b8b9e',
+  };
+});
+---
+
+<div class="citymap">
+  <div class="map">
+    <img src="/img/europe-map.svg" alt="Europakarte mit den AI Nights Städten" width="800" height="730" loading="lazy" />
+    {markers.map((c) => (
+      <a
+        href={`/stadt/${c.slug}/`}
+        class:list={['marker', c.status, `label-${c.labelPos ?? 'right'}`, { highlight: c.isHighlight }]}
+        style={`left: ${c.x}%; top: ${c.y}%; --dot-color: ${c.color}`}
+        aria-current={c.isHighlight ? 'page' : undefined}
+      >
+        <span class="dot"></span>
+        <span class="label">{c.name}</span>
+      </a>
+    ))}
+  </div>
+  {legend && (
+    <div class="legend">
+      <span class="legend-item"><span class="ldot" style="background:#e5484d"></span> Aktiv</span>
+      <span class="legend-item"><span class="ldot" style="background:#8b8b9e"></span> Bald</span>
+      {highlight && <span class="legend-item"><span class="ldot" style="background:#ff2d7a"></span> Du bist hier</span>}
+    </div>
+  )}
+</div>
+
+<style>
+  .map {
+    position: relative;
+  }
+  .map img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .marker {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .marker .dot {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--dot-color);
+    display: block;
+    position: relative;
+  }
+  .marker.active .dot::after,
+  .marker.highlight .dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--dot-color);
+    animation: pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(0.6);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
+  }
+  .marker.highlight {
+    z-index: 3;
+  }
+  .marker.highlight .dot {
+    box-shadow: 0 0 12px rgba(255, 45, 122, 0.8);
+  }
+  .marker.soon:not(.highlight) .dot {
+    opacity: 0.75;
+  }
+  .marker .label {
+    position: absolute;
+    left: calc(100% + 0.4rem);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 1px 4px rgba(10, 1, 24, 0.9);
+    white-space: nowrap;
+  }
+  .marker.label-left .label {
+    left: auto;
+    right: calc(100% + 0.4rem);
+  }
+  .marker.soon:not(.highlight) .label {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .marker.highlight .label {
+    color: #ff2d7a;
+  }
+  .marker:hover .label {
+    color: var(--magenta-bright);
+  }
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .ldot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+</style>
