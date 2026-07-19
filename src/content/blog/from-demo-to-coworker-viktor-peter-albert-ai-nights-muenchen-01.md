@@ -4,8 +4,8 @@ description: 'Speaker-Ankündigung für die AI Nights München #01: Peter Albert
 pubDate: 2026-07-19
 author: 'AI Nights Team'
 image:
-  src: '/wp-content/uploads/2026/01/1-34-publikum.jpg'
-  alt: 'Peter Albert'
+  src: '/wp-content/uploads/2026/07/peter-albert.jpg'
+  alt: 'Peter Albert, Co-Founder Viktor (Zeta AI)'
 tags:
   - speaker-ankuendigung
   - muenchen
