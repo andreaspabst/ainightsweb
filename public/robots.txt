@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://ainights.ai/sitemap.xml
 Sitemap: https://ainights.ai/sitemap-index.xml

@@ -1,0 +1,29 @@
+# AI Nights
+
+> AI Nights ist eine lokale Event-Reihe rund um Künstliche Intelligenz in Nürnberg und München (weitere Städte in Planung: Hamburg, Leipzig, Bayreuth, Frankfurt, Barcelona). Viermal im Jahr finden Afterwork-Abende mit je drei kurzen Praxis-Talks, Live-Demos, Pausen mit Drinks & Snacks und viel Raum für Networking statt. Veranstalter ist Andreas Pabst (AXDN).
+
+Die Website ist überwiegend deutschsprachig. Termine, Speaker und Themen ändern sich regelmäßig — die Event-Seiten sind die verlässlichste Quelle.
+
+## Events & Tickets
+
+- [Alle Events](https://ainights.ai/events/): Kommende und vergangene AI Nights mit Programm, Speakern und Sponsoren
+- [Tickets](https://ainights.ai/de/tickets/): Kommende Meetups mit Terminen, Orten und Ticket-Links, filterbar nach Stadt
+- [Städte](https://ainights.ai/stadt/): Übersichtskarte — wo AI Nights aktiv ist und welche Städte folgen
+
+## Menschen & Inhalte
+
+- [Speaker](https://ainights.ai/speaker/): Alle Speaker mit Bio, Themen und Sessions
+- [Blog](https://ainights.ai/blog/): Speaker-Ankündigungen, Event-Recaps und KI-Themen
+- [Bildergalerie](https://ainights.ai/de/galerie/): Fotos der bisherigen Events
+
+## Mitmachen & Partner
+
+- [Speaker werden](https://ainights.ai/de/speaker-application/): Bewerbung für einen Talk-Slot
+- [Sponsoring](https://ainights.ai/de/sponsoring/): Pakete und Vorteile für Sponsoren
+- [Volunteer werden](https://ainights.ai/de/volunteer-bewerbung/): Beim Event hinter den Kulissen mithelfen
+- [Sponsoren](https://ainights.ai/de/sponsors/): Unternehmen, die die AI Nights unterstützen
+
+## Rechtliches
+
+- [Impressum](https://ainights.ai/de/legal-notice/)
+- [Datenschutz](https://ainights.ai/de/data-protection/)
