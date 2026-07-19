@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build && node scripts/postbuild.mjs",
-    "preview": "astro preview",
+    "preview": "SHOW_SCHEDULED=1 astro build && node scripts/postbuild.mjs && astro preview",
     "astro": "astro"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ import Layout from '../../../layouts/Layout.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
 import BlogGrid from '../../../components/BlogGrid.astro';
-import { BLOG_CATEGORIES, type BlogCategory } from '../../../lib/blog';
+import { BLOG_CATEGORIES, isPublished, type BlogCategory } from '../../../lib/blog';
 
 export function getStaticPaths() {
   return Object.keys(BLOG_CATEGORIES).map((category) => ({ params: { category } }));
@@ -13,10 +13,9 @@ export function getStaticPaths() {
 const category = Astro.params.category as BlogCategory;
 const meta = BLOG_CATEGORIES[category];
 
-const isDev = import.meta.env.DEV;
 const posts = (await getCollection('blog'))
   .filter((p) => p.data.category === category)
-  .filter((p) => isDev || (!p.data.draft && p.data.pubDate.getTime() <= Date.now()))
+  .filter(isPublished)
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 ---
 

@@ -20,3 +20,13 @@ export const BLOG_CATEGORIES: Record<BlogCategory, { label: string; description:
 };
 
 export const categoryLabel = (c: BlogCategory) => BLOG_CATEGORIES[c].label;
+
+// Sichtbarkeit von Drafts und geplanten Beiträgen (pubDate in der Zukunft):
+// - Dev-Server (npm run dev): immer sichtbar, mit Badge
+// - Lokaler Preview (npm run preview → setzt SHOW_SCHEDULED=1): sichtbar
+// - Production-Build (Forge, CI: npm run build): ausgeblendet
+export const showScheduledPreview =
+  import.meta.env.DEV || (typeof process !== 'undefined' && process.env.SHOW_SCHEDULED === '1');
+
+export const isPublished = (p: { data: { draft: boolean; pubDate: Date } }) =>
+  showScheduledPreview || (!p.data.draft && p.data.pubDate.getTime() <= Date.now());
