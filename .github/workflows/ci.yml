@@ -1,0 +1,33 @@
+# CI für ainights.ai: prüft bei jedem Push/PR, dass die Site baut,
+# jede Seite erreichbar ist (interne Links/Assets) und die SEO-Basics
+# stimmen. Achtung: Der Forge-Deploy auf master läuft unabhängig davon —
+# ein roter Lauf heißt: sofort nachschauen, live ist evtl. schon kaputt.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Build (Astro)
+        run: npm run build
+
+      - name: Seiten & interne Links prüfen
+        run: node scripts/check-links.mjs
+
+      - name: SEO-Audit (Title, Description, OG, alt, h1)
+        run: node scripts/seo-audit.mjs
