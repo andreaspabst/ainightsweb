@@ -3,6 +3,7 @@ title: 'Spec Driven Development: Braucht es bald keine Entwickler mehr? – Thom
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #02: Seobility-CTO Thomas Schönherr über Programmieren mit KI — und warum Denken zur Kernkompetenz wird.'
 pubDate: 2025-11-27
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/thomas-schoenherr-seobility-squared.jpeg'
   alt: 'Thomas Schönherr'

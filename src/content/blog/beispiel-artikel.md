@@ -3,6 +3,7 @@ title: 'Beispiel-Artikel: So schreibst du einen AI Nights Blogpost'
 description: 'Vorlage für neue Blogbeiträge — Frontmatter-Felder, Bilder und Formatierung. Dieser Entwurf erscheint nicht auf der Website.'
 pubDate: 2026-07-18
 author: 'AI Nights Team'
+category: news
 image:
   src: '/wp-content/uploads/2026/01/1-34-publikum.jpg'
   alt: 'Publikum bei den AI Nights'

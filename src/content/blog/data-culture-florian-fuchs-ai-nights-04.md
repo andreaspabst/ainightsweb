@@ -3,6 +3,7 @@ title: 'Data Culture – Was ist das, und wenn ja, wie viele? Florian Fuchs bei 
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #04: Florian Fuchs (VEND Consulting) über Datenkultur als Grundlage für datengetriebene Entscheidungen und erfolgreichen KI-Einsatz.'
 pubDate: 2026-04-30
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/05/Florian-Fuchs-Cropped-scaled.jpg'
   alt: 'Florian Fuchs'

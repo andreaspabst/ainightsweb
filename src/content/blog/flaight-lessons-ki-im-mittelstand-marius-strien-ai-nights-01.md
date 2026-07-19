@@ -3,6 +3,7 @@ title: 'Von Lilienthal zu den Wright Brothers: flAIght Lessons aus dem Mittelsta
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #01: Marius Strien (Head of Marketing, SPECK Pumpen) zeigt, wie ein Traditionsunternehmen KI in Marketing, Recruiting und Fertigung bringt.'
 pubDate: 2025-09-18
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/marius-strien-speck-pumpen.jpeg'
   alt: 'Marius Strien'

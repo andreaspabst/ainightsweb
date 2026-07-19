@@ -3,6 +3,7 @@ title: 'From Demo to Coworker: Die Entstehung von Viktor – Peter Albert bei de
 description: 'Speaker-Ankündigung für die AI Nights München #01: Peter Albert (Co-Founder Viktor, ex-Meta-AI/Llama-2-Team) über den Weg vom AI-Experiment zum AI Coworker, dem Kunden echte Arbeit anvertrauen.'
 pubDate: 2026-07-19
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/07/peter-albert.jpg'
   alt: 'Peter Albert, Co-Founder Viktor (Zeta AI)'

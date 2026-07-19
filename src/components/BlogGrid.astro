@@ -1,0 +1,137 @@
+---
+import { imgVariant } from '../lib/images';
+import { categoryLabel } from '../lib/blog';
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+const { posts } = Astro.props;
+
+function fmtDate(d: Date) {
+  return d.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+// Nur im Dev-Modus sichtbar: Kennzeichnung für Drafts/geplante Beiträge
+const previewLabel = (p: CollectionEntry<'blog'>) =>
+  p.data.draft ? 'Draft' : p.data.pubDate.getTime() > Date.now() ? `Geplant · ${p.data.pubDate.toLocaleDateString('de-DE')}` : null;
+---
+
+<div class="grid">
+  {posts.map((p) => (
+    <article class="post card">
+      <a href={`/blog/${p.id}/`} class="cover">
+        {p.data.image?.src && <img src={imgVariant(p.data.image.src, 640)} alt={p.data.image.alt ?? p.data.title} loading="lazy" width="640" height="400" />}
+        <span class="cat-badge">{categoryLabel(p.data.category)}</span>
+      </a>
+      <div class="body">
+        <p class="date">
+          {fmtDate(p.data.pubDate)}
+          {previewLabel(p) && <span class="preview-badge">{previewLabel(p)}</span>}
+        </p>
+        <h2><a href={`/blog/${p.id}/`}>{p.data.title}</a></h2>
+        <p class="excerpt">{p.data.description}</p>
+        {p.data.tags && p.data.tags.length > 0 && (
+          <p class="tags">{p.data.tags.map((t) => <span class="tag">#{t}</span>)}</p>
+        )}
+        <a href={`/blog/${p.id}/`} class="more">Weiterlesen →</a>
+      </div>
+    </article>
+  ))}
+</div>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .post {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .post:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+  }
+  .cover {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    background: var(--bg-elevated);
+    overflow: hidden;
+  }
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cat-badge {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+  }
+  .body {
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  .date {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--blue-bright);
+  }
+  .preview-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    border: 1px dashed var(--magenta-bright);
+    color: var(--magenta-bright);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 1.2rem;
+  }
+  h2 a {
+    color: var(--text-primary);
+  }
+  h2 a:hover {
+    color: var(--magenta-bright);
+  }
+  .excerpt {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .more {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--magenta-bright);
+  }
+</style>

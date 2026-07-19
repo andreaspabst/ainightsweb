@@ -3,6 +3,7 @@ title: 'The Wave of AI: Die KI-Welle reiten statt überrollt werden – Florian 
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #03: Florian Prüfer (Global Program Manager AI, Siemens) über Haltung, Ausprobieren und Zusammenarbeit im Umgang mit KI.'
 pubDate: 2026-02-26
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/02/florian-pruefer-squared.jpeg'
   alt: 'Florian Prüfer'

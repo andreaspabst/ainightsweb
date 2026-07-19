@@ -3,6 +3,7 @@ title: '„Let''s Talk“: KI-Situationstraining bei der Polizei Baden-Württemb
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #02: Julian B. Schulze (Tech Lead, Codersgarden) über eine KI-Trainingsplattform für Polizeistudierende — mit übertragbarem Architekturbeispiel.'
 pubDate: 2025-12-04
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/Julian-B.-Schulze.png'
   alt: 'Julian B. Schulze'

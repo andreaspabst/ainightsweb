@@ -3,6 +3,7 @@ title: 'KI im Marketing: Was funktioniert wirklich – und was nicht? Elena Kela
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #06: Elena Kelava (Head of Customer Marketing, camel active) über echte KI-Use-Cases aus Performance Marketing, SEO und Content.'
 pubDate: 2026-10-01
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/06/IMG_5477-scaled.jpeg'
   alt: 'Elena Kelava'

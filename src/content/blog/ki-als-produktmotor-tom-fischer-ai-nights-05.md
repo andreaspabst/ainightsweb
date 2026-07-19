@@ -3,6 +3,7 @@ title: 'KI als Produktmotor: Wie die Nürnberger Nachrichten neue Produkte und F
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #05: Tom Fischer (KI-Manager, Verlag Nürnberger Presse) über KI-Newsletter, Audio-Formate, Themenradar und ein dialogbasiertes Pressearchiv.'
 pubDate: 2026-07-23
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/07/Tom-Fischer.jpeg'
   alt: 'Tom Fischer'

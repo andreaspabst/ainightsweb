@@ -3,6 +3,7 @@ title: 'KI zwischen Innovation und Regulierung – Bundestagsabgeordneter Dr. Ko
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #02: Dr. Konrad Körner (MdB, Rechtsanwalt) über Gesetze, Bürokratie und die Bedingungen, unter denen KI-Innovation gelingt.'
 pubDate: 2025-12-11
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/dr-konrad-koerner-ainights.jpeg'
   alt: 'Dr. Konrad Körner'

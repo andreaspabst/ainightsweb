@@ -51,6 +51,7 @@ Datei: `src/content/blog/<thema-kebab>-<speaker>-ai-nights-<nr>.md`
   Fischer bei den AI Nights #05“)
 - `description`: 1–2 Sätze mit Speaker, Rolle, Thema
 - `image`: Speaker-Foto (vorher ggf. Skill `optimize-images` laufen lassen)
+- `category: speaker-announcements` (Blog-Kategorie, Pflicht)
 - `tags`: immer `speaker-ankuendigung` + Stadt + 1–2 Themen-Tags
 
 Aufbau des Textes (an bestehenden Posts orientieren, z. B.

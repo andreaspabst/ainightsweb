@@ -3,6 +3,7 @@ title: 'Spielerisch KI-Systeme bauen: Enterprise-Erfahrung trifft Spieltrieb –
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #05: Tim Junge (Associate Partner, IBM) & Markus Utomo (Spiel- und Lerndesigner, TEDx-Speaker) über Game Design für KI-Kompetenz.'
 pubDate: 2026-07-28
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/07/tim-junge-markus-utomo.png'
   alt: 'Tim Junge & Markus Utomo'

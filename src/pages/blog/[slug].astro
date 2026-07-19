@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { imgVariant } from '../../lib/images';
+import { categoryLabel } from '../../lib/blog';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -47,7 +48,10 @@ function fmtDate(dt: Date) {
     <a href="/blog/" class="back">← Alle Beiträge</a>
     <article>
       <header>
-        <p class="date">{fmtDate(d.pubDate)} · {d.author}</p>
+        <p class="date">
+          {fmtDate(d.pubDate)} · {d.author} ·
+          <a href={`/blog/kategorie/${d.category}/`} class="cat-link">{categoryLabel(d.category)}</a>
+        </p>
         <h1 class="display-font">{d.title}</h1>
         <p class="lead">{d.description}</p>
         {d.image?.src && (
@@ -89,6 +93,12 @@ function fmtDate(dt: Date) {
     font-weight: 600;
     font-size: 0.9rem;
     margin-bottom: 0.6rem;
+  }
+  .cat-link {
+    color: var(--magenta-bright);
+  }
+  .cat-link:hover {
+    text-decoration: underline;
   }
   h1 {
     font-size: clamp(2rem, 5vw, 3rem);

@@ -149,6 +149,7 @@ const blog = defineCollection({
     updatedDate: z.coerce.date().optional(),
     author: z.string().default('AI Nights Team'),
     image: image,
+    category: z.enum(['speaker-announcements', 'news', 'ai-news']).default('news'),
     tags: z.array(z.string()).optional(),
     draft: z.boolean().default(false),
   }),

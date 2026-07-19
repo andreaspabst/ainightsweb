@@ -1,45 +1,56 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import BlogGrid from '../../components/BlogGrid.astro';
-import { BLOG_CATEGORIES } from '../../lib/blog';
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import BlogGrid from '../../../components/BlogGrid.astro';
+import { BLOG_CATEGORIES, type BlogCategory } from '../../../lib/blog';
 
-// Drafts und geplante Beiträge (pubDate in der Zukunft) erscheinen nicht im
-// Production-Build (Forge); geplante Posts gehen mit dem nächsten Deploy nach
-// ihrem Datum live. Im lokalen Dev-Server (npm run dev) sind sie sichtbar.
+export function getStaticPaths() {
+  return Object.keys(BLOG_CATEGORIES).map((category) => ({ params: { category } }));
+}
+
+const category = Astro.params.category as BlogCategory;
+const meta = BLOG_CATEGORIES[category];
+
 const isDev = import.meta.env.DEV;
 const posts = (await getCollection('blog'))
+  .filter((p) => p.data.category === category)
   .filter((p) => isDev || (!p.data.draft && p.data.pubDate.getTime() <= Date.now()))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 ---
 
 <Layout
   lang="de"
-  title="Blog — AI Nights"
-  description="Der AI Nights Blog: Speaker-Ankündigungen, News aus der Community und Content rund um Künstliche Intelligenz aus Nürnberg und München."
-  path="/blog/"
-  alternates={{ de: '/blog/' }}
+  title={`${meta.label} — AI Nights Blog`}
+  description={meta.description}
+  path={`/blog/kategorie/${category}/`}
+  alternates={{ de: `/blog/kategorie/${category}/` }}
 >
   <Header lang="de" />
   <main class="container archive section">
-    <p class="eyebrow">Neues von den AI Nights</p>
-    <h1 class="display-font">Blog</h1>
-    <p class="sub">Speaker-Ankündigungen, News aus der Community und Content rund um KI.</p>
+    <p class="eyebrow">AI Nights Blog</p>
+    <h1 class="display-font">{meta.label}</h1>
+    <p class="sub">{meta.description}</p>
 
     <nav class="cat-filter" aria-label="Blog-Kategorien">
-      <a href="/blog/" class="filter-btn active" aria-current="page">Alle</a>
+      <a href="/blog/" class="filter-btn">Alle</a>
       {Object.entries(BLOG_CATEGORIES).map(([slug, c]) => (
-        <a href={`/blog/kategorie/${slug}/`} class="filter-btn">{c.label}</a>
+        <a
+          href={`/blog/kategorie/${slug}/`}
+          class:list={['filter-btn', { active: slug === category }]}
+          aria-current={slug === category ? 'page' : undefined}
+        >
+          {c.label}
+        </a>
       ))}
     </nav>
 
     {posts.length === 0 && (
       <div class="empty card">
-        <h2 class="display-font">Bald geht's los ✨</h2>
-        <p>Hier erscheinen in Kürze Recaps und Artikel rund um die AI&nbsp;Nights. Bis dahin: Schau bei unseren Events vorbei!</p>
-        <a href="/events/" class="btn btn-primary">Zu den Events</a>
+        <h2 class="display-font">Hier erscheint bald etwas ✨</h2>
+        <p>In dieser Kategorie gibt es noch keine Beiträge — schau bald wieder vorbei.</p>
+        <a href="/blog/" class="btn btn-primary">Alle Beiträge ansehen</a>
       </div>
     )}
 
@@ -58,7 +69,7 @@ const posts = (await getCollection('blog'))
   }
   .sub {
     color: var(--text-secondary);
-    max-width: 56ch;
+    max-width: 62ch;
     margin-bottom: 1.8rem;
     font-size: 1.05rem;
   }

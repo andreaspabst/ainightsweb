@@ -3,6 +3,7 @@ title: 'Wenn KI Strom- und Wassernetze absichert – und selbst zum Angriffsziel
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #05: Martin Hofmann (IT-Leiter, infra fürth) über KI in kritischen Infrastrukturen — zwischen Resilienz und neuen Angriffsvektoren.'
 pubDate: 2026-07-18
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/06/WhatsApp-Bild-2025-11-26-um-22.49.20_75edfa15-scaled.jpg'
   alt: 'Martin Hofmann'

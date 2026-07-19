@@ -3,6 +3,7 @@ title: 'Zwischen „Wow!“ und „Wie?“: Mitarbeitende AI-fit machen – die 
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #04: Katharina Rohrmeier, Lisa Mahlein & Sabrina Grünthanner über AI-Readiness als Kulturthema in der Schwan-STABILO Gruppe.'
 pubDate: 2026-05-14
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/05/Learning-Agents-scaled.jpg'
   alt: 'Katharina Rohrmeier, Lisa Mahlein & Sabrina Grünthanner'

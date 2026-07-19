@@ -3,6 +3,7 @@ title: 'Warum B2B-Software unter Druck gerät – und KI-Features nicht die Antw
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #03: AI-Engineer Alex Key über Product Fundamentals im KI-Zeitalter — und warum aufgesetzte Chatbots der teuerste Weg in die Irrelevanz sind.'
 pubDate: 2026-03-05
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/03/IMG_9583.jpeg'
   alt: 'Alex Key'

@@ -3,6 +3,7 @@ title: 'Welches KI-Modell passt zu mir? Benchmarking, Kosten & Multi-Modell-Eins
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #04: Maximilian Schreiber (Co-Founder, Pantares AI) über Modell-Benchmarking, Kosten-Nutzen-Abwägungen und Prompt-Routing.'
 pubDate: 2026-05-07
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/05/Maximilian-Schreiber.jpeg'
   alt: 'Maximilian Schreiber'

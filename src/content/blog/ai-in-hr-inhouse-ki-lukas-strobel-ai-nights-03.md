@@ -3,6 +3,7 @@ title: 'AI in HR: Eine Inhouse-KI im Praxiseinsatz – Lukas Strobel bei den AI 
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #03: Lukas Strobel zeigt, wie eine selbst entwickelte KI bei LORENZ HR-Workflows automatisiert — und wo sie an Grenzen stößt.'
 pubDate: 2026-02-19
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/lukas-strobel.png'
   alt: 'Lukas Strobel'

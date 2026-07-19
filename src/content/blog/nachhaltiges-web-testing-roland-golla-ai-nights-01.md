@@ -3,6 +3,7 @@ title: 'Nachhaltiges Web, Accessibility & Testing – Roland Golla komplettiert 
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #01: Tech-Speaker und Influencer Roland Golla über nachhaltiges Webdevelopment, Accessibility und Website-Testing in Zeiten von KI.'
 pubDate: 2025-10-02
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/kill-bill-roland-golla.jpg'
   alt: 'Roland Golla'

@@ -3,6 +3,7 @@ title: 'LangExtract in Action: Aus unstrukturiertem Text werden strukturierte Da
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #01: Catalin Tudor (Software Architect & AI Expert, evosoft) zeigt live, wie LLMs mit LangExtract verlässlich strukturierte Daten liefern.'
 pubDate: 2025-09-25
 author: 'AI Nights Team'
+category: speaker-announcements
 image:
   src: '/wp-content/uploads/2026/01/Catalin-Tudor.jpg'
   alt: 'Catalin Tudor'
