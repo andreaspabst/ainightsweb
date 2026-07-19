@@ -28,6 +28,43 @@ const speakers = (await getCollection('speaker'))
         <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
       ))}
     </div>
+
+    <section class="become">
+      <div class="become-head">
+        <p class="eyebrow">Deine Bühne wartet</p>
+        <h2 class="display-font">Werde selbst Speaker!</h2>
+        <p class="sub center">
+          Du setzt KI in der Praxis ein und hast etwas zu erzählen? Dann gehörst du auf die AI&nbsp;Nights Bühne — egal ob
+          erster Talk oder hundertster.
+        </p>
+      </div>
+      <div class="reasons">
+        <div class="reason card">
+          <span class="r-icon">👀</span>
+          <h3>Sichtbarkeit erhöhen</h3>
+          <p>Präsentiere dein Expertise vor KI-Profis, Entscheidern und Enthusiasten — auf der Bühne und in unserem Content danach.</p>
+        </div>
+        <div class="reason card">
+          <span class="r-icon">🤝</span>
+          <h3>Netzwerk erweitern</h3>
+          <p>Direkter Kontakt zu C-Level, IT-Entscheidern, Gründern und anderen Speakern — in entspannter Afterwork-Atmosphäre.</p>
+        </div>
+        <div class="reason card">
+          <span class="r-icon">🏆</span>
+          <h3>Ruf aufbauen</h3>
+          <p>Etabliere dich als Vordenker in der KI-Community — mit eigenem Speaker-Profil und Session-Seite auf ainights.ai.</p>
+        </div>
+        <div class="reason card">
+          <span class="r-icon">🎬</span>
+          <h3>Voller Support</h3>
+          <p>Profi-Technik, Bühnenlicht, Event-Promotion in unseren Kanälen und Fotos vom Abend — wir kümmern uns drum.</p>
+        </div>
+      </div>
+      <div class="become-cta">
+        <a href="/de/speaker-application/#signup-form" class="btn btn-primary">Jetzt als Speaker bewerben</a>
+        <a href="/de/speaker-application/" class="btn btn-ghost">Mehr zum Speaker-Programm</a>
+      </div>
+    </section>
   </main>
   <Footer lang="de" />
 </Layout>
@@ -50,5 +87,51 @@ const speakers = (await getCollection('speaker'))
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.25rem;
+  }
+  .become {
+    margin-top: 4rem;
+    border-top: 1px solid var(--border);
+    padding-top: 3rem;
+  }
+  .become-head {
+    text-align: center;
+  }
+  .become-head h2 {
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub.center {
+    text-align: center;
+    margin: 0 auto 2.2rem;
+  }
+  .reasons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+  .reason {
+    padding: 1.5rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .r-icon {
+    font-size: 1.6rem;
+  }
+  .reason h3 {
+    font-size: 1.08rem;
+    color: var(--text-primary);
+  }
+  .reason p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .become-cta {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2.2rem;
   }
 </style>
