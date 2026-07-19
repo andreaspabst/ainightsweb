@@ -31,6 +31,23 @@ const {
 const canonical = new URL(path, site).href;
 const ogImage = image.startsWith('http') ? image : new URL(image, site).href;
 const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+// SEO-Normalisierung (zentral für ALLE Seiten):
+// - Description: 50–160 Zeichen — zu lange am Wortende kürzen, zu kurze mit Brand-Kontext auffüllen
+// - <title>: auf ~65 Zeichen kürzen (og:title/twitter:title behalten den vollen Titel)
+function truncateAtWord(s: string, max: number): string {
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max - 1);
+  return cut.slice(0, Math.max(cut.lastIndexOf(' '), 40)).trimEnd() + '…';
+}
+const BRAND_SUFFIX = ' | AI Nights — KI-Events & Community in Nürnberg und München.';
+let metaDescription = (description ?? '').trim();
+if (metaDescription.length < 50) {
+  metaDescription = truncateAtWord((metaDescription ? metaDescription.replace(/[.\s]+$/, '') : title) + BRAND_SUFFIX, 160);
+} else if (metaDescription.length > 160) {
+  metaDescription = truncateAtWord(metaDescription, 160);
+}
+const titleTag = truncateAtWord(title, 65);
 ---
 
 <!doctype html>
@@ -38,7 +55,7 @@ const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
+    <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/png" sizes="32x32" href="/wp-content/uploads/2026/01/cropped-apple-touch-icon-32x32.png" />
@@ -65,18 +82,19 @@ const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <meta property="og:site_name" content="AI Nights" />
     <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={metaDescription} />
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImage} />
 
     {jsonLdArray.map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
 
-    <title>{title}</title>
+    <title>{titleTag}</title>
   </head>
   <body>
     <slot />

@@ -20,12 +20,19 @@ const speakers = allSpeakers
   .filter((s) => !isPlaceholderSpeaker(s));
 
 const timeLabel = d.time ?? (d.startTime && d.endTime ? `${d.startTime} – ${d.endTime}` : d.startTime);
+
+// Zeitfenster-Präfixe („18:00 - 18:45 Uhr | …“, „(inkl. 15 Min …)“) aus dem
+// Titel entfernen — SEO: das Thema gehört an den Anfang des <title>.
+const cleanTitle = d.title
+  .replace(/^[\d:.\s–\-]+Uhr?\s*(\||:)?\s*/i, '')
+  .replace(/^\(inkl\.[^)]*\)\s*(\||:)?\s*/i, '')
+  .trim() || d.title;
 ---
 
 <Layout
   lang="de"
-  title={d.seo?.title ?? `${d.title} — AI Nights Session`}
-  description={d.seo?.description ?? d.excerpt ?? `${d.title} — Session bei den AI Nights.`}
+  title={d.seo?.title ?? `${cleanTitle} — AI Nights Session`}
+  description={d.seo?.description ?? d.excerpt ?? `${cleanTitle} — Session bei den AI Nights.`}
   path={`/sessions/${d.slug}/`}
   image={d.image?.src ?? speakers[0]?.data.image?.src}
   ogType="article"

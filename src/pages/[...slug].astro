@@ -47,12 +47,20 @@ export async function getStaticPaths() {
 
 const { page } = Astro.props;
 const lang = (page.lang === 'en' ? 'en' : 'de') as 'de' | 'en';
+
+// Meta-Description: leere Strings aus dem WordPress-Export überspringen und
+// notfalls aus dem Seiteninhalt ableiten (Layout normalisiert die Länge).
+const contentText = (page.contentHtml ?? '')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+const description = page.description || page.heroSubtitle || contentText || page.title;
 ---
 
 <Layout
   lang={lang}
   title={page.seoTitle ?? `${page.title} — AI Nights`}
-  description={page.description ?? page.heroSubtitle ?? page.title}
+  description={description}
   path={page.path}
 >
   <Header lang={lang} />
