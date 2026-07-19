@@ -139,26 +139,6 @@ const stadt = defineCollection({
   }),
 });
 
-const assistants = defineCollection({
-  loader: glob({ pattern: '*.json', base: './src/content/assistants' }),
-  schema: z.object({
-    id: z.number().optional(),
-    title: z.string(),
-    slug: z.string(),
-    excerpt: z.string().optional(),
-    contentHtml: z.string().optional(),
-    image,
-    link: z.string().optional(),
-    category: z.string().optional(),
-    systemPrompt: z.string().optional(),
-    requiredInput: z.string().optional(),
-    contextKnowledge: z.string().optional(),
-    exampleOutput: z.string().optional(),
-    seo,
-    date: z.string().optional(),
-  }),
-});
-
 // Blog: Markdown-Dateien unter src/content/blog/, Slug = Dateiname
 const blog = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/blog' }),
@@ -174,4 +154,4 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { speaker, sessions, events, sponsor, stadt, assistants, blog };
+export const collections = { speaker, sessions, events, sponsor, stadt, blog };

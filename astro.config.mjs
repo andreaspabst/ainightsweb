@@ -18,6 +18,11 @@ export default defineConfig({
     '/': '/de/',
     // Doppelter Speaker-Eintrag wurde in /speaker/der-pabst/ fusioniert
     '/speaker/andreas-pabst/': '/speaker/der-pabst/',
+    // Entfernte Platzhalter-Speaker (waren live indexiert)
+    '/speaker/ai-nights-speaker-01/': '/speaker/',
+    '/speaker/ai-nights-speaker-02/': '/speaker/',
+    '/speaker/ai-nights-speaker-03/': '/speaker/',
+    '/speaker/ai-nights-speaker-04/': '/speaker/',
     // Podcast-Seite wurde entfernt
     '/de/podcast/': '/de/',
     // Alias für die Städte-Übersicht (kanonisch: /stadt/)
