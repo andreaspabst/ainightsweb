@@ -9,6 +9,11 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  vite: {
+    server: {
+      allowedHosts: ['ainights.loc'],
+    },
+  },
   redirects: {
     '/': '/de/',
     // Doppelter Speaker-Eintrag wurde in /speaker/der-pabst/ fusioniert
