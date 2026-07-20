@@ -134,7 +134,7 @@ const facts: { icon: string; label: string }[] = [
         {speakers.length > 0 && (
           <a href="#lineup" class="hero-speakers">
             <span class="hero-speakers-avatars">
-              {speakers.slice(0, 4).map((s) => (
+              {[...moderators, ...speakers].slice(0, 5).map((s) => (
                 s.data.image?.src
                   ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
                   : <span class="hero-speakers-fallback">✨</span>
@@ -176,6 +176,72 @@ const facts: { icon: string; label: string }[] = [
         </ul>
       </section>
 
+      {/* Programm */}
+      {sessions.length > 0 && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
+          <h2 class="display-font sec-h">Die Themen des Abends</h2>
+          <div class="timeline">
+            {sessions.map((s) => {
+              const sp = (s.data.speakerIds ?? [])
+                .map((id: number) => spMap.get(id))
+                .filter(Boolean)
+                .filter((x: any) => !isPlaceholderSpeaker(x));
+              const meta = sessionMeta(s);
+              if (isBreak(s)) {
+                return (
+                  <div class="tl-item tl-break">
+                    <div class="tl-time">
+                      {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
+                    </div>
+                    <div class="tl-dot tl-dot-break"></div>
+                    <div class="tl-content break-content">
+                      <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div class="tl-item">
+                  <div class="tl-time">
+                    {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
+                    {s.data.duration && <span class="tt-dur">{s.data.duration} min</span>}
+                  </div>
+                  <div class="tl-dot"></div>
+                  <article class="tl-content card">
+                    {meta.length > 0 && (
+                      <p class="talk-meta">
+                        {meta.map((m) => <span class="chip">{m}</span>)}
+                      </p>
+                    )}
+                    <h3>{s.data.title}</h3>
+                    {sp.length > 0 && (
+                      <div class="talk-sp">
+                        <span class="talk-sp-avatars">
+                          {sp.map((x: any) => (
+                            x.data.image?.src
+                              ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
+                              : <span class="talk-sp-fallback">✨</span>
+                          ))}
+                        </span>
+                        <span class="talk-sp-names">{sp.map((x: any) => x.data.title).join(', ')}</span>
+                      </div>
+                    )}
+                    {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
+                    {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
+                      <details class="talk-detail">
+                        <summary>Mehr anzeigen</summary>
+                        <div class="prose" set:html={s.data.contentHtml} />
+                      </details>
+                    )}
+                  </article>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* Speaker-Vorstellung */}
       {(speakers.length > 0 || tbaCount > 0) && (
         <section class="sec" id="lineup" data-reveal>
@@ -215,64 +281,6 @@ const facts: { icon: string; label: string }[] = [
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* Programm */}
-      {sessions.length > 0 && (
-        <section class="sec" data-reveal>
-          <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
-          <h2 class="display-font sec-h">Die Themen des Abends</h2>
-          <div class="timeline">
-            {sessions.map((s) => {
-              const sp = (s.data.speakerIds ?? [])
-                .map((id: number) => spMap.get(id))
-                .filter(Boolean)
-                .filter((x: any) => !isPlaceholderSpeaker(x));
-              const meta = sessionMeta(s);
-              if (isBreak(s)) {
-                return (
-                  <div class="tl-item tl-break">
-                    <div class="tl-time">
-                      {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
-                    </div>
-                    <div class="tl-dot tl-dot-break"></div>
-                    <div class="tl-content break-content">
-                      <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
-                    </div>
-                  </div>
-                );
-              }
-              return (
-                <div class="tl-item">
-                  <div class="tl-time">
-                    {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
-                    {s.data.duration && <span class="tt-dur">{s.data.duration} min</span>}
-                  </div>
-                  <div class="tl-dot"></div>
-                  <article class="tl-content card">
-                    {meta.length > 0 && (
-                      <p class="talk-meta">
-                        {meta.map((m) => <span class="chip">{m}</span>)}
-                      </p>
-                    )}
-                    <h3><a href={`/sessions/${s.data.slug}/`}>{s.data.title}</a></h3>
-                    {sp.length > 0 && (
-                      <p class="talk-sp">{sp.map((x: any) => x.data.title).join(', ')}</p>
-                    )}
-                    {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
-                    {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
-                      <details class="talk-detail">
-                        <summary>Mehr anzeigen</summary>
-                        <div class="prose" set:html={s.data.contentHtml} />
-                      </details>
-                    )}
-                    <a href={`/sessions/${s.data.slug}/`} class="talk-more">Zur Session →</a>
-                  </article>
-                </div>
-              );
-            })}
           </div>
         </section>
       )}
@@ -648,6 +656,7 @@ const facts: { icon: string; label: string }[] = [
   .facts h2 {
     font-size: 1.55rem;
     margin-bottom: 1.4rem;
+    text-align: center;
   }
   .facts ul {
     list-style: none;
@@ -678,9 +687,14 @@ const facts: { icon: string; label: string }[] = [
   .sec {
     margin-bottom: 4rem;
   }
+  .sec > .eyebrow {
+    display: block;
+    text-align: center;
+  }
   .sec-h {
     font-size: clamp(1.6rem, 4vw, 2.3rem);
     margin: 0.3rem 0 1.8rem;
+    text-align: center;
   }
 
   /* Speaker & Moderation — vollständige Vorstellung */
@@ -849,12 +863,7 @@ const facts: { icon: string; label: string }[] = [
   .tl-content h3 {
     font-size: 1.3rem;
     margin-bottom: 0.5rem;
-  }
-  .tl-content h3 a {
     color: var(--text-primary);
-  }
-  .tl-content h3 a:hover {
-    color: var(--magenta-bright);
   }
   .talk-meta {
     display: flex;
@@ -894,19 +903,41 @@ const facts: { icon: string; label: string }[] = [
     font-weight: 600;
   }
   .talk-sp {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.9rem;
+  }
+  .talk-sp-avatars {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .talk-sp-avatars img,
+  .talk-sp-fallback {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-elevated);
+    margin-left: -10px;
+    display: grid;
+    place-items: center;
+    background: var(--gradient-accent);
+    font-size: 0.85rem;
+  }
+  .talk-sp-avatars img:first-child,
+  .talk-sp-fallback:first-child {
+    margin-left: 0;
+  }
+  .talk-sp-names {
     color: var(--blue-bright);
     font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: 0.7rem;
   }
   .talk-ex {
     color: var(--text-secondary);
     font-size: 1rem;
     margin-bottom: 0.8rem;
-  }
-  .talk-more {
-    font-size: 0.9rem;
-    font-weight: 600;
   }
   .talk-detail {
     margin: 0.4rem 0 0.9rem;
@@ -986,16 +1017,16 @@ const facts: { icon: string; label: string }[] = [
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.3rem 1.7rem;
-    min-width: 160px;
-    min-height: 90px;
+    padding: 1.6rem 2.1rem;
+    min-width: 190px;
+    min-height: 110px;
   }
   .sponsor-logo:hover {
     border-color: var(--border-strong);
   }
   .sponsor-logo img {
-    max-height: 48px;
-    max-width: 140px;
+    max-height: 64px;
+    max-width: 170px;
     object-fit: contain;
   }
   .cta {
