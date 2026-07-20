@@ -55,6 +55,32 @@ const titleTag = truncateAtWord(title, 65);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {/* Consent Management (CCM19) — muss vor allen einwilligungspflichtigen Skripten laden */}
+    <script
+      is:inline
+      src="https://cloud.ccm19.de/app.js?apiKey=2aba15f3f7a43396c98af77973092a78717379a6bcda94fc&domain=68751d196d9583b7070bff52"
+      referrerpolicy="origin"></script>
+
+    {/* Google Analytics 4 mit Consent Mode v2: Standard = abgelehnt,
+        CCM19 aktualisiert den Consent-Status nach Einwilligung */}
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500,
+      });
+      gtag('js', new Date());
+      gtag('config', 'G-QR205Y2TEF');
+    </script>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QR205Y2TEF"></script>
+
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
