@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && node scripts/postbuild.mjs",
-    "preview": "SHOW_SCHEDULED=1 astro build && node scripts/postbuild.mjs && astro preview",
+    "build": "node scripts/fetch-legal.mjs && astro build && node scripts/postbuild.mjs",
+    "preview": "node scripts/fetch-legal.mjs && SHOW_SCHEDULED=1 astro build && node scripts/postbuild.mjs && astro preview",
     "astro": "astro"
   },
   "dependencies": {
