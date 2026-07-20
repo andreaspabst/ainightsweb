@@ -28,6 +28,9 @@ export default defineConfig({
     // Alias für die Städte-Übersicht (kanonisch: /stadt/)
     '/cities/': '/stadt/',
     '/staedte/': '/stadt/',
+    // Deutsche Kurz-URLs für Rechtsseiten (u. a. von CMP-Banner-Links erwartet)
+    '/datenschutz/': '/de/data-protection/',
+    '/impressum/': '/de/legal-notice/',
   },
   integrations: [
     sitemap({
