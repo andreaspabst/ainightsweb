@@ -118,6 +118,13 @@ const facts: { icon: string; label: string }[] = [
         </div>
         <p class="kicker">Afterwork Event{dateLabel ? ` am ${new Date(d.eventDate!).toLocaleDateString('de-DE')}` : ''}</p>
         <h1 class="display-font">{d.title}</h1>
+
+        {(d.contentHtml || d.excerpt) && (
+          <div class="hero-desc prose">
+            {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
+          </div>
+        )}
+
         <div class="meta">
           {dateLabel && <span>📅 {dateLabel}</span>}
           {d.startTime && <span>🕕 {d.startTime} Uhr</span>}
@@ -156,12 +163,6 @@ const facts: { icon: string; label: string }[] = [
     </section>
 
     <div class="container body">
-      {(d.excerpt || d.contentHtml) && (
-        <div class="intro prose" data-reveal>
-          {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
-        </div>
-      )}
-
       {/* Fakten */}
       <section class="facts card" data-reveal>
         <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
@@ -175,31 +176,42 @@ const facts: { icon: string; label: string }[] = [
         </ul>
       </section>
 
-      {/* Speaker-Lineup */}
+      {/* Speaker-Vorstellung */}
       {(speakers.length > 0 || tbaCount > 0) && (
         <section class="sec" id="lineup" data-reveal>
-          <p class="eyebrow">Wer dich durch den Abend begleitet</p>
-          <h2 class="display-font sec-h">Speakerauswahl des Abends</h2>
-          <div class="people">
+          <p class="eyebrow">Lerne von Branchenexperten und Vordenkern</p>
+          <h2 class="display-font sec-h">Speaker des Abends</h2>
+          <div class="speaker-list">
             {speakers.map((s) => (
-              <a href={`/speaker/${s.data.slug}/`} class="person card">
-                {s.data.image?.src && (
-                  <span class="avatar-ring">
-                    <img src={s.data.image.src} alt={s.data.title} loading="lazy" />
-                  </span>
-                )}
-                <div class="p-body">
-                  <strong>{s.data.title}</strong>
-                  {s.data.jobTitle && <span>{s.data.jobTitle}</span>}
+              <div class="speaker-full card">
+                <a href={`/speaker/${s.data.slug}/`} class="sp-photo-link">
+                  {s.data.image?.src
+                    ? <img class="sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />
+                    : <span class="sp-photo sp-photo-fallback">✨</span>}
+                </a>
+                <div class="sp-body">
+                  <h3><a href={`/speaker/${s.data.slug}/`}>{s.data.title}</a></h3>
+                  {s.data.jobTitle && <p class="sp-role">{s.data.jobTitle}</p>}
+                  {s.data.bioHtml
+                    ? <div class="sp-bio prose" set:html={s.data.bioHtml} />
+                    : s.data.excerpt && <p class="sp-bio">{s.data.excerpt}</p>}
+                  {s.data.topics?.length > 0 && (
+                    <ul class="sp-topics">
+                      {s.data.topics.map((t: string) => <li>{t}</li>)}
+                    </ul>
+                  )}
+                  {s.data.socials?.linkedin && (
+                    <a href={s.data.socials.linkedin} target="_blank" rel="noopener" class="sp-social">LinkedIn ↗</a>
+                  )}
                 </div>
-              </a>
+              </div>
             ))}
             {Array.from({ length: tbaCount }).map(() => (
-              <div class="person card tba">
-                <div class="tba-avatar">✨</div>
-                <div class="p-body">
-                  <strong>Wird noch bekanntgegeben</strong>
-                  <span>Speaker folgt in Kürze</span>
+              <div class="speaker-full card tba">
+                <span class="sp-photo sp-photo-fallback">✨</span>
+                <div class="sp-body">
+                  <h3>Wird noch bekanntgegeben</h3>
+                  <p class="sp-role">Speaker folgt in Kürze</p>
                 </div>
               </div>
             ))}
@@ -225,9 +237,9 @@ const facts: { icon: string; label: string }[] = [
                     <div class="tl-time">
                       {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
                     </div>
-                    <div class="tl-dot"></div>
+                    <div class="tl-dot tl-dot-break"></div>
                     <div class="tl-content break-content">
-                      ☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}
+                      <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
                     </div>
                   </div>
                 );
@@ -268,22 +280,20 @@ const facts: { icon: string; label: string }[] = [
       {/* Moderation */}
       {moderators.length > 0 && (
         <section class="sec" data-reveal>
-          <p class="eyebrow">Moderation</p>
-          <h2 class="display-font sec-h">Wer dich durch den Abend führt</h2>
-          {moderators.map((s) => (
-            <a href={`/speaker/${s.data.slug}/`} class="moderator card">
-              {s.data.image?.src && (
-                <span class="avatar-ring avatar-ring-lg">
-                  <img src={s.data.image.src} alt={s.data.title} loading="lazy" />
-                </span>
-              )}
-              <div class="m-body">
-                <strong>{s.data.title}</strong>
-                {s.data.jobTitle && <span class="m-role">{s.data.jobTitle}</span>}
-                {s.data.excerpt && <p>{s.data.excerpt}</p>}
-              </div>
-            </a>
-          ))}
+          <p class="eyebrow">Wer dich durch den Abend führt</p>
+          <h2 class="display-font sec-h">Moderation</h2>
+          <div class="speaker-list">
+            {moderators.map((s) => (
+              <a href={`/speaker/${s.data.slug}/`} class="speaker-full card moderator-card">
+                {s.data.image?.src && <img class="sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />}
+                <div class="sp-body">
+                  <h3>{s.data.title}</h3>
+                  {s.data.jobTitle && <p class="sp-role">{s.data.jobTitle}</p>}
+                  {s.data.excerpt && <p class="sp-bio">{s.data.excerpt}</p>}
+                </div>
+              </a>
+            ))}
+          </div>
         </section>
       )}
 
@@ -402,7 +412,7 @@ const facts: { icon: string; label: string }[] = [
 <style>
   .hero {
     position: relative;
-    padding-block: clamp(3rem, 8vw, 6rem);
+    padding-block: clamp(4rem, 11vw, 7.5rem) clamp(3.5rem, 8vw, 6rem);
     overflow: hidden;
     border-bottom: 1px solid var(--border);
   }
@@ -412,12 +422,12 @@ const facts: { icon: string; label: string }[] = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.28;
+    opacity: 0.34;
   }
   .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 1, 24, 0.5), var(--bg-base));
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.45), var(--bg-base) 92%);
   }
   .hero-stars {
     position: absolute;
@@ -444,18 +454,18 @@ const facts: { icon: string; label: string }[] = [
     opacity: 0.55;
   }
   .hero-orb-a {
-    width: 380px;
-    height: 380px;
-    top: -120px;
-    right: -80px;
+    width: 420px;
+    height: 420px;
+    top: -140px;
+    right: -100px;
     background: radial-gradient(circle, rgba(255, 45, 122, 0.55), transparent 70%);
     animation: drift-a 16s ease-in-out infinite alternate;
   }
   .hero-orb-b {
-    width: 320px;
-    height: 320px;
-    bottom: -140px;
-    left: -60px;
+    width: 360px;
+    height: 360px;
+    bottom: -160px;
+    left: -80px;
     background: radial-gradient(circle, rgba(50, 107, 255, 0.45), transparent 70%);
     animation: drift-b 20s ease-in-out infinite alternate;
   }
@@ -480,15 +490,19 @@ const facts: { icon: string; label: string }[] = [
   }
   .hero-inner {
     position: relative;
+    text-align: center;
   }
   .back {
+    display: inline-block;
     color: var(--text-secondary);
     font-size: 0.9rem;
+    text-align: left;
   }
   .badges {
     display: flex;
+    justify-content: center;
     gap: 0.6rem;
-    margin: 1.5rem 0 1rem;
+    margin: 1.8rem 0 1.2rem;
   }
   .badge {
     background: var(--gradient-accent);
@@ -508,32 +522,54 @@ const facts: { icon: string; label: string }[] = [
   .kicker {
     color: var(--blue-bright);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.8rem;
   }
   h1 {
-    font-size: clamp(2rem, 5vw, 3.4rem);
-    max-width: 20ch;
-    margin-bottom: 1.2rem;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1.08;
+    max-width: 22ch;
+    margin: 0 auto 1.6rem;
+  }
+  .hero-desc {
+    max-width: 680px;
+    margin: 0 auto 1.8rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+  .hero-desc :global(p) {
+    margin: 0 0 1rem;
+  }
+  .hero-desc :global(ul),
+  .hero-desc :global(ol) {
+    text-align: left;
+    display: inline-block;
+    margin: 1rem auto;
+    padding-left: 1.3rem;
+  }
+  .hero-desc :global(strong) {
+    color: var(--text-primary);
   }
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.2rem;
+    justify-content: center;
+    gap: 1.4rem;
     color: var(--text-secondary);
-    font-size: 0.98rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.02rem;
+    margin-bottom: 1.8rem;
   }
   .hero-speakers {
     display: inline-flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.9rem;
     color: var(--text-secondary);
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 600;
-    margin-bottom: 1.8rem;
+    margin-bottom: 2.2rem;
     transition: color 0.2s ease;
   }
   .hero-speakers:hover {
@@ -544,16 +580,16 @@ const facts: { icon: string; label: string }[] = [
   }
   .hero-speakers-avatars img,
   .hero-speakers-fallback {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--bg-base);
-    margin-left: -10px;
+    margin-left: -12px;
     display: grid;
     place-items: center;
     background: var(--gradient-accent);
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
   .hero-speakers-avatars img:first-child,
   .hero-speakers-fallback:first-child {
@@ -561,14 +597,14 @@ const facts: { icon: string; label: string }[] = [
   }
   .hero-actions {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    gap: 1.6rem;
   }
   .countdown {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
   }
   .cd-box {
     display: flex;
@@ -576,13 +612,13 @@ const facts: { icon: string; label: string }[] = [
     align-items: center;
     background: var(--bg-glass);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.5rem 0.7rem;
-    min-width: 52px;
+    border-radius: 12px;
+    padding: 0.65rem 0.9rem;
+    min-width: 66px;
   }
   .cd-box strong {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     line-height: 1;
     background: var(--gradient-text);
     -webkit-background-clip: text;
@@ -590,111 +626,156 @@ const facts: { icon: string; label: string }[] = [
     color: transparent;
   }
   .cd-box span {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
   }
   .cd-sep {
     color: var(--text-muted);
     font-weight: 700;
+    font-size: 1.2rem;
   }
   .body {
-    max-width: 860px;
-    padding-block: 3rem 2rem;
-  }
-  .intro {
-    margin-bottom: 2.5rem;
+    max-width: 980px;
+    padding-block: 3.5rem 2rem;
   }
   .facts {
-    padding: 2rem;
-    margin-bottom: 3rem;
+    padding: 2.2rem 2.4rem;
+    margin-bottom: 3.5rem;
   }
   .facts h2 {
-    font-size: 1.4rem;
-    margin-bottom: 1.2rem;
+    font-size: 1.55rem;
+    margin-bottom: 1.4rem;
   }
   .facts ul {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
   }
   .facts li {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.8rem;
     color: var(--text-secondary);
+    font-size: 1.02rem;
   }
   .fact-icon {
     display: grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
+    width: 42px;
+    height: 42px;
     flex-shrink: 0;
     border-radius: 50%;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   .sec {
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
   }
   .sec-h {
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
-    margin: 0.3rem 0 1.5rem;
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+    margin: 0.3rem 0 1.8rem;
   }
-  .people {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  .person {
+
+  /* Speaker & Moderation — vollständige Vorstellung */
+  .speaker-list {
     display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    padding: 0.7rem;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .speaker-full {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    align-items: flex-start;
     transition: border-color 0.2s ease, transform 0.2s ease;
   }
-  .person:hover {
+  .moderator-card {
+    align-items: center;
+  }
+  a.speaker-full:hover {
     border-color: var(--border-strong);
     transform: translateY(-2px);
   }
-  .avatar-ring {
-    display: block;
+  .sp-photo-link {
     flex-shrink: 0;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    padding: 2px;
-    background: var(--gradient-accent);
   }
-  .avatar-ring img {
+  .sp-photo {
     display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    width: 168px;
+    height: 168px;
+    border-radius: 20px;
     object-fit: cover;
-    border: 2px solid var(--bg-base);
+    flex-shrink: 0;
   }
-  .avatar-ring-lg {
-    width: 96px;
-    height: 96px;
+  .sp-photo-fallback {
+    display: grid;
+    place-items: center;
+    background: var(--gradient-accent);
+    font-size: 2.6rem;
   }
-  .p-body {
+  .sp-body h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.35rem;
+  }
+  .sp-body h3 a {
+    color: var(--text-primary);
+  }
+  .sp-body h3 a:hover {
+    color: var(--magenta-bright);
+  }
+  .sp-role {
+    color: var(--blue-bright);
+    font-weight: 600;
+    font-size: 0.98rem;
+    margin: 0 0 0.9rem;
+  }
+  .sp-bio {
+    color: var(--text-secondary);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+  }
+  .sp-topics {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
   }
-  .p-body strong {
-    color: var(--text-primary);
+  .sp-topics li {
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-secondary);
     font-size: 0.95rem;
   }
-  .p-body span {
-    color: var(--text-muted);
-    font-size: 0.78rem;
+  .sp-topics li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta-bright);
+  }
+  .sp-social {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blue-bright);
+  }
+  .speaker-full.tba {
+    opacity: 0.75;
+    align-items: center;
+  }
+  .speaker-full.tba .sp-photo {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
   }
 
   /* Programm-Timeline */
@@ -702,21 +783,21 @@ const facts: { icon: string; label: string }[] = [
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1.6rem;
   }
   .tl-item {
     position: relative;
     display: grid;
-    grid-template-columns: 80px 20px 1fr;
-    gap: 0 1rem;
+    grid-template-columns: 96px 24px 1fr;
+    gap: 0 1.2rem;
     align-items: start;
   }
   .tl-item::before {
     content: '';
     position: absolute;
-    top: 1.6rem;
-    bottom: -1.2rem;
-    left: 89px;
+    top: 1.9rem;
+    bottom: -1.6rem;
+    left: 107px;
     width: 2px;
     background: linear-gradient(180deg, var(--border-strong), var(--border));
   }
@@ -726,34 +807,48 @@ const facts: { icon: string; label: string }[] = [
   .tl-time {
     display: flex;
     flex-direction: column;
-    padding-top: 1.6rem;
+    padding-top: 1.9rem;
     text-align: right;
   }
   .tt-time {
     color: var(--text-primary);
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
   }
   .tt-dur {
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
   .tl-dot {
     position: relative;
     z-index: 1;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    margin-top: 1.9rem;
+    margin-top: 2.1rem;
     background: var(--gradient-accent);
-    box-shadow: 0 0 0 4px var(--bg-base), var(--glow-magenta);
+    box-shadow: 0 0 0 5px var(--bg-base), var(--glow-magenta);
+    animation: dot-pulse 2.4s ease-in-out infinite;
+  }
+  .tl-dot-break {
+    animation: none;
+    background: var(--bg-elevated);
+    border: 2px solid var(--border-strong);
+    box-shadow: 0 0 0 5px var(--bg-base);
+  }
+  @keyframes dot-pulse {
+    0%, 100% { box-shadow: 0 0 0 5px var(--bg-base), 0 0 20px rgba(255, 45, 122, 0.3); }
+    50% { box-shadow: 0 0 0 5px var(--bg-base), 0 0 32px rgba(255, 45, 122, 0.6); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tl-dot { animation: none; }
   }
   .tl-content {
-    padding: 1.5rem;
+    padding: 1.8rem;
   }
   .tl-content h3 {
-    font-size: 1.15rem;
-    margin-bottom: 0.4rem;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
   }
   .tl-content h3 a {
     color: var(--text-primary);
@@ -765,41 +860,52 @@ const facts: { icon: string; label: string }[] = [
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.8rem;
   }
   .chip {
     display: inline-block;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 0.15rem 0.65rem;
-    font-size: 0.75rem;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.02em;
   }
   .tl-break {
-    grid-template-columns: 80px 20px 1fr;
+    grid-template-columns: 96px 24px 1fr;
   }
   .tl-break .tl-content.break-content {
-    padding: 0.6rem 0;
+    padding: 0.8rem 0;
+    display: flex;
+    align-items: center;
+  }
+  .break-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border-strong);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 600;
   }
   .talk-sp {
     color: var(--blue-bright);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.7rem;
   }
   .talk-ex {
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin-bottom: 0.7rem;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
   }
   .talk-more {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
   }
   .talk-detail {
@@ -808,7 +914,7 @@ const facts: { icon: string; label: string }[] = [
   .talk-detail summary {
     cursor: pointer;
     color: var(--magenta-bright);
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 600;
     list-style: none;
   }
@@ -819,40 +925,16 @@ const facts: { icon: string; label: string }[] = [
     margin-bottom: 0.8rem;
   }
   .talk-detail .prose {
-    font-size: 0.95rem;
-  }
-  .moderator {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    padding: 1.5rem;
-    transition: border-color 0.2s ease;
-  }
-  .moderator:hover {
-    border-color: var(--border-strong);
-  }
-  .m-body strong {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-  }
-  .m-role {
-    display: block;
-    color: var(--blue-bright);
-    font-size: 0.85rem;
-    margin: 0.2rem 0 0.5rem;
-  }
-  .m-body p {
-    color: var(--text-secondary);
-    font-size: 0.92rem;
+    font-size: 0.98rem;
   }
   .photos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.7rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.8rem;
   }
   .photo {
     aspect-ratio: 1 / 1;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--border);
   }
@@ -867,23 +949,6 @@ const facts: { icon: string; label: string }[] = [
   }
   .gal-link {
     margin-top: 1.5rem;
-  }
-  .person.tba {
-    opacity: 0.75;
-  }
-  .tba-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    font-size: 1.3rem;
-    background: var(--bg-elevated);
-    border: 1px dashed var(--border-strong);
-  }
-  .person.tba strong {
-    color: var(--text-secondary);
   }
   .testi-videos {
     display: grid;
@@ -904,12 +969,13 @@ const facts: { icon: string; label: string }[] = [
     gap: 1rem;
   }
   .testi {
-    padding: 1.6rem;
+    padding: 1.8rem;
     margin: 0;
   }
   .testi p {
     color: var(--text-primary);
     font-style: italic;
+    font-size: 1.02rem;
   }
   .sponsor-row {
     display: flex;
@@ -920,21 +986,21 @@ const facts: { icon: string; label: string }[] = [
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.2rem 1.6rem;
-    min-width: 150px;
-    min-height: 84px;
+    padding: 1.3rem 1.7rem;
+    min-width: 160px;
+    min-height: 90px;
   }
   .sponsor-logo:hover {
     border-color: var(--border-strong);
   }
   .sponsor-logo img {
-    max-height: 44px;
-    max-width: 130px;
+    max-height: 48px;
+    max-width: 140px;
     object-fit: contain;
   }
   .cta {
     position: relative;
-    padding: 2.5rem;
+    padding: 3rem 2.5rem;
     text-align: center;
     margin-top: 1rem;
     overflow: hidden;
@@ -955,8 +1021,8 @@ const facts: { icon: string; label: string }[] = [
   }
   .cta h2 {
     position: relative;
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
-    margin-bottom: 1.2rem;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin-bottom: 1.4rem;
   }
   .cta .btn {
     position: relative;
@@ -981,6 +1047,17 @@ const facts: { icon: string; label: string }[] = [
   }
 
   @media (max-width: 640px) {
+    .speaker-full {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .speaker-full .sp-topics {
+      text-align: left;
+    }
+    .speaker-full .sp-topics li {
+      text-align: left;
+    }
     .tl-item,
     .tl-break {
       grid-template-columns: 20px 1fr;
