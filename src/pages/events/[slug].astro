@@ -86,11 +86,26 @@ const dateLabel = fmtDate(d.eventDate);
 const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
 const countdownTarget = !isPast && d.eventDate ? `${d.eventDate}T${d.startTime ?? '18:00'}:00` : null;
 
+// Programm-Struktur für die Kurzfakten: die eigentlichen Talks (ohne Welcome/
+// Kickoff und ohne Pausen) laufen je 30 Minuten inkl. Zeit für Austausch;
+// dazwischen liegen separate 15-minütige Pausen.
+const isWelcome = (s: any) => /welcome|kickoff/i.test(s.data.title);
+const coreTalks = sessions.filter((s) => !isBreak(s) && !isWelcome(s));
+const breaks = sessions.filter((s) => isBreak(s));
+const talkDuration = coreTalks.find((s) => s.data.duration)?.data.duration;
+const breakDuration = breaks.find((s) => s.data.duration)?.data.duration;
+
 const facts: { icon: string; label: string }[] = [
   { icon: '🎤', label: `${speakerSlots.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}` },
   { icon: '🤖', label: '100% KI-Fokus' },
-  { icon: '🗂️', label: sessions.length ? `${sessions.length} Sessions` : 'Kurze Impuls-Sessions' },
-  { icon: '💬', label: 'Zeit für Gespräche & Austausch' },
+  {
+    icon: '🗂️',
+    label: coreTalks.length
+      ? `${coreTalks.length} Sessions${talkDuration ? ` à ${talkDuration} Min.` : ''} inkl. Austausch`
+      : 'Kurze Impuls-Sessions',
+  },
+  ...(breaks.length ? [{ icon: '☕', label: `Pausen${breakDuration ? ` à ${breakDuration} Min.` : ''}` }] : []),
+  { icon: '🤝', label: 'Speaker den ganzen Abend verfügbar' },
   { icon: '🥂', label: 'Inklusive Drinks & Snacks' },
 ];
 ---
@@ -179,13 +194,15 @@ const facts: { icon: string; label: string }[] = [
     </section>
 
     <div class="container body">
-      {/* Fakten */}
-      <section class="facts card" data-reveal>
+      {/* Fakten — als farbiger Trenner zwischen Hero und Content, statt einer weiteren dunklen Karte */}
+      <section class="facts" data-reveal>
+        <div class="facts-orb facts-orb-a"></div>
+        <div class="facts-orb facts-orb-b"></div>
         <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
         <ul>
-          {facts.map((f) => (
+          {facts.map((f, i) => (
             <li>
-              <span class="fact-icon">{f.icon}</span>
+              <span class={`fact-icon fact-icon-${i % 2 === 0 ? 'a' : 'b'}`}>{f.icon}</span>
               <span>{f.label}</span>
             </li>
           ))}
@@ -436,8 +453,37 @@ const facts: { icon: string; label: string }[] = [
     els.forEach((el) => io.observe(el));
   }
 
+  function initParallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const hero = document.querySelector<HTMLElement>('.hero');
+    const bg = document.querySelector<HTMLElement>('.hero-bg');
+    const stars = document.querySelector<HTMLElement>('.hero-stars');
+    if (!hero) return;
+    let ticking = false;
+    function update() {
+      const rect = hero.getBoundingClientRect();
+      const h = rect.height || 1;
+      const progress = Math.min(Math.max(-rect.top / h, 0), 1);
+      if (bg) bg.style.transform = `translateY(${progress * 14}%) scale(1.12)`;
+      if (stars) stars.style.transform = `translateY(${progress * 8}%)`;
+      ticking = false;
+    }
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+
   initCountdowns();
   initReveal();
+  initParallax();
 </script>
 
 <style>
@@ -454,6 +500,7 @@ const facts: { icon: string; label: string }[] = [
     height: 100%;
     object-fit: cover;
     opacity: 0.34;
+    will-change: transform;
   }
   .hero-overlay {
     position: absolute;
@@ -672,22 +719,55 @@ const facts: { icon: string; label: string }[] = [
     max-width: 980px;
     padding-block: 3.5rem 2rem;
   }
+
+  /* Fakten — farbiger Trenner statt einer weiteren dunklen Karte */
   .facts {
-    padding: 2.2rem 2.4rem;
-    margin-bottom: 3.5rem;
+    position: relative;
+    overflow: hidden;
+    padding: 2.6rem 2.4rem;
+    margin-bottom: 5.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background:
+      linear-gradient(135deg, rgba(255, 45, 122, 0.14), rgba(50, 107, 255, 0.1)),
+      var(--bg-glass);
+    backdrop-filter: blur(12px);
+  }
+  .facts-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(50px);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .facts-orb-a {
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    left: -60px;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.6), transparent 70%);
+  }
+  .facts-orb-b {
+    width: 220px;
+    height: 220px;
+    bottom: -100px;
+    right: -60px;
+    background: radial-gradient(circle, rgba(50, 107, 255, 0.55), transparent 70%);
   }
   .facts h2 {
-    font-size: 1.55rem;
-    margin-bottom: 1.4rem;
+    position: relative;
+    font-size: 1.7rem;
+    margin-bottom: 1.6rem;
     text-align: center;
   }
   .facts ul {
+    position: relative;
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 1rem;
+    gap: 1.1rem;
   }
   .facts li {
     display: flex;
@@ -703,20 +783,44 @@ const facts: { icon: string; label: string }[] = [
     height: 42px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
     font-size: 1.2rem;
   }
+  .fact-icon-a {
+    background: rgba(255, 45, 122, 0.16);
+    border: 1px solid rgba(255, 45, 122, 0.35);
+  }
+  .fact-icon-b {
+    background: rgba(50, 107, 255, 0.16);
+    border: 1px solid rgba(50, 107, 255, 0.35);
+  }
   .sec {
-    margin-bottom: 4rem;
+    position: relative;
+    margin-bottom: 5.5rem;
+  }
+  .sec::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -2.5rem;
+    left: 50%;
+    width: 640px;
+    max-width: 130vw;
+    height: 380px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(255, 45, 122, 0.07), transparent 70%);
+    pointer-events: none;
+  }
+  .sec:nth-of-type(even)::before {
+    background: radial-gradient(ellipse at center, rgba(50, 107, 255, 0.07), transparent 70%);
   }
   .sec > .eyebrow {
     display: block;
     text-align: center;
+    font-size: 0.92rem;
   }
   .sec-h {
-    font-size: clamp(1.6rem, 4vw, 2.3rem);
-    margin: 0.3rem 0 1.8rem;
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    margin: 0.4rem 0 1.8rem;
     text-align: center;
   }
 
