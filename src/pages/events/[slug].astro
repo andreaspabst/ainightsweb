@@ -15,15 +15,80 @@ export async function getStaticPaths() {
 const { e } = Astro.props;
 const d = e.data;
 
-// Foto-Rückblick dieses Events (falls vorhanden)
+// Foto-Rückblick dieses Events (falls vorhanden). Events ohne eigene Galerie
+// (z. B. weil sie noch nicht stattgefunden haben) bekommen stattdessen einen
+// bunt gemischten Vorgeschmack aus vergangenen AI Nights — Fotos aller Events
+// im Round-Robin gemischt, damit nicht ein einzelnes Event dominiert.
 const galleryGroup = (galleryData as { event: string; images: string[] }[]).find((g) => g.event === d.slug);
-const eventPhotos = galleryGroup?.images.slice(0, 24) ?? [];
+const hasOwnPhotos = (galleryGroup?.images.length ?? 0) > 0;
+let eventPhotos = galleryGroup?.images.slice(0, 24) ?? [];
+
+if (!hasOwnPhotos) {
+  const pools = (galleryData as { event: string; images: string[] }[]).map((g) => g.images);
+  const mixed: string[] = [];
+  for (let i = 0; mixed.length < 20 && pools.some((p) => i < p.length); i++) {
+    for (const p of pools) {
+      if (p[i]) mixed.push(p[i]);
+      if (mixed.length >= 20) break;
+    }
+  }
+  eventPhotos = mixed;
+}
 
 // Community-Stimmen (wie auf der Startseite)
 const testimonials = [
   'Sehr unterhaltsam und fachlich stark. Man merkt, dass hier echte Erfahrung auf der Bühne steht.',
   'Lockere Atmosphäre, starke Location und interessante Vorträge. Man fühlt sich sofort abgeholt und willkommen.',
   'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
+];
+
+// Stimmen als Schriftform für den Parallax-Abschnitt weiter unten (aktualisiert:
+// die AI Nights sind längst über Nürnberg hinausgewachsen)
+const parallaxQuotes = [
+  'Spannende Talks mit richtig guten Impulsen. Genau die Art Input, die zum Weiterdenken anregt.',
+  'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
+  'Gute Themen, klare Pausen und endlich Zeit für echtes Networking. So entstehen Gespräche, die hängen bleiben.',
+  'Lockere Atmosphäre, starke Location und interessante Vorträge. Man fühlt sich sofort abgeholt und willkommen.',
+];
+const parallaxBg = '/wp-content/uploads/2026/01/23-ianight-23-scaled.jpg';
+
+// YouTube-Einblick „So fühlt sich AI Nights an“ (wie auf der aktuellen Seite)
+const youtubeId = 'U-F1GZmbzJE';
+
+// Gastgeber/Host-Vorstellung (statische Marken-Copy, wie auf der aktuellen Seite)
+const hostImage = '/wp-content/uploads/2026/01/19-ianight-19-scaled.jpg';
+const hostParagraphs = [
+  'Ich beschäftige mich täglich mit der Frage, wie KI sinnvoll in Produkte, Prozesse und Teams integriert werden kann.',
+  'Als Head of Engineering und KI-Enthusiast arbeite ich an der Schnittstelle von Technik, Produkt und Anwendung – von der Automatisierung einzelner Workflows bis hin zur Entwicklung AI-nativer Lösungen.',
+  'Dabei geht es selten um „noch ein Tool“. Sondern darum, herauszufinden, wo KI wirklich Mehrwert schafft und wo nicht.',
+  'Die AI Nights sind aus genau diesem Gedanken entstanden: Ein Ort für Austausch, ehrliche Fragen und unterschiedliche Perspektiven.',
+  'Mir war wichtig, ein Format zu schaffen, das nicht überfordert, sondern Orientierung gibt. Mit kurzen Impulsen, genug Pausen und Zeit für Gespräche, die über die Bühne hinausgehen.',
+];
+
+// FAQ (wie auf der aktuellen Seite)
+const faqItems = [
+  { q: 'Was sind die AI Nights?', a: 'Die AI Nights sind ein Afterwork-Meetup rund um Künstliche Intelligenz. Mit kurzen Talks, drei Speaker pro Abend, moderierter Diskussion und viel Zeit für Austausch – offline, persönlich und auf Augenhöhe.' },
+  { q: 'Wie läuft der Abend ab?', a: 'Der Einlass beginnt ab 17:00 Uhr und die Talks starten um 18:00 Uhr. Jeder Impuls dauert maximal 30 Minuten, dazwischen gibt es bewusst kurze Pausen. Im Anschluss (so ab 20:15/20:30 Uhr) bleibt ausreichend Zeit für Networking bei Snacks & Drinks. Den genauen Ablaufplan erhältst du ein paar Tage vor dem Event per E-Mail.' },
+  { q: 'Wie funktioniert der Ticketkauf?', a: 'Ganz unkompliziert: Du sicherst dir dein Ticket hier online über unsere Website und wirst direkt an den Zahlungsanbieter Digistore24 weitergeleitet. Nach dem Kauf bekommst du ein digitales Ticket via E-Mail zugesendet, das du am Eventabend einfach auf dem Smartphone vorzeigst – ausdrucken ist nicht nötig.' },
+  { q: 'Kann ich auch spontan kommen?', a: 'Ja! 🎉 Wenn noch Plätze verfügbar sind, gibt es eine Abendkasse. Du kannst also auch spontan vorbeikommen und vor Ort ein Ticket kaufen.\n👉 Tipp: Online-Tickets sind günstiger und garantieren dir sicher einen Platz.' },
+  { q: 'Für wen sind die AI Nights gedacht?', a: 'Für alle, die KI verstehen, einordnen oder anwenden wollen – egal ob du aus Tech, Business, Recht, Produkt, Design kommst oder einfach neugierig bist. Du musst kein Vorwissen mitbringen.' },
+  { q: 'Gibt es Zeit zum Netzwerken?', a: 'Ja – und zwar bewusst. Nach den Talks ist genug Zeit für Gespräche, Fragen und neue Kontakte. Kein Speed-Networking, kein Zwang – einfach echter Austausch.' },
+  { q: 'Muss ich mich mit KI oder bestimmten Tools schon auskennen?', a: 'Nein. Du solltest technisches Grundverständnis mitbringen (z. B. als Entwickler:in oder Tech-Interessierte:r), aber du musst kein KI-Profi sein. Die Vorträge sind praxisnah und verständlich – und es ist genug Raum für Fragen!' },
+  { q: 'Sind die AI Nights unabhängig oder steckt ein Unternehmen dahinter?', a: 'Die AI Nights sind ein unabhängiges Community-Format. Es geht nicht darum, Tools zu verkaufen oder Meinungen vorzugeben, sondern darum, Wissen, Erfahrungen und Perspektiven zu teilen. Was du daraus machst, entscheidest du selbst.' },
+  { q: 'Wo finden die AI Nights statt?', a: 'Entweder in den 📍 Design Offices Nürnberg Hauptbahnhof oder in den 📍 Design Offices Nürnberg City, Königstorgraben 11, 5. OG. Moderne Location mit Platz für Austausch, Denken und Afterwork-Vibes – keine klassische Konferenz-Atmosphäre.\nKurzfristige Änderungen werden dir direkt über den Newsletter mitgeteilt.' },
+  { q: 'Gibt es etwas zu Essen oder zu Trinken?', a: 'Ja. Getränke und Snacks sind im Ticketpreis enthalten, damit du ankommen, bleiben und dich auf Gespräche konzentrieren kannst.' },
+  { q: 'Wie lange dauert das Event?', a: 'Ab 17:00 Uhr öffnen wir die Türen – Zeit zum Ankommen, Getränk schnappen und erste Gespräche führen. Der offizielle Teil startet um 18:00 Uhr.\nDie Talks dauern jeweils maximal 30 Minuten. Dazwischen gibt es bewusst 15 Minuten Pause – zum Durchatmen, Nachfragen und Austauschen.\nAb ca. 20:15 Uhr geht der Abend in ein offenes Networking über. Viele bleiben noch 1–2 Stunden, manche auch länger – ganz entspannt und ohne festen Zeitplan.' },
+  { q: 'Ich bin unsicher, ob das das Richtige für mich ist.', a: 'Dann bist du vermutlich genau richtig. Die AI Nights sind für Menschen mit Fragen, Zweifel und Neugier – nicht nur für die, die schon alles wissen. Melde dich bei Fragen einfach bei uns direkt via Mail unter ping@ainights.ai' },
+];
+
+// „Kurz. Klar. Relevant.“ — Abschluss-Feature-Strip (wie auf der aktuellen Seite)
+const closingFeatures = [
+  { icon: '💡', label: 'Praxis-Impulse' },
+  { icon: '🤝', label: 'Netzwerken' },
+  { icon: '👀', label: 'Drei Perspektiven' },
+  { icon: '🥂', label: 'Drinks & Snacks' },
+  { icon: '❓', label: 'Fragen stellen' },
+  { icon: '💬', label: 'Speaker-Austausch' },
 ];
 
 // Beziehungen (Post-IDs) zu Collection-Einträgen auflösen
@@ -46,14 +111,11 @@ const moderators = resolve(d.moderatorIds, spMap);
 // Komplettes Programm inkl. Pausen — wie im Original; Pausen werden schlanker dargestellt
 const sessions = resolve(d.sessionIds, seMap);
 const isBreak = (s: any) => /pause|break/i.test(s.data.title);
-const talkCount = sessions.filter((s) => !isBreak(s)).length;
 const sponsors = resolve(d.sponsorIds, spoMap);
 
-// Meta-Badges einer Session (Zeit, Dauer, Bühne, Level)
+// Meta-Badges einer Session (Bühne, Level) — Zeit/Dauer wandern in die Timeline-Spalte
 function sessionMeta(s: any) {
   const m: string[] = [];
-  if (s.data.startTime && s.data.endTime) m.push(`${s.data.startTime}–${s.data.endTime} Uhr`);
-  if (s.data.duration) m.push(`${s.data.duration} min`);
   if (s.data.room) m.push(s.data.room);
   if (s.data.level) m.push(String(s.data.level).charAt(0).toUpperCase() + String(s.data.level).slice(1));
   return m;
@@ -62,6 +124,12 @@ function sessionMeta(s: any) {
 // Hero-Hintergrund: echtes Eventfoto statt des Branding-Bilds (das enthält
 // eingebrannten Titeltext und kollidiert sonst mit der H1). Fallback: Publikumsfoto.
 const heroBg = eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
+// Bei Events ohne eigene Galerie stammt eventPhotos[1] aus einem anderen Event-Pool
+// als das Hero-Bild und war stichprobenartig schlecht ausgeleuchtet. eventPhotos[4]
+// ist im Round-Robin das zweite Bild aus demselben (gut ausgeleuchteten) Pool wie heroBg.
+const factsImage = hasOwnPhotos
+  ? (eventPhotos[1] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg')
+  : (eventPhotos[4] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg');
 
 function fmtDate(dt?: string) {
   if (!dt) return null;
@@ -71,13 +139,29 @@ function fmtDate(dt?: string) {
 }
 const dateLabel = fmtDate(d.eventDate);
 const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
+const countdownTarget = !isPast && d.eventDate ? `${d.eventDate}T${d.startTime ?? '18:00'}:00` : null;
 
-const facts = [
-  `${speakerSlots.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}`,
-  '100% KI-Fokus',
-  sessions.length ? `${sessions.length} Sessions` : 'Kurze Impuls-Sessions',
-  'Zeit für Gespräche & Austausch',
-  'Inklusive Drinks & Snacks',
+// Programm-Struktur für die Kurzfakten: die eigentlichen Talks (ohne Welcome/
+// Kickoff und ohne Pausen) laufen je 30 Minuten inkl. Zeit für Austausch;
+// dazwischen liegen separate 15-minütige Pausen.
+const isWelcome = (s: any) => /welcome|kickoff/i.test(s.data.title);
+const coreTalks = sessions.filter((s) => !isBreak(s) && !isWelcome(s));
+const breaks = sessions.filter((s) => isBreak(s));
+const talkDuration = coreTalks.find((s) => s.data.duration)?.data.duration;
+const breakDuration = breaks.find((s) => s.data.duration)?.data.duration;
+
+const facts: { icon: string; label: string }[] = [
+  { icon: '🎤', label: `${speakerSlots.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}` },
+  { icon: '🤖', label: '100% KI-Fokus' },
+  {
+    icon: '🗂️',
+    label: coreTalks.length
+      ? `${coreTalks.length} Sessions${talkDuration ? ` à ${talkDuration} Min.` : ''} inkl. Austausch`
+      : 'Kurze Impuls-Sessions',
+  },
+  ...(breaks.length ? [{ icon: '☕', label: `Pausen${breakDuration ? ` à ${breakDuration} Min.` : ''}` }] : []),
+  { icon: '🤝', label: 'Speaker den ganzen Abend verfügbar' },
+  { icon: '🥂', label: 'Inklusive Drinks & Snacks' },
 ];
 ---
 
@@ -107,75 +191,80 @@ const facts = [
   <Header lang="de" />
   <main>
     <section class="hero">
-      <img class="hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" />
+      <img class="hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" data-parallax="10" data-parallax-scale="1.12" />
+      <div class="hero-duotone"></div>
       <div class="hero-overlay"></div>
+      <div class="hero-stars" data-parallax="5"></div>
+      <div class="hero-orb hero-orb-a"></div>
+      <div class="hero-orb hero-orb-b"></div>
       <div class="container hero-inner">
         <a href="/events/" class="back">← Alle Events</a>
         <div class="badges">
-          {d.city && <span class="badge">{d.city}</span>}
+          {d.city && <span class="badge">📍 {d.city}</span>}
+          <span class="badge badge-outline">🌙 Afterwork</span>
           {isPast && <span class="badge past">Vergangenes Event</span>}
         </div>
-        <p class="kicker">Afterwork Event{dateLabel ? ` am ${new Date(d.eventDate!).toLocaleDateString('de-DE')}` : ''}</p>
+        <p class="kicker">{dateLabel ? `Afterwork am ${new Date(d.eventDate!).toLocaleDateString('de-DE')}` : 'Afterwork Event'}</p>
         <h1 class="display-font">{d.title}</h1>
-        <div class="meta">
-          {dateLabel && <span>📅 {dateLabel}</span>}
-          {d.startTime && <span>🕕 {d.startTime} Uhr</span>}
-          {d.locationName && <span>📍 {d.locationName}</span>}
+
+        <div class="hero-chips">
+          {dateLabel && <span class="hero-chip"><span class="hc-icon">📅</span>{dateLabel}</span>}
+          {d.startTime && <span class="hero-chip"><span class="hc-icon">🕕</span>{d.startTime} Uhr</span>}
+          {d.locationName && <span class="hero-chip"><span class="hc-icon">📍</span>{d.locationName}</span>}
         </div>
-        {d.ticketUrl && !isPast && <a href={d.ticketUrl} class="btn btn-primary">Tickets sichern</a>}
+
+        <div class="hero-bar">
+          {speakers.length > 0 && (
+            <a href="#lineup" class="hero-bar-speakers">
+              <span class="hero-speakers-avatars">
+                {[...moderators, ...speakers].slice(0, 5).map((s) => (
+                  s.data.image?.src
+                    ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
+                    : <span class="hero-speakers-fallback">✨</span>
+                ))}
+              </span>
+              <span class="hero-bar-speakers-label">{speakerSlots.length || speakers.length} Speaker ↓</span>
+            </a>
+          )}
+
+          {countdownTarget && (
+            <div class="hero-bar-countdown">
+              <span class="hbc-dot"></span>
+              <div class="countdown" data-countdown={countdownTarget}>
+                <div class="cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+              </div>
+            </div>
+          )}
+
+          {d.ticketUrl && !isPast && <a href={d.ticketUrl} class="btn btn-primary hero-bar-cta">Tickets sichern</a>}
+        </div>
       </div>
+      <svg class="hero-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,32 C220,80 420,0 720,28 C1020,56 1220,84 1440,24 L1440,90 L0,90 Z"></path>
+      </svg>
     </section>
 
     <div class="container body">
-      {(d.excerpt || d.contentHtml) && (
-        <div class="intro prose">
+      {(d.contentHtml || d.excerpt) && (
+        <div class="intro prose" data-reveal>
           {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
         </div>
       )}
 
-      {/* Fakten */}
-      <section class="facts card">
-        <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
-        <ul>
-          {facts.map((f) => <li>{f}</li>)}
-        </ul>
-      </section>
-
-      {/* Speaker-Lineup */}
-      {(speakers.length > 0 || tbaCount > 0) && (
-        <section class="sec">
-          <p class="eyebrow">Wer dich durch den Abend begleitet</p>
-          <h2 class="display-font sec-h">Speakerauswahl des Abends</h2>
-          <div class="people">
-            {speakers.map((s) => (
-              <a href={`/speaker/${s.data.slug}/`} class="person card">
-                {s.data.image?.src && <img src={s.data.image.src} alt={s.data.title} loading="lazy" />}
-                <div class="p-body">
-                  <strong>{s.data.title}</strong>
-                  {s.data.jobTitle && <span>{s.data.jobTitle}</span>}
-                </div>
-              </a>
-            ))}
-            {Array.from({ length: tbaCount }).map(() => (
-              <div class="person card tba">
-                <div class="tba-avatar">✨</div>
-                <div class="p-body">
-                  <strong>Wird noch bekanntgegeben</strong>
-                  <span>Speaker folgt in Kürze</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Programm */}
+      {/* Programm — als Kachel-Stack: jede Karte bleibt beim Scrollen kurz stehen,
+          bis die nächste sich darüberschiebt. */}
       {sessions.length > 0 && (
-        <section class="sec">
+        <section class="sec" data-reveal>
           <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
-          <h2 class="display-font sec-h">Die Themen des Abends</h2>
-          <div class="program">
-            {sessions.map((s) => {
+          <h2 class="display-font sec-h">Die <span class="gradient-text">Themen</span> des Abends</h2>
+          <div class="stack">
+            {sessions.map((s, i) => {
               const sp = (s.data.speakerIds ?? [])
                 .map((id: number) => spMap.get(id))
                 .filter(Boolean)
@@ -183,22 +272,31 @@ const facts = [
               const meta = sessionMeta(s);
               if (isBreak(s)) {
                 return (
-                  <article class="talk card break">
-                    <h3>☕ {s.data.title}</h3>
-                    {s.data.duration && <span class="chip">{s.data.duration} min</span>}
-                  </article>
+                  <div class="stack-card stack-break" style={`--i:${i}`}>
+                    <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
+                  </div>
                 );
               }
               return (
-                <article class="talk card">
-                  {meta.length > 0 && (
-                    <p class="talk-meta">
-                      {meta.map((m) => <span class="chip">{m}</span>)}
-                    </p>
-                  )}
-                  <h3><a href={`/sessions/${s.data.slug}/`}>{s.data.title}</a></h3>
+                <article class="stack-card" style={`--i:${i}`}>
+                  <span class="stack-num">{i + 1}</span>
+                  <div class="stack-head">
+                    {s.data.startTime && <span class="stack-time">🕕 {s.data.startTime} Uhr</span>}
+                    {meta.map((m) => <span class="chip">{m}</span>)}
+                    {s.data.duration && <span class="chip">{s.data.duration} min</span>}
+                  </div>
+                  <h3>{s.data.title}</h3>
                   {sp.length > 0 && (
-                    <p class="talk-sp">{sp.map((x: any) => x.data.title).join(', ')}</p>
+                    <div class="talk-sp">
+                      <span class="talk-sp-avatars">
+                        {sp.map((x: any) => (
+                          x.data.image?.src
+                            ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
+                            : <span class="talk-sp-fallback">✨</span>
+                        ))}
+                      </span>
+                      <span class="talk-sp-names">{sp.map((x: any) => x.data.title).join(', ')}</span>
+                    </div>
                   )}
                   {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
                   {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
@@ -207,7 +305,6 @@ const facts = [
                       <div class="prose" set:html={s.data.contentHtml} />
                     </details>
                   )}
-                  <a href={`/sessions/${s.data.slug}/`} class="talk-more">Zur Session →</a>
                 </article>
               );
             })}
@@ -215,57 +312,33 @@ const facts = [
         </section>
       )}
 
-      {/* Moderation */}
-      {moderators.length > 0 && (
-        <section class="sec">
-          <p class="eyebrow">Moderation</p>
-          <h2 class="display-font sec-h">Wer dich durch den Abend führt</h2>
-          {moderators.map((s) => (
-            <a href={`/speaker/${s.data.slug}/`} class="moderator card">
-              {s.data.image?.src && <img src={s.data.image.src} alt={s.data.title} loading="lazy" />}
-              <div class="m-body">
-                <strong>{s.data.title}</strong>
-                {s.data.jobTitle && <span class="m-role">{s.data.jobTitle}</span>}
-                {s.data.excerpt && <p>{s.data.excerpt}</p>}
-              </div>
+      {/* Fakten — farbiger Trenner mit Bild statt einer weiteren dunklen Karte */}
+      <section class="facts" data-reveal>
+        <div class="facts-orb facts-orb-a"></div>
+        <div class="facts-orb facts-orb-b"></div>
+        <div class="facts-grid">
+          <div class="facts-img">
+            <img src={imgVariant(factsImage, 640)} alt="" loading="lazy" />
+          </div>
+          <div class="facts-info">
+            <h2 class="display-font">Das Afterwork-Event in <span class="gradient-text">Kürze</span></h2>
+            <ul>
+              {facts.map((f, i) => (
+                <li>
+                  <span class={`fact-icon fact-icon-${i % 2 === 0 ? 'a' : 'b'}`}>{f.icon}</span>
+                  <span>{f.label}</span>
+                </li>
+              ))}
+            </ul>
+            <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary facts-cta">
+              {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
             </a>
-          ))}
-        </section>
-      )}
-
-      {/* Sponsoren */}
-      {sponsors.length > 0 && (
-        <section class="sec">
-          <p class="eyebrow">Möglich gemacht von</p>
-          <h2 class="display-font sec-h">Sponsoren dieses Events</h2>
-          <div class="sponsor-row">
-            {sponsors.map((s) => (
-              <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
-                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
-              </a>
-            ))}
           </div>
-        </section>
-      )}
-
-      {/* Foto-Rückblick vergangener Events */}
-      {eventPhotos.length > 0 && (
-        <section class="sec">
-          <p class="eyebrow">AI Nights Rückblick</p>
-          <h2 class="display-font sec-h">Impressionen von diesem Event</h2>
-          <div class="photos">
-            {eventPhotos.map((src) => (
-              <a href={src} target="_blank" rel="noopener" class="photo">
-                <img src={imgVariant(src, 320)} alt={`Impression ${d.title}`} loading="lazy" />
-              </a>
-            ))}
-          </div>
-          <a href="/de/galerie/" class="btn btn-ghost gal-link">Zur ganzen Galerie</a>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Stimmen aus der Community — Video-Testimonials wie im Original */}
-      <section class="sec">
+      <section class="sec" data-reveal>
         <p class="eyebrow">Was Besucher über die AI Nights sagen</p>
         <h2 class="display-font sec-h">Stimmen aus der Community</h2>
         <div class="testi-videos">
@@ -282,8 +355,213 @@ const facts = [
         </div>
       </section>
 
-      <section class="cta card">
-        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : 'Sichere dir deinen Platz'}</h2>
+      {/* Moderation */}
+      {moderators.length > 0 && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">Wer dich durch den Abend führt</p>
+          <h2 class="display-font sec-h">Moderation</h2>
+          <div class="speaker-list">
+            {moderators.map((s) => (
+              <a href={`/speaker/${s.data.slug}/`} class="speaker-full card moderator-card">
+                {s.data.image?.src && <img class="sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />}
+                <div class="sp-body">
+                  <h3>{s.data.title}</h3>
+                  {s.data.jobTitle && <p class="sp-role">{s.data.jobTitle}</p>}
+                  {s.data.excerpt && <p class="sp-bio">{s.data.excerpt}</p>}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Speaker-Vorstellung */}
+      {(speakers.length > 0 || tbaCount > 0) && (
+        <section class="sec" id="lineup" data-reveal>
+          <p class="eyebrow">Lerne von Branchenexperten und Vordenkern</p>
+          <h2 class="display-font sec-h"><span class="gradient-text">Speaker</span> des Abends</h2>
+          <div class="speaker-list">
+            {speakers.map((s) => (
+              <div class="speaker-full card">
+                <a href={`/speaker/${s.data.slug}/`} class="sp-photo-link">
+                  {s.data.image?.src
+                    ? <img class="sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />
+                    : <span class="sp-photo sp-photo-fallback">✨</span>}
+                </a>
+                <div class="sp-body">
+                  <h3><a href={`/speaker/${s.data.slug}/`}>{s.data.title}</a></h3>
+                  {s.data.jobTitle && <p class="sp-role">{s.data.jobTitle}</p>}
+                  {s.data.bioHtml
+                    ? <div class="sp-bio prose" set:html={s.data.bioHtml} />
+                    : s.data.excerpt && <p class="sp-bio">{s.data.excerpt}</p>}
+                  {s.data.topics?.length > 0 && (
+                    <ul class="sp-topics">
+                      {s.data.topics.map((t: string) => <li>{t}</li>)}
+                    </ul>
+                  )}
+                  {s.data.socials?.linkedin && (
+                    <a href={s.data.socials.linkedin} target="_blank" rel="noopener" class="sp-social">LinkedIn ↗</a>
+                  )}
+                </div>
+              </div>
+            ))}
+            {Array.from({ length: tbaCount }).map(() => (
+              <div class="speaker-full card tba">
+                <span class="sp-photo sp-photo-fallback">✨</span>
+                <div class="sp-body">
+                  <h3>Wird noch bekanntgegeben</h3>
+                  <p class="sp-role">Speaker folgt in Kürze</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Foto-Rückblick — eigene Event-Fotos, sonst bunt gemischter Vorgeschmack */}
+      {eventPhotos.length > 0 && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">AI Nights Rückblick</p>
+          <h2 class="display-font sec-h">
+            {hasOwnPhotos ? 'Impressionen von diesem Event' : 'Ein Vorgeschmack aus bisherigen AI Nights'}
+          </h2>
+          {!hasOwnPhotos && (
+            <p class="photos-note">
+              Für dieses Event gibt's noch keine eigenen Fotos — hier ein Vorgeschmack aus bisherigen AI&nbsp;Nights.
+            </p>
+          )}
+          <div class="photos">
+            {eventPhotos.map((src) => (
+              <a href={src} target="_blank" rel="noopener" class="photo">
+                <img src={imgVariant(src, 320)} alt={hasOwnPhotos ? `Impression ${d.title}` : 'Impression von einer AI Nights'} loading="lazy" />
+              </a>
+            ))}
+          </div>
+          <a href="/de/galerie/" class="btn btn-ghost gal-link">Zur ganzen Galerie</a>
+        </section>
+      )}
+
+      {/* YouTube-Einblick */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Ein Einblick in die letzte AI Night</p>
+        <h2 class="display-font sec-h">So fühlt sich <span class="gradient-text">AI Nights</span> an</h2>
+        <div class="yt-wrap">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+            title="So fühlt sich AI Nights an"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
+      {/* Sponsoren */}
+      {sponsors.length > 0 && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">Möglich gemacht von</p>
+          <h2 class="display-font sec-h"><span class="gradient-text">Sponsoren</span> dieses Events</h2>
+          <div class="sponsor-row">
+            {sponsors.map((s) => (
+              <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
+                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Gastgeber & Initiator — eigenständiges, farbig abgesetztes Panel */}
+      <section class="sec host-sec" data-reveal>
+        <div class="host-panel">
+          <div class="host-orb host-orb-a"></div>
+          <div class="host-orb host-orb-b"></div>
+          <div class="host-inner">
+            <div class="host-photo-wrap">
+              <div class="host-photo-ring">
+                <img src={imgVariant(hostImage, 640)} alt="Andreas Pabst" loading="lazy" />
+              </div>
+              <span class="host-badge">✨ Gastgeber &amp; Initiator</span>
+            </div>
+            <div class="host-body">
+              <p class="host-eyebrow">Dein Gastgeber und Initiator der AI Nights Nürnberg</p>
+              <h2 class="display-font host-name">Andreas Pabst</h2>
+              <p class="host-role">Head of Engineering &amp; KI Specialist</p>
+              <div class="prose host-prose">
+                {hostParagraphs.map((p) => <p>{p}</p>)}
+              </div>
+              <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">Tickets sichern</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Parallax-Zitate */}
+      <section class="sec quote-parallax" data-reveal>
+        <div class="qp-bg" style={`background-image:url(${imgVariant(parallaxBg, 1600)})`} data-parallax="16" data-parallax-scale="1.2"></div>
+        <div class="qp-duotone"></div>
+        <div class="qp-overlay"></div>
+        <div class="qp-inner">
+          <span class="qp-mark" aria-hidden="true">„</span>
+          <p class="qp-lead">
+            Die AI Nights sind in Nürnberg gestartet – und
+            <span class="gradient-text">wachsen längst über die Region hinaus</span>:
+            <span class="gradient-text">München, Hamburg und Leipzig</span> sind schon dabei, weitere Städte folgen.
+            Nicht, weil überall dieselben Antworten gesucht werden – sondern weil überall ähnliche Fragen gestellt werden.
+          </p>
+          <p class="qp-lead">
+            KI betrifft längst nicht mehr nur Spezialist:innen. Sie verändert Arbeitsweisen, Entscheidungen und Zusammenarbeit.
+            Und genau darüber sprechen wir: offen, verständlich und ohne Hürden.
+          </p>
+        </div>
+        <div class="qp-marquee">
+          <div class="qp-track">
+            <div class="qp-track-set">
+              {parallaxQuotes.map((q) => (
+                <blockquote class="qp-quote"><p>„{q}"</p></blockquote>
+              ))}
+            </div>
+            <div class="qp-track-set" aria-hidden="true">
+              {parallaxQuotes.map((q) => (
+                <blockquote class="qp-quote"><p>„{q}"</p></blockquote>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Fragen zum Event</p>
+        <h2 class="display-font sec-h">Häufige <span class="gradient-text">Fragen</span></h2>
+        <div class="faq-list">
+          {faqItems.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<span class="faq-icon">＋</span></summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* Abschluss */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Kurz. Klar. Relevant.</p>
+        <h2 class="display-font sec-h">Das sind die <span class="gradient-text">AI Nights</span></h2>
+        <ul class="closing-features">
+          {closingFeatures.map((f, i) => (
+            <li>
+              <span class={`cf-icon cf-icon-${i % 2 === 0 ? 'a' : 'b'}`}>{f.icon}</span>
+              <span>{f.label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="cta card" data-reveal>
+        <div class="cta-glow"></div>
+        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : <>Bereit, bei den <span class="gradient-text">AI Nights</span> dabei zu sein?</>}</h2>
+        {!isPast && <p class="cta-sub">Verpasse nicht diese Gelegenheit, dich mit KI-Experten zu vernetzen und dein Wissen zu erweitern</p>}
         <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">
           {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
         </a>
@@ -293,12 +571,106 @@ const facts = [
   <Footer lang="de" />
 </Layout>
 
+<script>
+  function initCountdowns() {
+    document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => {
+      const target = new Date(el.dataset.countdown ?? '').getTime();
+      if (Number.isNaN(target)) return;
+      const dEl = el.querySelector('[data-cd-d]');
+      const hEl = el.querySelector('[data-cd-h]');
+      const mEl = el.querySelector('[data-cd-m]');
+      const sEl = el.querySelector('[data-cd-s]');
+      let timer: ReturnType<typeof setInterval>;
+      function tick() {
+        const diff = Math.max(0, target - Date.now());
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        if (dEl) dEl.textContent = String(days).padStart(2, '0');
+        if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+        if (mEl) mEl.textContent = String(mins).padStart(2, '0');
+        if (sEl) sEl.textContent = String(secs).padStart(2, '0');
+        if (diff <= 0) clearInterval(timer);
+      }
+      tick();
+      timer = setInterval(tick, 1000);
+    });
+  }
+
+  function initReveal() {
+    const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+    );
+    els.forEach((el) => io.observe(el));
+  }
+
+  function initParallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const layers = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+    if (!layers.length) return;
+    let ticking = false;
+    function update() {
+      const vh = window.innerHeight || 1;
+      layers.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const progress = (center - vh / 2) / vh;
+        const speed = parseFloat(el.dataset.parallax ?? '10');
+        const scale = el.dataset.parallaxScale ? parseFloat(el.dataset.parallaxScale) : 1;
+        el.style.transform = `translateY(${progress * speed}%)${scale !== 1 ? ` scale(${scale})` : ''}`;
+      });
+      ticking = false;
+    }
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
+
+  initCountdowns();
+  initReveal();
+  initParallax();
+</script>
+
 <style>
   .hero {
     position: relative;
-    padding-block: clamp(3rem, 8vw, 6rem);
+    padding-block: clamp(4rem, 11vw, 7.5rem) clamp(4.5rem, 9vw, 7rem);
     overflow: hidden;
-    border-bottom: 1px solid var(--border);
+  }
+  .hero-divider {
+    position: absolute;
+    z-index: 2;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: clamp(36px, 6vw, 70px);
+    pointer-events: none;
+  }
+  .hero-divider path {
+    fill: var(--bg-base);
   }
   .hero-bg {
     position: absolute;
@@ -306,24 +678,94 @@ const facts = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.28;
+    opacity: 0.42;
+    will-change: transform;
+  }
+  .hero-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(220, 39, 119, 0.5), rgba(50, 107, 255, 0.4));
+    mix-blend-mode: color;
   }
   .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 1, 24, 0.5), var(--bg-base));
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.4), var(--bg-base) 92%);
+  }
+  .hero-stars {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 20% 30%, rgba(255, 255, 255, 0.9), transparent),
+      radial-gradient(1px 1px at 65% 12%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1.6px 1.6px at 82% 40%, rgba(255, 255, 255, 0.85), transparent),
+      radial-gradient(1px 1px at 35% 65%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1.2px 1.2px at 92% 78%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 8% 85%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1.3px 1.3px at 50% 90%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1px 1px at 55% 45%, rgba(255, 255, 255, 0.5), transparent);
+    background-repeat: repeat;
+    background-size: 340px 340px;
+    animation: twinkle 5s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    opacity: 0.55;
+  }
+  .hero-orb-a {
+    width: 420px;
+    height: 420px;
+    top: -140px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.55), transparent 70%);
+    animation: drift-a 16s ease-in-out infinite alternate;
+  }
+  .hero-orb-b {
+    width: 360px;
+    height: 360px;
+    bottom: -160px;
+    left: -80px;
+    background: radial-gradient(circle, rgba(50, 107, 255, 0.45), transparent 70%);
+    animation: drift-b 20s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.55; }
+    to { opacity: 1; }
+  }
+  @keyframes drift-a {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-40px, 30px); }
+  }
+  @keyframes drift-b {
+    from { transform: translate(0, 0); }
+    to { transform: translate(30px, -30px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-stars,
+    .hero-orb-a,
+    .hero-orb-b {
+      animation: none;
+    }
   }
   .hero-inner {
     position: relative;
+    text-align: center;
   }
   .back {
+    display: inline-block;
     color: var(--text-secondary);
     font-size: 0.9rem;
+    text-align: left;
   }
   .badges {
     display: flex;
+    justify-content: center;
     gap: 0.6rem;
-    margin: 1.5rem 0 1rem;
+    margin: 1.8rem 0 1.2rem;
   }
   .badge {
     background: var(--gradient-accent);
@@ -335,6 +777,11 @@ const facts = [
     padding: 0.3rem 0.8rem;
     border-radius: 999px;
   }
+  .badge-outline {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(8px);
+  }
   .badge.past {
     background: var(--bg-glass);
     border: 1px solid var(--border);
@@ -342,165 +789,538 @@ const facts = [
   }
   .kicker {
     color: var(--blue-bright);
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: 0.95rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.6rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.8rem;
   }
   h1 {
-    font-size: clamp(2rem, 5vw, 3.4rem);
-    max-width: 20ch;
-    margin-bottom: 1.2rem;
+    font-size: clamp(2.6rem, 6.5vw, 4.6rem);
+    line-height: 1.05;
+    max-width: 22ch;
+    margin: 0 auto 1.6rem;
   }
-  .meta {
+
+  /* Kompakte, scanbare Kurzfakten statt Fließtext */
+  .hero-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.2rem;
-    color: var(--text-secondary);
-    font-size: 0.98rem;
-    margin-bottom: 1.8rem;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 2.2rem;
   }
-  .body {
-    max-width: 860px;
-    padding-block: 3rem 2rem;
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .hc-icon {
+    font-size: 1rem;
+  }
+
+  /* Ein gebündelter Info-Streifen: Speaker, Countdown, CTA — alles auf einen Blick */
+  .hero-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 1.3rem 1.8rem;
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
+  }
+  .hero-bar-speakers {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition: color 0.2s ease;
+  }
+  .hero-bar-speakers:hover {
+    color: var(--text-primary);
+  }
+  .hero-bar-speakers-label {
+    white-space: nowrap;
+  }
+  .hero-speakers-avatars {
+    display: inline-flex;
+  }
+  .hero-speakers-avatars img,
+  .hero-speakers-fallback {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-base);
+    margin-left: -11px;
+    display: grid;
+    place-items: center;
+    background: var(--gradient-accent);
+    font-size: 1rem;
+  }
+  .hero-speakers-avatars img:first-child,
+  .hero-speakers-fallback:first-child {
+    margin-left: 0;
+  }
+  .hero-bar-countdown {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-inline: 1.6rem;
+    border-inline: 1px solid var(--border);
+  }
+  .hbc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--magenta-bright);
+    box-shadow: 0 0 0 0 rgba(255, 45, 122, 0.6);
+    animation: hbc-pulse 1.8s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes hbc-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 45, 122, 0.55); }
+    50% { box-shadow: 0 0 0 6px rgba(255, 45, 122, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hbc-dot { animation: none; }
+  }
+  .countdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .cd-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 46px;
+  }
+  .cd-box strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    line-height: 1;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .cd-box span {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.2rem;
+  }
+  .cd-sep {
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  @media (max-width: 640px) {
+    .hero-bar {
+      flex-direction: column;
+    }
+    .hero-bar-countdown {
+      border-inline: none;
+      padding-inline: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding-block: 1rem;
+    }
   }
   .intro {
-    margin-bottom: 2.5rem;
-  }
-  .facts {
-    padding: 2rem;
     margin-bottom: 3rem;
   }
+  .body {
+    max-width: 980px;
+    padding-block: 3.5rem 2rem;
+  }
+
+  /* Fakten — farbiger Trenner statt einer weiteren dunklen Karte */
+  .facts {
+    position: relative;
+    overflow: hidden;
+    padding: 2.6rem 2.4rem;
+    margin-bottom: 5.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background:
+      linear-gradient(135deg, rgba(255, 45, 122, 0.14), rgba(50, 107, 255, 0.1)),
+      var(--bg-glass);
+    backdrop-filter: blur(12px);
+  }
+  .facts-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(50px);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .facts-orb-a {
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    left: -60px;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.6), transparent 70%);
+  }
+  .facts-orb-b {
+    width: 220px;
+    height: 220px;
+    bottom: -100px;
+    right: -60px;
+    background: radial-gradient(circle, rgba(50, 107, 255, 0.55), transparent 70%);
+  }
   .facts h2 {
-    font-size: 1.4rem;
-    margin-bottom: 1.2rem;
+    position: relative;
+    font-size: 1.7rem;
+    margin-bottom: 1.6rem;
+    text-align: center;
   }
   .facts ul {
+    position: relative;
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 0.7rem;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.1rem;
   }
   .facts li {
-    padding-left: 1.6rem;
-    position: relative;
-    color: var(--text-secondary);
-  }
-  .facts li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--magenta-bright);
-    font-weight: 700;
-  }
-  .sec {
-    margin-bottom: 3rem;
-  }
-  .sec-h {
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
-    margin: 0.3rem 0 1.5rem;
-  }
-  .people {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  .person {
     display: flex;
     align-items: center;
-    gap: 0.9rem;
-    padding: 0.7rem;
+    gap: 0.8rem;
+    color: var(--text-secondary);
+    font-size: 1.02rem;
+  }
+  .fact-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    font-size: 1.2rem;
+  }
+  .fact-icon-a {
+    background: rgba(255, 45, 122, 0.16);
+    border: 1px solid rgba(255, 45, 122, 0.35);
+  }
+  .fact-icon-b {
+    background: rgba(50, 107, 255, 0.16);
+    border: 1px solid rgba(50, 107, 255, 0.35);
+  }
+  .facts-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(200px, 320px) 1fr;
+    gap: 2.2rem;
+    align-items: center;
+  }
+  .facts-img {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .facts-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .facts-info h2 {
+    text-align: left;
+  }
+  .facts-cta {
+    margin-top: 1.8rem;
+  }
+  @media (max-width: 720px) {
+    .facts-cta {
+      display: flex;
+      justify-content: center;
+    }
+    .facts-grid {
+      grid-template-columns: 1fr;
+    }
+    .facts-img {
+      aspect-ratio: 16 / 9;
+      max-width: 320px;
+      margin-inline: auto;
+    }
+    .facts-info h2 {
+      text-align: center;
+    }
+  }
+  .sec {
+    position: relative;
+    margin-bottom: 5.5rem;
+  }
+  .sec::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -2.5rem;
+    left: 50%;
+    width: 640px;
+    max-width: 130vw;
+    height: 380px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(255, 45, 122, 0.07), transparent 70%);
+    pointer-events: none;
+  }
+  .sec:nth-of-type(even)::before {
+    background: radial-gradient(ellipse at center, rgba(50, 107, 255, 0.07), transparent 70%);
+  }
+  .sec > .eyebrow {
+    display: block;
+    text-align: center;
+    font-size: 0.92rem;
+  }
+  .sec-h {
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    margin: 0.4rem 0 1.8rem;
+    text-align: center;
+  }
+
+  /* Speaker & Moderation — vollständige Vorstellung */
+  .speaker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .speaker-full {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    align-items: flex-start;
     transition: border-color 0.2s ease, transform 0.2s ease;
   }
-  .person:hover {
+  .moderator-card {
+    align-items: center;
+  }
+  a.speaker-full:hover {
     border-color: var(--border-strong);
     transform: translateY(-2px);
   }
-  .person img {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
+  .sp-photo-link {
+    flex-shrink: 0;
+  }
+  .sp-photo {
+    display: block;
+    width: 168px;
+    height: 168px;
+    border-radius: 20px;
     object-fit: cover;
     flex-shrink: 0;
   }
-  .p-body {
-    display: flex;
-    flex-direction: column;
+  .sp-photo-fallback {
+    display: grid;
+    place-items: center;
+    background: var(--gradient-accent);
+    font-size: 2.6rem;
   }
-  .p-body strong {
-    color: var(--text-primary);
-    font-size: 0.95rem;
+  .sp-body h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.35rem;
   }
-  .p-body span {
-    color: var(--text-muted);
-    font-size: 0.78rem;
-  }
-  .program {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .talk {
-    padding: 1.5rem;
-  }
-  .talk h3 {
-    font-size: 1.15rem;
-    margin-bottom: 0.4rem;
-  }
-  .talk h3 a {
+  .sp-body h3 a {
     color: var(--text-primary);
   }
-  .talk h3 a:hover {
+  .sp-body h3 a:hover {
     color: var(--magenta-bright);
   }
-  .talk-meta {
+  .sp-role {
+    color: var(--blue-bright);
+    font-weight: 600;
+    font-size: 0.98rem;
+    margin: 0 0 0.9rem;
+  }
+  .sp-bio {
+    color: var(--text-secondary);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+  }
+  .sp-topics {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .sp-topics li {
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+  .sp-topics li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta-bright);
+  }
+  .sp-social {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blue-bright);
+  }
+  .speaker-full.tba {
+    opacity: 0.75;
+    align-items: center;
+  }
+  .speaker-full.tba .sp-photo {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+  }
+
+  /* Programm als Kachel-Stack: jede Karte bleibt beim Scrollen kurz „kleben“,
+     bis die nächste Karte sich darüberschiebt — dadurch entsteht beim
+     Hoch-/Runterscrollen ein überlappender, bewegter Kartenstapel-Effekt. */
+  .stack {
+    position: relative;
+    padding-bottom: 1.5rem;
+  }
+  .stack-card {
+    position: sticky;
+    top: calc(84px + var(--i, 0) * 18px);
+    margin-bottom: 1.4rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--border-strong);
+    border-radius: calc(var(--radius) + 6px);
+    padding: 2rem 2.2rem;
+    box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+    z-index: calc(var(--i, 0) + 1);
+  }
+  .stack-card:nth-child(odd) {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(160deg, rgba(255, 45, 122, 0.16), transparent 60%);
+    border-top-color: var(--magenta-bright);
+  }
+  .stack-card:nth-child(even) {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(160deg, rgba(50, 107, 255, 0.16), transparent 60%);
+    border-top-color: var(--blue-bright);
+  }
+  .stack-num {
+    position: absolute;
+    top: -14px;
+    left: 1.8rem;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 16px rgba(255, 45, 122, 0.4);
+  }
+  .stack-head {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 0.7rem;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.4rem 0 0.9rem;
+  }
+  .stack-time {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-right: 0.3rem;
+  }
+  .stack-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
   }
   .chip {
     display: inline-block;
-    background: var(--bg-elevated);
+    background: var(--bg-base);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 0.15rem 0.65rem;
-    font-size: 0.75rem;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.02em;
   }
-  .talk.break {
+  .stack-card.stack-break {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.9rem 1.5rem;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
     background: transparent;
+    border: 1px dashed var(--border-strong);
+    box-shadow: none;
   }
-  .talk.break h3 {
-    font-size: 0.95rem;
+  .break-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border-strong);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
     color: var(--text-muted);
-    margin: 0;
+    font-size: 0.92rem;
     font-weight: 600;
   }
   .talk-sp {
-    color: var(--blue-bright);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.9rem;
+  }
+  .talk-sp-avatars {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .talk-sp-avatars img,
+  .talk-sp-fallback {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-elevated);
+    margin-left: -10px;
+    display: grid;
+    place-items: center;
+    background: var(--gradient-accent);
     font-size: 0.85rem;
+  }
+  .talk-sp-avatars img:first-child,
+  .talk-sp-fallback:first-child {
+    margin-left: 0;
+  }
+  .talk-sp-names {
+    color: var(--blue-bright);
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: 0.6rem;
   }
   .talk-ex {
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin-bottom: 0.7rem;
-  }
-  .talk-more {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
   }
   .talk-detail {
     margin: 0.4rem 0 0.9rem;
@@ -508,7 +1328,7 @@ const facts = [
   .talk-detail summary {
     cursor: pointer;
     color: var(--magenta-bright);
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 600;
     list-style: none;
   }
@@ -519,47 +1339,22 @@ const facts = [
     margin-bottom: 0.8rem;
   }
   .talk-detail .prose {
+    font-size: 0.98rem;
+  }
+  .photos-note {
+    text-align: center;
+    color: var(--text-muted);
     font-size: 0.95rem;
-  }
-  .moderator {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    padding: 1.5rem;
-    transition: border-color 0.2s ease;
-  }
-  .moderator:hover {
-    border-color: var(--border-strong);
-  }
-  .moderator img {
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-  .m-body strong {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-  }
-  .m-role {
-    display: block;
-    color: var(--blue-bright);
-    font-size: 0.85rem;
-    margin: 0.2rem 0 0.5rem;
-  }
-  .m-body p {
-    color: var(--text-secondary);
-    font-size: 0.92rem;
+    margin: -0.8rem 0 1.6rem;
   }
   .photos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.7rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.8rem;
   }
   .photo {
     aspect-ratio: 1 / 1;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--border);
   }
@@ -574,23 +1369,6 @@ const facts = [
   }
   .gal-link {
     margin-top: 1.5rem;
-  }
-  .person.tba {
-    opacity: 0.75;
-  }
-  .tba-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    font-size: 1.3rem;
-    background: var(--bg-elevated);
-    border: 1px dashed var(--border-strong);
-  }
-  .person.tba strong {
-    color: var(--text-secondary);
   }
   .testi-videos {
     display: grid;
@@ -611,12 +1389,13 @@ const facts = [
     gap: 1rem;
   }
   .testi {
-    padding: 1.6rem;
+    padding: 1.8rem;
     margin: 0;
   }
   .testi p {
     color: var(--text-primary);
     font-style: italic;
+    font-size: 1.02rem;
   }
   .sponsor-row {
     display: flex;
@@ -627,25 +1406,434 @@ const facts = [
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.2rem 1.6rem;
-    min-width: 150px;
-    min-height: 84px;
+    padding: 1.6rem 2.1rem;
+    min-width: 190px;
+    min-height: 110px;
   }
   .sponsor-logo:hover {
     border-color: var(--border-strong);
   }
   .sponsor-logo img {
-    max-height: 44px;
-    max-width: 130px;
+    max-height: 64px;
+    max-width: 170px;
     object-fit: contain;
   }
+
+  /* YouTube-Einblick */
+  .yt-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+  }
+  .yt-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Gastgeber — eigenständiges, farbig abgesetztes Panel (bricht aus dem 980px-Container aus) */
+  .host-sec {
+    margin-bottom: 0;
+  }
+  .host-panel {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+    background:
+      radial-gradient(ellipse 60% 80% at 15% 20%, rgba(255, 45, 122, 0.16), transparent 60%),
+      radial-gradient(ellipse 60% 80% at 85% 80%, rgba(50, 107, 255, 0.16), transparent 60%),
+      var(--bg-elevated);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .host-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .host-orb-a {
+    width: 320px;
+    height: 320px;
+    top: -100px;
+    left: 8%;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.5), transparent 70%);
+  }
+  .host-orb-b {
+    width: 300px;
+    height: 300px;
+    bottom: -120px;
+    right: 10%;
+    background: radial-gradient(circle, rgba(50, 107, 255, 0.45), transparent 70%);
+  }
+  .host-inner {
+    position: relative;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) 1fr;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+  }
+  .host-photo-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .host-photo-ring {
+    width: 100%;
+    max-width: 240px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    padding: 5px;
+    background: var(--gradient-accent);
+    box-shadow: var(--glow-magenta);
+  }
+  .host-photo-ring img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--bg-elevated);
+    display: block;
+  }
+  .host-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(12px);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .host-eyebrow {
+    color: var(--blue-bright);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+  .host-name {
+    font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+    margin: 0 0 0.3rem;
+  }
+  .host-role {
+    color: var(--magenta-bright);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
+  }
+  .host-prose p {
+    margin: 0 0 1rem;
+  }
+  .host-body .btn {
+    margin-top: 0.6rem;
+  }
+  @media (max-width: 760px) {
+    .host-inner {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .host-eyebrow,
+    .host-role {
+      text-align: center;
+    }
+  }
+
+  /* Parallax-Zitate — bricht aus dem 980px-Container aus, Duoton-Foto + Marquee */
+  .quote-parallax {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+    padding: 0;
+  }
+  .qp-bg {
+    position: absolute;
+    inset: -15% 0;
+    background-size: cover;
+    background-position: center;
+    will-change: transform;
+  }
+  .qp-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(220, 39, 119, 0.65), rgba(50, 107, 255, 0.55));
+    mix-blend-mode: color;
+  }
+  .qp-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.45), rgba(10, 1, 24, 0.88) 75%, var(--bg-base) 100%);
+  }
+  .qp-inner {
+    position: relative;
+    max-width: 800px;
+    margin-inline: auto;
+    padding: clamp(4.5rem, 10vw, 7rem) 1.5rem 0;
+    text-align: center;
+  }
+  .qp-mark {
+    display: block;
+    font-family: 'Space Grotesk', serif;
+    font-size: clamp(4rem, 10vw, 6rem);
+    line-height: 1;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -0.8rem;
+  }
+  .qp-lead {
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-weight: 600;
+    margin: 0 0 1rem;
+  }
+  .qp-marquee {
+    position: relative;
+    margin-top: 3rem;
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .qp-track {
+    display: flex;
+    width: max-content;
+    animation: qp-scroll 28s linear infinite;
+  }
+  .qp-marquee:hover .qp-track {
+    animation-play-state: paused;
+  }
+  .qp-track-set {
+    display: flex;
+    gap: 1.2rem;
+    padding-inline: 0.6rem;
+  }
+  @keyframes qp-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .qp-track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: var(--maxw);
+      margin-inline: auto;
+    }
+    .qp-track-set {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .qp-track-set:last-child {
+      display: none;
+    }
+  }
+  .qp-quote {
+    flex: 0 0 auto;
+    width: min(300px, 78vw);
+    background: rgba(20, 10, 42, 0.82);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin: 0;
+  }
+  .qp-quote p {
+    color: var(--text-primary);
+    font-style: italic;
+    font-size: 0.95rem;
+    margin: 0;
+    text-align: left;
+  }
+
+  /* FAQ */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .faq-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem 1.6rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-icon {
+    flex-shrink: 0;
+    color: var(--magenta-bright);
+    font-size: 1.3rem;
+    transition: transform 0.2s ease;
+  }
+  .faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+  .faq-item p {
+    padding: 0 1.6rem 1.4rem;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.96rem;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+
+  /* Abschluss-Feature-Strip */
+  .closing-features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem 1.2rem;
+    text-align: center;
+  }
+  .closing-features li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .cf-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    font-size: 1.7rem;
+    transition: transform 0.2s ease;
+  }
+  .closing-features li:hover .cf-icon {
+    transform: translateY(-3px) scale(1.05);
+  }
+  .cf-icon-a {
+    background: linear-gradient(135deg, rgba(255, 45, 122, 0.22), rgba(255, 45, 122, 0.06));
+    border: 1px solid rgba(255, 45, 122, 0.35);
+  }
+  .cf-icon-b {
+    background: linear-gradient(135deg, rgba(50, 107, 255, 0.22), rgba(50, 107, 255, 0.06));
+    border: 1px solid rgba(50, 107, 255, 0.35);
+  }
+  @media (max-width: 560px) {
+    .closing-features {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   .cta {
-    padding: 2.5rem;
+    position: relative;
+    padding: 3rem 2.5rem;
     text-align: center;
     margin-top: 1rem;
+    overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 45, 122, 0.25), transparent 60%);
+    animation: pulse-glow 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-glow { animation: none; }
   }
   .cta h2 {
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
-    margin-bottom: 1.2rem;
+    position: relative;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin-bottom: 1.4rem;
+  }
+  .cta-sub {
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: -0.8rem 0 1.6rem;
+  }
+  .cta .btn {
+    position: relative;
+  }
+
+  /* Scroll-Reveal */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 0.8, 0.3, 1);
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .speaker-full {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .speaker-full .sp-topics {
+      text-align: left;
+    }
+    .speaker-full .sp-topics li {
+      text-align: left;
+    }
+    .stack-card {
+      padding: 1.6rem 1.4rem;
+      top: calc(64px + var(--i, 0) * 12px);
+    }
+    .stack-num {
+      left: 1.2rem;
+    }
   }
 </style>
