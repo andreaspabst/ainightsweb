@@ -90,6 +90,18 @@ const closingFeatures = [
   { icon: '💬', label: 'Speaker-Austausch' },
 ];
 
+// Location — eigene Sektion mit Bild statt nur einem Meta-Icon im Hero
+const locationImage = eventPhotos[2] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
+const mapsQuery = encodeURIComponent([d.locationName, d.locationAddress, d.city].filter(Boolean).join(', '));
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+// Für wen sind die AI Nights? (basierend auf der bestehenden FAQ-Antwort, in drei Personas aufgeteilt)
+const audiences = [
+  { icon: '🚀', title: 'Neugierige & Einsteiger:innen', text: 'Du findest KI spannend, weißt aber noch nicht genau, wo du anfangen sollst? Perfekt — Vorwissen brauchst du nicht, nur Neugier.' },
+  { icon: '💻', title: 'Tech & Produkt', text: 'Entwickler:innen und Produktleute, die wissen wollen, was in der Praxis wirklich funktioniert — nicht nur auf Folien.' },
+  { icon: '📈', title: 'Business & Entscheider:innen', text: 'Du willst einordnen, wo KI im eigenen Unternehmen wirklich Mehrwert schafft — und wo (noch) nicht.' },
+];
+
 // Beziehungen (Post-IDs) zu Collection-Einträgen auflösen
 const speakerColl = await getCollection('speaker');
 const sessionColl = await getCollection('sessions');
@@ -245,7 +257,7 @@ const facts: { icon: string; label: string }[] = [
             </div>
           )}
 
-          {d.ticketUrl && !isPast && <a href={d.ticketUrl} class="btn btn-primary hero-bar-cta">Tickets sichern</a>}
+          {d.ticketUrl && !isPast && <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary hero-bar-cta">Tickets sichern</a>}
         </div>
       </div>
       <svg class="hero-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
@@ -337,10 +349,30 @@ const facts: { icon: string; label: string }[] = [
                 </li>
               ))}
             </ul>
-            <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary facts-cta">
+            <a
+              href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'}
+              target={!isPast && d.ticketUrl ? '_blank' : undefined}
+              rel={!isPast && d.ticketUrl ? 'noopener' : undefined}
+              class="btn btn-primary facts-cta"
+            >
               {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* Für wen ist das? */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Passt das zu dir?</p>
+        <h2 class="display-font sec-h">Für wen sind die <span class="gradient-text">AI Nights</span></h2>
+        <div class="audience-grid">
+          {audiences.map((a) => (
+            <div class="audience-card">
+              <span class="audience-icon">{a.icon}</span>
+              <h3>{a.title}</h3>
+              <p>{a.text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -478,6 +510,25 @@ const facts: { icon: string; label: string }[] = [
         </section>
       )}
 
+      {/* Location */}
+      {d.locationName && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">Wo es stattfindet</p>
+          <h2 class="display-font sec-h"><span class="gradient-text">{d.locationName}</span></h2>
+          <div class="location-grid">
+            <div class="location-img">
+              <img src={imgVariant(locationImage, 640)} alt={d.locationName} loading="lazy" />
+            </div>
+            <div class="location-info">
+              {d.locationAddress && <p class="location-address">📍 {d.locationAddress}</p>}
+              {d.city && <p class="location-city">{d.city}</p>}
+              <p class="location-note">Zentral gelegen, entspannte Atmosphäre — perfekt, um nach der Arbeit direkt vorbeizukommen.</p>
+              <a href={mapsUrl} target="_blank" rel="noopener" class="btn btn-ghost">Auf Google Maps öffnen ↗</a>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Gastgeber & Initiator — eigenständiges, farbig abgesetztes Panel */}
       <section class="sec host-sec" data-reveal>
         <div class="host-panel">
@@ -503,7 +554,14 @@ const facts: { icon: string; label: string }[] = [
                 </p>
                 {hostParagraphs.slice(2).map((p) => <p>{p}</p>)}
               </div>
-              <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">Tickets sichern</a>
+              <a
+                href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'}
+                target={!isPast && d.ticketUrl ? '_blank' : undefined}
+                rel={!isPast && d.ticketUrl ? 'noopener' : undefined}
+                class="btn btn-primary"
+              >
+                Tickets sichern
+              </a>
             </div>
           </div>
         </div>
@@ -514,6 +572,7 @@ const facts: { icon: string; label: string }[] = [
         <div class="qp-bg" style={`background-image:url(${imgVariant(parallaxBg, 1600)})`} data-parallax="16" data-parallax-scale="1.2"></div>
         <div class="qp-duotone"></div>
         <div class="qp-overlay"></div>
+        <div class="qp-stars" data-parallax="6"></div>
         <div class="qp-inner">
           <span class="qp-mark" aria-hidden="true">„</span>
           <p class="qp-lead">
@@ -575,12 +634,30 @@ const facts: { icon: string; label: string }[] = [
         <div class="cta-glow"></div>
         <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : <>Bereit, bei den <span class="gradient-text">AI Nights</span> dabei zu sein?</>}</h2>
         {!isPast && <p class="cta-sub">Verpasse nicht diese Gelegenheit, dich mit KI-Experten zu vernetzen und dein Wissen zu erweitern</p>}
-        <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">
+        <a
+          href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'}
+          target={!isPast && d.ticketUrl ? '_blank' : undefined}
+          rel={!isPast && d.ticketUrl ? 'noopener' : undefined}
+          class="btn btn-primary"
+        >
           {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
         </a>
       </section>
     </div>
   </main>
+
+  {d.ticketUrl && !isPast && (
+    <div class="sticky-cta" id="sticky-cta">
+      <div class="sticky-cta-inner">
+        <span class="sticky-cta-text">
+          <strong>{d.title}</strong>
+          {dateLabel && <span class="sticky-cta-date">{dateLabel}{d.startTime ? ` · ${d.startTime} Uhr` : ''}</span>}
+        </span>
+        <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary">Tickets sichern</a>
+      </div>
+    </div>
+  )}
+
   <Footer lang="de" />
 </Layout>
 
@@ -662,9 +739,21 @@ const facts: { icon: string; label: string }[] = [
     update();
   }
 
+  function initStickyCta() {
+    const bar = document.getElementById('sticky-cta');
+    const trigger = document.querySelector<HTMLElement>('.hero-bar-cta');
+    if (!bar || !trigger || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      ([entry]) => bar.classList.toggle('is-visible', !entry.isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(trigger);
+  }
+
   initCountdowns();
   initReveal();
   initParallax();
+  initStickyCta();
 </script>
 
 <style>
@@ -1603,6 +1692,21 @@ const facts: { icon: string; label: string }[] = [
     mix-blend-mode: color;
     opacity: 0.22;
   }
+  .qp-stars {
+    position: absolute;
+    inset: -15% 0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 20% 30%, rgba(255, 255, 255, 0.9), transparent),
+      radial-gradient(1px 1px at 65% 12%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1.6px 1.6px at 82% 40%, rgba(255, 255, 255, 0.85), transparent),
+      radial-gradient(1px 1px at 35% 65%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1.2px 1.2px at 92% 78%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 8% 85%, rgba(255, 255, 255, 0.6), transparent);
+    background-repeat: repeat;
+    background-size: 300px 300px;
+    animation: twinkle 5s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
   .qp-overlay {
     position: absolute;
     inset: 0;
@@ -1737,6 +1841,95 @@ const facts: { icon: string; label: string }[] = [
     white-space: pre-line;
   }
 
+  /* Für wen — Zielgruppen-Karten */
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.2rem;
+  }
+  .audience-card {
+    position: relative;
+    padding: 1.8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: var(--bg-elevated);
+    background-image: radial-gradient(ellipse at top left, rgba(255, 45, 122, 0.14), transparent 60%);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .audience-card:nth-child(2) {
+    background-image: radial-gradient(ellipse at top left, rgba(50, 107, 255, 0.14), transparent 60%);
+  }
+  .audience-card:nth-child(3) {
+    background-image: radial-gradient(ellipse at top left, rgba(109, 40, 217, 0.18), transparent 60%);
+  }
+  .audience-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+  .audience-icon {
+    display: block;
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+  }
+  .audience-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  .audience-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Location */
+  .location-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 380px) 1fr;
+    gap: 2.2rem;
+    align-items: center;
+  }
+  .location-img {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .location-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .location-address {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0 0 0.3rem;
+  }
+  .location-city {
+    color: var(--blue-bright);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.9rem;
+  }
+  .location-note {
+    color: var(--text-secondary);
+    margin: 0 0 1.4rem;
+  }
+  @media (max-width: 720px) {
+    .location-grid {
+      grid-template-columns: 1fr;
+    }
+    .location-img {
+      aspect-ratio: 16 / 9;
+      max-width: 400px;
+      margin-inline: auto;
+    }
+  }
+
   /* Abschluss-Feature-Strip */
   .closing-features {
     list-style: none;
@@ -1852,5 +2045,68 @@ const facts: { icon: string; label: string }[] = [
       padding: 1.6rem 1.4rem;
       top: calc(64px + var(--i, 0) * 12px);
     }
+  }
+
+  /* Sticky Ticket-Leiste — CTA immer griffbereit, ohne im Text ständig neue Buttons zu setzen */
+  .sticky-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    background: rgba(10, 1, 24, 0.92);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-strong);
+    padding: 0.8rem 1.5rem;
+    transform: translateY(120%);
+    transition: transform 0.3s ease;
+  }
+  .sticky-cta.is-visible {
+    transform: translateY(0);
+  }
+  .sticky-cta-inner {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .sticky-cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+  }
+  .sticky-cta-text strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sticky-cta-date {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+  .sticky-cta .btn {
+    flex-shrink: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-cta {
+      transition: none;
+    }
+  }
+
+  /* Mehr Leben im Hintergrund: die dezenten Sektions-Glows driften langsam */
+  .sec::before {
+    animation: sec-drift 16s ease-in-out infinite alternate;
+  }
+  @keyframes sec-drift {
+    from { transform: translateX(-50%) translate(0, 0); }
+    to { transform: translateX(-50%) translate(30px, 25px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sec::before { animation: none; }
   }
 </style>
