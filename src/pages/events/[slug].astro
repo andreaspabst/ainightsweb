@@ -127,7 +127,12 @@ function sessionMeta(s: any) {
 // Hero-Hintergrund: echtes Eventfoto statt des Branding-Bilds (das enthält
 // eingebrannten Titeltext und kollidiert sonst mit der H1). Fallback: Publikumsfoto.
 const heroBg = eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
-const factsImage = eventPhotos[1] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
+// Bei Events ohne eigene Galerie stammt eventPhotos[1] aus einem anderen Event-Pool
+// als das Hero-Bild und war stichprobenartig schlecht ausgeleuchtet. eventPhotos[4]
+// ist im Round-Robin das zweite Bild aus demselben (gut ausgeleuchteten) Pool wie heroBg.
+const factsImage = hasOwnPhotos
+  ? (eventPhotos[1] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg')
+  : (eventPhotos[4] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg');
 
 function fmtDate(dt?: string) {
   if (!dt) return null;
@@ -244,16 +249,20 @@ const facts: { icon: string; label: string }[] = [
           )}
         </div>
       </div>
+      <svg class="hero-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,32 C220,80 420,0 720,28 C1020,56 1220,84 1440,24 L1440,90 L0,90 Z"></path>
+      </svg>
     </section>
 
     <div class="container body">
-      {/* Programm */}
+      {/* Programm — als Kachel-Stack: jede Karte bleibt beim Scrollen kurz stehen,
+          bis die nächste sich darüberschiebt. */}
       {sessions.length > 0 && (
         <section class="sec" data-reveal>
           <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
           <h2 class="display-font sec-h">Die Themen des Abends</h2>
-          <div class="timeline">
-            {sessions.map((s) => {
+          <div class="stack">
+            {sessions.map((s, i) => {
               const sp = (s.data.speakerIds ?? [])
                 .map((id: number) => spMap.get(id))
                 .filter(Boolean)
@@ -261,52 +270,40 @@ const facts: { icon: string; label: string }[] = [
               const meta = sessionMeta(s);
               if (isBreak(s)) {
                 return (
-                  <div class="tl-item tl-break">
-                    <div class="tl-time">
-                      {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
-                    </div>
-                    <div class="tl-dot tl-dot-break"></div>
-                    <div class="tl-content break-content">
-                      <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
-                    </div>
+                  <div class="stack-card stack-break" style={`--i:${i}`}>
+                    <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
                   </div>
                 );
               }
               return (
-                <div class="tl-item">
-                  <div class="tl-time">
-                    {s.data.startTime && <span class="tt-time">{s.data.startTime}</span>}
-                    {s.data.duration && <span class="tt-dur">{s.data.duration} min</span>}
+                <article class="stack-card" style={`--i:${i}`}>
+                  <span class="stack-num">{i + 1}</span>
+                  <div class="stack-head">
+                    {s.data.startTime && <span class="stack-time">🕕 {s.data.startTime} Uhr</span>}
+                    {meta.map((m) => <span class="chip">{m}</span>)}
+                    {s.data.duration && <span class="chip">{s.data.duration} min</span>}
                   </div>
-                  <div class="tl-dot"></div>
-                  <article class="tl-content card">
-                    {meta.length > 0 && (
-                      <p class="talk-meta">
-                        {meta.map((m) => <span class="chip">{m}</span>)}
-                      </p>
-                    )}
-                    <h3>{s.data.title}</h3>
-                    {sp.length > 0 && (
-                      <div class="talk-sp">
-                        <span class="talk-sp-avatars">
-                          {sp.map((x: any) => (
-                            x.data.image?.src
-                              ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
-                              : <span class="talk-sp-fallback">✨</span>
-                          ))}
-                        </span>
-                        <span class="talk-sp-names">{sp.map((x: any) => x.data.title).join(', ')}</span>
-                      </div>
-                    )}
-                    {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
-                    {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
-                      <details class="talk-detail">
-                        <summary>Mehr anzeigen</summary>
-                        <div class="prose" set:html={s.data.contentHtml} />
-                      </details>
-                    )}
-                  </article>
-                </div>
+                  <h3>{s.data.title}</h3>
+                  {sp.length > 0 && (
+                    <div class="talk-sp">
+                      <span class="talk-sp-avatars">
+                        {sp.map((x: any) => (
+                          x.data.image?.src
+                            ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
+                            : <span class="talk-sp-fallback">✨</span>
+                        ))}
+                      </span>
+                      <span class="talk-sp-names">{sp.map((x: any) => x.data.title).join(', ')}</span>
+                    </div>
+                  )}
+                  {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
+                  {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
+                    <details class="talk-detail">
+                      <summary>Mehr anzeigen</summary>
+                      <div class="prose" set:html={s.data.contentHtml} />
+                    </details>
+                  )}
+                </article>
               );
             })}
           </div>
@@ -331,6 +328,9 @@ const facts: { icon: string; label: string }[] = [
                 </li>
               ))}
             </ul>
+            <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary facts-cta">
+              {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+            </a>
           </div>
         </div>
       </section>
@@ -469,18 +469,27 @@ const facts: { icon: string; label: string }[] = [
         </section>
       )}
 
-      {/* Gastgeber & Initiator */}
-      <section class="sec" data-reveal>
-        <p class="eyebrow">Dein Gastgeber und Initiator der AI Nights Nürnberg</p>
-        <h2 class="display-font sec-h">Andreas Pabst</h2>
-        <div class="host-grid">
-          <div class="host-body prose">
-            <p><strong>Andreas Pabst – Head of Engineering &amp; KI Specialist</strong></p>
-            {hostParagraphs.map((p) => <p>{p}</p>)}
-            <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">Tickets sichern</a>
-          </div>
-          <div class="host-img">
-            <img src={imgVariant(hostImage, 640)} alt="Andreas Pabst" loading="lazy" />
+      {/* Gastgeber & Initiator — eigenständiges, farbig abgesetztes Panel */}
+      <section class="sec host-sec" data-reveal>
+        <div class="host-panel">
+          <div class="host-orb host-orb-a"></div>
+          <div class="host-orb host-orb-b"></div>
+          <div class="host-inner">
+            <div class="host-photo-wrap">
+              <div class="host-photo-ring">
+                <img src={imgVariant(hostImage, 640)} alt="Andreas Pabst" loading="lazy" />
+              </div>
+              <span class="host-badge">✨ Gastgeber &amp; Initiator</span>
+            </div>
+            <div class="host-body">
+              <p class="host-eyebrow">Dein Gastgeber und Initiator der AI Nights Nürnberg</p>
+              <h2 class="display-font host-name">Andreas Pabst</h2>
+              <p class="host-role">Head of Engineering &amp; KI Specialist</p>
+              <div class="prose host-prose">
+                {hostParagraphs.map((p) => <p>{p}</p>)}
+              </div>
+              <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">Tickets sichern</a>
+            </div>
           </div>
         </div>
       </section>
@@ -488,13 +497,24 @@ const facts: { icon: string; label: string }[] = [
       {/* Parallax-Zitate */}
       <section class="sec quote-parallax" data-reveal>
         <div class="qp-bg" style={`background-image:url(${imgVariant(parallaxBg, 1600)})`} data-parallax="16" data-parallax-scale="1.2"></div>
+        <div class="qp-duotone"></div>
         <div class="qp-overlay"></div>
         <div class="qp-inner">
+          <span class="qp-mark" aria-hidden="true">„</span>
           {parallaxLead.map((p) => <p class="qp-lead">{p}</p>)}
-          <div class="qp-quotes">
-            {parallaxQuotes.map((q) => (
-              <blockquote class="qp-quote"><p>„{q}"</p></blockquote>
-            ))}
+        </div>
+        <div class="qp-marquee">
+          <div class="qp-track">
+            <div class="qp-track-set">
+              {parallaxQuotes.map((q) => (
+                <blockquote class="qp-quote"><p>„{q}"</p></blockquote>
+              ))}
+            </div>
+            <div class="qp-track-set" aria-hidden="true">
+              {parallaxQuotes.map((q) => (
+                <blockquote class="qp-quote"><p>„{q}"</p></blockquote>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -623,9 +643,20 @@ const facts: { icon: string; label: string }[] = [
 <style>
   .hero {
     position: relative;
-    padding-block: clamp(4rem, 11vw, 7.5rem) clamp(3.5rem, 8vw, 6rem);
+    padding-block: clamp(4rem, 11vw, 7.5rem) clamp(4.5rem, 9vw, 7rem);
     overflow: hidden;
-    border-bottom: 1px solid var(--border);
+  }
+  .hero-divider {
+    position: absolute;
+    z-index: 2;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: clamp(36px, 6vw, 70px);
+    pointer-events: none;
+  }
+  .hero-divider path {
+    fill: var(--bg-base);
   }
   .hero-bg {
     position: absolute;
@@ -948,7 +979,14 @@ const facts: { icon: string; label: string }[] = [
   .facts-info h2 {
     text-align: left;
   }
+  .facts-cta {
+    margin-top: 1.8rem;
+  }
   @media (max-width: 720px) {
+    .facts-cta {
+      display: flex;
+      justify-content: center;
+    }
     .facts-grid {
       grid-template-columns: 1fr;
     }
@@ -1087,99 +1125,61 @@ const facts: { icon: string; label: string }[] = [
     border-radius: 50%;
   }
 
-  /* Programm-Timeline */
-  .timeline {
+  /* Programm als Kachel-Stack: jede Karte bleibt beim Scrollen kurz „kleben“,
+     bis die nächste Karte sich darüberschiebt — dadurch entsteht beim
+     Hoch-/Runterscrollen ein überlappender, bewegter Kartenstapel-Effekt. */
+  .stack {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
+    padding-bottom: 1.5rem;
   }
-  .tl-item {
-    position: relative;
-    display: grid;
-    grid-template-columns: 96px 24px 1fr;
-    gap: 0 1.2rem;
-    align-items: start;
+  .stack-card {
+    position: sticky;
+    top: calc(84px + var(--i, 0) * 10px);
+    margin-bottom: 1.4rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 6px);
+    padding: 2rem 2.2rem;
+    box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+    z-index: calc(var(--i, 0) + 1);
   }
-  .tl-item::before {
-    content: '';
+  .stack-num {
     position: absolute;
-    top: 1.9rem;
-    bottom: -1.6rem;
-    left: 107px;
-    width: 2px;
-    background: linear-gradient(180deg, var(--border-strong), var(--border));
+    top: -14px;
+    left: 1.8rem;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 16px rgba(255, 45, 122, 0.4);
   }
-  .tl-item:last-child::before {
-    display: none;
-  }
-  .tl-time {
+  .stack-head {
     display: flex;
-    flex-direction: column;
-    padding-top: 1.9rem;
-    text-align: right;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.4rem 0 0.9rem;
   }
-  .tt-time {
+  .stack-time {
     color: var(--text-primary);
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
+    margin-right: 0.3rem;
   }
-  .tt-dur {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-  }
-  .tl-dot {
-    position: relative;
-    z-index: 1;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    margin-top: 2.1rem;
-    background: var(--gradient-accent);
-    box-shadow: 0 0 0 5px var(--bg-base), var(--glow-magenta);
-  }
-  .tl-dot::after {
-    content: '';
-    position: absolute;
-    inset: -6px;
-    border-radius: 50%;
-    background: rgba(255, 45, 122, 0.55);
-    opacity: 0.6;
-    animation: dot-pulse 2.4s ease-in-out infinite;
-    pointer-events: none;
-  }
-  .tl-dot-break {
-    background: var(--bg-elevated);
-    border: 2px solid var(--border-strong);
-    box-shadow: 0 0 0 5px var(--bg-base);
-  }
-  .tl-dot-break::after {
-    display: none;
-  }
-  @keyframes dot-pulse {
-    0% { transform: scale(0.6); opacity: 0.55; }
-    100% { transform: scale(1.8); opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .tl-dot::after { animation: none; opacity: 0; }
-  }
-  .tl-content {
-    padding: 1.8rem;
-  }
-  .tl-content h3 {
+  .stack-card h3 {
     font-size: 1.3rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
   }
-  .talk-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 0.8rem;
-  }
   .chip {
     display: inline-block;
-    background: var(--bg-elevated);
+    background: var(--bg-base);
     border: 1px solid var(--border);
     border-radius: 999px;
     padding: 0.2rem 0.75rem;
@@ -1188,13 +1188,14 @@ const facts: { icon: string; label: string }[] = [
     color: var(--text-muted);
     letter-spacing: 0.02em;
   }
-  .tl-break {
-    grid-template-columns: 96px 24px 1fr;
-  }
-  .tl-break .tl-content.break-content {
-    padding: 0.8rem 0;
+  .stack-break {
     display: flex;
     align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    box-shadow: none;
   }
   .break-pill {
     display: inline-flex;
@@ -1359,43 +1360,130 @@ const facts: { icon: string; label: string }[] = [
     border: 0;
   }
 
-  /* Gastgeber */
-  .host-grid {
+  /* Gastgeber — eigenständiges, farbig abgesetztes Panel (bricht aus dem 980px-Container aus) */
+  .host-sec {
+    margin-bottom: 0;
+  }
+  .host-panel {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+    background:
+      radial-gradient(ellipse 60% 80% at 15% 20%, rgba(255, 45, 122, 0.16), transparent 60%),
+      radial-gradient(ellipse 60% 80% at 85% 80%, rgba(50, 107, 255, 0.16), transparent 60%),
+      var(--bg-elevated);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .host-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .host-orb-a {
+    width: 320px;
+    height: 320px;
+    top: -100px;
+    left: 8%;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.5), transparent 70%);
+  }
+  .host-orb-b {
+    width: 300px;
+    height: 300px;
+    bottom: -120px;
+    right: 10%;
+    background: radial-gradient(circle, rgba(50, 107, 255, 0.45), transparent 70%);
+  }
+  .host-inner {
+    position: relative;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: 1.5rem;
     display: grid;
-    grid-template-columns: 1fr minmax(220px, 360px);
-    gap: 2.4rem;
+    grid-template-columns: minmax(200px, 260px) 1fr;
+    gap: clamp(2rem, 5vw, 3.5rem);
     align-items: center;
   }
-  .host-body p {
+  .host-photo-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .host-photo-ring {
+    width: 100%;
+    max-width: 240px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    padding: 5px;
+    background: var(--gradient-accent);
+    box-shadow: var(--glow-magenta);
+  }
+  .host-photo-ring img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--bg-elevated);
+    display: block;
+  }
+  .host-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(12px);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .host-eyebrow {
+    color: var(--blue-bright);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+  .host-name {
+    font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+    margin: 0 0 0.3rem;
+  }
+  .host-role {
+    color: var(--magenta-bright);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
+  }
+  .host-prose p {
     margin: 0 0 1rem;
   }
   .host-body .btn {
     margin-top: 0.6rem;
   }
-  .host-img {
-    aspect-ratio: 4 / 5;
-    border-radius: var(--radius);
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .host-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  @media (max-width: 720px) {
-    .host-grid {
+  @media (max-width: 760px) {
+    .host-inner {
       grid-template-columns: 1fr;
+      text-align: center;
     }
-    .host-img {
-      order: -1;
-      aspect-ratio: 16 / 9;
-      max-width: 320px;
-      margin-inline: auto;
+    .host-eyebrow,
+    .host-role {
+      text-align: center;
     }
   }
 
-  /* Parallax-Zitate — bricht aus dem 980px-Container aus */
+  /* Parallax-Zitate — bricht aus dem 980px-Container aus, Duoton-Foto + Marquee */
   .quote-parallax {
     position: relative;
     width: 100vw;
@@ -1413,37 +1501,90 @@ const facts: { icon: string; label: string }[] = [
     background-position: center;
     will-change: transform;
   }
+  .qp-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(220, 39, 119, 0.65), rgba(50, 107, 255, 0.55));
+    mix-blend-mode: color;
+  }
   .qp-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 1, 24, 0.55), rgba(10, 1, 24, 0.88));
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.45), rgba(10, 1, 24, 0.88) 75%, var(--bg-base) 100%);
   }
   .qp-inner {
     position: relative;
-    max-width: 900px;
+    max-width: 800px;
     margin-inline: auto;
-    padding: clamp(4rem, 10vw, 7rem) 1.5rem;
+    padding: clamp(4.5rem, 10vw, 7rem) 1.5rem 0;
     text-align: center;
   }
+  .qp-mark {
+    display: block;
+    font-family: 'Space Grotesk', serif;
+    font-size: clamp(4rem, 10vw, 6rem);
+    line-height: 1;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -0.8rem;
+  }
   .qp-lead {
-    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
     color: var(--text-primary);
     line-height: 1.6;
-    font-weight: 500;
-    margin: 0 0 1.2rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
   }
-  .qp-quotes {
-    margin-top: 2.6rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    text-align: left;
+  .qp-marquee {
+    position: relative;
+    margin-top: 3rem;
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .qp-track {
+    display: flex;
+    width: max-content;
+    animation: qp-scroll 28s linear infinite;
+  }
+  .qp-marquee:hover .qp-track {
+    animation-play-state: paused;
+  }
+  .qp-track-set {
+    display: flex;
+    gap: 1.2rem;
+    padding-inline: 0.6rem;
+  }
+  @keyframes qp-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .qp-track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: var(--maxw);
+      margin-inline: auto;
+    }
+    .qp-track-set {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .qp-track-set:last-child {
+      display: none;
+    }
   }
   .qp-quote {
-    background: var(--bg-glass);
+    flex: 0 0 auto;
+    width: min(300px, 78vw);
+    background: rgba(20, 10, 42, 0.82);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
     padding: 1.4rem;
     margin: 0;
   }
@@ -1452,6 +1593,7 @@ const facts: { icon: string; label: string }[] = [
     font-style: italic;
     font-size: 0.95rem;
     margin: 0;
+    text-align: left;
   }
 
   /* FAQ */
@@ -1588,30 +1730,12 @@ const facts: { icon: string; label: string }[] = [
     .speaker-full .sp-topics li {
       text-align: left;
     }
-    .tl-item,
-    .tl-break {
-      grid-template-columns: 20px 1fr;
+    .stack-card {
+      padding: 1.6rem 1.4rem;
+      top: calc(64px + var(--i, 0) * 8px);
     }
-    .tl-time {
-      grid-row: 1;
-      grid-column: 1 / -1;
-      flex-direction: row;
-      gap: 0.5rem;
-      align-items: baseline;
-      padding-top: 0;
-      text-align: left;
-      margin-bottom: 0.4rem;
-    }
-    .tl-dot {
-      grid-row: 2;
-      margin-top: 0.3rem;
-    }
-    .tl-content {
-      grid-row: 2;
-    }
-    .tl-item::before {
-      left: 9px;
-      top: 2.2rem;
+    .stack-num {
+      left: 1.2rem;
     }
   }
 </style>
