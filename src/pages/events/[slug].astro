@@ -60,7 +60,6 @@ const hostImage = '/wp-content/uploads/2026/01/19-ianight-19-scaled.jpg';
 const hostParagraphs = [
   'Ich beschäftige mich täglich mit der Frage, wie KI sinnvoll in Produkte, Prozesse und Teams integriert werden kann.',
   'Als Head of Engineering und KI-Enthusiast arbeite ich an der Schnittstelle von Technik, Produkt und Anwendung – von der Automatisierung einzelner Workflows bis hin zur Entwicklung AI-nativer Lösungen.',
-  'Dabei geht es selten um „noch ein Tool“. Sondern darum, herauszufinden, wo KI wirklich Mehrwert schafft und wo nicht.',
   'Die AI Nights sind aus genau diesem Gedanken entstanden: Ein Ort für Austausch, ehrliche Fragen und unterschiedliche Perspektiven.',
   'Mir war wichtig, ein Format zu schaffen, das nicht überfordert, sondern Orientierung gibt. Mit kurzen Impulsen, genug Pausen und Zeit für Gespräche, die über die Bühne hinausgehen.',
 ];
@@ -150,6 +149,10 @@ const breaks = sessions.filter((s) => isBreak(s));
 const talkDuration = coreTalks.find((s) => s.data.duration)?.data.duration;
 const breakDuration = breaks.find((s) => s.data.duration)?.data.duration;
 
+// Einlasszeit (Türöffnung) weicht meist vom Programmstart ab — separat ausweisen
+const firstTalkTime = sessions.find((s) => !isBreak(s))?.data.startTime;
+const showDoors = Boolean(d.startTime && firstTalkTime && d.startTime !== firstTalkTime);
+
 const facts: { icon: string; label: string }[] = [
   { icon: '🎤', label: `${speakerSlots.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}` },
   { icon: '🤖', label: '100% KI-Fokus' },
@@ -217,7 +220,7 @@ const facts: { icon: string; label: string }[] = [
           {speakers.length > 0 && (
             <a href="#lineup" class="hero-bar-speakers">
               <span class="hero-speakers-avatars">
-                {[...moderators, ...speakers].slice(0, 5).map((s) => (
+                {speakers.slice(0, 5).map((s) => (
                   s.data.image?.src
                     ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
                     : <span class="hero-speakers-fallback">✨</span>
@@ -263,6 +266,11 @@ const facts: { icon: string; label: string }[] = [
         <section class="sec" data-reveal>
           <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
           <h2 class="display-font sec-h">Die <span class="gradient-text">Themen</span> des Abends</h2>
+          {showDoors && (
+            <div class="stack-note">
+              <span class="note-pill">🚪 Einlass ab {d.startTime} Uhr</span>
+            </div>
+          )}
           <div class="stack">
             {sessions.map((s, i) => {
               const sp = (s.data.speakerIds ?? [])
@@ -273,13 +281,12 @@ const facts: { icon: string; label: string }[] = [
               if (isBreak(s)) {
                 return (
                   <div class="stack-card stack-break" style={`--i:${i}`}>
-                    <span class="break-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
+                    <span class="note-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
                   </div>
                 );
               }
               return (
                 <article class="stack-card" style={`--i:${i}`}>
-                  <span class="stack-num">{i + 1}</span>
                   <div class="stack-head">
                     {s.data.startTime && <span class="stack-time">🕕 {s.data.startTime} Uhr</span>}
                     {meta.map((m) => <span class="chip">{m}</span>)}
@@ -488,7 +495,13 @@ const facts: { icon: string; label: string }[] = [
               <h2 class="display-font host-name">Andreas Pabst</h2>
               <p class="host-role">Head of Engineering &amp; KI Specialist</p>
               <div class="prose host-prose">
-                {hostParagraphs.map((p) => <p>{p}</p>)}
+                <p>{hostParagraphs[0]}</p>
+                <p>{hostParagraphs[1]}</p>
+                <p>
+                  Dabei geht es selten um „noch ein Tool". Sondern darum, herauszufinden,{' '}
+                  <strong class="gradient-text">wo KI wirklich Mehrwert schafft</strong> und wo nicht.
+                </p>
+                {hostParagraphs.slice(2).map((p) => <p>{p}</p>)}
               </div>
               <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">Tickets sichern</a>
             </div>
@@ -714,22 +727,22 @@ const facts: { icon: string; label: string }[] = [
     border-radius: 50%;
     filter: blur(60px);
     pointer-events: none;
-    opacity: 0.55;
+    opacity: 0.75;
   }
   .hero-orb-a {
-    width: 420px;
-    height: 420px;
-    top: -140px;
-    right: -100px;
-    background: radial-gradient(circle, rgba(255, 45, 122, 0.55), transparent 70%);
+    width: 480px;
+    height: 480px;
+    top: -150px;
+    right: -110px;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.7), transparent 70%);
     animation: drift-a 16s ease-in-out infinite alternate;
   }
   .hero-orb-b {
-    width: 360px;
-    height: 360px;
-    bottom: -160px;
-    left: -80px;
-    background: radial-gradient(circle, rgba(50, 107, 255, 0.45), transparent 70%);
+    width: 420px;
+    height: 420px;
+    bottom: -170px;
+    left: -90px;
+    background: radial-gradient(circle, rgba(50, 107, 255, 0.6), transparent 70%);
     animation: drift-b 20s ease-in-out infinite alternate;
   }
   @keyframes twinkle {
@@ -861,16 +874,16 @@ const facts: { icon: string; label: string }[] = [
   }
   .hero-speakers-avatars img,
   .hero-speakers-fallback {
-    width: 38px;
-    height: 38px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--bg-base);
-    margin-left: -11px;
+    margin-left: -14px;
     display: grid;
     place-items: center;
     background: var(--gradient-accent);
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   .hero-speakers-avatars img:first-child,
   .hero-speakers-fallback:first-child {
@@ -943,11 +956,13 @@ const facts: { icon: string; label: string }[] = [
     }
   }
   .intro {
-    margin-bottom: 3rem;
+    max-width: 720px;
+    margin-inline: auto;
+    margin-bottom: 5rem;
   }
   .body {
     max-width: 980px;
-    padding-block: 3.5rem 2rem;
+    padding-block: 2.2rem 2rem;
   }
 
   /* Fakten — farbiger Trenner statt einer weiteren dunklen Karte */
@@ -1219,22 +1234,6 @@ const facts: { icon: string; label: string }[] = [
     background-image: linear-gradient(160deg, rgba(50, 107, 255, 0.16), transparent 60%);
     border-top-color: var(--blue-bright);
   }
-  .stack-num {
-    position: absolute;
-    top: -14px;
-    left: 1.8rem;
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--gradient-accent);
-    color: #fff;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    box-shadow: 0 6px 16px rgba(255, 45, 122, 0.4);
-  }
   .stack-head {
     display: flex;
     flex-wrap: wrap;
@@ -1264,26 +1263,37 @@ const facts: { icon: string; label: string }[] = [
     color: var(--text-muted);
     letter-spacing: 0.02em;
   }
+  /* Einlass- & Pausen-Hinweise: eigener, farblich bewegter Block statt unauffälliger Pille */
+  .stack-note,
   .stack-card.stack-break {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.7rem 1.4rem;
-    background: transparent;
-    border: 1px dashed var(--border-strong);
+    padding: 0.9rem 1.6rem;
+    margin-bottom: 1.4rem;
+    border-radius: calc(var(--radius) + 6px);
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(120deg, rgba(255, 45, 122, 0.35), rgba(50, 107, 255, 0.35), rgba(255, 45, 122, 0.35));
+    background-size: 220% 220%;
+    animation: note-flow 7s ease infinite;
     box-shadow: none;
   }
-  .break-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--bg-elevated);
-    border: 1px dashed var(--border-strong);
-    border-radius: 999px;
-    padding: 0.5rem 1.1rem;
-    color: var(--text-muted);
-    font-size: 0.92rem;
-    font-weight: 600;
+  @keyframes note-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stack-note,
+    .stack-card.stack-break {
+      animation: none;
+    }
+  }
+  .note-pill {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 700;
   }
   .talk-sp {
     display: flex;
@@ -1501,7 +1511,16 @@ const facts: { icon: string; label: string }[] = [
     border-radius: 50%;
     padding: 5px;
     background: var(--gradient-accent);
+    background-size: 200% 200%;
     box-shadow: var(--glow-magenta);
+    animation: host-ring-wobble 5s ease-in-out infinite;
+  }
+  @keyframes host-ring-wobble {
+    0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+    50% { background-position: 100% 50%; filter: hue-rotate(20deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .host-photo-ring { animation: none; }
   }
   .host-photo-ring img {
     width: 100%;
@@ -1582,6 +1601,7 @@ const facts: { icon: string; label: string }[] = [
     inset: 0;
     background: linear-gradient(135deg, rgba(220, 39, 119, 0.65), rgba(50, 107, 255, 0.55));
     mix-blend-mode: color;
+    opacity: 0.22;
   }
   .qp-overlay {
     position: absolute;
@@ -1831,9 +1851,6 @@ const facts: { icon: string; label: string }[] = [
     .stack-card {
       padding: 1.6rem 1.4rem;
       top: calc(64px + var(--i, 0) * 12px);
-    }
-    .stack-num {
-      left: 1.2rem;
     }
   }
 </style>
