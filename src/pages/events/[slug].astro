@@ -42,11 +42,8 @@ const testimonials = [
   'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
 ];
 
-// Stimmen als Schriftform für den Parallax-Abschnitt weiter unten (wie im Original)
-const parallaxLead = [
-  'Die AI Nights ziehen Menschen aus Nürnberg, Fürth, Erlangen und der ganzen Region an. Nicht, weil sie alle dieselben Antworten suchen – sondern weil sie ähnliche Fragen haben.',
-  'KI betrifft längst nicht mehr nur Spezialist:innen. Sie verändert Arbeitsweisen, Entscheidungen und Zusammenarbeit. Und genau darüber sprechen wir: offen, verständlich und ohne Hürden.',
-];
+// Stimmen als Schriftform für den Parallax-Abschnitt weiter unten (aktualisiert:
+// die AI Nights sind längst über Nürnberg hinausgewachsen)
 const parallaxQuotes = [
   'Spannende Talks mit richtig guten Impulsen. Genau die Art Input, die zum Weiterdenken anregt.',
   'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
@@ -195,6 +192,7 @@ const facts: { icon: string; label: string }[] = [
   <main>
     <section class="hero">
       <img class="hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" data-parallax="10" data-parallax-scale="1.12" />
+      <div class="hero-duotone"></div>
       <div class="hero-overlay"></div>
       <div class="hero-stars" data-parallax="5"></div>
       <div class="hero-orb hero-orb-a"></div>
@@ -202,51 +200,49 @@ const facts: { icon: string; label: string }[] = [
       <div class="container hero-inner">
         <a href="/events/" class="back">← Alle Events</a>
         <div class="badges">
-          {d.city && <span class="badge">{d.city}</span>}
+          {d.city && <span class="badge">📍 {d.city}</span>}
+          <span class="badge badge-outline">🌙 Afterwork</span>
           {isPast && <span class="badge past">Vergangenes Event</span>}
         </div>
-        <p class="kicker">Afterwork Event{dateLabel ? ` am ${new Date(d.eventDate!).toLocaleDateString('de-DE')}` : ''}</p>
+        <p class="kicker">{dateLabel ? `Afterwork am ${new Date(d.eventDate!).toLocaleDateString('de-DE')}` : 'Afterwork Event'}</p>
         <h1 class="display-font">{d.title}</h1>
 
-        {(d.contentHtml || d.excerpt) && (
-          <div class="hero-desc prose">
-            {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
-          </div>
-        )}
-
-        <div class="meta">
-          {dateLabel && <span>📅 {dateLabel}</span>}
-          {d.startTime && <span>🕕 {d.startTime} Uhr</span>}
-          {d.locationName && <span>📍 {d.locationName}</span>}
+        <div class="hero-chips">
+          {dateLabel && <span class="hero-chip"><span class="hc-icon">📅</span>{dateLabel}</span>}
+          {d.startTime && <span class="hero-chip"><span class="hc-icon">🕕</span>{d.startTime} Uhr</span>}
+          {d.locationName && <span class="hero-chip"><span class="hc-icon">📍</span>{d.locationName}</span>}
         </div>
 
-        {speakers.length > 0 && (
-          <a href="#lineup" class="hero-speakers">
-            <span class="hero-speakers-avatars">
-              {[...moderators, ...speakers].slice(0, 5).map((s) => (
-                s.data.image?.src
-                  ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
-                  : <span class="hero-speakers-fallback">✨</span>
-              ))}
-            </span>
-            <span>Speakerauswahl des Abends ansehen ↓</span>
-          </a>
-        )}
-
-        <div class="hero-actions">
-          {d.ticketUrl && !isPast && <a href={d.ticketUrl} class="btn btn-primary">Tickets sichern</a>}
+        <div class="hero-bar">
+          {speakers.length > 0 && (
+            <a href="#lineup" class="hero-bar-speakers">
+              <span class="hero-speakers-avatars">
+                {[...moderators, ...speakers].slice(0, 5).map((s) => (
+                  s.data.image?.src
+                    ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
+                    : <span class="hero-speakers-fallback">✨</span>
+                ))}
+              </span>
+              <span class="hero-bar-speakers-label">{speakerSlots.length || speakers.length} Speaker ↓</span>
+            </a>
+          )}
 
           {countdownTarget && (
-            <div class="countdown" data-countdown={countdownTarget}>
-              <div class="cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
-              <div class="cd-sep">:</div>
-              <div class="cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
-              <div class="cd-sep">:</div>
-              <div class="cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
-              <div class="cd-sep">:</div>
-              <div class="cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+            <div class="hero-bar-countdown">
+              <span class="hbc-dot"></span>
+              <div class="countdown" data-countdown={countdownTarget}>
+                <div class="cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+              </div>
             </div>
           )}
+
+          {d.ticketUrl && !isPast && <a href={d.ticketUrl} class="btn btn-primary hero-bar-cta">Tickets sichern</a>}
         </div>
       </div>
       <svg class="hero-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
@@ -255,12 +251,18 @@ const facts: { icon: string; label: string }[] = [
     </section>
 
     <div class="container body">
+      {(d.contentHtml || d.excerpt) && (
+        <div class="intro prose" data-reveal>
+          {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
+        </div>
+      )}
+
       {/* Programm — als Kachel-Stack: jede Karte bleibt beim Scrollen kurz stehen,
           bis die nächste sich darüberschiebt. */}
       {sessions.length > 0 && (
         <section class="sec" data-reveal>
           <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
-          <h2 class="display-font sec-h">Die Themen des Abends</h2>
+          <h2 class="display-font sec-h">Die <span class="gradient-text">Themen</span> des Abends</h2>
           <div class="stack">
             {sessions.map((s, i) => {
               const sp = (s.data.speakerIds ?? [])
@@ -319,7 +321,7 @@ const facts: { icon: string; label: string }[] = [
             <img src={imgVariant(factsImage, 640)} alt="" loading="lazy" />
           </div>
           <div class="facts-info">
-            <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
+            <h2 class="display-font">Das Afterwork-Event in <span class="gradient-text">Kürze</span></h2>
             <ul>
               {facts.map((f, i) => (
                 <li>
@@ -377,7 +379,7 @@ const facts: { icon: string; label: string }[] = [
       {(speakers.length > 0 || tbaCount > 0) && (
         <section class="sec" id="lineup" data-reveal>
           <p class="eyebrow">Lerne von Branchenexperten und Vordenkern</p>
-          <h2 class="display-font sec-h">Speaker des Abends</h2>
+          <h2 class="display-font sec-h"><span class="gradient-text">Speaker</span> des Abends</h2>
           <div class="speaker-list">
             {speakers.map((s) => (
               <div class="speaker-full card">
@@ -442,7 +444,7 @@ const facts: { icon: string; label: string }[] = [
       {/* YouTube-Einblick */}
       <section class="sec" data-reveal>
         <p class="eyebrow">Ein Einblick in die letzte AI Night</p>
-        <h2 class="display-font sec-h">So fühlt sich AI Nights an</h2>
+        <h2 class="display-font sec-h">So fühlt sich <span class="gradient-text">AI Nights</span> an</h2>
         <div class="yt-wrap">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
@@ -458,7 +460,7 @@ const facts: { icon: string; label: string }[] = [
       {sponsors.length > 0 && (
         <section class="sec" data-reveal>
           <p class="eyebrow">Möglich gemacht von</p>
-          <h2 class="display-font sec-h">Sponsoren dieses Events</h2>
+          <h2 class="display-font sec-h"><span class="gradient-text">Sponsoren</span> dieses Events</h2>
           <div class="sponsor-row">
             {sponsors.map((s) => (
               <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
@@ -501,7 +503,16 @@ const facts: { icon: string; label: string }[] = [
         <div class="qp-overlay"></div>
         <div class="qp-inner">
           <span class="qp-mark" aria-hidden="true">„</span>
-          {parallaxLead.map((p) => <p class="qp-lead">{p}</p>)}
+          <p class="qp-lead">
+            Die AI Nights sind in Nürnberg gestartet – und
+            <span class="gradient-text">wachsen längst über die Region hinaus</span>:
+            <span class="gradient-text">München, Hamburg und Leipzig</span> sind schon dabei, weitere Städte folgen.
+            Nicht, weil überall dieselben Antworten gesucht werden – sondern weil überall ähnliche Fragen gestellt werden.
+          </p>
+          <p class="qp-lead">
+            KI betrifft längst nicht mehr nur Spezialist:innen. Sie verändert Arbeitsweisen, Entscheidungen und Zusammenarbeit.
+            Und genau darüber sprechen wir: offen, verständlich und ohne Hürden.
+          </p>
         </div>
         <div class="qp-marquee">
           <div class="qp-track">
@@ -522,7 +533,7 @@ const facts: { icon: string; label: string }[] = [
       {/* FAQ */}
       <section class="sec" data-reveal>
         <p class="eyebrow">Fragen zum Event</p>
-        <h2 class="display-font sec-h">Häufige Fragen</h2>
+        <h2 class="display-font sec-h">Häufige <span class="gradient-text">Fragen</span></h2>
         <div class="faq-list">
           {faqItems.map((f) => (
             <details class="faq-item">
@@ -536,17 +547,20 @@ const facts: { icon: string; label: string }[] = [
       {/* Abschluss */}
       <section class="sec" data-reveal>
         <p class="eyebrow">Kurz. Klar. Relevant.</p>
-        <h2 class="display-font sec-h">Das sind die AI Nights</h2>
+        <h2 class="display-font sec-h">Das sind die <span class="gradient-text">AI Nights</span></h2>
         <ul class="closing-features">
-          {closingFeatures.map((f) => (
-            <li><span class="cf-icon">{f.icon}</span>{f.label}</li>
+          {closingFeatures.map((f, i) => (
+            <li>
+              <span class={`cf-icon cf-icon-${i % 2 === 0 ? 'a' : 'b'}`}>{f.icon}</span>
+              <span>{f.label}</span>
+            </li>
           ))}
         </ul>
       </section>
 
       <section class="cta card" data-reveal>
         <div class="cta-glow"></div>
-        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : 'Bereit, bei den AI Nights dabei zu sein?'}</h2>
+        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : <>Bereit, bei den <span class="gradient-text">AI Nights</span> dabei zu sein?</>}</h2>
         {!isPast && <p class="cta-sub">Verpasse nicht diese Gelegenheit, dich mit KI-Experten zu vernetzen und dein Wissen zu erweitern</p>}
         <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">
           {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
@@ -664,13 +678,19 @@ const facts: { icon: string; label: string }[] = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.34;
+    opacity: 0.42;
     will-change: transform;
+  }
+  .hero-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(220, 39, 119, 0.5), rgba(50, 107, 255, 0.4));
+    mix-blend-mode: color;
   }
   .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 1, 24, 0.45), var(--bg-base) 92%);
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.4), var(--bg-base) 92%);
   }
   .hero-stars {
     position: absolute;
@@ -757,6 +777,11 @@ const facts: { icon: string; label: string }[] = [
     padding: 0.3rem 0.8rem;
     border-radius: 999px;
   }
+  .badge-outline {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(8px);
+  }
   .badge.past {
     background: var(--bg-glass);
     border: 1px solid var(--border);
@@ -764,104 +789,130 @@ const facts: { icon: string; label: string }[] = [
   }
   .kicker {
     color: var(--blue-bright);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.95rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     margin-bottom: 0.8rem;
   }
   h1 {
-    font-size: clamp(2.4rem, 6vw, 4.2rem);
-    line-height: 1.08;
+    font-size: clamp(2.6rem, 6.5vw, 4.6rem);
+    line-height: 1.05;
     max-width: 22ch;
     margin: 0 auto 1.6rem;
   }
-  .hero-desc {
-    max-width: 680px;
-    margin: 0 auto 1.8rem;
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    line-height: 1.75;
-  }
-  .hero-desc :global(p) {
-    margin: 0 0 1rem;
-  }
-  .hero-desc :global(ul),
-  .hero-desc :global(ol) {
-    text-align: left;
-    display: inline-block;
-    margin: 1rem auto;
-    padding-left: 1.3rem;
-  }
-  .hero-desc :global(strong) {
-    color: var(--text-primary);
-  }
-  .meta {
+
+  /* Kompakte, scanbare Kurzfakten statt Fließtext */
+  .hero-chips {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1.4rem;
-    color: var(--text-secondary);
-    font-size: 1.02rem;
-    margin-bottom: 1.8rem;
+    gap: 0.6rem;
+    margin-bottom: 2.2rem;
   }
-  .hero-speakers {
+  .hero-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.9rem;
-    color: var(--text-secondary);
-    font-size: 0.92rem;
+    gap: 0.5rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    color: var(--text-primary);
     font-weight: 600;
-    margin-bottom: 2.2rem;
+    font-size: 0.92rem;
+  }
+  .hc-icon {
+    font-size: 1rem;
+  }
+
+  /* Ein gebündelter Info-Streifen: Speaker, Countdown, CTA — alles auf einen Blick */
+  .hero-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 1.3rem 1.8rem;
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
+  }
+  .hero-bar-speakers {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 700;
     transition: color 0.2s ease;
   }
-  .hero-speakers:hover {
+  .hero-bar-speakers:hover {
     color: var(--text-primary);
+  }
+  .hero-bar-speakers-label {
+    white-space: nowrap;
   }
   .hero-speakers-avatars {
     display: inline-flex;
   }
   .hero-speakers-avatars img,
   .hero-speakers-fallback {
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--bg-base);
-    margin-left: -12px;
+    margin-left: -11px;
     display: grid;
     place-items: center;
     background: var(--gradient-accent);
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   .hero-speakers-avatars img:first-child,
   .hero-speakers-fallback:first-child {
     margin-left: 0;
   }
-  .hero-actions {
+  .hero-bar-countdown {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 1.6rem;
+    gap: 0.6rem;
+    padding-inline: 1.6rem;
+    border-inline: 1px solid var(--border);
+  }
+  .hbc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--magenta-bright);
+    box-shadow: 0 0 0 0 rgba(255, 45, 122, 0.6);
+    animation: hbc-pulse 1.8s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes hbc-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 45, 122, 0.55); }
+    50% { box-shadow: 0 0 0 6px rgba(255, 45, 122, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hbc-dot { animation: none; }
   }
   .countdown {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
   .cd-box {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: var(--bg-glass);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0.65rem 0.9rem;
-    min-width: 66px;
+    min-width: 46px;
   }
   .cd-box strong {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     line-height: 1;
     background: var(--gradient-text);
     -webkit-background-clip: text;
@@ -869,16 +920,30 @@ const facts: { icon: string; label: string }[] = [
     color: transparent;
   }
   .cd-box span {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
   }
   .cd-sep {
     color: var(--text-muted);
     font-weight: 700;
-    font-size: 1.2rem;
+  }
+  @media (max-width: 640px) {
+    .hero-bar {
+      flex-direction: column;
+    }
+    .hero-bar-countdown {
+      border-inline: none;
+      padding-inline: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding-block: 1rem;
+    }
+  }
+  .intro {
+    margin-bottom: 3rem;
   }
   .body {
     max-width: 980px;
@@ -1134,14 +1199,25 @@ const facts: { icon: string; label: string }[] = [
   }
   .stack-card {
     position: sticky;
-    top: calc(84px + var(--i, 0) * 10px);
+    top: calc(84px + var(--i, 0) * 18px);
     margin-bottom: 1.4rem;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
+    border-top: 3px solid var(--border-strong);
     border-radius: calc(var(--radius) + 6px);
     padding: 2rem 2.2rem;
     box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
     z-index: calc(var(--i, 0) + 1);
+  }
+  .stack-card:nth-child(odd) {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(160deg, rgba(255, 45, 122, 0.16), transparent 60%);
+    border-top-color: var(--magenta-bright);
+  }
+  .stack-card:nth-child(even) {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(160deg, rgba(50, 107, 255, 0.16), transparent 60%);
+    border-top-color: var(--blue-bright);
   }
   .stack-num {
     position: absolute;
@@ -1188,7 +1264,7 @@ const facts: { icon: string; label: string }[] = [
     color: var(--text-muted);
     letter-spacing: 0.02em;
   }
-  .stack-break {
+  .stack-card.stack-break {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1647,21 +1723,43 @@ const facts: { icon: string; label: string }[] = [
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem 1.2rem;
     text-align: center;
   }
   .closing-features li {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.8rem;
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
   .cf-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
     font-size: 1.7rem;
+    transition: transform 0.2s ease;
+  }
+  .closing-features li:hover .cf-icon {
+    transform: translateY(-3px) scale(1.05);
+  }
+  .cf-icon-a {
+    background: linear-gradient(135deg, rgba(255, 45, 122, 0.22), rgba(255, 45, 122, 0.06));
+    border: 1px solid rgba(255, 45, 122, 0.35);
+  }
+  .cf-icon-b {
+    background: linear-gradient(135deg, rgba(50, 107, 255, 0.22), rgba(50, 107, 255, 0.06));
+    border: 1px solid rgba(50, 107, 255, 0.35);
+  }
+  @media (max-width: 560px) {
+    .closing-features {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   .cta {
@@ -1732,7 +1830,7 @@ const facts: { icon: string; label: string }[] = [
     }
     .stack-card {
       padding: 1.6rem 1.4rem;
-      top: calc(64px + var(--i, 0) * 8px);
+      top: calc(64px + var(--i, 0) * 12px);
     }
     .stack-num {
       left: 1.2rem;
