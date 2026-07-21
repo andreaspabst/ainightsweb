@@ -15,9 +15,25 @@ export async function getStaticPaths() {
 const { e } = Astro.props;
 const d = e.data;
 
-// Foto-Rückblick dieses Events (falls vorhanden)
+// Foto-Rückblick dieses Events (falls vorhanden). Events ohne eigene Galerie
+// (z. B. weil sie noch nicht stattgefunden haben) bekommen stattdessen einen
+// bunt gemischten Vorgeschmack aus vergangenen AI Nights — Fotos aller Events
+// im Round-Robin gemischt, damit nicht ein einzelnes Event dominiert.
 const galleryGroup = (galleryData as { event: string; images: string[] }[]).find((g) => g.event === d.slug);
-const eventPhotos = galleryGroup?.images.slice(0, 24) ?? [];
+const hasOwnPhotos = (galleryGroup?.images.length ?? 0) > 0;
+let eventPhotos = galleryGroup?.images.slice(0, 24) ?? [];
+
+if (!hasOwnPhotos) {
+  const pools = (galleryData as { event: string; images: string[] }[]).map((g) => g.images);
+  const mixed: string[] = [];
+  for (let i = 0; mixed.length < 20 && pools.some((p) => i < p.length); i++) {
+    for (const p of pools) {
+      if (p[i]) mixed.push(p[i]);
+      if (mixed.length >= 20) break;
+    }
+  }
+  eventPhotos = mixed;
+}
 
 // Community-Stimmen (wie auf der Startseite)
 const testimonials = [
@@ -320,15 +336,22 @@ const facts: { icon: string; label: string }[] = [
         </section>
       )}
 
-      {/* Foto-Rückblick vergangener Events */}
+      {/* Foto-Rückblick — eigene Event-Fotos, sonst bunt gemischter Vorgeschmack */}
       {eventPhotos.length > 0 && (
         <section class="sec" data-reveal>
           <p class="eyebrow">AI Nights Rückblick</p>
-          <h2 class="display-font sec-h">Impressionen von diesem Event</h2>
+          <h2 class="display-font sec-h">
+            {hasOwnPhotos ? 'Impressionen von diesem Event' : 'So fühlt sich AI Nights an'}
+          </h2>
+          {!hasOwnPhotos && (
+            <p class="photos-note">
+              Für dieses Event gibt's noch keine eigenen Fotos — hier ein Vorgeschmack aus bisherigen AI&nbsp;Nights.
+            </p>
+          )}
           <div class="photos">
             {eventPhotos.map((src) => (
               <a href={src} target="_blank" rel="noopener" class="photo">
-                <img src={imgVariant(src, 320)} alt={`Impression ${d.title}`} loading="lazy" />
+                <img src={imgVariant(src, 320)} alt={hasOwnPhotos ? `Impression ${d.title}` : 'Impression von einer AI Nights'} loading="lazy" />
               </a>
             ))}
           </div>
@@ -842,20 +865,31 @@ const facts: { icon: string; label: string }[] = [
     margin-top: 2.1rem;
     background: var(--gradient-accent);
     box-shadow: 0 0 0 5px var(--bg-base), var(--glow-magenta);
+  }
+  .tl-dot::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: rgba(255, 45, 122, 0.55);
+    opacity: 0.6;
     animation: dot-pulse 2.4s ease-in-out infinite;
+    pointer-events: none;
   }
   .tl-dot-break {
-    animation: none;
     background: var(--bg-elevated);
     border: 2px solid var(--border-strong);
     box-shadow: 0 0 0 5px var(--bg-base);
   }
+  .tl-dot-break::after {
+    display: none;
+  }
   @keyframes dot-pulse {
-    0%, 100% { box-shadow: 0 0 0 5px var(--bg-base), 0 0 20px rgba(255, 45, 122, 0.3); }
-    50% { box-shadow: 0 0 0 5px var(--bg-base), 0 0 32px rgba(255, 45, 122, 0.6); }
+    0% { transform: scale(0.6); opacity: 0.55; }
+    100% { transform: scale(1.8); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .tl-dot { animation: none; }
+    .tl-dot::after { animation: none; opacity: 0; }
   }
   .tl-content {
     padding: 1.8rem;
@@ -957,6 +991,12 @@ const facts: { icon: string; label: string }[] = [
   }
   .talk-detail .prose {
     font-size: 0.98rem;
+  }
+  .photos-note {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: -0.8rem 0 1.6rem;
   }
   .photos {
     display: grid;
