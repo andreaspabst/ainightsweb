@@ -42,6 +42,58 @@ const testimonials = [
   'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
 ];
 
+// Stimmen als Schriftform für den Parallax-Abschnitt weiter unten (wie im Original)
+const parallaxLead = [
+  'Die AI Nights ziehen Menschen aus Nürnberg, Fürth, Erlangen und der ganzen Region an. Nicht, weil sie alle dieselben Antworten suchen – sondern weil sie ähnliche Fragen haben.',
+  'KI betrifft längst nicht mehr nur Spezialist:innen. Sie verändert Arbeitsweisen, Entscheidungen und Zusammenarbeit. Und genau darüber sprechen wir: offen, verständlich und ohne Hürden.',
+];
+const parallaxQuotes = [
+  'Spannende Talks mit richtig guten Impulsen. Genau die Art Input, die zum Weiterdenken anregt.',
+  'Die Mischung aus Vortrags-Diversität und Live-Demos war top. Abwechslungsreich und nie langweilig.',
+  'Gute Themen, klare Pausen und endlich Zeit für echtes Networking. So entstehen Gespräche, die hängen bleiben.',
+  'Lockere Atmosphäre, starke Location und interessante Vorträge. Man fühlt sich sofort abgeholt und willkommen.',
+];
+const parallaxBg = '/wp-content/uploads/2026/01/23-ianight-23-scaled.jpg';
+
+// YouTube-Einblick „So fühlt sich AI Nights an“ (wie auf der aktuellen Seite)
+const youtubeId = 'U-F1GZmbzJE';
+
+// Gastgeber/Host-Vorstellung (statische Marken-Copy, wie auf der aktuellen Seite)
+const hostImage = '/wp-content/uploads/2026/01/19-ianight-19-scaled.jpg';
+const hostParagraphs = [
+  'Ich beschäftige mich täglich mit der Frage, wie KI sinnvoll in Produkte, Prozesse und Teams integriert werden kann.',
+  'Als Head of Engineering und KI-Enthusiast arbeite ich an der Schnittstelle von Technik, Produkt und Anwendung – von der Automatisierung einzelner Workflows bis hin zur Entwicklung AI-nativer Lösungen.',
+  'Dabei geht es selten um „noch ein Tool“. Sondern darum, herauszufinden, wo KI wirklich Mehrwert schafft und wo nicht.',
+  'Die AI Nights sind aus genau diesem Gedanken entstanden: Ein Ort für Austausch, ehrliche Fragen und unterschiedliche Perspektiven.',
+  'Mir war wichtig, ein Format zu schaffen, das nicht überfordert, sondern Orientierung gibt. Mit kurzen Impulsen, genug Pausen und Zeit für Gespräche, die über die Bühne hinausgehen.',
+];
+
+// FAQ (wie auf der aktuellen Seite)
+const faqItems = [
+  { q: 'Was sind die AI Nights?', a: 'Die AI Nights sind ein Afterwork-Meetup rund um Künstliche Intelligenz. Mit kurzen Talks, drei Speaker pro Abend, moderierter Diskussion und viel Zeit für Austausch – offline, persönlich und auf Augenhöhe.' },
+  { q: 'Wie läuft der Abend ab?', a: 'Der Einlass beginnt ab 17:00 Uhr und die Talks starten um 18:00 Uhr. Jeder Impuls dauert maximal 30 Minuten, dazwischen gibt es bewusst kurze Pausen. Im Anschluss (so ab 20:15/20:30 Uhr) bleibt ausreichend Zeit für Networking bei Snacks & Drinks. Den genauen Ablaufplan erhältst du ein paar Tage vor dem Event per E-Mail.' },
+  { q: 'Wie funktioniert der Ticketkauf?', a: 'Ganz unkompliziert: Du sicherst dir dein Ticket hier online über unsere Website und wirst direkt an den Zahlungsanbieter Digistore24 weitergeleitet. Nach dem Kauf bekommst du ein digitales Ticket via E-Mail zugesendet, das du am Eventabend einfach auf dem Smartphone vorzeigst – ausdrucken ist nicht nötig.' },
+  { q: 'Kann ich auch spontan kommen?', a: 'Ja! 🎉 Wenn noch Plätze verfügbar sind, gibt es eine Abendkasse. Du kannst also auch spontan vorbeikommen und vor Ort ein Ticket kaufen.\n👉 Tipp: Online-Tickets sind günstiger und garantieren dir sicher einen Platz.' },
+  { q: 'Für wen sind die AI Nights gedacht?', a: 'Für alle, die KI verstehen, einordnen oder anwenden wollen – egal ob du aus Tech, Business, Recht, Produkt, Design kommst oder einfach neugierig bist. Du musst kein Vorwissen mitbringen.' },
+  { q: 'Gibt es Zeit zum Netzwerken?', a: 'Ja – und zwar bewusst. Nach den Talks ist genug Zeit für Gespräche, Fragen und neue Kontakte. Kein Speed-Networking, kein Zwang – einfach echter Austausch.' },
+  { q: 'Muss ich mich mit KI oder bestimmten Tools schon auskennen?', a: 'Nein. Du solltest technisches Grundverständnis mitbringen (z. B. als Entwickler:in oder Tech-Interessierte:r), aber du musst kein KI-Profi sein. Die Vorträge sind praxisnah und verständlich – und es ist genug Raum für Fragen!' },
+  { q: 'Sind die AI Nights unabhängig oder steckt ein Unternehmen dahinter?', a: 'Die AI Nights sind ein unabhängiges Community-Format. Es geht nicht darum, Tools zu verkaufen oder Meinungen vorzugeben, sondern darum, Wissen, Erfahrungen und Perspektiven zu teilen. Was du daraus machst, entscheidest du selbst.' },
+  { q: 'Wo finden die AI Nights statt?', a: 'Entweder in den 📍 Design Offices Nürnberg Hauptbahnhof oder in den 📍 Design Offices Nürnberg City, Königstorgraben 11, 5. OG. Moderne Location mit Platz für Austausch, Denken und Afterwork-Vibes – keine klassische Konferenz-Atmosphäre.\nKurzfristige Änderungen werden dir direkt über den Newsletter mitgeteilt.' },
+  { q: 'Gibt es etwas zu Essen oder zu Trinken?', a: 'Ja. Getränke und Snacks sind im Ticketpreis enthalten, damit du ankommen, bleiben und dich auf Gespräche konzentrieren kannst.' },
+  { q: 'Wie lange dauert das Event?', a: 'Ab 17:00 Uhr öffnen wir die Türen – Zeit zum Ankommen, Getränk schnappen und erste Gespräche führen. Der offizielle Teil startet um 18:00 Uhr.\nDie Talks dauern jeweils maximal 30 Minuten. Dazwischen gibt es bewusst 15 Minuten Pause – zum Durchatmen, Nachfragen und Austauschen.\nAb ca. 20:15 Uhr geht der Abend in ein offenes Networking über. Viele bleiben noch 1–2 Stunden, manche auch länger – ganz entspannt und ohne festen Zeitplan.' },
+  { q: 'Ich bin unsicher, ob das das Richtige für mich ist.', a: 'Dann bist du vermutlich genau richtig. Die AI Nights sind für Menschen mit Fragen, Zweifel und Neugier – nicht nur für die, die schon alles wissen. Melde dich bei Fragen einfach bei uns direkt via Mail unter ping@ainights.ai' },
+];
+
+// „Kurz. Klar. Relevant.“ — Abschluss-Feature-Strip (wie auf der aktuellen Seite)
+const closingFeatures = [
+  { icon: '💡', label: 'Praxis-Impulse' },
+  { icon: '🤝', label: 'Netzwerken' },
+  { icon: '👀', label: 'Drei Perspektiven' },
+  { icon: '🥂', label: 'Drinks & Snacks' },
+  { icon: '❓', label: 'Fragen stellen' },
+  { icon: '💬', label: 'Speaker-Austausch' },
+];
+
 // Beziehungen (Post-IDs) zu Collection-Einträgen auflösen
 const speakerColl = await getCollection('speaker');
 const sessionColl = await getCollection('sessions');
@@ -75,6 +127,7 @@ function sessionMeta(s: any) {
 // Hero-Hintergrund: echtes Eventfoto statt des Branding-Bilds (das enthält
 // eingebrannten Titeltext und kollidiert sonst mit der H1). Fallback: Publikumsfoto.
 const heroBg = eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
+const factsImage = eventPhotos[1] ?? eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
 
 function fmtDate(dt?: string) {
   if (!dt) return null;
@@ -136,9 +189,9 @@ const facts: { icon: string; label: string }[] = [
   <Header lang="de" />
   <main>
     <section class="hero">
-      <img class="hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" />
+      <img class="hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" data-parallax="10" data-parallax-scale="1.12" />
       <div class="hero-overlay"></div>
-      <div class="hero-stars"></div>
+      <div class="hero-stars" data-parallax="5"></div>
       <div class="hero-orb hero-orb-a"></div>
       <div class="hero-orb hero-orb-b"></div>
       <div class="container hero-inner">
@@ -194,21 +247,6 @@ const facts: { icon: string; label: string }[] = [
     </section>
 
     <div class="container body">
-      {/* Fakten — als farbiger Trenner zwischen Hero und Content, statt einer weiteren dunklen Karte */}
-      <section class="facts" data-reveal>
-        <div class="facts-orb facts-orb-a"></div>
-        <div class="facts-orb facts-orb-b"></div>
-        <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
-        <ul>
-          {facts.map((f, i) => (
-            <li>
-              <span class={`fact-icon fact-icon-${i % 2 === 0 ? 'a' : 'b'}`}>{f.icon}</span>
-              <span>{f.label}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       {/* Programm */}
       {sessions.length > 0 && (
         <section class="sec" data-reveal>
@@ -275,6 +313,66 @@ const facts: { icon: string; label: string }[] = [
         </section>
       )}
 
+      {/* Fakten — farbiger Trenner mit Bild statt einer weiteren dunklen Karte */}
+      <section class="facts" data-reveal>
+        <div class="facts-orb facts-orb-a"></div>
+        <div class="facts-orb facts-orb-b"></div>
+        <div class="facts-grid">
+          <div class="facts-img">
+            <img src={imgVariant(factsImage, 640)} alt="" loading="lazy" />
+          </div>
+          <div class="facts-info">
+            <h2 class="display-font">Das Afterwork-Event in Kürze</h2>
+            <ul>
+              {facts.map((f, i) => (
+                <li>
+                  <span class={`fact-icon fact-icon-${i % 2 === 0 ? 'a' : 'b'}`}>{f.icon}</span>
+                  <span>{f.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Stimmen aus der Community — Video-Testimonials wie im Original */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Was Besucher über die AI Nights sagen</p>
+        <h2 class="display-font sec-h">Stimmen aus der Community</h2>
+        <div class="testi-videos">
+          {['ALEX', 'BERND', 'ROLAND'].map((n) => (
+            <video controls preload="metadata" playsinline>
+              <source type="video/mp4" src={`/wp-content/uploads/2026/02/${n}-AINIGHTS-TESTIMONIAL.mp4`} />
+            </video>
+          ))}
+        </div>
+        <div class="testi-grid">
+          {testimonials.map((q) => (
+            <blockquote class="testi card"><p>„{q}"</p></blockquote>
+          ))}
+        </div>
+      </section>
+
+      {/* Moderation */}
+      {moderators.length > 0 && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">Wer dich durch den Abend führt</p>
+          <h2 class="display-font sec-h">Moderation</h2>
+          <div class="speaker-list">
+            {moderators.map((s) => (
+              <a href={`/speaker/${s.data.slug}/`} class="speaker-full card moderator-card">
+                {s.data.image?.src && <img class="sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />}
+                <div class="sp-body">
+                  <h3>{s.data.title}</h3>
+                  {s.data.jobTitle && <p class="sp-role">{s.data.jobTitle}</p>}
+                  {s.data.excerpt && <p class="sp-bio">{s.data.excerpt}</p>}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Speaker-Vorstellung */}
       {(speakers.length > 0 || tbaCount > 0) && (
         <section class="sec" id="lineup" data-reveal>
@@ -318,47 +416,12 @@ const facts: { icon: string; label: string }[] = [
         </section>
       )}
 
-      {/* Moderation */}
-      {moderators.length > 0 && (
-        <section class="sec" data-reveal>
-          <p class="eyebrow">Wer dich durch den Abend führt</p>
-          <h2 class="display-font sec-h">Moderation</h2>
-          <div class="speaker-list">
-            {moderators.map((s) => (
-              <a href={`/speaker/${s.data.slug}/`} class="speaker-full card moderator-card">
-                {s.data.image?.src && <img class="sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />}
-                <div class="sp-body">
-                  <h3>{s.data.title}</h3>
-                  {s.data.jobTitle && <p class="sp-role">{s.data.jobTitle}</p>}
-                  {s.data.excerpt && <p class="sp-bio">{s.data.excerpt}</p>}
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Sponsoren */}
-      {sponsors.length > 0 && (
-        <section class="sec" data-reveal>
-          <p class="eyebrow">Möglich gemacht von</p>
-          <h2 class="display-font sec-h">Sponsoren dieses Events</h2>
-          <div class="sponsor-row">
-            {sponsors.map((s) => (
-              <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
-                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Foto-Rückblick — eigene Event-Fotos, sonst bunt gemischter Vorgeschmack */}
       {eventPhotos.length > 0 && (
         <section class="sec" data-reveal>
           <p class="eyebrow">AI Nights Rückblick</p>
           <h2 class="display-font sec-h">
-            {hasOwnPhotos ? 'Impressionen von diesem Event' : 'So fühlt sich AI Nights an'}
+            {hasOwnPhotos ? 'Impressionen von diesem Event' : 'Ein Vorgeschmack aus bisherigen AI Nights'}
           </h2>
           {!hasOwnPhotos && (
             <p class="photos-note">
@@ -376,27 +439,95 @@ const facts: { icon: string; label: string }[] = [
         </section>
       )}
 
-      {/* Stimmen aus der Community — Video-Testimonials wie im Original */}
+      {/* YouTube-Einblick */}
       <section class="sec" data-reveal>
-        <p class="eyebrow">Was Besucher über die AI Nights sagen</p>
-        <h2 class="display-font sec-h">Stimmen aus der Community</h2>
-        <div class="testi-videos">
-          {['ALEX', 'BERND', 'ROLAND'].map((n) => (
-            <video controls preload="metadata" playsinline>
-              <source type="video/mp4" src={`/wp-content/uploads/2026/02/${n}-AINIGHTS-TESTIMONIAL.mp4`} />
-            </video>
-          ))}
+        <p class="eyebrow">Ein Einblick in die letzte AI Night</p>
+        <h2 class="display-font sec-h">So fühlt sich AI Nights an</h2>
+        <div class="yt-wrap">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+            title="So fühlt sich AI Nights an"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
         </div>
-        <div class="testi-grid">
-          {testimonials.map((q) => (
-            <blockquote class="testi card"><p>„{q}"</p></blockquote>
+      </section>
+
+      {/* Sponsoren */}
+      {sponsors.length > 0 && (
+        <section class="sec" data-reveal>
+          <p class="eyebrow">Möglich gemacht von</p>
+          <h2 class="display-font sec-h">Sponsoren dieses Events</h2>
+          <div class="sponsor-row">
+            {sponsors.map((s) => (
+              <a href={`/sponsor/${s.data.slug}/`} class="sponsor-logo card" title={s.data.title}>
+                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Gastgeber & Initiator */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Dein Gastgeber und Initiator der AI Nights Nürnberg</p>
+        <h2 class="display-font sec-h">Andreas Pabst</h2>
+        <div class="host-grid">
+          <div class="host-body prose">
+            <p><strong>Andreas Pabst – Head of Engineering &amp; KI Specialist</strong></p>
+            {hostParagraphs.map((p) => <p>{p}</p>)}
+            <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">Tickets sichern</a>
+          </div>
+          <div class="host-img">
+            <img src={imgVariant(hostImage, 640)} alt="Andreas Pabst" loading="lazy" />
+          </div>
+        </div>
+      </section>
+
+      {/* Parallax-Zitate */}
+      <section class="sec quote-parallax" data-reveal>
+        <div class="qp-bg" style={`background-image:url(${imgVariant(parallaxBg, 1600)})`} data-parallax="16" data-parallax-scale="1.2"></div>
+        <div class="qp-overlay"></div>
+        <div class="qp-inner">
+          {parallaxLead.map((p) => <p class="qp-lead">{p}</p>)}
+          <div class="qp-quotes">
+            {parallaxQuotes.map((q) => (
+              <blockquote class="qp-quote"><p>„{q}"</p></blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Fragen zum Event</p>
+        <h2 class="display-font sec-h">Häufige Fragen</h2>
+        <div class="faq-list">
+          {faqItems.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<span class="faq-icon">＋</span></summary>
+              <p>{f.a}</p>
+            </details>
           ))}
         </div>
       </section>
 
+      {/* Abschluss */}
+      <section class="sec" data-reveal>
+        <p class="eyebrow">Kurz. Klar. Relevant.</p>
+        <h2 class="display-font sec-h">Das sind die AI Nights</h2>
+        <ul class="closing-features">
+          {closingFeatures.map((f) => (
+            <li><span class="cf-icon">{f.icon}</span>{f.label}</li>
+          ))}
+        </ul>
+      </section>
+
       <section class="cta card" data-reveal>
         <div class="cta-glow"></div>
-        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : 'Sichere dir deinen Platz'}</h2>
+        <h2 class="display-font">{isPast ? 'Beim nächsten AI Nights Afterwork dabei sein' : 'Bereit, bei den AI Nights dabei zu sein?'}</h2>
+        {!isPast && <p class="cta-sub">Verpasse nicht diese Gelegenheit, dich mit KI-Experten zu vernetzen und dein Wissen zu erweitern</p>}
         <a href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'} class="btn btn-primary">
           {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
         </a>
@@ -455,17 +586,19 @@ const facts: { icon: string; label: string }[] = [
 
   function initParallax() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const hero = document.querySelector<HTMLElement>('.hero');
-    const bg = document.querySelector<HTMLElement>('.hero-bg');
-    const stars = document.querySelector<HTMLElement>('.hero-stars');
-    if (!hero) return;
+    const layers = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+    if (!layers.length) return;
     let ticking = false;
     function update() {
-      const rect = hero.getBoundingClientRect();
-      const h = rect.height || 1;
-      const progress = Math.min(Math.max(-rect.top / h, 0), 1);
-      if (bg) bg.style.transform = `translateY(${progress * 14}%) scale(1.12)`;
-      if (stars) stars.style.transform = `translateY(${progress * 8}%)`;
+      const vh = window.innerHeight || 1;
+      layers.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const progress = (center - vh / 2) / vh;
+        const speed = parseFloat(el.dataset.parallax ?? '10');
+        const scale = el.dataset.parallaxScale ? parseFloat(el.dataset.parallaxScale) : 1;
+        el.style.transform = `translateY(${progress * speed}%)${scale !== 1 ? ` scale(${scale})` : ''}`;
+      });
       ticking = false;
     }
     window.addEventListener(
@@ -478,6 +611,7 @@ const facts: { icon: string; label: string }[] = [
       },
       { passive: true }
     );
+    window.addEventListener('resize', update, { passive: true });
     update();
   }
 
@@ -792,6 +926,40 @@ const facts: { icon: string; label: string }[] = [
   .fact-icon-b {
     background: rgba(50, 107, 255, 0.16);
     border: 1px solid rgba(50, 107, 255, 0.35);
+  }
+  .facts-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(200px, 320px) 1fr;
+    gap: 2.2rem;
+    align-items: center;
+  }
+  .facts-img {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .facts-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .facts-info h2 {
+    text-align: left;
+  }
+  @media (max-width: 720px) {
+    .facts-grid {
+      grid-template-columns: 1fr;
+    }
+    .facts-img {
+      aspect-ratio: 16 / 9;
+      max-width: 320px;
+      margin-inline: auto;
+    }
+    .facts-info h2 {
+      text-align: center;
+    }
   }
   .sec {
     position: relative;
@@ -1173,6 +1341,187 @@ const facts: { icon: string; label: string }[] = [
     max-width: 170px;
     object-fit: contain;
   }
+
+  /* YouTube-Einblick */
+  .yt-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+  }
+  .yt-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Gastgeber */
+  .host-grid {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 360px);
+    gap: 2.4rem;
+    align-items: center;
+  }
+  .host-body p {
+    margin: 0 0 1rem;
+  }
+  .host-body .btn {
+    margin-top: 0.6rem;
+  }
+  .host-img {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .host-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (max-width: 720px) {
+    .host-grid {
+      grid-template-columns: 1fr;
+    }
+    .host-img {
+      order: -1;
+      aspect-ratio: 16 / 9;
+      max-width: 320px;
+      margin-inline: auto;
+    }
+  }
+
+  /* Parallax-Zitate — bricht aus dem 980px-Container aus */
+  .quote-parallax {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+    padding: 0;
+  }
+  .qp-bg {
+    position: absolute;
+    inset: -15% 0;
+    background-size: cover;
+    background-position: center;
+    will-change: transform;
+  }
+  .qp-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.55), rgba(10, 1, 24, 0.88));
+  }
+  .qp-inner {
+    position: relative;
+    max-width: 900px;
+    margin-inline: auto;
+    padding: clamp(4rem, 10vw, 7rem) 1.5rem;
+    text-align: center;
+  }
+  .qp-lead {
+    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-weight: 500;
+    margin: 0 0 1.2rem;
+  }
+  .qp-quotes {
+    margin-top: 2.6rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    text-align: left;
+  }
+  .qp-quote {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    padding: 1.4rem;
+    margin: 0;
+  }
+  .qp-quote p {
+    color: var(--text-primary);
+    font-style: italic;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* FAQ */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .faq-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem 1.6rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-icon {
+    flex-shrink: 0;
+    color: var(--magenta-bright);
+    font-size: 1.3rem;
+    transition: transform 0.2s ease;
+  }
+  .faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+  .faq-item p {
+    padding: 0 1.6rem 1.4rem;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.96rem;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+
+  /* Abschluss-Feature-Strip */
+  .closing-features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.2rem;
+    text-align: center;
+  }
+  .closing-features li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .cf-icon {
+    font-size: 1.7rem;
+  }
+
   .cta {
     position: relative;
     padding: 3rem 2.5rem;
@@ -1198,6 +1547,12 @@ const facts: { icon: string; label: string }[] = [
     position: relative;
     font-size: clamp(1.6rem, 4vw, 2.2rem);
     margin-bottom: 1.4rem;
+  }
+  .cta-sub {
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: -0.8rem 0 1.6rem;
   }
   .cta .btn {
     position: relative;
