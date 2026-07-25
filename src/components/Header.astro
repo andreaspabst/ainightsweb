@@ -7,7 +7,6 @@ const { lang = 'de' } = Astro.props;
 const t = {
   de: {
     home: '/de/',
-    events: 'Events',
     cities: 'Städte',
     speaker: 'Speaker',
     sponsors: 'Sponsoren',
@@ -24,7 +23,6 @@ const t = {
   },
   en: {
     home: '/en/',
-    events: 'Events',
     cities: 'Cities',
     speaker: 'Speaker',
     sponsors: 'Sponsors',
@@ -49,7 +47,6 @@ const t = {
     </a>
 
     <nav class="nav" aria-label="Hauptnavigation">
-      <a href="/events/">{t.events}</a>
       <div class="dropdown">
         <button type="button" class="drop-btn" aria-haspopup="true" aria-expanded="false">
           {t.cities}
@@ -76,7 +73,6 @@ const t = {
   </div>
 
   <div class="mobile-menu" hidden>
-    <a href="/events/">{t.events}</a>
     <a href="/stadt/nuernberg/">{t.nuernberg}</a>
     <a href="/stadt/muenchen/">{t.muenchen}</a>
     <a href="/stadt/erlangen/">{t.erlangen}</a>
