@@ -69,19 +69,13 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
 >
   <Header lang="de" />
   <main>
-    <section class="hero section">
-      <div class="container">
-        <p class="eyebrow">Jetzt dabei sein</p>
-        <h1 class="display-font">Tickets</h1>
-        <p class="sub">Holt euch eure Tickets für AI&nbsp;Nights Events und werdet Teil unserer großartigen Community.</p>
-        <a href="#eventlist" class="btn btn-primary">Unsere kommenden Events…</a>
-      </div>
-    </section>
-
     <section id="eventlist" class="meetups section">
       <div class="container">
-        <h2 class="display-font">Kommende Meetups</h2>
-        <p class="sub center">Nimm an unseren regelmäßigen Afterwork Meetups und Events teil und bau dein Netzwerk auf.</p>
+        <div class="intro">
+          <p class="eyebrow">Jetzt dabei sein</p>
+          <h1 class="display-font">Tickets</h1>
+          <p class="sub center">Holt euch eure Tickets für AI&nbsp;Nights Events und werdet Teil unserer großartigen Community.</p>
+        </div>
 
         {cities.length > 1 && (
           <div class="city-filter" role="group" aria-label="Nach Stadt filtern">
@@ -181,30 +175,20 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
 </script>
 
 <style>
-  .hero {
-    text-align: center;
-    padding-block: 4.5rem 3.5rem;
-  }
-  .hero h1 {
-    font-size: clamp(2.4rem, 6vw, 3.6rem);
-    margin: 0.4rem 0 1rem;
-  }
-  .hero .sub {
-    margin-inline: auto;
-    margin-bottom: 2rem;
-  }
   .sub {
     color: var(--text-secondary);
     max-width: 56ch;
     font-size: 1.05rem;
   }
   .meetups {
-    padding-block: 1rem 4.5rem;
+    padding-block: clamp(3.5rem, 8vw, 7rem) 4.5rem;
   }
-  .meetups h2 {
+  .intro {
     text-align: center;
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
-    margin-bottom: 0.8rem;
+  }
+  .intro h1 {
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    margin: 0.4rem 0 1rem;
   }
   .sub.center {
     text-align: center;
