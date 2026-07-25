@@ -129,14 +129,6 @@ const sessions = resolve(d.sessionIds, seMap);
 const isBreak = (s: any) => /pause|break/i.test(s.data.title);
 const sponsors = resolve(d.sponsorIds, spoMap);
 
-// Meta-Badges einer Session (Bühne, Level) — Zeit/Dauer wandern in die Timeline-Spalte
-function sessionMeta(s: any) {
-  const m: string[] = [];
-  if (s.data.room) m.push(s.data.room);
-  if (s.data.level) m.push(String(s.data.level).charAt(0).toUpperCase() + String(s.data.level).slice(1));
-  return m;
-}
-
 // Hero-Hintergrund: echtes Eventfoto statt des Branding-Bilds (das enthält
 // eingebrannten Titeltext und kollidiert sonst mit der H1). Fallback: Publikumsfoto.
 const heroBg = eventPhotos[0] ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
@@ -169,6 +161,8 @@ const breakDuration = breaks.find((s) => s.data.duration)?.data.duration;
 // Einlasszeit (Türöffnung) weicht meist vom Programmstart ab — separat ausweisen
 const firstTalkTime = sessions.find((s) => !isBreak(s))?.data.startTime;
 const showDoors = Boolean(d.startTime && firstTalkTime && d.startTime !== firstTalkTime);
+// Nach dem letzten Talk: offenes Ende & Austausch statt eines festen Programmpunkts
+const lastTalkEndTime = [...sessions].reverse().find((s) => !isBreak(s) && s.data.endTime)?.data.endTime;
 
 const facts: { icon: string; label: string }[] = [
   { icon: '🎤', label: `${speakerSlots.length || 3} Speaker${moderators.length ? ' & ' + moderators.length + ' Moderator' : ''}` },
@@ -262,7 +256,7 @@ const facts: { icon: string; label: string }[] = [
             </div>
           )}
 
-          {d.ticketUrl && !isPast && <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary hero-bar-cta">Tickets sichern</a>}
+          {d.ticketUrl && !isPast && <a href={d.ticketUrl} data-btn-pos="EVENT_HERO" target="_blank" rel="noopener" class="btn btn-primary hero-bar-cta">Tickets sichern</a>}
         </div>
       </div>
       <svg class="hero-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
@@ -294,7 +288,6 @@ const facts: { icon: string; label: string }[] = [
                 .map((id: number) => spMap.get(id))
                 .filter(Boolean)
                 .filter((x: any) => !isPlaceholderSpeaker(x));
-              const meta = sessionMeta(s);
               if (isBreak(s)) {
                 return (
                   <div class="stack-card stack-break" style={`--i:${i}`}>
@@ -306,8 +299,6 @@ const facts: { icon: string; label: string }[] = [
                 <article class="stack-card" style={`--i:${i}`}>
                   <div class="stack-head">
                     {s.data.startTime && <span class="stack-time">🕕 {s.data.startTime} Uhr</span>}
-                    {meta.map((m) => <span class="chip">{m}</span>)}
-                    {s.data.duration && <span class="chip">{s.data.duration} min</span>}
                   </div>
                   <h3>{s.data.title}</h3>
                   {sp.length > 0 && (
@@ -332,6 +323,11 @@ const facts: { icon: string; label: string }[] = [
                 </article>
               );
             })}
+            {lastTalkEndTime && (
+              <div class="stack-card stack-break" style={`--i:${sessions.length}`}>
+                <span class="note-pill">🥂 Ab {lastTalkEndTime} Uhr: Offenes Ende & Austausch</span>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -356,6 +352,7 @@ const facts: { icon: string; label: string }[] = [
             </ul>
             <a
               href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'}
+              data-btn-pos="EVENT_FACTS"
               target={!isPast && d.ticketUrl ? '_blank' : undefined}
               rel={!isPast && d.ticketUrl ? 'noopener' : undefined}
               class="btn btn-primary facts-cta"
@@ -587,6 +584,7 @@ const facts: { icon: string; label: string }[] = [
               </div>
               <a
                 href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'}
+                data-btn-pos="EVENT_HOST"
                 target={!isPast && d.ticketUrl ? '_blank' : undefined}
                 rel={!isPast && d.ticketUrl ? 'noopener' : undefined}
                 class="btn btn-primary"
@@ -672,6 +670,7 @@ const facts: { icon: string; label: string }[] = [
         {!isPast && <p class="cta-sub">Verpasse nicht diese Gelegenheit, dich mit KI-Experten zu vernetzen und dein Wissen zu erweitern</p>}
         <a
           href={!isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/'}
+          data-btn-pos="EVENT_FINALCTA"
           target={!isPast && d.ticketUrl ? '_blank' : undefined}
           rel={!isPast && d.ticketUrl ? 'noopener' : undefined}
           class="btn btn-primary"
@@ -692,11 +691,12 @@ const facts: { icon: string; label: string }[] = [
           {d.eventDate && (
             <span class="sticky-cta-date">
               {new Date(d.eventDate).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
-              {d.startTime ? ` · ${d.startTime} Uhr` : ''}
+              {d.city ? ` ${d.city}` : ''}
+              {d.startTime ? ` - Einlass ${d.startTime} Uhr` : ''}
             </span>
           )}
         </div>
-        <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary sticky-cta-btn">Tickets sichern</a>
+        <a href={d.ticketUrl} data-btn-pos="EVENT_STICKY" target="_blank" rel="noopener" class="btn btn-primary sticky-cta-btn">Tickets sichern</a>
       </div>
     </div>
   )}
