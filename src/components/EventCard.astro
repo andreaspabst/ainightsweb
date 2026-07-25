@@ -11,8 +11,10 @@ export interface Props {
   image?: { src?: string; alt?: string };
   excerpt?: string;
   ticketUrl?: string;
+  /** Button-Position fürs Tracking (?jtr=/?ds24tr=), z. B. "HOME_EVENTCARD" */
+  btnPos?: string;
 }
-const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl } = Astro.props;
+const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD' } = Astro.props;
 
 function fmtDate(d?: string) {
   if (!d) return null;
@@ -35,7 +37,7 @@ const dateLabel = fmtDate(eventDate);
     {excerpt && <p class="excerpt">{excerpt}</p>}
     <div class="actions">
       <a href={`/events/${slug}/`} class="btn btn-ghost">Details</a>
-      {ticketUrl && <a href={ticketUrl} class="btn btn-primary">Tickets</a>}
+      {ticketUrl && <a href={ticketUrl} data-btn-pos={btnPos} class="btn btn-primary">Tickets</a>}
     </div>
   </div>
 </article>

@@ -124,6 +124,38 @@ const titleTag = truncateAtWord(title, 65);
   </head>
   <body>
     <slot />
+
+    {/* Kampagnen-Tracking für Ticket-Links: eingehendes ?jtr= wird für die
+        Session gemerkt und an alle [data-btn-pos]-Ticketlinks weitergereicht
+        (ds24tr= für Digistore24, jtr= für alles andere/Joinify). Ohne
+        gespeicherten Wert wird die Button-Position als Fallback genutzt,
+        siehe .claude/skills/ticket-tracking. */}
+    <script is:inline>
+      (function () {
+        var STORAGE_KEY = 'ainights_jtr';
+        try {
+          var incoming = new URLSearchParams(window.location.search).get('jtr');
+          if (incoming) sessionStorage.setItem(STORAGE_KEY, incoming);
+        } catch (e) {}
+
+        var stored = null;
+        try {
+          stored = sessionStorage.getItem(STORAGE_KEY);
+        } catch (e) {}
+
+        document.querySelectorAll('a[data-btn-pos]').forEach(function (a) {
+          try {
+            var url = new URL(a.getAttribute('href'), window.location.origin);
+            if (url.hostname === window.location.hostname) return;
+            var value = stored || 'AINWEB_' + a.getAttribute('data-btn-pos');
+            var isDigistore = /ds24|digistore/i.test(url.hostname);
+            url.searchParams.set(isDigistore ? 'ds24tr' : 'jtr', value);
+            a.setAttribute('href', url.toString());
+          } catch (e) {}
+        });
+      })();
+    </script>
+
     <style is:global>
       :root {
         /* AI-Nights-Branding: Magenta + Blau auf dunklem Violett */

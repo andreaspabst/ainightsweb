@@ -149,10 +149,6 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
             </article>
           ))}
         </div>
-
-        <div class="all-events">
-          <a href="/events/" class="btn btn-ghost">Alle Events ansehen</a>
-        </div>
       </div>
     </section>
   </main>
@@ -325,9 +321,5 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
   }
   .secure:hover {
     color: var(--blue-bright);
-  }
-  .all-events {
-    text-align: center;
-    margin-top: 2.8rem;
   }
 </style>
