@@ -10,6 +10,11 @@ const formats = [
     href: '/de/tickets/',
     cta: 'Zu den Events',
   },
+  {
+    title: 'AI Women’s Night',
+    desc: 'Das neue Format von und für Frauen in der KI-Community – Austausch, Vorbilder und Praxis auf Augenhöhe.',
+    soon: 'More details coming soon',
+  },
 ];
 ---
 
@@ -31,7 +36,7 @@ const formats = [
         <div class="card fmt">
           <h2 class="display-font">{f.title}</h2>
           <p>{f.desc}</p>
-          <a href={f.href} class="btn btn-ghost">{f.cta}</a>
+          {f.href ? <a href={f.href} class="btn btn-ghost">{f.cta}</a> : <span class="soon">{f.soon}</span>}
         </div>
       ))}
     </div>
@@ -72,5 +77,16 @@ const formats = [
   .fmt p {
     color: var(--text-secondary);
     flex: 1;
+  }
+  .soon {
+    display: inline-block;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    border: 1px dashed var(--border-strong);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 </style>
