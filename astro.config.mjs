@@ -25,6 +25,9 @@ export default defineConfig({
     '/speaker/ai-nights-speaker-04/': '/speaker/',
     // Podcast-Seite wurde entfernt
     '/de/podcast/': '/de/',
+    // Formate, die (noch) nicht stattfinden — Detailseiten entfernt
+    '/de/formate/ai-barcamp-nuernberg/': '/de/formate/',
+    '/de/formate/agentic-day-nuernberg/': '/de/formate/',
     // Alias für die Städte-Übersicht (kanonisch: /stadt/)
     '/cities/': '/stadt/',
     '/staedte/': '/stadt/',
