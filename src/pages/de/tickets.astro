@@ -231,6 +231,15 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* Die Ticketliste enthält mehrere große Karten gleichzeitig. Eine etwas
+       deckendere Glass-Fläche hält den Look, ohne jede Karte beim Scrollen
+       live gegen den Seitenhintergrund weichzeichnen zu müssen. */
+    background: linear-gradient(145deg, rgba(34, 20, 61, 0.94), rgba(18, 8, 38, 0.96));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: paint;
     transition: transform 0.2s ease, border-color 0.2s ease;
   }
   .ticket-card:hover {
