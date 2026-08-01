@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import SpeakerCard from '../../components/SpeakerCard.astro';
 import EventCard from '../../components/EventCard.astro';
 import SponsorTiers from '../../components/SponsorTiers.astro';
+import { imgVariant } from '../../lib/images';
 
 // --- Daten ---
 const speakers = (await getCollection('speaker'))
@@ -48,6 +49,19 @@ const testimonials = [
 const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
   (n) => `/wp-content/uploads/2026/01/${n}-ianight-${n}-scaled.jpg`,
 );
+
+const heroPhotos = [17, 21, 27, 39, 44, 53, 64].map(
+  (n) => `/wp-content/uploads/2026/01/${n}-ianight-${n}-scaled.jpg`,
+);
+const heroPhotoAlts = [
+  'Publikum und Speaker bei einer AI Night',
+  'Gäste im Gespräch bei den AI Nights',
+  'Networking in entspannter AI-Nights-Atmosphäre',
+  'Speaker auf der Bühne der AI Nights',
+  'Community-Austausch während einer AI Night',
+  'Live-Talk vor dem AI-Nights-Publikum',
+  'Teilnehmende bei einem AI-Nights-Afterwork',
+];
 ---
 
 <Layout
@@ -97,7 +111,17 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
           <div class="glass-orbit orbit-top"><span class="pulse"></span> Live in deiner Stadt</div>
           <div class="glass-orbit orbit-bottom"><strong>100%</strong><span>echter<br />AI-Fokus</span></div>
           <div class="photo-shell">
-            <img src="/wp-content/uploads/2026/01/17-ianight-17-scaled.jpg" alt="Publikum und Speaker bei einer AI Night" />
+            <div class="hero-slideshow">
+              {heroPhotos.map((src, i) => (
+                <img
+                  src={imgVariant(src, 1024)}
+                  alt={heroPhotoAlts[i]}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={i === 0 ? 'high' : 'low'}
+                  style={`--slide-index: ${i}`}
+                />
+              ))}
+            </div>
             <div class="photo-overlay">
               <span>AI NIGHTS</span>
               <strong class="display-font">Think bigger.<br />Meet local.</strong>
@@ -684,7 +708,26 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
     inset: 0;
     background: linear-gradient(180deg, rgba(21,6,45,.05) 25%, rgba(8,1,24,.86) 100%);
   }
-  .photo-shell img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.8) contrast(1.08); }
+  .hero-slideshow { position: absolute; inset: 0; }
+  .photo-shell img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    filter: saturate(.8) contrast(1.08);
+    animation: hero-crossfade 42s ease-in-out infinite;
+    animation-delay: calc((var(--slide-index) * 6s) - .8s);
+  }
+  .photo-shell img:first-child { opacity: 1; }
+  @keyframes hero-crossfade {
+    0% { opacity: 0; transform: scale(1.015); }
+    2% { opacity: 1; }
+    12% { opacity: 1; }
+    16% { opacity: 0; transform: scale(1.055); }
+    100% { opacity: 0; transform: scale(1.055); }
+  }
   .photo-overlay { position: absolute; z-index: 2; left: 2.1rem; bottom: 2rem; }
   .photo-overlay span { color: rgba(255,255,255,.65); font-size: .7rem; letter-spacing: .25em; }
   .photo-overlay strong { display: block; margin-top: .45rem; font-size: 2rem; line-height: 1; }
@@ -769,5 +812,9 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
     .shard-two { animation-delay: -2s; }
     @keyframes drift { to { transform: translate3d(3rem, 2rem, 0) scale(1.12); } }
     @keyframes float { to { translate: 0 -14px; rotate: 8deg; } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photo-shell img { animation: none; opacity: 0; }
+    .photo-shell img:first-child { opacity: 1; }
   }
 </style>
