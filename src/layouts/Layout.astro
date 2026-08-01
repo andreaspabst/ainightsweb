@@ -178,6 +178,10 @@ const titleTag = truncateAtWord(title, 65);
         --gradient-hot: linear-gradient(135deg, #dc2777 0%, #ff8154 100%);
         --glow-magenta: 0 0 40px rgba(255, 45, 122, 0.4);
         --glow-blue: 0 0 60px rgba(50, 107, 255, 0.35);
+        --glass-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.032));
+        --glass-border: rgba(255, 255, 255, 0.17);
+        --glass-border-hover: rgba(255, 255, 255, 0.3);
+        --glass-shadow: 0 28px 80px rgba(2, 0, 18, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.13);
 
         --maxw: 1180px;
         --radius: 18px;
@@ -198,6 +202,7 @@ const titleTag = truncateAtWord(title, 65);
         color: var(--text-primary);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        overflow-x: clip;
       }
 
       body {
@@ -209,7 +214,20 @@ const titleTag = truncateAtWord(title, 65);
           radial-gradient(ellipse 60% 40% at 50% 95%, rgba(109, 40, 217, 0.16), transparent 60%),
           var(--bg-base);
         background-attachment: fixed;
-        overflow-x: hidden;
+        overflow-x: clip;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.16;
+        background-image:
+          linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+        background-size: 78px 78px;
+        mask-image: radial-gradient(circle at 50% 20%, #000, transparent 70%);
       }
 
       a {
@@ -258,6 +276,10 @@ const titleTag = truncateAtWord(title, 65);
       .section {
         padding-block: clamp(3.5rem, 8vw, 7rem);
       }
+      main:not(.home-modern):not(.cities-page) > .container:first-child,
+      main.container {
+        position: relative;
+      }
       .eyebrow {
         display: inline-block;
         font-size: 0.8rem;
@@ -284,21 +306,22 @@ const titleTag = truncateAtWord(title, 65);
         border-radius: 999px;
         font-weight: 600;
         font-size: 0.98rem;
-        border: 1px solid transparent;
+        border: 1px solid rgba(255,255,255,.16);
         transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
         cursor: pointer;
+        backdrop-filter: blur(18px) saturate(150%);
       }
       .btn-primary {
         background: var(--gradient-accent);
         color: #fff;
-        box-shadow: var(--glow-magenta);
+        box-shadow: 0 14px 36px rgba(161, 43, 201, 0.3), inset 0 1px 0 rgba(255,255,255,.35);
       }
       .btn-primary:hover {
         transform: translateY(-2px);
         color: #fff;
       }
       .btn-ghost {
-        background: var(--bg-glass);
+        background: rgba(255,255,255,.055);
         color: var(--text-primary);
         border-color: var(--border-strong);
       }
@@ -307,11 +330,55 @@ const titleTag = truncateAtWord(title, 65);
         border-color: var(--magenta-bright);
       }
       .card {
-        background: var(--bg-glass);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        backdrop-filter: blur(12px);
+        background: var(--glass-surface);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        backdrop-filter: blur(22px) saturate(145%);
+        box-shadow: var(--glass-shadow);
       }
+
+      /* Gemeinsame Bühne für Archive, Detailseiten und migrierte Inhalte */
+      main.container.archive,
+      main.container.detail,
+      main.container.page {
+        padding-top: clamp(4rem, 8vw, 7rem);
+        overflow: clip;
+      }
+      main.container.archive::before,
+      main.container.detail::before,
+      main.container.page::before {
+        content: '';
+        position: absolute;
+        width: 30rem;
+        height: 30rem;
+        top: -12rem;
+        right: -12rem;
+        border-radius: 50%;
+        background: rgba(220,39,119,.19);
+        filter: blur(90px);
+        pointer-events: none;
+        z-index: -1;
+      }
+      main.container.archive > h1,
+      main.container.detail h1,
+      main.container.page h1 {
+        font-size: clamp(2.8rem, 7vw, 5.7rem);
+        line-height: .98;
+        letter-spacing: -.055em;
+      }
+      main.container.archive > .sub,
+      main.container.page .sub {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+      }
+      .prose {
+        padding: clamp(1.5rem, 4vw, 3rem);
+        border: 1px solid var(--glass-border);
+        border-radius: 28px;
+        background: var(--glass-surface);
+        backdrop-filter: blur(22px) saturate(140%);
+        box-shadow: var(--glass-shadow);
+      }
+      .prose h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); letter-spacing: -.035em; }
 
       /* Gerenderte Inhalte (aus WordPress migriertes HTML) */
       .prose {

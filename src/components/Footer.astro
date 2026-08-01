@@ -102,6 +102,10 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
 
 <footer class="site-footer">
   <div class="container">
+    <div class="footer-cta">
+      <div><p class="eyebrow">Stay curious</p><h2 class="display-font">Die nächste Idee beginnt <span>heute Nacht.</span></h2></div>
+      <a href={lang === 'de' ? '/de/tickets/' : '/de/tickets/'} class="btn btn-primary">Nächste AI Night ↗</a>
+    </div>
     <div class="grid">
       <div class="brand">
         <a href={homeHref}><img src="/wp-content/uploads/2026/07/AI-Nights-Logo-wAXDN.svg" alt="AI Nights" width="182" height="34" /></a>
@@ -141,11 +145,18 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--border);
-    background: linear-gradient(180deg, transparent, rgba(20, 10, 42, 0.6));
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,.1);
+    background: radial-gradient(circle at 18% 20%, rgba(50,107,255,.13),transparent 35%), radial-gradient(circle at 82% 70%,rgba(220,39,119,.13),transparent 35%), linear-gradient(180deg, transparent, rgba(20, 10, 42, 0.72));
     padding-block: 4rem 2rem;
     margin-top: 4rem;
   }
+  .footer-cta { display:flex;align-items:center;justify-content:space-between;gap:2rem;margin-bottom:4rem;padding:clamp(1.8rem,4vw,3rem);border:1px solid rgba(255,255,255,.17);border-radius:30px;background:var(--glass-surface);backdrop-filter:blur(25px) saturate(150%);box-shadow:var(--glass-shadow); }
+  .footer-cta h2 { font-size:clamp(1.8rem,4vw,3rem);max-width:20ch;letter-spacing:-.045em; }
+  .footer-cta h2 span { background:var(--gradient-text);-webkit-background-clip:text;background-clip:text;color:transparent; }
+  .footer-cta .eyebrow { margin-bottom:.5rem; }
+  .footer-cta .btn { flex:none; }
   .grid {
     display: grid;
     grid-template-columns: 1.6fr repeat(4, 1fr);
@@ -235,5 +246,6 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
     .grid {
       grid-template-columns: 1fr;
     }
+    .footer-cta { align-items:flex-start;flex-direction:column; }
   }
 </style>

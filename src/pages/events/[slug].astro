@@ -910,6 +910,13 @@ const facts: { icon: string; label: string }[] = [
     position: relative;
     text-align: center;
   }
+  .hero-inner h1 {
+    max-width: 18ch;
+    margin-inline: auto;
+    font-size: clamp(3rem, 7.5vw, 6.7rem);
+    line-height: .94;
+    letter-spacing: -.06em;
+  }
   .back {
     display: inline-block;
     color: var(--text-secondary);
@@ -933,9 +940,9 @@ const facts: { icon: string; label: string }[] = [
     border-radius: 999px;
   }
   .badge-outline {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-strong);
-    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,.075);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px) saturate(150%);
   }
   .badge.past {
     background: var(--bg-glass);
@@ -989,12 +996,12 @@ const facts: { icon: string; label: string }[] = [
     align-items: center;
     justify-content: center;
     gap: 1.6rem;
-    background: var(--bg-glass);
-    border: 1px solid var(--border-strong);
-    backdrop-filter: blur(16px);
-    border-radius: 20px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(28px) saturate(165%);
+    border-radius: 26px;
     padding: 1.3rem 1.8rem;
-    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--glass-shadow);
   }
   .hero-bar-speakers {
     display: inline-flex;
