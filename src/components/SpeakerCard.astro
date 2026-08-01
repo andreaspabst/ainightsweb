@@ -27,26 +27,31 @@ const placeholder = '/wp-content/uploads/2026/01/speaker01-4043248_avatar_female
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    border-radius: 26px;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow .25s ease;
   }
   .speaker-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-strong);
+    transform: translateY(-7px);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 32px 80px rgba(2,0,18,.48), inset 0 1px rgba(255,255,255,.16);
     color: inherit;
   }
   .photo {
     aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--bg-elevated);
+    position: relative;
   }
+  .photo::after { content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(9,1,25,.58));pointer-events:none; }
   .photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s ease, filter .4s ease;
   }
   .speaker-card:hover .photo img {
-    transform: scale(1.05);
+    transform: scale(1.055);
+    filter: saturate(1.12);
   }
   .body {
     padding: 1.1rem 1.2rem 1.3rem;
@@ -56,7 +61,8 @@ const placeholder = '/wp-content/uploads/2026/01/speaker01-4043248_avatar_female
     flex: 1;
   }
   h3 {
-    font-size: 1.12rem;
+    font-size: 1.2rem;
+    letter-spacing: -.03em;
     color: var(--text-primary);
   }
   .role {

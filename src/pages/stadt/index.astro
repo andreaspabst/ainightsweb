@@ -18,133 +18,158 @@ const soon = shown.filter((c) => c.status === 'soon');
   alternates={{ de: '/stadt/' }}
 >
   <Header lang="de" />
-  <main class="container archive section">
-    <p class="eyebrow">Live vor Ort</p>
-    <h1 class="display-font">Unsere Städte</h1>
-    <p class="sub">
-      Die AI&nbsp;Nights sind eine wachsende Event-Reihe: gestartet in Nürnberg, inzwischen auch in München — und weitere
-      Städte stehen schon in den Startlöchern.
-    </p>
+  <main class="cities-page">
+    <section class="cities-hero">
+      <div class="aurora aurora-pink"></div>
+      <div class="aurora aurora-blue"></div>
+      <div class="city-grid-bg"></div>
+      <div class="container hero-layout">
+        <div class="hero-copy">
+          <p class="eyebrow glass-label"><span></span> Live. Lokal. Vernetzt.</p>
+          <h1 class="display-font">AI verbindet.<br /><span class="gradient-text">Stadt für Stadt.</span></h1>
+          <p class="sub">
+            Was in Nürnberg begann, wird zur Bewegung. Finde deine lokale AI-Community, erlebe ehrliche
+            Einblicke aus der Praxis und gestalte die nächste AI Night direkt vor deiner Haustür mit.
+          </p>
+          <div class="hero-facts">
+            <div><strong class="display-font">{active.length}</strong><span>aktive Städte</span></div>
+            <div><strong class="display-font">{soon.length}</strong><span>demnächst</span></div>
+            <div><strong class="display-font">1</strong><span>Community</span></div>
+          </div>
+        </div>
 
-    <div class="map-wrap card">
-      <CityMap />
-    </div>
-    <p class="map-credit">Kartenbasis: Natural Earth (Public Domain)</p>
+        <div class="map-shell">
+          <div class="map-glass">
+            <div class="map-topline"><span>AI NIGHTS NETWORK</span><span class="live-dot">Live map</span></div>
+            <CityMap />
+          </div>
+          <div class="floating-note note-one"><span>●</span> Nürnberg<br /><small>Community Hub</small></div>
+          <div class="floating-note note-two"><strong>+{soon.length}</strong><span>neue Städte<br />im Aufbau</span></div>
+        </div>
+      </div>
+    </section>
 
-    <h2 class="group display-font">Hier sind wir aktiv</h2>
-    <div class="grid">
-      {active.map((c) => (
-        <a href={`/stadt/${c.slug}/`} class="city card">
-          <span class="city-badge" style={`background: ${cityColor(c.name)}`}>Aktiv</span>
-          <h3 class="display-font">{c.name}</h3>
-          <p>Regelmäßige Afterwork-Events mit Talks, Live-Demos und Community.</p>
-          <span class="more">Zur Stadt →</span>
-        </a>
-      ))}
-    </div>
+    <section class="section city-section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Already glowing</p>
+            <h2 class="display-font">Hier sind wir <span class="gradient-text">schon live.</span></h2>
+          </div>
+          <p>Regelmäßige Afterworks mit Talks, Live-Demos und Gesprächen, die auch nach dem letzten Talk weitergehen.</p>
+        </div>
+        <div class="grid active-grid">
+          {active.map((c, i) => (
+            <a href={`/stadt/${c.slug}/`} class="city city-active">
+              <div class="city-photo">
+                <img
+                  src={i === 0 ? '/wp-content/uploads/2026/01/city_nuernberg_summer.png' : '/wp-content/uploads/2026/01/39-ianight-39-scaled-640w.webp'}
+                  alt={`AI Nights in ${c.name}`}
+                  loading="lazy"
+                />
+                <span class="city-badge" style={`--city-color: ${cityColor(c.name)}`}><i></i> Aktiv</span>
+              </div>
+              <div class="city-body">
+                <span class="city-index">0{i + 1}</span>
+                <h3 class="display-font">{c.name}</h3>
+                <p>Dein lokaler Treffpunkt für KI, neue Perspektiven und Austausch auf Augenhöhe.</p>
+                <span class="more">AI Nights {c.name} <b>↗</b></span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
 
-    <h2 class="group display-font">Bald am Start</h2>
-    <div class="grid">
-      {soon.map((c) => (
-        <a href={`/stadt/${c.slug}/`} class="city card soon-card">
-          <span class="city-badge soon-badge">Bald</span>
-          <h3 class="display-font">{c.name}</h3>
-          <p>Die AI&nbsp;Nights kommen — Termin wird noch bekanntgegeben.</p>
-          <span class="more">Mehr erfahren →</span>
-        </a>
-      ))}
-    </div>
+    <section class="section expansion-section">
+      <div class="container">
+        <div class="expansion-head">
+          <div>
+            <p class="eyebrow">Next up</p>
+            <h2 class="display-font">Die nächste Night könnte <span class="gradient-text">deine sein.</span></h2>
+          </div>
+          <a href="mailto:hello@ainights.ai" class="btn btn-ghost">AI Nights in deine Stadt bringen</a>
+        </div>
+        <div class="grid soon-grid">
+          {soon.map((c) => (
+            <a href={`/stadt/${c.slug}/`} class="city soon-card">
+              <span class="city-badge soon-badge"><i></i> In Planung</span>
+              <div class="soon-city-line"><h3 class="display-font">{c.name}</h3><span>↗</span></div>
+              <p>Die Community wächst. Trag dich ein und erfahre zuerst, wann es losgeht.</p>
+              <div class="progress"><span></span></div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   </main>
   <Footer lang="de" />
 </Layout>
 
 <style>
-  .archive {
-    padding-block: 3rem 4rem;
-  }
-  h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    margin: 0.4rem 0 0.8rem;
-  }
-  .sub {
-    color: var(--text-secondary);
-    max-width: 56ch;
-    margin-bottom: 2.5rem;
-    font-size: 1.05rem;
-  }
-  .map-wrap {
-    padding: 1.5rem;
-    overflow: hidden;
-  }
-  .map {
-    position: relative;
-  }
-  .map img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .map-credit {
-    margin-top: 0.6rem;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
-  .map-credit a {
-    color: var(--text-muted);
-    text-decoration: underline;
-  }
-  .group {
-    font-size: 1.4rem;
-    margin: 2.5rem 0 1.3rem;
-  }
+  .cities-page { --glass: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.035)); }
+  .cities-hero { position: relative; overflow: hidden; padding-block: clamp(4rem, 9vw, 7rem); min-height: 760px; display: grid; align-items: center; }
+  .city-grid-bg { position: absolute; inset: 0; opacity: .1; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px); background-size: 72px 72px; mask-image: radial-gradient(circle at 60% 50%, #000, transparent 72%); }
+  .aurora { position: absolute; width: 35rem; aspect-ratio: 1; border-radius: 50%; filter: blur(90px); opacity: .22; }
+  .aurora-pink { background: var(--magenta-bright); right: -12rem; top: -8rem; }
+  .aurora-blue { background: var(--blue); left: -15rem; bottom: -18rem; }
+  .hero-layout { position: relative; display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(3rem,7vw,6rem); align-items: center; }
+  .glass-label { width: fit-content; padding: .55rem .9rem; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; background: rgba(255,255,255,.06); backdrop-filter: blur(20px); color: var(--text-secondary); -webkit-text-fill-color: currentColor; }
+  .glass-label span { display:inline-block; width:.45rem; height:.45rem; margin-right:.5rem; border-radius:50%; background:#7cffc4; box-shadow:0 0 14px #7cffc4; }
+  h1 { font-size: clamp(3.2rem, 7vw, 6.5rem); line-height: .94; letter-spacing: -.065em; margin: 1.4rem 0 1.7rem; }
+  .sub { color: var(--text-secondary); max-width: 52ch; font-size: 1.08rem; }
+  .hero-facts { display: flex; gap: 2rem; margin-top: 2.4rem; }
+  .hero-facts div { display:flex; flex-direction:column; padding-right:2rem; border-right:1px solid rgba(255,255,255,.12); }
+  .hero-facts div:last-child { border:0; }
+  .hero-facts strong { font-size: 1.8rem; }
+  .hero-facts span { color:var(--text-muted); font-size:.72rem; }
+  .map-shell { position:relative; }
+  .map-glass { padding: 1.2rem; border:1px solid rgba(255,255,255,.2); border-radius: 34px; background:var(--glass); backdrop-filter:blur(28px) saturate(150%); box-shadow:0 35px 90px rgba(2,0,18,.48), inset 0 1px rgba(255,255,255,.15); transform:perspective(1200px) rotateY(-4deg) rotateX(2deg); }
+  .map-topline { display:flex; justify-content:space-between; padding:.4rem .5rem 1rem; color:var(--text-muted); font-size:.65rem; letter-spacing:.16em; }
+  .live-dot { color:#7cffc4; }
+  .floating-note { position:absolute; z-index:3; padding:.8rem 1rem; border:1px solid rgba(255,255,255,.2); border-radius:18px; background:var(--glass); backdrop-filter:blur(22px); box-shadow:0 20px 55px rgba(0,0,0,.4); font-size:.78rem; font-weight:600; }
+  .floating-note small { color:var(--text-muted); }
+  .note-one { left:-6%; bottom:13%; }
+  .note-one span { color:#ff4d91; }
+  .note-two { right:-4%; top:17%; display:flex; align-items:center; gap:.7rem; }
+  .note-two strong { font-size:1.6rem; }
+  .note-two span { color:var(--text-muted); font-size:.66rem; }
+  .city-section { position:relative; }
+  .section-heading,.expansion-head { display:flex; justify-content:space-between; align-items:end; gap:2rem; margin-bottom:2rem; }
+  .section-heading h2,.expansion-head h2 { font-size:clamp(2rem,4.5vw,3.5rem); }
+  .section-heading > p { max-width:42ch; color:var(--text-muted); margin-bottom:.5rem; }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
   }
-  .city {
-    padding: 1.6rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-  }
-  .city:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-strong);
-  }
-  .city-badge {
-    align-self: flex-start;
-    color: #fff;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-  }
-  .soon-badge {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-strong);
-    color: var(--text-muted);
-  }
-  .city h3 {
-    font-size: 1.3rem;
-    color: var(--text-primary);
-  }
-  .city p {
-    color: var(--text-secondary);
-    font-size: 0.92rem;
-    line-height: 1.6;
-  }
-  .soon-card {
-    opacity: 0.85;
-  }
-  .more {
-    margin-top: auto;
-    padding-top: 0.5rem;
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--magenta-bright);
-  }
+  .city { position:relative; overflow:hidden; color:inherit; border:1px solid rgba(255,255,255,.16); border-radius:28px; background:var(--glass); backdrop-filter:blur(22px); box-shadow:0 24px 70px rgba(2,0,18,.3), inset 0 1px rgba(255,255,255,.12); transition:transform .25s ease,border-color .25s ease; }
+  .city:hover { transform:translateY(-7px); border-color:rgba(255,255,255,.3); color:inherit; }
+  .city-photo { position:relative; height:240px; overflow:hidden; }
+  .city-photo::after { content:''; position:absolute; inset:0; background:linear-gradient(transparent 40%,rgba(9,1,25,.75)); }
+  .city-photo img { width:100%;height:100%;object-fit:cover;transition:transform .5s ease; }
+  .city:hover .city-photo img { transform:scale(1.04); }
+  .city-badge { display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .7rem;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(10,1,24,.5);backdrop-filter:blur(14px);color:#fff;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em; }
+  .city-photo .city-badge { position:absolute;z-index:2;left:1rem;top:1rem; }
+  .city-badge i { width:.45rem;height:.45rem;border-radius:50%;background:var(--city-color,#7cffc4);box-shadow:0 0 12px var(--city-color,#7cffc4); }
+  .city-body { position:relative;padding:1.5rem; }
+  .city-index { position:absolute;right:1.4rem;top:1.2rem;color:rgba(255,255,255,.16);font-weight:700; }
+  .city h3 { color:var(--text-primary);font-size:1.75rem; }
+  .city p { color:var(--text-muted);font-size:.88rem;margin:.65rem 0 1.2rem; }
+  .more { display:flex;justify-content:space-between;align-items:center;color:var(--text-secondary);font-size:.82rem;font-weight:600; }
+  .more b { display:grid;place-items:center;width:2rem;height:2rem;border-radius:50%;background:rgba(255,255,255,.08); }
+  .expansion-section { background:linear-gradient(180deg,transparent,rgba(50,107,255,.055),transparent); }
+  .expansion-head .btn { flex:none; }
+  .soon-grid { grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
+  .soon-card { padding:1.35rem;min-height:205px;display:flex;flex-direction:column; }
+  .soon-badge { align-self:flex-start;color:var(--text-muted); }
+  .soon-badge i { background:#a68bff;box-shadow:0 0 12px #8b6dff; }
+  .soon-city-line { display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem; }
+  .soon-city-line h3 { font-size:1.5rem; }
+  .soon-city-line > span { color:var(--text-muted); }
+  .soon-card p { flex:1; }
+  .progress { height:3px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden; }
+  .progress span { display:block;width:42%;height:100%;background:linear-gradient(90deg,var(--magenta-bright),var(--blue-bright)); }
+  @media(max-width:900px){.hero-layout{grid-template-columns:1fr}.map-shell{max-width:680px}.section-heading,.expansion-head{align-items:start;flex-direction:column}.note-one{left:0}.note-two{right:0}}
+  @media(max-width:600px){.cities-hero{padding-top:3rem}.hero-facts{gap:1rem}.hero-facts div{padding-right:1rem}.map-glass{padding:.7rem;border-radius:24px}.floating-note{display:none}.active-grid{grid-template-columns:1fr}.expansion-head .btn{width:100%;justify-content:center}}
 </style>

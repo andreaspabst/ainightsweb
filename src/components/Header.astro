@@ -87,18 +87,22 @@ const t = {
 <style>
   .site-header {
     position: sticky;
-    top: 0;
+    top: 10px;
     z-index: 100;
-    background: rgba(10, 1, 24, 0.72);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
+    width: min(calc(100% - 24px), 1220px);
+    margin-inline: auto;
+    background: linear-gradient(135deg, rgba(21, 9, 43, 0.78), rgba(12, 3, 29, 0.62));
+    backdrop-filter: blur(28px) saturate(170%);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 22px;
+    box-shadow: 0 18px 55px rgba(2,0,18,.34), inset 0 1px 0 rgba(255,255,255,.13);
   }
   .bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    height: 68px;
+    height: 64px;
   }
   .logo img {
     height: 32px;
@@ -139,9 +143,10 @@ const t = {
     gap: 0.2rem;
     min-width: 210px;
     padding: 0.5rem;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    background: rgba(18, 7, 39, .86);
+    backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 18px;
     opacity: 0;
     visibility: hidden;
     transition: all 0.18s ease;
@@ -173,7 +178,8 @@ const t = {
     font-weight: 600;
     font-size: 0.85rem;
     letter-spacing: 0.04em;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.045);
     border-radius: 999px;
     padding: 0.35rem 0.7rem;
   }
@@ -206,7 +212,8 @@ const t = {
     gap: 0.3rem;
     padding: 1rem 1.5rem 1.5rem;
     border-top: 1px solid var(--border);
-    background: var(--bg-base);
+    background: rgba(12,3,29,.96);
+    border-radius: 0 0 22px 22px;
   }
   .mobile-menu a {
     color: var(--text-secondary);
@@ -232,6 +239,11 @@ const t = {
     .mobile-menu[data-open='true'] {
       display: flex;
     }
+  }
+  @media (max-width: 520px) {
+    .site-header { top: 6px; width: calc(100% - 12px); border-radius: 18px; }
+    .bar { height: 58px; padding-inline: 1rem; }
+    .logo img { height: 27px; }
   }
 </style>
 
