@@ -13,6 +13,10 @@
   "locationName": "ZOLLHOF Tech Incubator Nürnberg",
   "city": "Nürnberg",
   "ticketUrl": "https://joinify.net/app/products/uehb9rss/tickets",
+  "platforms": {
+    "joinify": "uehb9rss",
+    "eventbrite": "1996515150560"
+  },
   "date": "2026-05-17 09:36:16",
   "speakerIds": [
     410,

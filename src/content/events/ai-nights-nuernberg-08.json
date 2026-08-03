@@ -13,6 +13,10 @@
   "locationName": "Design Offices Nürnberg City",
   "city": "Nürnberg",
   "ticketUrl": "https://joinify.net/app/products/p8ar645b/tickets",
+  "platforms": {
+    "joinify": "p8ar645b",
+    "eventbrite": "1996514983059"
+  },
   "date": "2026-05-17 09:54:56",
   "speakerIds": [
     410,

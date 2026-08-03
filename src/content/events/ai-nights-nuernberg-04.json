@@ -13,6 +13,11 @@
   "locationName": "Design Offices Nürnberg Hbf.",
   "city": "Nürnberg",
   "ticketUrl": "https://www.checkout-ds24.com/product/643741/",
+  "platforms": {
+    "digistore": "https://www.checkout-ds24.com/product/643741",
+    "eventbrite": "1992204966684",
+    "meetup": "314819026"
+  },
   "date": "2026-01-03 11:33:33",
   "speakerIds": [1242, 1246, 1253],
   "sessionIds": [728, 1249, 1009, 1251, 977, 1245],

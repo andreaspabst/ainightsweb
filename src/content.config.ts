@@ -96,6 +96,17 @@ const events = defineCollection({
     locationAddress: z.string().optional(),
     city: z.string().optional(),
     ticketUrl: z.string().optional(),
+    // IDs/Referenzen des Events auf den Ticket-/Listing-Plattformen
+    // (gepflegt vom Skill event-platforms; verlinkt wird nur ticketUrl)
+    platforms: z
+      .object({
+        joinify: z.string().optional(),
+        digistore: z.string().optional(),
+        eventbrite: z.string().optional(),
+        meetup: z.string().optional(),
+        luma: z.string().optional(),
+      })
+      .optional(),
     status: z.string().optional(),
     gallery: z.array(z.string()).optional(),
     // Beziehungen (aus ACF *_slots), als Post-IDs
