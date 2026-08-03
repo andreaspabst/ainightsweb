@@ -1,0 +1,14 @@
+{
+  "id": 1500,
+  "title": "hackers&wizards",
+  "slug": "hackers-wizards",
+  "excerpt": "Software Factory für Engineering-Organisationen.",
+  "logo": {
+    "src": "/wp-content/uploads/2026/07/hackers-wizards-logo.svg",
+    "alt": "hackers&wizards"
+  },
+  "website": "https://www.hackersandwizards.dev/de/",
+  "tier": "bronce",
+  "date": "2026-07-31 00:00:00",
+  "contentHtml": "<p>hackers&amp;wizards ist eine Software Factory für Engineering-Organisationen. Das Team hilft Engineering-Teams dabei, gemeinsame Agentic-Engineering-Praktiken über den gesamten Delivery-Zyklus aufzubauen – von Planung und Umsetzung über Review bis hin zu Deployment und Betrieb. Gegründet von Stefan und Bene, die mit über 20 Jahren Engineering-Erfahrung Kund:innen wie Moonfare, Krombacher und StashAway begleitet haben.</p>"
+}

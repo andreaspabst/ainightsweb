@@ -1,0 +1,14 @@
+{
+  "id": 1501,
+  "title": "MAIKE",
+  "slug": "maike",
+  "excerpt": "Deine GAIO-Agentur für Sichtbarkeit in KI-Antworten.",
+  "logo": {
+    "src": "/wp-content/uploads/2026/07/maike-logo.svg",
+    "alt": "MAIKE"
+  },
+  "website": "https://maike.today/",
+  "tier": "bronce",
+  "date": "2026-07-31 00:00:00",
+  "contentHtml": "<p>MAIKE ist eine Agentur für Generative AI Optimization (GAIO): Statt klassischer Suchmaschinenoptimierung sorgt MAIKE dafür, dass Marken in den Antworten von ChatGPT, Google Gemini, Perplexity &amp; Co. sichtbar werden und als Empfehlung erscheinen. Mit Ansätzen wie dem eigens entwickelten Sentimentradar macht MAIKE die wahrgenommene Qualität von Inhalten entlang mehrerer Achsen messbar und übersetzt das in konkrete Optimierungen für mehr Sichtbarkeit und Conversion.</p>"
+}
