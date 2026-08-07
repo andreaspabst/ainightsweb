@@ -81,6 +81,24 @@ const titleTag = truncateAtWord(title, 65);
     </script>
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QR205Y2TEF"></script>
 
+    {/* Meta Pixel (AI Nights, ID 1575575307657537): Meta bietet keinen Consent-Mode
+        wie Google, daher blockiert CCM19 dieses Skript per type="text/x-ccm-loader"
+        und gibt es erst nach Einwilligung frei. Dazu muss im eRecht24-Projektmanager
+        beim Vendor "Meta Pixel" die "Gruppe für den Script-Loader" auf "meta-pixel"
+        gesetzt werden — ohne diesen Schritt bleibt das Skript inaktiv. */}
+    <script type="text/x-ccm-loader" data-ccm-loader-group="meta-pixel">
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1575575307657537');
+      fbq('track', 'PageView');
+    </script>
+
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
