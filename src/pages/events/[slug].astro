@@ -271,8 +271,7 @@ const facts: { icon: string; label: string }[] = [
         </div>
       )}
 
-      {/* Programm — als Kachel-Stack: jede Karte bleibt beim Scrollen kurz stehen,
-          bis die nächste sich darüberschiebt. */}
+      {/* Programm */}
       {sessions.length > 0 && (
         <section class="sec" data-reveal>
           <p class="eyebrow">Gespräche. Impulse. Perspektiven.</p>
@@ -310,7 +309,14 @@ const facts: { icon: string; label: string }[] = [
                             : <span class="talk-sp-fallback">✨</span>
                         ))}
                       </span>
-                      <span class="talk-sp-names">{sp.map((x: any) => x.data.title).join(', ')}</span>
+                      <span class="talk-sp-info">
+                        {sp.map((x: any) => (
+                          <span class="talk-sp-person">
+                            <span class="talk-sp-name">{x.data.title}</span>
+                            {x.data.jobTitle && <span class="talk-sp-role">{x.data.jobTitle}</span>}
+                          </span>
+                        ))}
+                      </span>
                     </div>
                   )}
                   {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
@@ -1354,16 +1360,12 @@ const facts: { icon: string; label: string }[] = [
     border-radius: 50%;
   }
 
-  /* Programm als Kachel-Stack: jede Karte bleibt beim Scrollen kurz „kleben“,
-     bis die nächste Karte sich darüberschiebt — dadurch entsteht beim
-     Hoch-/Runterscrollen ein überlappender, bewegter Kartenstapel-Effekt. */
+  /* Programm */
   .stack {
     position: relative;
     padding-bottom: 1.5rem;
   }
   .stack-card {
-    position: sticky;
-    top: calc(84px + var(--i, 0) * 18px);
     margin-bottom: 1.4rem;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
@@ -1462,10 +1464,24 @@ const facts: { icon: string; label: string }[] = [
   .talk-sp-fallback:first-child {
     margin-left: 0;
   }
-  .talk-sp-names {
+  .talk-sp-info {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .talk-sp-person {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .talk-sp-name {
     color: var(--blue-bright);
     font-size: 0.9rem;
     font-weight: 600;
+  }
+  .talk-sp-role {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.35;
   }
   .talk-ex {
     color: var(--text-secondary);
@@ -2116,7 +2132,6 @@ const facts: { icon: string; label: string }[] = [
     }
     .stack-card {
       padding: 1.6rem 1.4rem;
-      top: calc(64px + var(--i, 0) * 12px);
     }
   }
 
