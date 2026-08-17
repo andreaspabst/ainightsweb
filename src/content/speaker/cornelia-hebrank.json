@@ -5,6 +5,12 @@
   "jobTitle": "Softwareentwicklerin & Softwarearchitektin, Tantive GmbH",
   "excerpt": "Cornelia Hebrank arbeitet bei der Tantive GmbH als Softwareentwicklerin und -architektin und beschäftigt sich in diesem Rahmen immer mehr auch mit den Einsatzbereichen für KI. Durch ihren Hintergrund in der biologischen Datenanalyse bringt sie Erfahrung rund um Datenbereinigung und Training von analytischen KI-Modellen mit und gibt gerne eine weibliche Perspektive auf den fairen Einsatz von KI.",
   "bioHtml": "<p>Cornelia Hebrank arbeitet bei der Tantive GmbH als Softwareentwicklerin und -architektin und beschäftigt sich in diesem Rahmen immer mehr auch mit den Einsatzbereichen für KI. Durch ihren Hintergrund in der biologischen Datenanalyse bringt sie Erfahrung rund um Datenbereinigung und Training von analytischen KI-Modellen mit und gibt gerne eine weibliche Perspektive auf den fairen Einsatz von KI.</p>",
+  "image": {
+    "src": "/img/speaker/cornelia-hebrank.jpg",
+    "alt": "Cornelia Hebrank, Speakerin bei den AI Nights Nürnberg",
+    "width": 2000,
+    "height": 1333
+  },
   "homeFeatured": true,
   "date": "2026-08-17 00:00:00",
   "modified": "2026-08-17 00:00:00",

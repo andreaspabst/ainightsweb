@@ -21,9 +21,16 @@ Web-Originalgröße eingebunden, sondern als passende WebP-Variante.
    Originalbreite; Originale ≤1024px bleiben unangetastet):
 
    ```bash
-   node scripts/optimize-images.mjs                      # kompletter Uploads-Ordner
+   node scripts/optimize-images.mjs                      # alle Bildordner
    node scripts/optimize-images.mjs public/pfad/bild.jpg # einzelne Dateien
    ```
+
+   **Wohin gehören Bilder?** `public/wp-content/uploads/` enthält den aus
+   WordPress übernommenen Bestand — dort bleiben Pfade unverändert (stabile
+   URLs). **Neue** Bilder gehören nach `public/img/` (z. B.
+   `public/img/speaker/vorname-nachname.jpg`); einen WordPress-Uploadpfad für
+   Dateien zu erfinden, die nie in WordPress lagen, bringt nichts. Das Skript
+   durchsucht beide Ordner.
 
    Das Skript legt `bild-1600w.webp`, `bild-1024w.webp`, `bild-640w.webp`,
    `bild-320w.webp` neben das Original, überspringt Vorhandenes sowie

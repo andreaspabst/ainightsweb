@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { imgVariant } from '../../lib/images';
 
 export async function getStaticPaths() {
   const sessions = await getCollection('sessions');
@@ -52,7 +53,7 @@ const cleanTitle = d.title
       <div class="speakers">
         {speakers.map((s) => (
           <a href={`/speaker/${s.data.slug}/`} class="sp">
-            {s.data.image?.src && <img src={s.data.image.src} alt={s.data.title} width="56" height="56" />}
+            {s.data.image?.src && <img src={imgVariant(s.data.image.src, 320)} alt={s.data.title} width="56" height="56" />}
             <span>
               <strong>{s.data.title}</strong>
               {s.data.jobTitle && <small>{s.data.jobTitle}</small>}

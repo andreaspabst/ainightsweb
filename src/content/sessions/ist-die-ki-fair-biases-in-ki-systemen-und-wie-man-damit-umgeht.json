@@ -4,6 +4,10 @@
   "slug": "ist-die-ki-fair-biases-in-ki-systemen-und-wie-man-damit-umgeht",
   "excerpt": "Viele KI-Modelle sind von Haus aus verzerrt und damit nicht wirklich neutral oder fair. Cornelia Hebrank zeigt, woher diese Verzerrungen kommen, wie sie sich auswirken und was man dagegen tun kann.",
   "contentHtml": "<p>Während KI-Modelle in immer mehr Feldern und für immer mehr Aufgaben eingesetzt werden, fehlt trotzdem oft noch ein grundlegendes Verständnis dafür, wie sie arbeiten. Als datengetriebene Systeme ist gerade die Datengrundlage extrem wichtig, und besonders bei LLMs haben wir auf diese praktisch keinen Einfluss. Entsprechend sind viele Modelle von Haus aus verzerrt und nicht wirklich neutral oder fair.</p>\n<p>Wir besprechen, woher diese Verzerrungen kommen, wie sie sich auswirken können und was man dagegen tun kann.</p>\n<ul>\n <li>Fairness muss bei KI-Systemen von Beginn an mitgedacht werden</li>\n <li>Je nach KI-System nehmen Datenanalyse oder Prompting die Fairness von Anfang an in den Fokus</li>\n <li>Ein diverses Team und der Austausch mit anderen Personengruppen helfen dabei besonders</li>\n</ul>",
+  "image": {
+    "src": "/img/speaker/cornelia-hebrank.jpg",
+    "alt": "Cornelia Hebrank, Speakerin bei den AI Nights Nürnberg"
+  },
   "speakerSlugs": [
     "cornelia-hebrank"
   ],

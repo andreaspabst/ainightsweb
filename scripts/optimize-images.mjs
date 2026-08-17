@@ -22,7 +22,12 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const DEFAULT_DIR = path.join(ROOT, 'public', 'wp-content', 'uploads');
+// Bildordner: die aus WordPress übernommenen Uploads (Bestand, URLs bleiben
+// stabil) und public/img für neue Bilder, die nie in WordPress lagen.
+const SCAN_DIRS = [
+  path.join(ROOT, 'public', 'wp-content', 'uploads'),
+  path.join(ROOT, 'public', 'img'),
+];
 const WIDTHS = [1600, 1024, 640, 320];
 const MIN_SOURCE_WIDTH = 1024;
 const QUALITY = 78;
@@ -32,11 +37,22 @@ const isVariant = (name) => /-\d+w\.webp$/i.test(name);
 const isSource = (name) => /\.(jpe?g|png)$/i.test(name) && !isSubsize(name);
 
 async function* walk(dir) {
-  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+  let entries;
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return; // Ordner existiert (noch) nicht
+  }
+  for (const entry of entries) {
     const p = path.join(dir, entry.name);
     if (entry.isDirectory()) yield* walk(p);
     else yield p;
   }
+}
+
+/** Alle Bildordner durchlaufen. */
+async function* walkAll() {
+  for (const dir of SCAN_DIRS) yield* walk(dir);
 }
 
 async function optimize(file) {
@@ -70,7 +86,7 @@ let files = [];
 if (args.length > 0) {
   files = args.map((a) => path.resolve(a));
 } else {
-  for await (const f of walk(DEFAULT_DIR)) {
+  for await (const f of walkAll()) {
     if (isSource(f) && !isVariant(f)) files.push(f);
   }
 }
@@ -88,7 +104,7 @@ console.log(`Fertig: ${total} Varianten für ${touched} Bilder erzeugt (${files.
 // Wird von src/lib/images.ts gelesen (Fallback aufs Original bei fehlender Variante).
 const PUBLIC = path.join(ROOT, 'public');
 const manifest = {};
-for await (const f of walk(DEFAULT_DIR)) {
+for await (const f of walkAll()) {
   const m = f.match(/^(.*)-(\d+)w\.webp$/);
   if (!m) continue;
   for (const ext of ['.jpg', '.jpeg', '.png', '.JPG', '.PNG']) {
