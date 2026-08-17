@@ -1,0 +1,26 @@
+{
+  "id": 1443,
+  "title": "Cornelia Hebrank",
+  "slug": "cornelia-hebrank",
+  "jobTitle": "Softwareentwicklerin & Softwarearchitektin, Tantive GmbH",
+  "excerpt": "Cornelia Hebrank arbeitet bei der Tantive GmbH als Softwareentwicklerin und -architektin und beschäftigt sich in diesem Rahmen immer mehr auch mit den Einsatzbereichen für KI. Durch ihren Hintergrund in der biologischen Datenanalyse bringt sie Erfahrung rund um Datenbereinigung und Training von analytischen KI-Modellen mit und gibt gerne eine weibliche Perspektive auf den fairen Einsatz von KI.",
+  "bioHtml": "<p>Cornelia Hebrank arbeitet bei der Tantive GmbH als Softwareentwicklerin und -architektin und beschäftigt sich in diesem Rahmen immer mehr auch mit den Einsatzbereichen für KI. Durch ihren Hintergrund in der biologischen Datenanalyse bringt sie Erfahrung rund um Datenbereinigung und Training von analytischen KI-Modellen mit und gibt gerne eine weibliche Perspektive auf den fairen Einsatz von KI.</p>",
+  "homeFeatured": true,
+  "date": "2026-08-17 00:00:00",
+  "modified": "2026-08-17 00:00:00",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/cornelia-hebrank-62bab0175/"
+  },
+  "topics": [
+    "KI-Systeme",
+    "LLMs",
+    "Biases und Fairness in Technologie",
+    "Training von KI-Modellen"
+  ],
+  "keyTakeaways": [
+    "Fairness muss bei KI-Systemen von Beginn an mitgedacht werden",
+    "Woher Verzerrungen in KI-Modellen kommen und wie sie sich auswirken",
+    "Wie Datenanalyse und Prompting Fairness von Anfang an in den Fokus nehmen",
+    "Warum ein diverses Team und der Austausch mit anderen Personengruppen dabei helfen"
+  ]
+}
