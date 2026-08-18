@@ -56,7 +56,7 @@ const past = events
           <h2 class="group display-font">Kommende Events in {cityName}</h2>
           <div class="grid">
             {upcoming.map((e) => (
-              <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} btnPos="STADT_EVENTCARD" />
+              <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} aftershow={e.data.aftershow} btnPos="STADT_EVENTCARD" />
             ))}
           </div>
         </>

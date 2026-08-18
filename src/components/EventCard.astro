@@ -1,6 +1,7 @@
 ---
 import { cityColor } from '../lib/cities';
 import { imgVariant } from '../lib/images';
+import AftershowBadge from './AftershowBadge.astro';
 
 export interface Props {
   slug: string;
@@ -13,8 +14,10 @@ export interface Props {
   ticketUrl?: string;
   /** Button-Position fürs Tracking (?jtr=/?ds24tr=), z. B. "HOME_EVENTCARD" */
   btnPos?: string;
+  /** Aftershow-Party des Events (optional) — zeigt Partner-Logo + Kurzhinweis */
+  aftershow?: { cardNote?: string; partnerLogo?: { src?: string; alt?: string }; partnerName?: string };
 }
-const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD' } = Astro.props;
+const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD', aftershow } = Astro.props;
 
 function fmtDate(d?: string) {
   if (!d) return null;
@@ -35,6 +38,9 @@ const dateLabel = fmtDate(eventDate);
     <h3><a href={`/events/${slug}/`}>{title}</a></h3>
     {locationName && <p class="loc">📍 {locationName}</p>}
     {excerpt && <p class="excerpt">{excerpt}</p>}
+    {aftershow?.cardNote && (
+      <AftershowBadge note={aftershow.cardNote} logo={aftershow.partnerLogo} logoAlt={aftershow.partnerName} />
+    )}
     <div class="actions">
       <a href={`/events/${slug}/`} class="btn btn-ghost">Details</a>
       {ticketUrl && <a href={ticketUrl} data-btn-pos={btnPos} class="btn btn-primary">Tickets</a>}

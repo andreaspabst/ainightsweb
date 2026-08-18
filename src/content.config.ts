@@ -122,6 +122,8 @@ const events = defineCollection({
           .optional(),
         partnerName: z.string().optional(),
         partnerLogo: image,
+        // Kurzfassung für die Event-Kacheln (Ticket-Übersicht, Startseite)
+        cardNote: z.string().optional(),
       })
       .optional(),
     // Beziehungen (aus ACF *_slots), als Post-IDs

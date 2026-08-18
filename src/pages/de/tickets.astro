@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { cityColor } from '../../lib/cities';
 import { imgVariant } from '../../lib/images';
+import AftershowBadge from '../../components/AftershowBadge.astro';
 
 // Kommende Events wie auf der Original-Tickets-Seite: chronologisch aufsteigend
 const today = new Date('2026-07-14');
@@ -53,6 +54,7 @@ const cards = upcoming.map((e) => {
     timeLabel: d.startTime ? `${d.startTime} Uhr` : null,
     speakers: joinNames(names(d.speakerIds, spMap)),
     sponsors: names(d.sponsorIds, spoMap).join(', '),
+    aftershow: d.aftershow,
   };
 });
 
@@ -98,6 +100,9 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
               <div class="body">
                 <h3><a href={`/events/${c.slug}/`}>{c.title}</a></h3>
                 {c.excerpt && <p class="excerpt">{c.excerpt}</p>}
+                {c.aftershow?.cardNote && (
+                  <AftershowBadge note={c.aftershow.cardNote} logo={c.aftershow.partnerLogo} logoAlt={c.aftershow.partnerName} />
+                )}
 
                 <ul class="meta">
                   {c.dateLabel && (
