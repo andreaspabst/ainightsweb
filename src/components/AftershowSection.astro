@@ -1,0 +1,221 @@
+---
+// Aftershow-Party nach dem letzten Talk. Wird nur gerendert, wenn im Event
+// (src/content/events/*.json) ein `aftershow`-Objekt gepflegt ist.
+// Optik: warme Holz-/Hopfen-Illustration als bewusster Bruch zum kühlen
+// Violett der übrigen Sektionen — Feierabend statt Konferenz.
+import { imgVariant } from '../lib/images';
+
+export interface Props {
+  data: {
+    title: string;
+    kicker?: string;
+    text?: string;
+    facts?: { icon?: string; label: string }[];
+    partnerName?: string;
+    partnerLogo?: { src?: string; alt?: string };
+  };
+}
+const { data } = Astro.props;
+const logo = data.partnerLogo?.src;
+---
+
+<section class="sec aftershow" data-reveal>
+  <div class="wood" aria-hidden="true"></div>
+
+  <!-- Holz & Hopfen: Ranke mit drei Dolden, rein dekorativ -->
+  <svg class="hops" viewBox="0 0 260 420" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="bractA" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#d7e79a" />
+        <stop offset="100%" stop-color="#9cb857" />
+      </linearGradient>
+      <linearGradient id="bractB" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#bcd383" />
+        <stop offset="100%" stop-color="#7f9a45" />
+      </linearGradient>
+      <linearGradient id="hopLeaf" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#9cba57" />
+        <stop offset="100%" stop-color="#5f7833" />
+      </linearGradient>
+
+      <!-- Dolde: überlappende Deckblätter, von oben nach unten spitz zulaufend -->
+      <g id="cone" stroke="#516a26" stroke-width="0.9" stroke-opacity=".45">
+        <ellipse cx="0" cy="-30" rx="8" ry="6" fill="url(#bractB)" />
+        <ellipse cx="-7" cy="-23" rx="10" ry="7" fill="url(#bractA)" transform="rotate(-18 -7 -23)" />
+        <ellipse cx="7" cy="-23" rx="10" ry="7" fill="url(#bractB)" transform="rotate(18 7 -23)" />
+        <ellipse cx="-10" cy="-13" rx="11" ry="7.5" fill="url(#bractB)" transform="rotate(-14 -10 -13)" />
+        <ellipse cx="0" cy="-15" rx="10" ry="7" fill="url(#bractA)" />
+        <ellipse cx="10" cy="-13" rx="11" ry="7.5" fill="url(#bractA)" transform="rotate(14 10 -13)" />
+        <ellipse cx="-10" cy="-2" rx="11" ry="7.5" fill="url(#bractA)" transform="rotate(-10 -10 -2)" />
+        <ellipse cx="1" cy="-3" rx="10.5" ry="7" fill="url(#bractB)" />
+        <ellipse cx="11" cy="-2" rx="11" ry="7.5" fill="url(#bractB)" transform="rotate(10 11 -2)" />
+        <ellipse cx="-8" cy="9" rx="9.5" ry="7" fill="url(#bractB)" transform="rotate(-12 -8 9)" />
+        <ellipse cx="2" cy="10" rx="9.5" ry="6.5" fill="url(#bractA)" />
+        <ellipse cx="9" cy="9" rx="9" ry="6.5" fill="url(#bractA)" transform="rotate(12 9 9)" />
+        <ellipse cx="-4" cy="19" rx="8" ry="6" fill="url(#bractA)" transform="rotate(-14 -4 19)" />
+        <ellipse cx="4" cy="20" rx="7.5" ry="5.5" fill="url(#bractB)" transform="rotate(14 4 20)" />
+        <ellipse cx="0" cy="28" rx="5.5" ry="4.5" fill="url(#bractB)" />
+      </g>
+
+      <g id="leaf">
+        <path d="M0 0 C 15 -10, 32 -2, 38 16 C 22 26, 5 19, 0 0 Z" fill="url(#hopLeaf)" />
+        <path d="M0 0 C 13 4, 26 10, 36 16" fill="none" stroke="#41551f" stroke-width="1.2" opacity=".55" />
+        <path d="M12 2 L 15 12 M22 6 L 23 17" stroke="#41551f" stroke-width="1" opacity=".4" fill="none" />
+      </g>
+    </defs>
+
+    <path
+      d="M236 4 C 206 44, 226 92, 186 130 C 146 168, 168 214, 128 256 C 96 290, 74 330, 66 386"
+      fill="none"
+      stroke="#6f8a3c"
+      stroke-width="4.5"
+      stroke-linecap="round"
+      opacity=".85"
+    />
+    <use href="#leaf" transform="translate(206 46) rotate(-24)" opacity=".95" />
+    <use href="#leaf" transform="translate(150 168) rotate(158) scale(.9)" opacity=".9" />
+    <use href="#leaf" transform="translate(92 300) rotate(-30) scale(.8)" opacity=".85" />
+    <use href="#cone" transform="translate(212 104) rotate(10)" />
+    <use href="#cone" transform="translate(160 214) rotate(-12) scale(.92)" />
+    <use href="#cone" transform="translate(96 344) rotate(6) scale(.8)" />
+  </svg>
+
+  <div class="inner">
+    {data.kicker && <p class="eyebrow">{data.kicker}</p>}
+    <h2 class="display-font sec-h">{data.title}</h2>
+    {data.text && <p class="lead">{data.text}</p>}
+
+    {data.facts && data.facts.length > 0 && (
+      <ul class="facts">
+        {data.facts.map((f) => (
+          <li>
+            {f.icon && <span class="ico" aria-hidden="true">{f.icon}</span>}
+            <span>{f.label}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {logo && (
+      <div class="partner">
+        <img src={imgVariant(logo, 640)} alt={data.partnerLogo?.alt ?? data.partnerName ?? 'Partner'} loading="lazy" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .aftershow {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    padding: clamp(2rem, 5vw, 3.4rem);
+    /* Holz: sichtbare Bretter mit Fugen und Maserung, warm statt violett —
+       links abgedunkelt, damit der Text darauf ruhig lesbar bleibt. */
+    background:
+      linear-gradient(100deg, rgba(26, 12, 6, 0.92) 0%, rgba(26, 12, 6, 0.62) 45%, rgba(26, 12, 6, 0.3) 100%),
+      repeating-linear-gradient(
+        180deg,
+        rgba(255, 226, 186, 0.09) 0 1px,
+        rgba(0, 0, 0, 0.34) 1px 4px,
+        rgba(0, 0, 0, 0) 4px 76px
+      ),
+      repeating-linear-gradient(
+        178.5deg,
+        rgba(255, 214, 168, 0.055) 0 2px,
+        rgba(0, 0, 0, 0.07) 2px 7px,
+        rgba(255, 214, 168, 0.03) 7px 11px,
+        rgba(0, 0, 0, 0.04) 11px 19px
+      ),
+      linear-gradient(150deg, #6b4020 0%, #4d2b13 55%, #351c0c 100%);
+    border: 1px solid rgba(255, 168, 92, 0.3);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .wood {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 80% at 15% 0%, rgba(255, 129, 84, 0.22), transparent 60%);
+    pointer-events: none;
+  }
+
+  .hops {
+    position: absolute;
+    top: -12px;
+    right: -10px;
+    width: clamp(130px, 22vw, 220px);
+    opacity: 0.85;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.45));
+  }
+
+  .inner {
+    position: relative;
+    max-width: 46rem;
+  }
+
+  .eyebrow {
+    color: #ffc59a;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+
+  .sec-h {
+    margin: 0 0 0.9rem;
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  .lead {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin: 0 0 1.5rem;
+    max-width: 38rem;
+  }
+
+  .facts {
+    list-style: none;
+    margin: 0 0 1.8rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .facts li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 190, 130, 0.3);
+    font-size: 0.94rem;
+    color: var(--text-primary);
+  }
+
+  .ico {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .partner img {
+    width: min(260px, 62vw);
+    height: auto;
+    display: block;
+  }
+
+  @media (max-width: 720px) {
+    .hops {
+      width: 120px;
+      opacity: 0.5;
+    }
+    .inner {
+      max-width: none;
+    }
+  }
+</style>

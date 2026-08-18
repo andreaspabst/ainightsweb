@@ -19,8 +19,56 @@
     "eventbrite": "1996513652078"
   },
   "date": "2026-01-02 18:20:05",
-  "speakerIds": [1351, 1359, 1442],
-  "sessionIds": [728, 1353, 1009, 1361, 977, 1441],
-  "sponsorIds": [331, 328, 989, 325, 304, 815, 1338, 1447, 1500, 1501],
-  "moderatorIds": [257]
+  "aftershow": {
+    "title": "Aftershow Party im Disco Stadl",
+    "kicker": "In Kooperation mit dem Altstadtfest Nürnberg",
+    "text": "Nach dem letzten Vortrag geht der Abend weiter: Gemeinsam mit dem Altstadtfest Nürnberg und dem Disco Stadl laden wir zur Aftershow Party. Weiterreden, was auf der Bühne angefangen hat — nur mit mehr Musik und weniger Folien.",
+    "facts": [
+      {
+        "icon": "🕘",
+        "label": "Beginn direkt nach dem letzten Vortrag"
+      },
+      {
+        "icon": "🍺",
+        "label": "1 Bier im Ticket inklusive"
+      },
+      {
+        "icon": "📝",
+        "label": "Anmeldung direkt beim Afterwork Event"
+      }
+    ],
+    "partnerName": "Disco Stadl Nürnberg",
+    "partnerLogo": {
+      "src": "/img/partner/disco-stadl-nuernberg-weiss.png",
+      "alt": "Logo Disco Stadl Nürnberg"
+    }
+  },
+  "speakerIds": [
+    1351,
+    1359,
+    1442
+  ],
+  "sessionIds": [
+    728,
+    1353,
+    1009,
+    1361,
+    977,
+    1441
+  ],
+  "sponsorIds": [
+    331,
+    328,
+    989,
+    325,
+    304,
+    815,
+    1338,
+    1447,
+    1500,
+    1501
+  ],
+  "moderatorIds": [
+    257
+  ]
 }
