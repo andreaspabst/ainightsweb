@@ -1,0 +1,47 @@
+---
+// Kompakter Aftershow-Hinweis für Event-Kacheln (Ticket-Übersicht, Startseite,
+// Stadtseiten). Zeigt das Partner-Logo plus einen kurzen Satz — die
+// ausführliche Sektion steht auf der Event-Detailseite.
+import { imgVariant } from '../lib/images';
+
+export interface Props {
+  note?: string;
+  logo?: { src?: string; alt?: string };
+  logoAlt?: string;
+}
+const { note, logo, logoAlt } = Astro.props;
+---
+
+{(note || logo?.src) && (
+  <div class="aftershow-badge">
+    {logo?.src && <img src={imgVariant(logo.src, 320)} alt={logo.alt ?? logoAlt ?? 'Aftershow-Partner'} loading="lazy" />}
+    {note && <p>{note}</p>}
+  </div>
+)}
+
+<style>
+  .aftershow-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 14px;
+    /* Holzton wie in der Aftershow-Sektion auf der Detailseite */
+    background: linear-gradient(135deg, rgba(107, 64, 32, 0.55), rgba(53, 28, 12, 0.55));
+    border: 1px solid rgba(255, 168, 92, 0.32);
+  }
+
+  .aftershow-badge img {
+    width: 88px;
+    height: auto;
+    flex: none;
+  }
+
+  .aftershow-badge p {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: #ffd9b8;
+    font-weight: 600;
+  }
+</style>

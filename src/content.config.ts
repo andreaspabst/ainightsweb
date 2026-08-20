@@ -109,6 +109,23 @@ const events = defineCollection({
       .optional(),
     status: z.string().optional(),
     gallery: z.array(z.string()).optional(),
+    // Optionale Aftershow-Party nach dem letzten Talk (Kooperation mit lokalen
+    // Partnern). Nur gesetzt, wenn es bei diesem Event wirklich eine gibt —
+    // die Sektion auf der Eventseite erscheint sonst nicht.
+    aftershow: z
+      .object({
+        title: z.string(),
+        kicker: z.string().optional(),
+        text: z.string().optional(),
+        facts: z
+          .array(z.object({ icon: z.string().optional(), label: z.string() }))
+          .optional(),
+        partnerName: z.string().optional(),
+        partnerLogo: image,
+        // Kurzfassung für die Event-Kacheln (Ticket-Übersicht, Startseite)
+        cardNote: z.string().optional(),
+      })
+      .optional(),
     // Beziehungen (aus ACF *_slots), als Post-IDs
     speakerIds: z.array(z.number()).optional(),
     sessionIds: z.array(z.number()).optional(),

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { imgVariant } from '../../lib/images';
 
 export async function getStaticPaths() {
   const { isPlaceholderSpeaker } = await import('../../lib/speakers');
@@ -54,7 +55,7 @@ const socialLinks = [
     <div class="head">
       {d.image?.src && (
         <div class="portrait">
-          <img src={d.image.src} alt={d.image.alt ?? d.title} width="480" height="480" />
+          <img src={imgVariant(d.image.src, 640)} alt={d.image.alt ?? d.title} width="480" height="480" />
         </div>
       )}
       <div class="intro">

@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import galleryData from '../../data/gallery.json';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { imgVariant } from '../../lib/images';
+import AftershowSection from '../../components/AftershowSection.astro';
 
 export async function getStaticPaths() {
   const events = await getCollection('events');
@@ -337,6 +338,9 @@ const facts: { icon: string; label: string }[] = [
           </div>
         </section>
       )}
+
+      {/* Aftershow-Party — nur bei Events, die eine haben */}
+      {d.aftershow && <AftershowSection data={d.aftershow} />}
 
       {/* Fakten — farbiger Trenner mit Bild statt einer weiteren dunklen Karte */}
       <section class="facts" data-reveal>
