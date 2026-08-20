@@ -1,0 +1,21 @@
+{
+  "id": 1300,
+  "title": "AI Woman Nights Nürnberg #01 - Premiere!",
+  "slug": "ai-woman-nights-01",
+  "excerpt": "Die Premiere der AI Woman Nights: ein Afterwork-Format rund um Künstliche Intelligenz, das gezielt Frauen zusammenbringt, die sich für KI interessieren, sie beruflich einsetzen oder einfach neugierig sind. Organisiert von Andreas Pabst und Andrea Reindel im club199 - a social hub.",
+  "contentHtml": "<p>Die Premiere der AI Woman Nights: ein Afterwork-Format rund um Künstliche Intelligenz, das gezielt Frauen zusammenbringt, die sich für KI interessieren, sie beruflich einsetzen oder einfach neugierig sind.</p><p>Entspannte Atmosphäre, gute Gespräche und Raum für Austausch auf Augenhöhe, im club199, a social hub in Nürnberg. Einlass ab 17:00 Uhr, Beginn 18:00 Uhr.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/08/ai-woman-nights-01-inspire.png",
+    "alt": "AI Woman Nights Nürnberg #01 - Premiere!"
+  },
+  "eventDate": "2026-10-27",
+  "startTime": "17:00",
+  "locationName": "club199 - a social hub",
+  "city": "Nürnberg",
+  "ticketUrl": "https://joinify.net/app/products/x5jehqew/tickets",
+  "platforms": {
+    "joinify": "x5jehqew"
+  },
+  "moderatorIds": [257, 1500],
+  "date": "2026-08-15 00:00:00"
+}
