@@ -28,7 +28,7 @@ Bei den AI Woman Nights ist Jede:r willkommen — aber die Bühne gehört den Fr
   <div style="flex:1;min-width:240px;padding:1.5rem;border-radius:22px;border:1px solid var(--border);background:var(--glass-surface);text-align:center;">
     <img src="/wp-content/uploads/2026/08/andrea-reindel-320w.webp" alt="Andrea Reindel" width="120" height="120" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto 1rem;display:block;" />
     <h3 style="margin:0 0 0.2rem;color:var(--text-primary);">Andrea Reindel</h3>
-    <p style="margin:0 0 0.7rem;font-size:0.85rem;font-weight:600;background:var(--gradient-text);-webkit-background-clip:text;background-clip:text;color:transparent;">Organisatorin — Marketing- &amp; Projektmanagerin, Gründerin AI HUB Nürnberg</p>
+    <p style="margin:0 0 0.7rem;font-size:0.85rem;font-weight:600;background:var(--gradient-text);-webkit-background-clip:text;background-clip:text;color:transparent;">Organisatorin — Marketing- &amp; Projektmanagerin, Ex-AI HUB Nürnberg</p>
     <p style="margin:0;font-size:0.92rem;color:var(--text-muted);">Hat den AI HUB Nürnberg aufgebaut und geleitet und sich umfassendes Wissen im Bereich AI im Marketing angeeignet. Heute selbstständig mit „Marketing Reindel".</p>
   </div>
   <div style="flex:1;min-width:240px;padding:1.5rem;border-radius:22px;border:1px solid var(--border);background:var(--glass-surface);text-align:center;">
