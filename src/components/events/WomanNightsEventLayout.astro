@@ -1,0 +1,1667 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { imgVariant } from '../../lib/images';
+import galleryData from '../../data/gallery.json';
+
+export interface Props {
+  e: Awaited<ReturnType<typeof getCollection<'events'>>>[number];
+}
+
+const { e } = Astro.props;
+const d = e.data;
+
+// Hero-Hintergrund: echtes Foto mit Menschen statt des Branding-Bilds (das trägt
+// eingebrannten Titeltext und kollidiert mit der H1). Eigene Fotos hat diese
+// Event-Reihe noch nicht — Fallback ist ein bewusst ausgewähltes Foto mit
+// Frauen im Bild, statt eines zufälligen AI-Nights-Fotos.
+const galleryGroup = (galleryData as { event: string; images: string[] }[]).find((g) => g.event === d.slug);
+const heroBg = galleryGroup?.images[0] ?? '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-88.jpg';
+
+// Zweites, anderes Foto für die Zitat-Sektion weiter unten
+const quotePool = (galleryData as { event: string; images: string[] }[]).flatMap((g) => g.images);
+const quoteBg = quotePool.find((img) => img !== heroBg) ?? '/wp-content/uploads/2026/01/1-94.jpg';
+
+const speakerColl = await getCollection('speaker');
+const sessionColl = await getCollection('sessions');
+const sponsorColl = await getCollection('sponsor');
+const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [x.data.id, x]));
+const spMap = byId(speakerColl);
+const seMap = byId(sessionColl);
+const spoMap = byId(sponsorColl);
+
+const resolve = (ids: number[] | undefined, m: Map<number, any>) =>
+  (ids ?? []).map((id) => m.get(id)).filter(Boolean);
+
+const speakerSlots = resolve(d.speakerIds, spMap);
+const speakers = speakerSlots.filter((s) => !isPlaceholderSpeaker(s));
+const tbaCount = speakerSlots.length - speakers.length;
+const moderators = resolve(d.moderatorIds, spMap);
+const sessions = resolve(d.sessionIds, seMap);
+const sponsors = resolve(d.sponsorIds, spoMap);
+const isBreak = (s: any) => /pause|break/i.test(s.data.title);
+// Einlasszeit (Türöffnung) weicht meist vom Programmstart ab — separat ausweisen
+const firstTalkTime = sessions.find((s) => !isBreak(s))?.data.startTime;
+const showDoors = Boolean(d.startTime && firstTalkTime && d.startTime !== firstTalkTime);
+const lastTalkEndTime = [...sessions].reverse().find((s) => !isBreak(s) && s.data.endTime)?.data.endTime;
+
+function fmtDate(dt?: string) {
+  if (!dt) return null;
+  const p = new Date(dt);
+  if (isNaN(p.getTime())) return dt;
+  return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+}
+const dateLabel = fmtDate(d.eventDate);
+const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
+const countdownTarget = !isPast && d.eventDate ? `${d.eventDate}T${d.startTime ?? '18:00'}:00` : null;
+
+const mapsQuery = encodeURIComponent([d.locationName, d.locationAddress, d.city].filter(Boolean).join(', '));
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+const ticketHref = !isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/';
+const ticketExternal = !isPast && Boolean(d.ticketUrl);
+
+// club199-Fotos + Location-Vorzüge, nur wenn das Event dort stattfindet
+const isClub199 = /club199/i.test(d.locationName ?? '');
+const club199Images = [
+  { src: '/wp-content/uploads/2026/08/club199-atelier.jpg', alt: 'club199 – Atelier-Raum mit Loungebereich' },
+  { src: '/wp-content/uploads/2026/08/club199-atelier2.jpg', alt: 'club199 – Atelier-Raum' },
+  { src: '/wp-content/uploads/2026/08/club199-atelier3.jpg', alt: 'club199 – Atelier-Raum, weitere Ansicht' },
+  { src: '/wp-content/uploads/2026/08/club199-studio.jpg', alt: 'club199 – Studio-Bereich' },
+];
+const club199Perks = [
+  { icon: '📍', text: 'Mitten in der Nürnberger Altstadt, direkt am Hallertor' },
+  { icon: '🎨', text: 'Loft-Atmosphäre mit Atelier- und Studio-Charakter statt steriler Eventlocation' },
+  { icon: '🚇', text: 'U-Bahn: U2 bis Opernhaus, dann ca. 5 Minuten zu Fuß' },
+  { icon: '🚗', text: 'Parken: Parkhaus Sterntor gleich um die Ecke' },
+];
+
+const facts: { icon: string; label: string }[] = [
+  { icon: '🎤', label: `${speakerSlots.length || 1} Speakerin${speakerSlots.length === 1 ? '' : 'nen'}${moderators.length ? ' & ' + moderators.length + ' Moderation' : ''}` },
+  { icon: '🙌', label: 'Jede:r als Gast willkommen' },
+  { icon: '🌟', label: 'Die Bühne gehört den Frauen' },
+  { icon: '🗂️', label: 'Kurze Impuls-Sessions' },
+  { icon: '🤝', label: 'Raum für echten Austausch' },
+  { icon: '🥂', label: 'Inklusive Drinks & Snacks' },
+];
+
+// Leitgedanken für die Marquee in der Zitat-Sektion — bewusst als eigene
+// Statements formuliert, nicht als erfundene Besucher:innen-Zitate (die Reihe
+// steht noch am Anfang, es gibt noch keine echten Stimmen dazu).
+const visionPillars = [
+  'Sichtbarkeit auf der Bühne statt nur im Publikum',
+  'Vorbilder, an denen man sich orientieren kann',
+  'Ehrlicher Austausch statt Buzzword-Bingo',
+  'Netzwerk, das über den Abend hinausträgt',
+];
+
+const faqItems = [
+  { q: 'Sind auch Männer und andere Gäste willkommen?', a: 'Ja, ausdrücklich! Zu den AI Woman Nights ist jede:r als Gast willkommen, unabhängig vom Geschlecht. Nur die Bühne gehört bewusst den Frauen — Speakerinnen und Moderatorinnen stehen im Vordergrund, das Publikum ist gemischt.' },
+  { q: 'Wer kann teilnehmen?', a: 'Jede:r ist als Gast willkommen — aber die Bühne gehört den Frauen. Die AI Woman Nights bringen gezielt Frauen zusammen, die sich für KI interessieren, sie beruflich einsetzen oder einfach neugierig sind.' },
+  { q: 'Muss ich Vorwissen mitbringen?', a: 'Nein. Es geht um Austausch auf Augenhöhe, nicht um Expertenwissen. Neugier reicht völlig.' },
+  { q: 'Wie funktioniert der Ticketkauf?', a: 'Du sicherst dir dein Ticket hier online und wirst direkt zum Zahlungsanbieter weitergeleitet. Nach dem Kauf bekommst du dein digitales Ticket per E-Mail.' },
+  { q: 'Wollt ihr sponsern oder mitwirken?', a: 'Sehr gerne! Mehr zum Sponsoring findest du weiter unten auf dieser Seite. Willst du selbst als Speakerin dabei sein, schau auf unserer Speaker-Bewerbung vorbei.' },
+];
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `${d.title} — AI Woman Nights`}
+  description={d.seo?.description ?? d.excerpt ?? `${d.title} — ein AI Woman Nights Afterwork-Event${d.city ? ` in ${d.city}` : ''}.`}
+  path={`/events/${d.slug}/`}
+  image={d.image?.src}
+  ogType="event"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: d.title,
+    startDate: d.eventDate,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: d.locationName
+      ? { '@type': 'Place', name: d.locationName, address: d.locationAddress ?? d.city }
+      : undefined,
+    image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
+    description: d.excerpt,
+    performer: speakers.map((s) => ({ '@type': 'Person', name: s.data.title })),
+    organizer: { '@type': 'Organization', name: 'AI Woman Nights', url: 'https://ainights.ai' },
+  }}
+>
+  <Header lang="de" />
+  <main class="wn">
+    <section class="wn-hero">
+      <img class="wn-hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" data-parallax="8" data-parallax-scale="1.1" />
+      <div class="wn-hero-duotone"></div>
+      <div class="wn-hero-overlay"></div>
+      <div class="wn-bubbles" aria-hidden="true">
+        <span class="wn-bubble" style="--size:230px; --x:6%; --y:62%; --dur:22s; --delay:-2s;"></span>
+        <span class="wn-bubble wn-bubble-gold" style="--size:150px; --x:88%; --y:18%; --dur:17s; --delay:-6s;"></span>
+        <span class="wn-bubble wn-bubble-gold" style="--size:110px; --x:78%; --y:72%; --dur:14s; --delay:-3s;"></span>
+        <span class="wn-bubble" style="--size:75px; --x:18%; --y:14%; --dur:12s; --delay:-8s;"></span>
+        <span class="wn-bubble" style="--size:280px; --x:48%; --y:88%; --dur:26s; --delay:-10s;"></span>
+        <span class="wn-bubble wn-bubble-gold" style="--size:95px; --x:94%; --y:48%; --dur:15s; --delay:-1s;"></span>
+      </div>
+      <div class="container wn-hero-inner">
+        <a href="/de/tickets/" class="wn-back">← Alle Events</a>
+        <p class="wn-eyebrow">✨ AI Woman Nights{d.city ? ` · ${d.city}` : ''}</p>
+        <h1 class="display-font">{d.title}</h1>
+        {(d.contentHtml || d.excerpt) && (
+          <div class="wn-intro prose">
+            {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
+          </div>
+        )}
+        <div class="wn-chips">
+          {dateLabel && <span class="wn-chip"><span>📅</span>{dateLabel}</span>}
+          {d.startTime && <span class="wn-chip"><span>🕕</span>{d.startTime} Uhr</span>}
+          {d.locationName && <span class="wn-chip"><span>📍</span>{d.locationName}</span>}
+        </div>
+        <div class="wn-hero-bar">
+          {speakers.length > 0 && (
+            <a href="#lineup" class="wn-hero-bar-speakers">
+              <span class="wn-hero-avatars">
+                {speakers.slice(0, 5).map((s) => (
+                  s.data.image?.src
+                    ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
+                    : <span class="wn-hero-avatar-fallback">✨</span>
+                ))}
+              </span>
+              <span class="wn-hero-bar-label">{speakerSlots.length || speakers.length} Speakerin{(speakerSlots.length || speakers.length) === 1 ? '' : 'nen'} ↓</span>
+            </a>
+          )}
+          {countdownTarget && (
+            <div class="wn-countdown" data-countdown={countdownTarget}>
+              <div class="wn-cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
+              <div class="wn-cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
+              <div class="wn-cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
+              <div class="wn-cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+            </div>
+          )}
+          <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+            {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="container wn-body">
+      {/* Mission */}
+      <section class="wn-sec wn-mission" data-reveal>
+        <span class="wn-mission-mark">„</span>
+        <p class="wn-mission-lead">
+          KI verändert alles — und keiner kann sich mehr wegducken. Wir sind der Meinung: Frauen müssen ganz vorne dabei sein.
+          Nicht nur auf den Zuschauerplätzen, sondern auf der Bühne, an den Konferenztischen und mitten in Diskussionen dazu.
+        </p>
+        <p class="wn-mission-sub">Bei den AI Woman Nights ist Jede:r willkommen — aber die Bühne gehört den Frauen.</p>
+      </section>
+
+      {/* Facts */}
+      <section class="wn-sec wn-facts" data-reveal>
+        <ul>
+          {facts.map((f) => (
+            <li><span class="wn-fact-icon">{f.icon}</span><span>{f.label}</span></li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Programm, falls vorhanden */}
+      {sessions.length > 0 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Der Abend</p>
+          <h2 class="display-font wn-h2">Programm</h2>
+          {showDoors && (
+            <div class="wn-stack-note">
+              <span class="wn-note-pill">🚪 Einlass ab {d.startTime} Uhr</span>
+            </div>
+          )}
+          <div class="wn-stack">
+            {sessions.map((s) => {
+              const sp = (s.data.speakerIds ?? []).map((id: number) => spMap.get(id)).filter(Boolean).filter((x: any) => !isPlaceholderSpeaker(x));
+              if (isBreak(s)) {
+                return (
+                  <div class="wn-stack-card wn-stack-break">
+                    <span class="wn-note-pill">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</span>
+                  </div>
+                );
+              }
+              return (
+                <article class="wn-stack-card">
+                  {s.data.startTime && <span class="wn-stack-time">🕕 {s.data.startTime} Uhr</span>}
+                  <h3>{s.data.title}</h3>
+                  {sp.length > 0 && (
+                    <div class="wn-talk-sp">
+                      <span class="wn-talk-sp-avatars">
+                        {sp.map((x: any) => (
+                          x.data.image?.src
+                            ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
+                            : <span class="wn-talk-sp-fallback">✨</span>
+                        ))}
+                      </span>
+                      <span class="wn-talk-sp-info">
+                        {sp.map((x: any) => (
+                          <span class="wn-talk-sp-person">
+                            <span class="wn-talk-sp-name">{x.data.title}</span>
+                            {x.data.jobTitle && <span class="wn-talk-sp-role">{x.data.jobTitle}</span>}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  )}
+                  {s.data.excerpt && <p class="wn-talk-ex">{s.data.excerpt}</p>}
+                  {s.data.contentHtml && s.data.contentHtml.replace(/<[^>]+>/g, '').trim().length > (s.data.excerpt?.length ?? 0) + 20 && (
+                    <details class="wn-talk-detail">
+                      <summary>Mehr anzeigen</summary>
+                      <div class="prose" set:html={s.data.contentHtml} />
+                    </details>
+                  )}
+                </article>
+              );
+            })}
+            {lastTalkEndTime && (
+              <div class="wn-stack-card wn-stack-break">
+                <span class="wn-note-pill">🥂 Ab {lastTalkEndTime} Uhr: Offenes Ende & Austausch</span>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Organisation */}
+      {moderators.length > 0 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Wer euch durch den Abend führt</p>
+          <h2 class="display-font wn-h2">Organisation</h2>
+          <div class="wn-org-grid">
+            {moderators.map((s) => (
+              <a href={`/speaker/${s.data.slug}/`} class="wn-org-card">
+                {s.data.image?.src && <img src={imgVariant(s.data.image.src, 320)} alt={s.data.title} loading="lazy" />}
+                <h3>{s.data.title}</h3>
+                {s.data.jobTitle && <p class="wn-org-role">{s.data.jobTitle}</p>}
+                {s.data.excerpt && <p class="wn-org-bio">{s.data.excerpt}</p>}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Speakerinnen */}
+      {(speakers.length > 0 || tbaCount > 0) && (
+        <section class="wn-sec" id="lineup" data-reveal>
+          <p class="wn-eyebrow2">Lerne von Frauen, die KI mitgestalten</p>
+          <h2 class="display-font wn-h2">Speakerinnen des Abends</h2>
+          <div class="wn-speaker-list">
+            {speakers.map((s) => (
+              <div class="wn-speaker-full">
+                <a href={`/speaker/${s.data.slug}/`} class="wn-sp-photo-link">
+                  {s.data.image?.src
+                    ? <img class="wn-sp-photo" src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />
+                    : <span class="wn-sp-photo wn-sp-photo-fallback">✨</span>}
+                </a>
+                <div class="wn-sp-body">
+                  <h3><a href={`/speaker/${s.data.slug}/`}>{s.data.title}</a></h3>
+                  {s.data.jobTitle && <p class="wn-sp-role">{s.data.jobTitle}</p>}
+                  {s.data.bioHtml
+                    ? <div class="wn-sp-bio prose" set:html={s.data.bioHtml} />
+                    : s.data.excerpt && <p class="wn-sp-bio">{s.data.excerpt}</p>}
+                  {s.data.topics?.length > 0 && (
+                    <ul class="wn-sp-topics">
+                      {s.data.topics.map((t: string) => <li>{t}</li>)}
+                    </ul>
+                  )}
+                  {s.data.socials?.linkedin && (
+                    <a href={s.data.socials.linkedin} target="_blank" rel="noopener" class="wn-sp-social">LinkedIn ↗</a>
+                  )}
+                </div>
+              </div>
+            ))}
+            {Array.from({ length: tbaCount }).map(() => (
+              <div class="wn-speaker-full wn-speaker-tba">
+                <span class="wn-sp-photo wn-sp-photo-fallback">✨</span>
+                <div class="wn-sp-body">
+                  <h3>Wird noch bekanntgegeben</h3>
+                  <p class="wn-sp-role">Speakerin folgt in Kürze</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Sponsoren, falls vorhanden */}
+      {sponsors.length > 0 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Möglich gemacht von</p>
+          <h2 class="display-font wn-h2">Sponsoren dieses Events</h2>
+          <div class="wn-sponsor-row">
+            {sponsors.map((s) => (
+              <a href={`/sponsor/${s.data.slug}/`} class="wn-sponsor-logo" title={s.data.title}>
+                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Location */}
+      {d.locationName && isClub199 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Wo es stattfindet</p>
+          <h2 class="display-font wn-h2">{d.locationName}</h2>
+          <div class="wn-loc-split">
+            <div class="wn-loc-slider" data-wn-slider>
+              <div class="wn-loc-track" data-wn-track>
+                {club199Images.map((img, i) => (
+                  <div class="wn-loc-slide">
+                    <img src={imgVariant(img.src, 800)} alt={img.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+                  </div>
+                ))}
+              </div>
+              <button type="button" class="wn-loc-nav wn-loc-prev" data-wn-prev aria-label="Vorheriges Bild">‹</button>
+              <button type="button" class="wn-loc-nav wn-loc-next" data-wn-next aria-label="Nächstes Bild">›</button>
+              <div class="wn-loc-dots" data-wn-dots>
+                {club199Images.map((_, i) => (
+                  <button type="button" class="wn-loc-dot" data-wn-dot={i} aria-label={`Bild ${i + 1} anzeigen`}></button>
+                ))}
+              </div>
+            </div>
+            <div class="wn-loc-info">
+              {d.locationAddress && <p class="wn-location-text">{d.locationAddress}</p>}
+              <ul class="wn-loc-perks">
+                {club199Perks.map((p) => (
+                  <li><span class="wn-loc-perk-icon">{p.icon}</span>{p.text}</li>
+                ))}
+              </ul>
+              <a href={mapsUrl} target="_blank" rel="noopener" class="btn btn-ghost">Auf Google Maps öffnen ↗</a>
+            </div>
+          </div>
+        </section>
+      )}
+      {d.locationName && !isClub199 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Wo es stattfindet</p>
+          <h2 class="display-font wn-h2">{d.locationName}</h2>
+          <div class="wn-location-card">
+            {d.locationAddress && <p class="wn-location-text">{d.locationAddress}</p>}
+            <p class="wn-location-text">Zentral in {d.city ?? 'der Stadt'} gelegen, entspannte Atmosphäre.</p>
+            <a href={mapsUrl} target="_blank" rel="noopener" class="btn btn-ghost">Auf Google Maps öffnen ↗</a>
+          </div>
+        </section>
+      )}
+
+      {/* Vision / Zitat-Sektion — bricht aus dem Container aus, echtes Foto + Marquee */}
+      <section class="wn-sec wn-quote-parallax" data-reveal>
+        <div class="wn-qp-bg" style={`background-image:url(${imgVariant(quoteBg, 1600)})`} data-parallax="14" data-parallax-scale="1.15"></div>
+        <div class="wn-qp-duotone"></div>
+        <div class="wn-qp-overlay"></div>
+        <div class="wn-qp-inner">
+          <span class="wn-qp-mark" aria-hidden="true">„</span>
+          <p class="wn-qp-lead">
+            Die AI Woman Nights sind aus den AI Nights heraus entstanden — mit der Premiere in Nürnberg als Startpunkt,
+            <span class="wn-qp-highlight">nicht als Endpunkt</span>. Der Anspruch geht über einen einzelnen Abend hinaus:
+            ein Ort, an dem Frauen sich sichtbar mit KI auseinandersetzen — nicht als Ausnahme, sondern als Selbstverständlichkeit.
+          </p>
+          <p class="wn-qp-lead">
+            KI verändert Arbeitsweisen, Entscheidungen und ganze Branchen. Wer mitgestalten will, muss mitreden —
+            und genau dafür schaffen wir hier Raum: offen, ehrlich und auf Augenhöhe.
+          </p>
+        </div>
+        <div class="wn-qp-marquee">
+          <div class="wn-qp-track">
+            <div class="wn-qp-track-set">
+              {visionPillars.map((v) => (
+                <span class="wn-qp-pill">{v}</span>
+              ))}
+            </div>
+            <div class="wn-qp-track-set" aria-hidden="true">
+              {visionPillars.map((v) => (
+                <span class="wn-qp-pill">{v}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sponsoring gesucht */}
+      <section class="wn-sec wn-sponsor-cta" data-reveal>
+        <div class="wn-sponsor-cta-inner">
+          <h2 class="display-font wn-h2-light">Sponsoring gesucht 🧡</h2>
+          <p>
+            Habt ihr Lust, oder kennt ihr ein Unternehmen, das die AI Woman Nights als Sponsor unterstützen möchte?
+            Wir freuen uns über Unterstützung jeder Größenordnung.
+          </p>
+          <a href="/de/sponsoring/" class="btn btn-primary">Mehr zum Sponsoring</a>
+        </div>
+      </section>
+
+      {/* Vergleich: allein bleiben vs. sichtbar werden */}
+      <section class="wn-sec wn-compare" data-reveal>
+        <h2 class="display-font wn-compare-headline">
+          Die meisten KI-Events zeigen dir <span class="wn-compare-strike">frontal was theoretisch geht</span>.<br />
+          Wir zeigen dir <span class="wn-compare-accent">was wirklich in der Praxis passiert</span> und bringen dich mit Speakerinnen zusammen.
+        </h2>
+        <div class="wn-compare-grid">
+          <div class="wn-compare-col wn-compare-col-off">
+            <p class="wn-compare-label">— Allein weiterwursteln</p>
+            <ul>
+              <li><span class="wn-compare-x">×</span> Frauen sitzen im Publikum, selten auf der Bühne</li>
+              <li><span class="wn-compare-x">×</span> Kein Netzwerk aus Frauen, die KI wirklich einsetzen</li>
+              <li><span class="wn-compare-x">×</span> Rollenvorbilder nur vom Feed, nicht zum Anfassen</li>
+              <li><span class="wn-compare-x">×</span> Fragen bleiben unausgesprochen in gemischten Runden</li>
+              <li><span class="wn-compare-x">×</span> Kein Netzwerk, das über den Abend hinausträgt</li>
+            </ul>
+          </div>
+          <div class="wn-compare-col wn-compare-col-on">
+            <p class="wn-compare-label">+ Bei AI Woman Nights dabei sein</p>
+            <ul>
+              <li><span class="wn-compare-plus">+</span> Frauen stehen auf der Bühne, nicht nur im Publikum</li>
+              <li><span class="wn-compare-plus">+</span> Direkter Draht zu Frauen, die KI in der Praxis einsetzen</li>
+              <li><span class="wn-compare-plus">+</span> Vorbilder zum Anfassen, aus deiner eigenen Stadt</li>
+              <li><span class="wn-compare-plus">+</span> Ehrlicher Austausch auf Augenhöhe, ohne Erklär-Modus</li>
+              <li><span class="wn-compare-plus">+</span> Netzwerk, das über den Abend hinausträgt</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section class="wn-sec" data-reveal>
+        <p class="wn-eyebrow2">Fragen zum Event</p>
+        <h2 class="display-font wn-h2">Häufige Fragen</h2>
+        <div class="wn-faq-list">
+          {faqItems.map((f) => (
+            <details class="wn-faq-item">
+              <summary>{f.q}<span class="wn-faq-icon">＋</span></summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="wn-cta" data-reveal>
+        <h2 class="display-font wn-h2-light">{isPast ? 'Bei der nächsten AI Woman Night dabei sein' : 'Bereit, dabei zu sein?'}</h2>
+        {!isPast && <p class="wn-cta-sub">Sichere dir jetzt dein Ticket — die Bühne gehört den Frauen.</p>}
+        <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+          {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+        </a>
+      </section>
+    </div>
+  </main>
+
+  {ticketExternal && (
+    <div class="wn-sticky-cta" id="wn-sticky-cta">
+      <div class="wn-sticky-inner">
+        <span class="wn-sticky-date">
+          {d.eventDate && new Date(d.eventDate).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
+          {d.city ? ` ${d.city}` : ''}
+        </span>
+        <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary">Tickets sichern</a>
+      </div>
+    </div>
+  )}
+
+  <Footer lang="de" />
+</Layout>
+
+<script>
+  function initCountdowns() {
+    document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => {
+      const target = new Date(el.dataset.countdown ?? '').getTime();
+      if (Number.isNaN(target)) return;
+      const dEl = el.querySelector('[data-cd-d]');
+      const hEl = el.querySelector('[data-cd-h]');
+      const mEl = el.querySelector('[data-cd-m]');
+      const sEl = el.querySelector('[data-cd-s]');
+      let timer: ReturnType<typeof setInterval>;
+      function tick() {
+        const diff = Math.max(0, target - Date.now());
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        if (dEl) dEl.textContent = String(days).padStart(2, '0');
+        if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+        if (mEl) mEl.textContent = String(mins).padStart(2, '0');
+        if (sEl) sEl.textContent = String(secs).padStart(2, '0');
+        if (diff <= 0) clearInterval(timer);
+      }
+      tick();
+      timer = setInterval(tick, 1000);
+    });
+  }
+  function initReveal() {
+    const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+    );
+    els.forEach((el) => io.observe(el));
+  }
+  function initStickyCta() {
+    const bar = document.getElementById('wn-sticky-cta');
+    const trigger = document.querySelector<HTMLElement>('.wn-hero-bar .btn-primary');
+    if (!bar || !trigger || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(([entry]) => bar.classList.toggle('is-visible', !entry.isIntersecting), { threshold: 0 });
+    io.observe(trigger);
+  }
+  function initParallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const layers = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+    if (!layers.length) return;
+    let ticking = false;
+    function update() {
+      const vh = window.innerHeight || 1;
+      layers.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const progress = (center - vh / 2) / vh;
+        const speed = parseFloat(el.dataset.parallax ?? '10');
+        const scale = el.dataset.parallaxScale ? parseFloat(el.dataset.parallaxScale) : 1;
+        el.style.transform = `translateY(${progress * speed}%)${scale !== 1 ? ` scale(${scale})` : ''}`;
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
+  function initLocationSlider() {
+    document.querySelectorAll<HTMLElement>('[data-wn-slider]').forEach((slider) => {
+      const track = slider.querySelector<HTMLElement>('[data-wn-track]');
+      const slides = Array.from(slider.querySelectorAll<HTMLElement>('.wn-loc-slide'));
+      const dots = Array.from(slider.querySelectorAll<HTMLElement>('[data-wn-dot]'));
+      const prev = slider.querySelector<HTMLElement>('[data-wn-prev]');
+      const next = slider.querySelector<HTMLElement>('[data-wn-next]');
+      if (!track || slides.length < 2) return;
+      let index = 0;
+      function render() {
+        if (track) track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+      }
+      function goTo(i: number) {
+        index = (i + slides.length) % slides.length;
+        render();
+      }
+      prev?.addEventListener('click', () => goTo(index - 1));
+      next?.addEventListener('click', () => goTo(index + 1));
+      dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+      let timer = setInterval(() => goTo(index + 1), 5000);
+      slider.addEventListener('mouseenter', () => clearInterval(timer));
+      slider.addEventListener('mouseleave', () => {
+        timer = setInterval(() => goTo(index + 1), 5000);
+      });
+      render();
+    });
+  }
+
+  initCountdowns();
+  initReveal();
+  initStickyCta();
+  initParallax();
+  initLocationSlider();
+</script>
+
+<style>
+  /* AI Woman Nights: eigene warme Magenta→Gold-Palette statt Magenta/Blau/Violett,
+     rundere Formen, editorialere Typografie — bewusst abgesetzt von den normalen
+     AI Nights Event-Seiten. */
+  .wn {
+    --wn-gradient: linear-gradient(120deg, #ff4f9c 0%, #ffcf5c 100%);
+    --wn-gold: #ffcf5c;
+    --wn-surface: linear-gradient(135deg, rgba(255, 79, 156, 0.14), rgba(255, 207, 92, 0.1)), rgba(255, 255, 255, 0.045);
+    --wn-surface-border: rgba(255, 121, 172, 0.32);
+  }
+
+  /* Hero: volles Eventbild als Hintergrund (wie bei den normalen AI Nights),
+     plus langsam schwebende, unscharfe Bubbles für einen leichteren, helleren Look. */
+  .wn-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(4rem, 10vw, 7rem) clamp(4rem, 8vw, 6.5rem);
+  }
+  .wn-hero-bg {
+    position: absolute;
+    inset: -3%;
+    width: 106%;
+    height: 106%;
+    object-fit: cover;
+    opacity: 0.65;
+    filter: blur(3px) saturate(1.1);
+    will-change: transform;
+  }
+  .wn-hero-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 79, 156, 0.42), rgba(255, 207, 92, 0.3));
+    mix-blend-mode: color;
+  }
+  .wn-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(30, 8, 24, 0.28), var(--bg-base) 94%);
+  }
+  .wn-bubbles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .wn-bubble {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255, 143, 190, 0.55), rgba(255, 79, 156, 0.12) 60%, transparent 75%);
+    filter: blur(18px);
+    opacity: 0.7;
+    animation: wn-bubble-float var(--dur, 18s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .wn-bubble-gold {
+    background: radial-gradient(circle at 35% 30%, rgba(255, 224, 153, 0.6), rgba(255, 207, 92, 0.14) 60%, transparent 75%);
+  }
+  @keyframes wn-bubble-float {
+    0% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(7%, -14%) scale(1.12); }
+    50% { transform: translate(-4%, -22%) scale(0.95); }
+    75% { transform: translate(-9%, -8%) scale(1.05); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wn-bubble { animation: none; }
+  }
+  .wn-hero-inner {
+    position: relative;
+    text-align: center;
+  }
+  .wn-back {
+    display: inline-block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.6rem;
+  }
+  .wn-eyebrow {
+    display: inline-block;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.8rem;
+  }
+  .wn-hero-inner h1 {
+    max-width: 20ch;
+    margin-inline: auto;
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.4rem;
+  }
+  .wn-intro {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+    margin: 0 auto 1.8rem;
+  }
+  .wn-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+  }
+  .wn-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 121, 172, 0.12);
+    border: 1px solid rgba(255, 121, 172, 0.3);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .wn-hero-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    backdrop-filter: blur(28px) saturate(165%);
+    border-radius: 26px;
+    padding: 1.3rem 1.8rem;
+    max-width: fit-content;
+    margin-inline: auto;
+  }
+  .wn-hero-bar-speakers {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .wn-hero-bar-label {
+    white-space: nowrap;
+  }
+  .wn-hero-avatars {
+    display: inline-flex;
+  }
+  .wn-hero-avatars img,
+  .wn-hero-avatar-fallback {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-base);
+    margin-left: -14px;
+    display: grid;
+    place-items: center;
+    background: var(--wn-gradient);
+    font-size: 1.1rem;
+  }
+  .wn-hero-avatars img:first-child,
+  .wn-hero-avatar-fallback:first-child {
+    margin-left: 0;
+  }
+  .wn-countdown {
+    display: flex;
+    gap: 0.7rem;
+    padding-inline: 1.4rem;
+    border-inline: 1px solid var(--wn-surface-border);
+  }
+  .wn-cd-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+  }
+  .wn-cd-box strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.15rem;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .wn-cd-box span {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  @media (max-width: 640px) {
+    .wn-hero-bar {
+      flex-direction: column;
+    }
+    .wn-countdown {
+      border-inline: none;
+      padding-inline: 0;
+      border-top: 1px solid var(--wn-surface-border);
+      border-bottom: 1px solid var(--wn-surface-border);
+      padding-block: 1rem;
+    }
+  }
+
+  .wn-body {
+    max-width: 900px;
+    padding-block: 1rem 2rem;
+  }
+  .wn-sec {
+    margin-bottom: 4.5rem;
+  }
+  .wn-eyebrow2 {
+    text-align: center;
+    color: var(--wn-gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .wn-h2 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    text-align: center;
+    margin: 0 0 1.8rem;
+  }
+  .wn-h2-light {
+    font-size: clamp(1.6rem, 4vw, 2.1rem);
+    text-align: center;
+    margin: 0 0 0.8rem;
+  }
+
+  .wn-mission {
+    position: relative;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border-radius: 28px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+  }
+  .wn-mission-mark {
+    display: block;
+    font-family: 'Space Grotesk', serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -0.5rem;
+  }
+  .wn-mission-lead {
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    max-width: 60ch;
+    margin: 0 auto 0.8rem;
+  }
+  .wn-mission-sub {
+    color: var(--wn-gold);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .wn-facts ul {
+    list-style: none;
+    margin: 0;
+    padding: 1.6rem 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem 2.2rem;
+    border-radius: 24px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+  }
+  .wn-facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .wn-fact-icon {
+    font-size: 1.15rem;
+  }
+
+  .wn-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+  .wn-stack-card {
+    padding: 1.8rem 2rem;
+    border-radius: 20px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    border-left: 3px solid var(--wn-gold);
+  }
+  .wn-stack-card h3 {
+    font-size: 1.25rem;
+    margin: 0.3rem 0 0.6rem;
+    color: var(--text-primary);
+  }
+  .wn-stack-time {
+    color: var(--wn-gold);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .wn-stack-note,
+  .wn-stack-card.wn-stack-break {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem 1.6rem;
+    border-radius: 999px;
+    border: 1px dashed var(--wn-surface-border);
+    background: var(--wn-surface);
+    text-align: center;
+  }
+  .wn-stack-note {
+    margin: -0.8rem 0 1.2rem;
+  }
+  .wn-note-pill {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+  .wn-talk-sp {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.9rem;
+  }
+  .wn-talk-sp-avatars {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .wn-talk-sp-avatars img,
+  .wn-talk-sp-fallback {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-elevated);
+    margin-left: -14px;
+    display: grid;
+    place-items: center;
+    background: var(--wn-gradient);
+    font-size: 1rem;
+  }
+  .wn-talk-sp-avatars img:first-child,
+  .wn-talk-sp-fallback:first-child {
+    margin-left: 0;
+  }
+  .wn-talk-sp-info {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .wn-talk-sp-person {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .wn-talk-sp-name {
+    color: var(--wn-gold);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .wn-talk-sp-role {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+  .wn-talk-ex {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .wn-talk-detail {
+    margin: 0.4rem 0 0.2rem;
+  }
+  .wn-talk-detail summary {
+    cursor: pointer;
+    color: var(--wn-gold);
+    font-size: 0.92rem;
+    font-weight: 600;
+    list-style: none;
+  }
+  .wn-talk-detail summary::-webkit-details-marker {
+    display: none;
+  }
+  .wn-talk-detail[open] summary {
+    margin-bottom: 0.8rem;
+  }
+  .wn-talk-detail .prose {
+    font-size: 0.98rem;
+    color: var(--text-secondary);
+  }
+
+  .wn-org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .wn-org-card {
+    padding: 1.8rem;
+    border-radius: 24px;
+    border: 1px solid var(--wn-surface-border);
+    background: var(--wn-surface);
+    text-align: center;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .wn-org-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 45, 122, 0.4);
+  }
+  .wn-org-card img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+    display: block;
+  }
+  .wn-org-card h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.3rem;
+    color: var(--text-primary);
+  }
+  .wn-org-role {
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 0.7rem;
+  }
+  .wn-org-bio {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .wn-speaker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .wn-speaker-full {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    align-items: flex-start;
+    border-radius: 28px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .wn-speaker-full:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 121, 172, 0.45);
+  }
+  .wn-sp-photo-link {
+    flex-shrink: 0;
+  }
+  .wn-sp-photo {
+    display: block;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .wn-sp-photo-fallback {
+    display: grid;
+    place-items: center;
+    background: var(--wn-gradient);
+    font-size: 2.2rem;
+  }
+  .wn-sp-body h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.3rem;
+  }
+  .wn-sp-body h3 a {
+    color: var(--text-primary);
+  }
+  .wn-sp-body h3 a:hover {
+    color: var(--wn-gold);
+  }
+  .wn-sp-role {
+    color: var(--wn-gold);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0 0 0.9rem;
+  }
+  .wn-sp-bio {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+  }
+  .wn-sp-topics {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .wn-sp-topics li {
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+  .wn-sp-topics li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--wn-gold);
+  }
+  .wn-sp-social {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--wn-gold);
+  }
+  .wn-speaker-tba {
+    opacity: 0.75;
+    align-items: center;
+  }
+  .wn-speaker-tba .wn-sp-photo {
+    width: 96px;
+    height: 96px;
+  }
+  @media (max-width: 640px) {
+    .wn-speaker-full {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .wn-speaker-full .wn-sp-topics,
+    .wn-speaker-full .wn-sp-topics li {
+      text-align: left;
+    }
+  }
+
+  .wn-sponsor-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .wn-sponsor-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem 2rem;
+    min-width: 180px;
+    min-height: 100px;
+    border-radius: 18px;
+    border: 1px solid var(--wn-surface-border);
+    background: var(--wn-surface);
+  }
+  .wn-sponsor-logo img {
+    max-height: 56px;
+    max-width: 160px;
+    object-fit: contain;
+  }
+
+  .wn-location-card {
+    padding: 2rem;
+    border-radius: 24px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    text-align: center;
+  }
+  .wn-location-text {
+    color: var(--text-secondary);
+    margin: 0 0 0.4rem;
+  }
+  .wn-location-card .btn {
+    margin-top: 1rem;
+  }
+
+  /* Location: 50/50 Karte mit Foto-Slider + Vorzüge/Anfahrt */
+  .wn-loc-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.8rem;
+    align-items: stretch;
+  }
+  .wn-loc-slider {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--wn-surface-border);
+    aspect-ratio: 4 / 3;
+    background: var(--bg-elevated);
+  }
+  .wn-loc-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.45s cubic-bezier(0.16, 0.8, 0.3, 1);
+  }
+  .wn-loc-slide {
+    flex: 0 0 100%;
+    height: 100%;
+  }
+  .wn-loc-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .wn-loc-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(20, 8, 16, 0.55);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s ease;
+  }
+  .wn-loc-nav:hover {
+    background: rgba(20, 8, 16, 0.8);
+  }
+  .wn-loc-prev {
+    left: 0.9rem;
+  }
+  .wn-loc-next {
+    right: 0.9rem;
+  }
+  .wn-loc-dots {
+    position: absolute;
+    bottom: 0.9rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .wn-loc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .wn-loc-dot.is-active {
+    background: var(--wn-gold);
+    transform: scale(1.2);
+  }
+  .wn-loc-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 24px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+  }
+  .wn-loc-perks {
+    list-style: none;
+    margin: 0.4rem 0 1.4rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .wn-loc-perks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+  .wn-loc-perk-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+  }
+  .wn-loc-info .btn {
+    align-self: flex-start;
+  }
+  @media (max-width: 760px) {
+    .wn-loc-split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Vision-Zitat — bricht aus dem 900px-Container aus, Foto + Marquee */
+  .wn-quote-parallax {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+    padding: 0;
+  }
+  .wn-qp-bg {
+    position: absolute;
+    inset: -15% 0;
+    background-size: cover;
+    background-position: center;
+    will-change: transform;
+  }
+  .wn-qp-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 79, 156, 0.5), rgba(255, 207, 92, 0.35));
+    mix-blend-mode: color;
+    opacity: 0.3;
+  }
+  .wn-qp-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(30, 8, 24, 0.35), rgba(20, 5, 16, 0.85) 75%, var(--bg-base) 100%);
+  }
+  .wn-qp-inner {
+    position: relative;
+    max-width: 760px;
+    margin-inline: auto;
+    padding: clamp(4rem, 9vw, 6.5rem) 1.5rem 0;
+    text-align: center;
+  }
+  .wn-qp-mark {
+    display: block;
+    font-family: 'Space Grotesk', serif;
+    font-size: clamp(3.5rem, 9vw, 5.5rem);
+    line-height: 1;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -0.6rem;
+  }
+  .wn-qp-lead {
+    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-weight: 600;
+    margin: 0 0 1rem;
+  }
+  .wn-qp-highlight {
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .wn-qp-marquee {
+    position: relative;
+    margin-top: 2.6rem;
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .wn-qp-track {
+    display: flex;
+    width: max-content;
+    animation: wn-qp-scroll 24s linear infinite;
+  }
+  .wn-qp-marquee:hover .wn-qp-track {
+    animation-play-state: paused;
+  }
+  .wn-qp-track-set {
+    display: flex;
+    gap: 1rem;
+    padding-inline: 0.6rem;
+  }
+  @keyframes wn-qp-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wn-qp-track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 900px;
+      margin-inline: auto;
+    }
+    .wn-qp-track-set {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .wn-qp-track-set:last-child {
+      display: none;
+    }
+  }
+  .wn-qp-pill {
+    flex: 0 0 auto;
+    background: rgba(20, 10, 20, 0.75);
+    border: 1px solid var(--wn-surface-border);
+    border-radius: 999px;
+    padding: 0.8rem 1.4rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .wn-sponsor-cta {
+    border-radius: 28px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    padding: 2.4rem;
+    text-align: center;
+  }
+  .wn-sponsor-cta-inner p {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .wn-sponsor-cta-inner a {
+    color: var(--wn-gold);
+    font-weight: 600;
+  }
+  .wn-sponsor-cta-inner .btn {
+    margin-top: 1.4rem;
+  }
+
+  /* Vergleich: allein bleiben vs. sichtbar werden */
+  .wn-compare-headline {
+    font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+    line-height: 1.24;
+    text-align: center;
+    max-width: 42ch;
+    margin: 0 auto 2.6rem;
+  }
+  .wn-compare-strike {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+  }
+  .wn-compare-accent {
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: italic;
+  }
+  .wn-compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .wn-compare-col {
+    padding: 2rem;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+  }
+  .wn-compare-col-off {
+    background: var(--bg-elevated);
+  }
+  .wn-compare-col-on {
+    background: var(--wn-surface);
+    border-color: var(--wn-surface-border);
+    box-shadow: 0 20px 50px -20px rgba(255, 79, 156, 0.3);
+  }
+  .wn-compare-label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0 0 1.2rem;
+  }
+  .wn-compare-col-off .wn-compare-label {
+    color: var(--text-muted);
+  }
+  .wn-compare-col-on .wn-compare-label {
+    color: var(--wn-gold);
+  }
+  .wn-compare-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .wn-compare-col li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .wn-compare-col-off li {
+    color: var(--text-muted);
+  }
+  .wn-compare-col-on li {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .wn-compare-x,
+  .wn-compare-plus {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+  .wn-compare-x {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+  }
+  .wn-compare-plus {
+    background: var(--wn-gradient);
+    color: #1a0a1a;
+  }
+  @media (max-width: 720px) {
+    .wn-compare-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .wn-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .wn-faq-item {
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .wn-faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .wn-faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .wn-faq-icon {
+    color: var(--wn-gold);
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+  }
+  .wn-faq-item[open] .wn-faq-icon {
+    transform: rotate(45deg);
+  }
+  .wn-faq-item p {
+    padding: 0 1.5rem 1.3rem;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .wn-cta {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: 28px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+  }
+  .wn-cta-sub {
+    color: var(--text-secondary);
+    margin: -0.6rem 0 1.4rem;
+  }
+
+  .wn-sticky-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    background: #1a0a1a;
+    border-top: 2px solid transparent;
+    border-image: var(--wn-gradient, linear-gradient(120deg, #ff2d7a, #f5b83d)) 1;
+    padding: 0.9rem 1.5rem;
+    transform: translateY(120%);
+    transition: transform 0.3s ease;
+  }
+  .wn-sticky-cta.is-visible {
+    transform: translateY(0);
+  }
+  .wn-sticky-inner {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .wn-sticky-date {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 0.8, 0.3, 1);
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
