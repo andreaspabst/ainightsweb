@@ -1,0 +1,13 @@
+{
+  "id": 1504,
+  "title": "Tantive GmbH",
+  "slug": "tantive",
+  "logo": {
+    "src": "/wp-content/uploads/2026/08/tantive-logo.svg",
+    "alt": "Tantive GmbH"
+  },
+  "website": "https://www.tantive.gmbh/",
+  "tier": "bronce",
+  "date": "2026-08-24 00:00:00",
+  "contentHtml": "<p>Die Tantive GmbH ist eine Nürnberger IT-Beratung für agile Softwareentwicklung — von skalierbaren Cloud- und Java-Lösungen bis zu KI- und Green-IT-Projekten.</p>"
+}
