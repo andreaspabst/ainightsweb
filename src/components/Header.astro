@@ -133,6 +133,15 @@ const t = {
   .dropdown {
     position: relative;
   }
+  .dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max(210px, 100%);
+    height: 0.9rem;
+  }
   .drop-menu {
     position: absolute;
     top: calc(100% + 0.9rem);
