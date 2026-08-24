@@ -16,19 +16,14 @@ const d = e.data;
 
 // Hero-Hintergrund: echtes Foto mit Menschen statt des Branding-Bilds (das trägt
 // eingebrannten Titeltext und kollidiert mit der H1). Eigene Fotos hat diese
-// Event-Reihe noch nicht, deshalb ein bunt gemischter Vorgeschmack aus
-// bisherigen AI Nights (gleiche Idee wie beim normalen Event-Template).
+// Event-Reihe noch nicht — Fallback ist ein bewusst ausgewähltes Foto mit
+// Frauen im Bild, statt eines zufälligen AI-Nights-Fotos.
 const galleryGroup = (galleryData as { event: string; images: string[] }[]).find((g) => g.event === d.slug);
-let heroBg = galleryGroup?.images[0];
-if (!heroBg) {
-  const pools = (galleryData as { event: string; images: string[] }[]).map((g) => g.images);
-  for (let i = 0; !heroBg && pools.some((p) => i < p.length); i++) {
-    for (const p of pools) {
-      if (p[i]) { heroBg = p[i]; break; }
-    }
-  }
-}
-heroBg = heroBg ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
+const heroBg = galleryGroup?.images[0] ?? '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-88.jpg';
+
+// Zweites, anderes Foto für die Zitat-Sektion weiter unten
+const quotePool = (galleryData as { event: string; images: string[] }[]).flatMap((g) => g.images);
+const quoteBg = quotePool.find((img) => img !== heroBg) ?? '/wp-content/uploads/2026/01/1-94.jpg';
 
 const speakerColl = await getCollection('speaker');
 const sessionColl = await getCollection('sessions');
@@ -67,10 +62,20 @@ const ticketExternal = !isPast && Boolean(d.ticketUrl);
 const facts: { icon: string; label: string }[] = [
   { icon: '🎤', label: `${speakerSlots.length || 1} Speakerin${speakerSlots.length === 1 ? '' : 'nen'}${moderators.length ? ' & ' + moderators.length + ' Moderation' : ''}` },
   { icon: '🙌', label: 'Jede:r als Gast willkommen' },
-  { icon: '🌸', label: 'Die Bühne gehört den Frauen' },
+  { icon: '🌟', label: 'Die Bühne gehört den Frauen' },
   { icon: '🗂️', label: 'Kurze Impuls-Sessions' },
   { icon: '🤝', label: 'Raum für echten Austausch' },
   { icon: '🥂', label: 'Inklusive Drinks & Snacks' },
+];
+
+// Leitgedanken für die Marquee in der Zitat-Sektion — bewusst als eigene
+// Statements formuliert, nicht als erfundene Besucher:innen-Zitate (die Reihe
+// steht noch am Anfang, es gibt noch keine echten Stimmen dazu).
+const visionPillars = [
+  'Sichtbarkeit auf der Bühne statt nur im Publikum',
+  'Vorbilder, an denen man sich orientieren kann',
+  'Ehrlicher Austausch statt Buzzword-Bingo',
+  'Netzwerk, das über den Abend hinausträgt',
 ];
 
 const faqItems = [
@@ -287,6 +292,39 @@ const faqItems = [
           </div>
         </section>
       )}
+
+      {/* Vision / Zitat-Sektion — bricht aus dem Container aus, echtes Foto + Marquee */}
+      <section class="wn-sec wn-quote-parallax" data-reveal>
+        <div class="wn-qp-bg" style={`background-image:url(${imgVariant(quoteBg, 1600)})`} data-parallax="14" data-parallax-scale="1.15"></div>
+        <div class="wn-qp-duotone"></div>
+        <div class="wn-qp-overlay"></div>
+        <div class="wn-qp-inner">
+          <span class="wn-qp-mark" aria-hidden="true">„</span>
+          <p class="wn-qp-lead">
+            Die AI Woman Nights sind aus den AI Nights heraus entstanden — mit der Premiere in Nürnberg als Startpunkt,
+            <span class="wn-qp-highlight">nicht als Endpunkt</span>. Der Anspruch geht über einen einzelnen Abend hinaus:
+            ein Ort, an dem Frauen sich sichtbar mit KI auseinandersetzen — nicht als Ausnahme, sondern als Selbstverständlichkeit.
+          </p>
+          <p class="wn-qp-lead">
+            KI verändert Arbeitsweisen, Entscheidungen und ganze Branchen. Wer mitgestalten will, muss mitreden —
+            und genau dafür schaffen wir hier Raum: offen, ehrlich und auf Augenhöhe.
+          </p>
+        </div>
+        <div class="wn-qp-marquee">
+          <div class="wn-qp-track">
+            <div class="wn-qp-track-set">
+              {visionPillars.map((v) => (
+                <span class="wn-qp-pill">{v}</span>
+              ))}
+            </div>
+            <div class="wn-qp-track-set" aria-hidden="true">
+              {visionPillars.map((v) => (
+                <span class="wn-qp-pill">{v}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Sponsoring gesucht */}
       <section class="wn-sec wn-sponsor-cta" data-reveal>
@@ -892,6 +930,121 @@ const faqItems = [
   }
   .wn-location-card .btn {
     margin-top: 1rem;
+  }
+
+  /* Vision-Zitat — bricht aus dem 900px-Container aus, Foto + Marquee */
+  .wn-quote-parallax {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+    padding: 0;
+  }
+  .wn-qp-bg {
+    position: absolute;
+    inset: -15% 0;
+    background-size: cover;
+    background-position: center;
+    will-change: transform;
+  }
+  .wn-qp-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 79, 156, 0.5), rgba(255, 207, 92, 0.35));
+    mix-blend-mode: color;
+    opacity: 0.3;
+  }
+  .wn-qp-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(30, 8, 24, 0.35), rgba(20, 5, 16, 0.85) 75%, var(--bg-base) 100%);
+  }
+  .wn-qp-inner {
+    position: relative;
+    max-width: 760px;
+    margin-inline: auto;
+    padding: clamp(4rem, 9vw, 6.5rem) 1.5rem 0;
+    text-align: center;
+  }
+  .wn-qp-mark {
+    display: block;
+    font-family: 'Space Grotesk', serif;
+    font-size: clamp(3.5rem, 9vw, 5.5rem);
+    line-height: 1;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -0.6rem;
+  }
+  .wn-qp-lead {
+    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-weight: 600;
+    margin: 0 0 1rem;
+  }
+  .wn-qp-highlight {
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .wn-qp-marquee {
+    position: relative;
+    margin-top: 2.6rem;
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .wn-qp-track {
+    display: flex;
+    width: max-content;
+    animation: wn-qp-scroll 24s linear infinite;
+  }
+  .wn-qp-marquee:hover .wn-qp-track {
+    animation-play-state: paused;
+  }
+  .wn-qp-track-set {
+    display: flex;
+    gap: 1rem;
+    padding-inline: 0.6rem;
+  }
+  @keyframes wn-qp-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wn-qp-track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 900px;
+      margin-inline: auto;
+    }
+    .wn-qp-track-set {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .wn-qp-track-set:last-child {
+      display: none;
+    }
+  }
+  .wn-qp-pill {
+    flex: 0 0 auto;
+    background: rgba(20, 10, 20, 0.75);
+    border: 1px solid var(--wn-surface-border);
+    border-radius: 999px;
+    padding: 0.8rem 1.4rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.92rem;
+    white-space: nowrap;
   }
 
   .wn-sponsor-cta {
