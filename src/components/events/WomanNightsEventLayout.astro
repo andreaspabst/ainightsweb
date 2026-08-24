@@ -89,42 +89,58 @@ const faqItems = [
   <Header lang="de" />
   <main class="wn">
     <section class="wn-hero">
-      <div class="wn-hero-glow wn-hero-glow-a"></div>
-      <div class="wn-hero-glow wn-hero-glow-b"></div>
+      {d.image?.src && (
+        <img class="wn-hero-bg" src={imgVariant(d.image.src, 1600)} alt="" role="presentation" data-parallax="8" data-parallax-scale="1.1" />
+      )}
+      <div class="wn-hero-duotone"></div>
+      <div class="wn-hero-overlay"></div>
+      <div class="wn-bubbles" aria-hidden="true">
+        <span class="wn-bubble" style="--size:230px; --x:6%; --y:62%; --dur:22s; --delay:-2s;"></span>
+        <span class="wn-bubble wn-bubble-gold" style="--size:150px; --x:88%; --y:18%; --dur:17s; --delay:-6s;"></span>
+        <span class="wn-bubble wn-bubble-gold" style="--size:110px; --x:78%; --y:72%; --dur:14s; --delay:-3s;"></span>
+        <span class="wn-bubble" style="--size:75px; --x:18%; --y:14%; --dur:12s; --delay:-8s;"></span>
+        <span class="wn-bubble" style="--size:280px; --x:48%; --y:88%; --dur:26s; --delay:-10s;"></span>
+        <span class="wn-bubble wn-bubble-gold" style="--size:95px; --x:94%; --y:48%; --dur:15s; --delay:-1s;"></span>
+      </div>
       <div class="container wn-hero-inner">
-        <div class="wn-hero-copy">
-          <a href="/de/tickets/" class="wn-back">← Alle Events</a>
-          <p class="wn-eyebrow">✨ AI Woman Nights{d.city ? ` · ${d.city}` : ''}</p>
-          <h1 class="display-font">{d.title}</h1>
-          {(d.contentHtml || d.excerpt) && (
-            <div class="wn-intro prose">
-              {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
-            </div>
-          )}
-          <div class="wn-chips">
-            {dateLabel && <span class="wn-chip"><span>📅</span>{dateLabel}</span>}
-            {d.startTime && <span class="wn-chip"><span>🕕</span>{d.startTime} Uhr</span>}
-            {d.locationName && <span class="wn-chip"><span>📍</span>{d.locationName}</span>}
-          </div>
-          <div class="wn-hero-actions">
-            <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
-              {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
-            </a>
-            {countdownTarget && (
-              <div class="wn-countdown" data-countdown={countdownTarget}>
-                <div class="wn-cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
-                <div class="wn-cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
-                <div class="wn-cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
-                <div class="wn-cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
-              </div>
-            )}
-          </div>
-        </div>
-        {d.image?.src && (
-          <div class="wn-hero-visual">
-            <img src={imgVariant(d.image.src, 1024)} alt={d.image.alt ?? d.title} />
+        <a href="/de/tickets/" class="wn-back">← Alle Events</a>
+        <p class="wn-eyebrow">✨ AI Woman Nights{d.city ? ` · ${d.city}` : ''}</p>
+        <h1 class="display-font">{d.title}</h1>
+        {(d.contentHtml || d.excerpt) && (
+          <div class="wn-intro prose">
+            {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
           </div>
         )}
+        <div class="wn-chips">
+          {dateLabel && <span class="wn-chip"><span>📅</span>{dateLabel}</span>}
+          {d.startTime && <span class="wn-chip"><span>🕕</span>{d.startTime} Uhr</span>}
+          {d.locationName && <span class="wn-chip"><span>📍</span>{d.locationName}</span>}
+        </div>
+        <div class="wn-hero-bar">
+          {speakers.length > 0 && (
+            <a href="#lineup" class="wn-hero-bar-speakers">
+              <span class="wn-hero-avatars">
+                {speakers.slice(0, 5).map((s) => (
+                  s.data.image?.src
+                    ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
+                    : <span class="wn-hero-avatar-fallback">✨</span>
+                ))}
+              </span>
+              <span class="wn-hero-bar-label">{speakerSlots.length || speakers.length} Speakerin{(speakerSlots.length || speakers.length) === 1 ? '' : 'nen'} ↓</span>
+            </a>
+          )}
+          {countdownTarget && (
+            <div class="wn-countdown" data-countdown={countdownTarget}>
+              <div class="wn-cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
+              <div class="wn-cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
+              <div class="wn-cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
+              <div class="wn-cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+            </div>
+          )}
+          <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+            {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+          </a>
+        </div>
       </div>
     </section>
 
@@ -352,14 +368,41 @@ const faqItems = [
   }
   function initStickyCta() {
     const bar = document.getElementById('wn-sticky-cta');
-    const trigger = document.querySelector<HTMLElement>('.wn-hero-actions .btn-primary');
+    const trigger = document.querySelector<HTMLElement>('.wn-hero-bar .btn-primary');
     if (!bar || !trigger || !('IntersectionObserver' in window)) return;
     const io = new IntersectionObserver(([entry]) => bar.classList.toggle('is-visible', !entry.isIntersecting), { threshold: 0 });
     io.observe(trigger);
   }
+  function initParallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const layers = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+    if (!layers.length) return;
+    let ticking = false;
+    function update() {
+      const vh = window.innerHeight || 1;
+      layers.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const progress = (center - vh / 2) / vh;
+        const speed = parseFloat(el.dataset.parallax ?? '10');
+        const scale = el.dataset.parallaxScale ? parseFloat(el.dataset.parallaxScale) : 1;
+        el.style.transform = `translateY(${progress * speed}%)${scale !== 1 ? ` scale(${scale})` : ''}`;
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
   initCountdowns();
   initReveal();
   initStickyCta();
+  initParallax();
 </script>
 
 <style>
@@ -367,47 +410,78 @@ const faqItems = [
      rundere Formen, editorialere Typografie — bewusst abgesetzt von den normalen
      AI Nights Event-Seiten. */
   .wn {
-    --wn-gradient: linear-gradient(120deg, #ff2d7a 0%, #f5b83d 100%);
-    --wn-gold: #f5b83d;
+    --wn-gradient: linear-gradient(120deg, #ff4f9c 0%, #ffcf5c 100%);
+    --wn-gold: #ffcf5c;
+    --wn-surface: linear-gradient(135deg, rgba(255, 79, 156, 0.14), rgba(255, 207, 92, 0.1)), rgba(255, 255, 255, 0.045);
+    --wn-surface-border: rgba(255, 121, 172, 0.32);
   }
+
+  /* Hero: volles Eventbild als Hintergrund (wie bei den normalen AI Nights),
+     plus langsam schwebende, unscharfe Bubbles für einen leichteren, helleren Look. */
   .wn-hero {
     position: relative;
     overflow: hidden;
-    padding-block: clamp(3rem, 8vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+    padding-block: clamp(4rem, 10vw, 7rem) clamp(4rem, 8vw, 6.5rem);
   }
-  .wn-hero-glow {
+  .wn-hero-bg {
     position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
+    inset: -5%;
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    opacity: 0.6;
+    filter: blur(22px) saturate(1.15);
+    will-change: transform;
+  }
+  .wn-hero-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 79, 156, 0.42), rgba(255, 207, 92, 0.3));
+    mix-blend-mode: color;
+  }
+  .wn-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(30, 8, 24, 0.28), var(--bg-base) 94%);
+  }
+  .wn-bubbles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
     pointer-events: none;
-    opacity: 0.55;
   }
-  .wn-hero-glow-a {
-    width: 520px;
-    height: 520px;
-    top: -200px;
-    right: -160px;
-    background: radial-gradient(circle, rgba(255, 45, 122, 0.55), transparent 70%);
+  .wn-bubble {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255, 143, 190, 0.55), rgba(255, 79, 156, 0.12) 60%, transparent 75%);
+    filter: blur(18px);
+    opacity: 0.7;
+    animation: wn-bubble-float var(--dur, 18s) ease-in-out infinite alternate;
+    animation-delay: var(--delay, 0s);
   }
-  .wn-hero-glow-b {
-    width: 460px;
-    height: 460px;
-    bottom: -220px;
-    left: -140px;
-    background: radial-gradient(circle, rgba(245, 184, 61, 0.4), transparent 70%);
+  .wn-bubble-gold {
+    background: radial-gradient(circle at 35% 30%, rgba(255, 224, 153, 0.6), rgba(255, 207, 92, 0.14) 60%, transparent 75%);
+  }
+  @keyframes wn-bubble-float {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(4%, -8%) scale(1.08); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wn-bubble { animation: none; }
   }
   .wn-hero-inner {
     position: relative;
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: clamp(2rem, 5vw, 3.5rem);
-    align-items: center;
+    text-align: center;
   }
   .wn-back {
     display: inline-block;
     color: var(--text-secondary);
     font-size: 0.9rem;
-    margin-bottom: 1.4rem;
+    margin-bottom: 1.6rem;
   }
   .wn-eyebrow {
     display: inline-block;
@@ -418,48 +492,92 @@ const faqItems = [
     font-weight: 700;
     font-size: 0.95rem;
     letter-spacing: 0.02em;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.8rem;
   }
-  .wn-hero-copy h1 {
-    font-size: clamp(2.4rem, 5vw, 3.6rem);
-    line-height: 1.06;
+  .wn-hero-inner h1 {
+    max-width: 20ch;
+    margin-inline: auto;
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: 1.05;
     letter-spacing: -0.03em;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.4rem;
   }
   .wn-intro {
     color: var(--text-secondary);
     font-size: 1.05rem;
     line-height: 1.7;
-    max-width: 54ch;
-    margin-bottom: 1.6rem;
+    max-width: 60ch;
+    margin: 0 auto 1.8rem;
   }
   .wn-chips {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.6rem;
-    margin-bottom: 1.8rem;
+    margin-bottom: 2rem;
   }
   .wn-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 45, 122, 0.08);
-    border: 1px solid rgba(255, 45, 122, 0.25);
+    background: rgba(255, 121, 172, 0.12);
+    border: 1px solid rgba(255, 121, 172, 0.3);
     border-radius: 999px;
     padding: 0.5rem 1rem;
     color: var(--text-primary);
     font-weight: 600;
     font-size: 0.9rem;
   }
-  .wn-hero-actions {
+  .wn-hero-bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 1.4rem;
+    justify-content: center;
+    gap: 1.6rem;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+    backdrop-filter: blur(28px) saturate(165%);
+    border-radius: 26px;
+    padding: 1.3rem 1.8rem;
+    max-width: fit-content;
+    margin-inline: auto;
+  }
+  .wn-hero-bar-speakers {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .wn-hero-bar-label {
+    white-space: nowrap;
+  }
+  .wn-hero-avatars {
+    display: inline-flex;
+  }
+  .wn-hero-avatars img,
+  .wn-hero-avatar-fallback {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-base);
+    margin-left: -14px;
+    display: grid;
+    place-items: center;
+    background: var(--wn-gradient);
+    font-size: 1.1rem;
+  }
+  .wn-hero-avatars img:first-child,
+  .wn-hero-avatar-fallback:first-child {
+    margin-left: 0;
   }
   .wn-countdown {
     display: flex;
     gap: 0.7rem;
+    padding-inline: 1.4rem;
+    border-inline: 1px solid var(--wn-surface-border);
   }
   .wn-cd-box {
     display: flex;
@@ -481,24 +599,16 @@ const faqItems = [
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-  .wn-hero-visual {
-    border-radius: 32px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 45, 122, 0.25);
-    box-shadow: 0 30px 70px -20px rgba(220, 39, 119, 0.35);
-  }
-  .wn-hero-visual img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  @media (max-width: 860px) {
-    .wn-hero-inner {
-      grid-template-columns: 1fr;
+  @media (max-width: 640px) {
+    .wn-hero-bar {
+      flex-direction: column;
     }
-    .wn-hero-visual {
-      order: -1;
+    .wn-countdown {
+      border-inline: none;
+      padding-inline: 0;
+      border-top: 1px solid var(--wn-surface-border);
+      border-bottom: 1px solid var(--wn-surface-border);
+      padding-block: 1rem;
     }
   }
 
@@ -534,8 +644,8 @@ const faqItems = [
     text-align: center;
     padding: 2.5rem 1.5rem;
     border-radius: 28px;
-    background: linear-gradient(135deg, rgba(255, 45, 122, 0.1), rgba(245, 184, 61, 0.08));
-    border: 1px solid rgba(255, 45, 122, 0.2);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
   }
   .wn-mission-mark {
     display: block;
@@ -570,8 +680,8 @@ const faqItems = [
     justify-content: center;
     gap: 1.4rem 2.2rem;
     border-radius: 24px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
   }
   .wn-facts li {
     display: flex;
@@ -593,8 +703,8 @@ const faqItems = [
   .wn-stack-card {
     padding: 1.6rem 1.8rem;
     border-radius: 20px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
     border-left: 3px solid var(--wn-gold);
   }
   .wn-stack-card h3 {
@@ -633,8 +743,8 @@ const faqItems = [
   .wn-org-card {
     padding: 1.8rem;
     border-radius: 24px;
-    border: 1px solid var(--border);
-    background: var(--glass-surface);
+    border: 1px solid var(--wn-surface-border);
+    background: var(--wn-surface);
     text-align: center;
     transition: transform 0.2s ease, border-color 0.2s ease;
   }
@@ -679,8 +789,8 @@ const faqItems = [
   .wn-speaker-card {
     padding: 2rem;
     border-radius: 28px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
     text-align: center;
   }
   .wn-speaker-photo-link img,
@@ -740,8 +850,8 @@ const faqItems = [
     min-width: 180px;
     min-height: 100px;
     border-radius: 18px;
-    border: 1px solid var(--border);
-    background: var(--bg-elevated);
+    border: 1px solid var(--wn-surface-border);
+    background: var(--wn-surface);
   }
   .wn-sponsor-logo img {
     max-height: 56px;
@@ -752,8 +862,8 @@ const faqItems = [
   .wn-location-card {
     padding: 2rem;
     border-radius: 24px;
-    background: var(--glass-surface);
-    border: 1px solid var(--border);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
     text-align: center;
   }
   .wn-location-text {
@@ -766,8 +876,8 @@ const faqItems = [
 
   .wn-sponsor-cta {
     border-radius: 28px;
-    background: linear-gradient(135deg, rgba(255, 45, 122, 0.14), rgba(245, 184, 61, 0.12));
-    border: 1px solid rgba(255, 45, 122, 0.25);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
     padding: 2.4rem;
     text-align: center;
   }
@@ -788,8 +898,8 @@ const faqItems = [
     gap: 0.7rem;
   }
   .wn-faq-item {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
     border-radius: 18px;
     overflow: hidden;
   }
@@ -826,8 +936,8 @@ const faqItems = [
     text-align: center;
     padding: 3rem 2rem;
     border-radius: 28px;
-    background: linear-gradient(135deg, rgba(255, 45, 122, 0.16), rgba(245, 184, 61, 0.1));
-    border: 1px solid rgba(255, 45, 122, 0.25);
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
   }
   .wn-cta-sub {
     color: var(--text-secondary);
