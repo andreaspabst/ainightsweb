@@ -4,9 +4,9 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { imgVariant } from '../../lib/images';
 
-// AXDN//27 · THE AI Conference — 22.04.2027, KORN'S Nürnberg. Diese Seite ist
-// ein eigenständiger Teaser auf ainights.ai, der auf axdn.io verlinkt. Noch
-// nirgendwo verlinkt (Draft) — deshalb noindex, bis freigegeben.
+// AXDN//27 · THE AI Conference — 22.04.2027, KORN'S Nürnberg. Eigenständiger
+// Teaser auf ainights.ai, der auf axdn.io verlinkt. Ab dem Footer-Link
+// öffentlich erreichbar.
 const ticketUrl = 'https://axdn.io/?jtr=AINIGHTS_LP';
 const countdownTarget = '2027-04-22T09:00:00+02:00';
 
@@ -71,7 +71,6 @@ const onPoints = [
   title="AXDN // 27 — THE AI Conference · 22. April 2027, Nürnberg"
   description="AXDN // 27: ein Tag, vier Tracks, eine Main Stage. Die AI Conference in Nürnberg, powered by AI Nights. 22. April 2027 im KORN'S Nürnberg."
   path="/conference/2027/"
-  noindex={true}
 >
   <Header lang="de" />
   <main class="ax">
