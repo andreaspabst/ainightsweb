@@ -324,8 +324,8 @@ const onPoints = [
     --ax-violet: #3b1e99;
     --ax-gold: #f2b544;
     --ax-gradient: linear-gradient(120deg, #ef0460 0%, #3b1e99 100%);
-    --ax-surface: linear-gradient(135deg, rgba(239, 4, 96, 0.12), rgba(59, 30, 153, 0.14)), rgba(255, 255, 255, 0.04);
-    --ax-surface-border: rgba(239, 4, 96, 0.28);
+    --ax-surface: linear-gradient(135deg, rgba(239, 4, 96, 0.18), rgba(59, 30, 153, 0.2)), rgba(255, 255, 255, 0.05);
+    --ax-surface-border: rgba(239, 4, 96, 0.32);
   }
   .ax-accent {
     background: var(--ax-gradient);
@@ -422,8 +422,27 @@ const onPoints = [
     gap: 0.9rem;
     margin-bottom: 2rem;
   }
-  .ax-hero-actions .btn-primary {
+  .ax .btn-primary {
     background: var(--ax-gradient);
+    position: relative;
+    overflow: hidden;
+  }
+  .ax .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    animation: ax-shine-sweep 3.2s ease-in-out infinite;
+  }
+  @keyframes ax-shine-sweep {
+    0% { left: -60%; }
+    45%, 100% { left: 130%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ax .btn-primary::after { animation: none; display: none; }
   }
   .ax-countdown {
     display: inline-flex;
@@ -477,12 +496,16 @@ const onPoints = [
   }
 
   /* Vergleich */
+  .ax-compare {
+    padding-block: 1.5rem;
+  }
   .ax-compare-headline {
-    font-size: clamp(1.6rem, 3.6vw, 2.4rem);
-    line-height: 1.24;
+    font-size: clamp(2rem, 4.8vw, 3.2rem);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
     text-align: center;
-    max-width: 46ch;
-    margin: 0 auto 2.6rem;
+    max-width: 34ch;
+    margin: 0 auto 3.6rem;
   }
   .ax-strike {
     color: var(--text-muted);
@@ -580,11 +603,21 @@ const onPoints = [
     border-radius: 22px;
     background: var(--ax-surface);
     border: 1px solid var(--ax-surface-border);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  .ax-track-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(239, 4, 96, 0.55);
+    box-shadow: 0 20px 44px -18px rgba(239, 4, 96, 0.4);
   }
   .ax-track-icon {
     display: block;
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     margin-bottom: 0.8rem;
+    transition: transform 0.25s ease;
+  }
+  .ax-track-card:hover .ax-track-icon {
+    transform: scale(1.18) rotate(-4deg);
   }
   .ax-track-card h3 {
     font-size: 1.1rem;
@@ -611,11 +644,20 @@ const onPoints = [
     border: 1px solid var(--border);
     border-top: 3px solid var(--ax-gold);
     text-align: center;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .ax-space-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 44px -18px rgba(242, 181, 68, 0.35);
   }
   .ax-space-icon {
     display: block;
-    font-size: 2rem;
+    font-size: 2.2rem;
     margin-bottom: 0.9rem;
+    transition: transform 0.25s ease;
+  }
+  .ax-space-card:hover .ax-space-icon {
+    transform: scale(1.18);
   }
   .ax-space-card h3 {
     font-size: 1.2rem;
@@ -631,15 +673,13 @@ const onPoints = [
 
   /* Location — gleiches Muster wie club199 auf den AI Woman Nights */
   .ax-wide {
-    max-width: 1180px;
-    margin-inline: auto;
-    padding-inline: 1.5rem;
     position: relative;
+    width: 100vw;
     left: 50%;
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    width: 100vw;
+    padding-inline: 1.5rem;
   }
   .ax-loc-split {
     max-width: 1180px;
@@ -807,6 +847,11 @@ const onPoints = [
     border: 1px solid var(--border);
     background: var(--glass-surface);
     text-align: center;
+    transition: transform 0.22s ease, border-color 0.22s ease;
+  }
+  .ax-curator-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(239, 4, 96, 0.4);
   }
   .ax-curator-card img,
   .ax-curator-fallback {
@@ -846,11 +891,31 @@ const onPoints = [
 
   /* Abschluss */
   .ax-cta {
+    position: relative;
+    overflow: hidden;
     text-align: center;
-    padding: 3rem 2rem;
+    padding: 3.4rem 2rem;
     border-radius: 28px;
     background: var(--ax-surface);
     border: 1px solid var(--ax-surface-border);
+  }
+  .ax-cta::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle at 50% 50%, rgba(239, 4, 96, 0.25), transparent 60%);
+    animation: ax-pulse-glow 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes ax-pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.12); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ax-cta::before { animation: none; }
+  }
+  .ax-cta > * {
+    position: relative;
   }
   .ax-cta h2 {
     font-size: clamp(1.6rem, 4vw, 2.2rem);
