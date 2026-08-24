@@ -346,7 +346,7 @@ const faqItems = [
 
       {/* Location */}
       {d.locationName && isClub199 && (
-        <section class="wn-sec" data-reveal>
+        <section class="wn-sec wn-loc-wide" data-reveal>
           <p class="wn-eyebrow2">Wo es stattfindet</p>
           <h2 class="display-font wn-h2">{d.locationName}</h2>
           <div class="wn-loc-split">
@@ -1213,11 +1213,36 @@ const faqItems = [
   }
 
   /* Location: 50/50 Karte mit Foto-Slider + Vorzüge/Anfahrt */
+  /* Bricht aus dem 900px-.wn-body-Container aus, damit die Karte genug
+     Raum hat und der Button niemals über den Slider ragen kann. */
+  .wn-loc-wide {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding-inline: 1.5rem;
+  }
   .wn-loc-split {
+    max-width: 1180px;
+    margin-inline: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.8rem;
     align-items: stretch;
+    /* verhindert CSS-Grid-Blowout: Spalten dürfen nie breiter werden als
+       ihr 1fr-Anteil, egal wie lang Button-Text oder Perks-Zeilen sind */
+    min-width: 0;
+  }
+  .wn-loc-slider,
+  .wn-loc-info {
+    min-width: 0;
+  }
+  .wn-loc-info .btn {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
   }
   .wn-loc-slider {
     position: relative;
