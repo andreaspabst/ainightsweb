@@ -12,5 +12,7 @@
   "homeFeatured": true,
   "sortNumber": 100,
   "date": "2026-01-01 20:42:59",
-  "modified": "2026-02-19 14:13:56"
+  "modified": "2026-02-19 14:13:56",
+  "role": "speaker",
+  "topicArea": "non-tech"
 }

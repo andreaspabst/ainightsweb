@@ -23,11 +23,37 @@ const speakers = (await getCollection('speaker'))
     <p class="eyebrow">Auf unseren Bühnen</p>
     <h1 class="display-font">Speaker der AI&nbsp;Nights</h1>
     <p class="sub">Lerne von Menschen, die KI tatsächlich einsetzen – mit Erfolgen, Umwegen und ehrlichen Learnings.</p>
-    <div class="grid">
+
+    <div class="filters">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="search" id="speaker-search" placeholder="Speaker suchen, z. B. Name oder Thema…" aria-label="Speaker suchen" />
+      </div>
+      <div class="pill-group" role="group" aria-label="Nach Rolle filtern">
+        <button type="button" class="pill active" data-filter="role" data-value="all">Alle</button>
+        <button type="button" class="pill" data-filter="role" data-value="speaker">Speaker</button>
+        <button type="button" class="pill" data-filter="role" data-value="moderator">Moderation</button>
+      </div>
+      <div class="pill-group" role="group" aria-label="Nach Themenbereich filtern">
+        <button type="button" class="pill active" data-filter="topic" data-value="all">Alle Themen</button>
+        <button type="button" class="pill" data-filter="topic" data-value="tech">Tech</button>
+        <button type="button" class="pill" data-filter="topic" data-value="non-tech">Non-Tech (HR, Marketing …)</button>
+      </div>
+    </div>
+
+    <div class="grid" id="speaker-grid">
       {speakers.map((s) => (
-        <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
+        <div
+          class="speaker-item"
+          data-role={s.data.role ?? 'speaker'}
+          data-topic={s.data.topicArea ?? ''}
+          data-search={`${s.data.title} ${s.data.jobTitle ?? ''} ${s.data.excerpt ?? ''}`.toLowerCase()}
+        >
+          <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
+        </div>
       ))}
     </div>
+    <p class="empty" id="speaker-empty" hidden>Keine Speaker gefunden. Versuch's mit anderen Filtern.</p>
 
     <section class="become">
       <div class="become-head">
@@ -69,6 +95,47 @@ const speakers = (await getCollection('speaker'))
   <Footer lang="de" />
 </Layout>
 
+<script>
+  const searchInput = document.getElementById('speaker-search') as HTMLInputElement | null;
+  const grid = document.getElementById('speaker-grid');
+  const empty = document.getElementById('speaker-empty');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.speaker-item'));
+  const pillGroups = Array.from(document.querySelectorAll<HTMLElement>('.pill-group'));
+
+  const state = { search: '', role: 'all', topic: 'all' };
+
+  function applyFilters() {
+    let visibleCount = 0;
+    for (const item of items) {
+      const matchesSearch = !state.search || (item.dataset.search ?? '').includes(state.search);
+      const matchesRole = state.role === 'all' || item.dataset.role === state.role;
+      const matchesTopic = state.topic === 'all' || item.dataset.topic === state.topic;
+      const visible = matchesSearch && matchesRole && matchesTopic;
+      item.hidden = !visible;
+      if (visible) visibleCount++;
+    }
+    if (grid) grid.hidden = visibleCount === 0;
+    if (empty) empty.hidden = visibleCount !== 0;
+  }
+
+  searchInput?.addEventListener('input', () => {
+    state.search = searchInput.value.trim().toLowerCase();
+    applyFilters();
+  });
+
+  for (const group of pillGroups) {
+    const filterKey = group.querySelector<HTMLElement>('[data-filter]')?.dataset.filter as 'role' | 'topic' | undefined;
+    if (!filterKey) continue;
+    group.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.pill');
+      if (!btn) return;
+      state[filterKey] = btn.dataset.value ?? 'all';
+      for (const p of group.querySelectorAll('.pill')) p.classList.toggle('active', p === btn);
+      applyFilters();
+    });
+  }
+</script>
+
 <style>
   .archive {
     padding-block: 3rem 4rem;
@@ -82,6 +149,68 @@ const speakers = (await getCollection('speaker'))
     max-width: 56ch;
     margin-bottom: 2.5rem;
     font-size: 1.05rem;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 2rem;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--glass-surface);
+    color: var(--text-muted);
+    flex: 1 1 240px;
+    max-width: 340px;
+  }
+  .search input {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    width: 100%;
+  }
+  .search input:focus {
+    outline: none;
+  }
+  .search input::placeholder {
+    color: var(--text-muted);
+  }
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .pill {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .pill:hover {
+    color: var(--text-primary);
+    border-color: var(--glass-border-hover);
+  }
+  .pill.active {
+    background: var(--gradient-text);
+    border-color: transparent;
+    color: #fff;
+  }
+  .empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 0;
   }
   .grid {
     display: grid;
