@@ -49,6 +49,9 @@ const speaker = defineCollection({
     homeFeatured: z.boolean().optional(),
     sortNumber: z.number().optional(),
     cities: z.array(z.string()).optional(),
+    // Für die Speaker-Filter auf /speaker/
+    role: z.enum(['speaker', 'moderator']).default('speaker'),
+    topicArea: z.enum(['tech', 'non-tech']).optional(),
     seo,
     date: z.string().optional(),
     modified: z.string().optional(),

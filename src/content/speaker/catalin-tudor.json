@@ -21,5 +21,7 @@
     "How to handle long documents efficiently",
     "How to produce visual, verifiable outputs from LLMs",
     "Example workflows integrating LangExtract with Python and modern LLMs"
-  ]
+  ],
+  "role": "speaker",
+  "topicArea": "tech"
 }
