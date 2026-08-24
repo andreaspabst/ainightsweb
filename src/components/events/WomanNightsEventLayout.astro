@@ -64,6 +64,21 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
 const ticketHref = !isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/';
 const ticketExternal = !isPast && Boolean(d.ticketUrl);
 
+// club199-Fotos + Location-Vorzüge, nur wenn das Event dort stattfindet
+const isClub199 = /club199/i.test(d.locationName ?? '');
+const club199Images = [
+  { src: '/wp-content/uploads/2026/08/club199-atelier.jpg', alt: 'club199 – Atelier-Raum mit Loungebereich' },
+  { src: '/wp-content/uploads/2026/08/club199-atelier2.jpg', alt: 'club199 – Atelier-Raum' },
+  { src: '/wp-content/uploads/2026/08/club199-atelier3.jpg', alt: 'club199 – Atelier-Raum, weitere Ansicht' },
+  { src: '/wp-content/uploads/2026/08/club199-studio.jpg', alt: 'club199 – Studio-Bereich' },
+];
+const club199Perks = [
+  { icon: '📍', text: 'Mitten in der Nürnberger Altstadt, direkt am Hallertor' },
+  { icon: '🎨', text: 'Loft-Atmosphäre mit Atelier- und Studio-Charakter statt steriler Eventlocation' },
+  { icon: '🚇', text: 'U-Bahn: U2 bis Opernhaus, dann ca. 5 Minuten zu Fuß' },
+  { icon: '🚗', text: 'Parken: Parkhaus Sterntor gleich um die Ecke' },
+];
+
 const facts: { icon: string; label: string }[] = [
   { icon: '🎤', label: `${speakerSlots.length || 1} Speakerin${speakerSlots.length === 1 ? '' : 'nen'}${moderators.length ? ' & ' + moderators.length + ' Moderation' : ''}` },
   { icon: '🙌', label: 'Jede:r als Gast willkommen' },
@@ -330,7 +345,40 @@ const faqItems = [
       )}
 
       {/* Location */}
-      {d.locationName && (
+      {d.locationName && isClub199 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Wo es stattfindet</p>
+          <h2 class="display-font wn-h2">{d.locationName}</h2>
+          <div class="wn-loc-split">
+            <div class="wn-loc-slider" data-wn-slider>
+              <div class="wn-loc-track" data-wn-track>
+                {club199Images.map((img, i) => (
+                  <div class="wn-loc-slide">
+                    <img src={imgVariant(img.src, 800)} alt={img.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+                  </div>
+                ))}
+              </div>
+              <button type="button" class="wn-loc-nav wn-loc-prev" data-wn-prev aria-label="Vorheriges Bild">‹</button>
+              <button type="button" class="wn-loc-nav wn-loc-next" data-wn-next aria-label="Nächstes Bild">›</button>
+              <div class="wn-loc-dots" data-wn-dots>
+                {club199Images.map((_, i) => (
+                  <button type="button" class="wn-loc-dot" data-wn-dot={i} aria-label={`Bild ${i + 1} anzeigen`}></button>
+                ))}
+              </div>
+            </div>
+            <div class="wn-loc-info">
+              {d.locationAddress && <p class="wn-location-text">{d.locationAddress}</p>}
+              <ul class="wn-loc-perks">
+                {club199Perks.map((p) => (
+                  <li><span class="wn-loc-perk-icon">{p.icon}</span>{p.text}</li>
+                ))}
+              </ul>
+              <a href={mapsUrl} target="_blank" rel="noopener" class="btn btn-ghost">Auf Google Maps öffnen ↗</a>
+            </div>
+          </div>
+        </section>
+      )}
+      {d.locationName && !isClub199 && (
         <section class="wn-sec" data-reveal>
           <p class="wn-eyebrow2">Wo es stattfindet</p>
           <h2 class="display-font wn-h2">{d.locationName}</h2>
@@ -534,10 +582,40 @@ const faqItems = [
     window.addEventListener('resize', update, { passive: true });
     update();
   }
+  function initLocationSlider() {
+    document.querySelectorAll<HTMLElement>('[data-wn-slider]').forEach((slider) => {
+      const track = slider.querySelector<HTMLElement>('[data-wn-track]');
+      const slides = Array.from(slider.querySelectorAll<HTMLElement>('.wn-loc-slide'));
+      const dots = Array.from(slider.querySelectorAll<HTMLElement>('[data-wn-dot]'));
+      const prev = slider.querySelector<HTMLElement>('[data-wn-prev]');
+      const next = slider.querySelector<HTMLElement>('[data-wn-next]');
+      if (!track || slides.length < 2) return;
+      let index = 0;
+      function render() {
+        if (track) track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+      }
+      function goTo(i: number) {
+        index = (i + slides.length) % slides.length;
+        render();
+      }
+      prev?.addEventListener('click', () => goTo(index - 1));
+      next?.addEventListener('click', () => goTo(index + 1));
+      dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+      let timer = setInterval(() => goTo(index + 1), 5000);
+      slider.addEventListener('mouseenter', () => clearInterval(timer));
+      slider.addEventListener('mouseleave', () => {
+        timer = setInterval(() => goTo(index + 1), 5000);
+      });
+      render();
+    });
+  }
+
   initCountdowns();
   initReveal();
   initStickyCta();
   initParallax();
+  initLocationSlider();
 </script>
 
 <style>
@@ -1132,6 +1210,124 @@ const faqItems = [
   }
   .wn-location-card .btn {
     margin-top: 1rem;
+  }
+
+  /* Location: 50/50 Karte mit Foto-Slider + Vorzüge/Anfahrt */
+  .wn-loc-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.8rem;
+    align-items: stretch;
+  }
+  .wn-loc-slider {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--wn-surface-border);
+    aspect-ratio: 4 / 3;
+    background: var(--bg-elevated);
+  }
+  .wn-loc-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.45s cubic-bezier(0.16, 0.8, 0.3, 1);
+  }
+  .wn-loc-slide {
+    flex: 0 0 100%;
+    height: 100%;
+  }
+  .wn-loc-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .wn-loc-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(20, 8, 16, 0.55);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s ease;
+  }
+  .wn-loc-nav:hover {
+    background: rgba(20, 8, 16, 0.8);
+  }
+  .wn-loc-prev {
+    left: 0.9rem;
+  }
+  .wn-loc-next {
+    right: 0.9rem;
+  }
+  .wn-loc-dots {
+    position: absolute;
+    bottom: 0.9rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .wn-loc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .wn-loc-dot.is-active {
+    background: var(--wn-gold);
+    transform: scale(1.2);
+  }
+  .wn-loc-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 24px;
+    background: var(--wn-surface);
+    border: 1px solid var(--wn-surface-border);
+  }
+  .wn-loc-perks {
+    list-style: none;
+    margin: 0.4rem 0 1.4rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .wn-loc-perks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+  .wn-loc-perk-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+  }
+  .wn-loc-info .btn {
+    align-self: flex-start;
+  }
+  @media (max-width: 760px) {
+    .wn-loc-split {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Vision-Zitat — bricht aus dem 900px-Container aus, Foto + Marquee */
