@@ -5,6 +5,7 @@ import Header from '../Header.astro';
 import Footer from '../Footer.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { imgVariant } from '../../lib/images';
+import galleryData from '../../data/gallery.json';
 
 export interface Props {
   e: Awaited<ReturnType<typeof getCollection<'events'>>>[number];
@@ -12,6 +13,22 @@ export interface Props {
 
 const { e } = Astro.props;
 const d = e.data;
+
+// Hero-Hintergrund: echtes Foto mit Menschen statt des Branding-Bilds (das trägt
+// eingebrannten Titeltext und kollidiert mit der H1). Eigene Fotos hat diese
+// Event-Reihe noch nicht, deshalb ein bunt gemischter Vorgeschmack aus
+// bisherigen AI Nights (gleiche Idee wie beim normalen Event-Template).
+const galleryGroup = (galleryData as { event: string; images: string[] }[]).find((g) => g.event === d.slug);
+let heroBg = galleryGroup?.images[0];
+if (!heroBg) {
+  const pools = (galleryData as { event: string; images: string[] }[]).map((g) => g.images);
+  for (let i = 0; !heroBg && pools.some((p) => i < p.length); i++) {
+    for (const p of pools) {
+      if (p[i]) { heroBg = p[i]; break; }
+    }
+  }
+}
+heroBg = heroBg ?? '/wp-content/uploads/2026/01/1-34-publikum.jpg';
 
 const speakerColl = await getCollection('speaker');
 const sessionColl = await getCollection('sessions');
@@ -49,6 +66,7 @@ const ticketExternal = !isPast && Boolean(d.ticketUrl);
 
 const facts: { icon: string; label: string }[] = [
   { icon: '🎤', label: `${speakerSlots.length || 1} Speakerin${speakerSlots.length === 1 ? '' : 'nen'}${moderators.length ? ' & ' + moderators.length + ' Moderation' : ''}` },
+  { icon: '🙌', label: 'Jede:r als Gast willkommen' },
   { icon: '🌸', label: 'Die Bühne gehört den Frauen' },
   { icon: '🗂️', label: 'Kurze Impuls-Sessions' },
   { icon: '🤝', label: 'Raum für echten Austausch' },
@@ -56,7 +74,8 @@ const facts: { icon: string; label: string }[] = [
 ];
 
 const faqItems = [
-  { q: 'Wer kann teilnehmen?', a: 'Jede:r ist willkommen — aber die Bühne gehört den Frauen. Die AI Woman Nights bringen gezielt Frauen zusammen, die sich für KI interessieren, sie beruflich einsetzen oder einfach neugierig sind.' },
+  { q: 'Sind auch Männer und andere Gäste willkommen?', a: 'Ja, ausdrücklich! Zu den AI Woman Nights ist jede:r als Gast willkommen, unabhängig vom Geschlecht. Nur die Bühne gehört bewusst den Frauen — Speakerinnen und Moderatorinnen stehen im Vordergrund, das Publikum ist gemischt.' },
+  { q: 'Wer kann teilnehmen?', a: 'Jede:r ist als Gast willkommen — aber die Bühne gehört den Frauen. Die AI Woman Nights bringen gezielt Frauen zusammen, die sich für KI interessieren, sie beruflich einsetzen oder einfach neugierig sind.' },
   { q: 'Muss ich Vorwissen mitbringen?', a: 'Nein. Es geht um Austausch auf Augenhöhe, nicht um Expertenwissen. Neugier reicht völlig.' },
   { q: 'Wie funktioniert der Ticketkauf?', a: 'Du sicherst dir dein Ticket hier online und wirst direkt zum Zahlungsanbieter weitergeleitet. Nach dem Kauf bekommst du dein digitales Ticket per E-Mail.' },
   { q: 'Wollt ihr sponsern oder mitwirken?', a: 'Sehr gerne! Schreib einfach an reindel.andrea@gmail.com oder kontakt@andreas-pabst.de — wir freuen uns über Unterstützung und neue Speakerinnen.' },
@@ -89,9 +108,7 @@ const faqItems = [
   <Header lang="de" />
   <main class="wn">
     <section class="wn-hero">
-      {d.image?.src && (
-        <img class="wn-hero-bg" src={imgVariant(d.image.src, 1600)} alt="" role="presentation" data-parallax="8" data-parallax-scale="1.1" />
-      )}
+      <img class="wn-hero-bg" src={imgVariant(heroBg, 1600)} alt="" role="presentation" data-parallax="8" data-parallax-scale="1.1" />
       <div class="wn-hero-duotone"></div>
       <div class="wn-hero-overlay"></div>
       <div class="wn-bubbles" aria-hidden="true">
@@ -425,12 +442,12 @@ const faqItems = [
   }
   .wn-hero-bg {
     position: absolute;
-    inset: -5%;
-    width: 110%;
-    height: 110%;
+    inset: -3%;
+    width: 106%;
+    height: 106%;
     object-fit: cover;
-    opacity: 0.6;
-    filter: blur(22px) saturate(1.15);
+    opacity: 0.65;
+    filter: blur(3px) saturate(1.1);
     will-change: transform;
   }
   .wn-hero-duotone {
@@ -460,15 +477,18 @@ const faqItems = [
     background: radial-gradient(circle at 35% 30%, rgba(255, 143, 190, 0.55), rgba(255, 79, 156, 0.12) 60%, transparent 75%);
     filter: blur(18px);
     opacity: 0.7;
-    animation: wn-bubble-float var(--dur, 18s) ease-in-out infinite alternate;
+    animation: wn-bubble-float var(--dur, 18s) ease-in-out infinite;
     animation-delay: var(--delay, 0s);
   }
   .wn-bubble-gold {
     background: radial-gradient(circle at 35% 30%, rgba(255, 224, 153, 0.6), rgba(255, 207, 92, 0.14) 60%, transparent 75%);
   }
   @keyframes wn-bubble-float {
-    from { transform: translate(0, 0) scale(1); }
-    to { transform: translate(4%, -8%) scale(1.08); }
+    0% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(7%, -14%) scale(1.12); }
+    50% { transform: translate(-4%, -22%) scale(0.95); }
+    75% { transform: translate(-9%, -8%) scale(1.05); }
+    100% { transform: translate(0, 0) scale(1); }
   }
   @media (prefers-reduced-motion: reduce) {
     .wn-bubble { animation: none; }
