@@ -1,0 +1,883 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { imgVariant } from '../../lib/images';
+
+export interface Props {
+  e: Awaited<ReturnType<typeof getCollection<'events'>>>[number];
+}
+
+const { e } = Astro.props;
+const d = e.data;
+
+const speakerColl = await getCollection('speaker');
+const sessionColl = await getCollection('sessions');
+const sponsorColl = await getCollection('sponsor');
+const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [x.data.id, x]));
+const spMap = byId(speakerColl);
+const seMap = byId(sessionColl);
+const spoMap = byId(sponsorColl);
+
+const resolve = (ids: number[] | undefined, m: Map<number, any>) =>
+  (ids ?? []).map((id) => m.get(id)).filter(Boolean);
+
+const speakerSlots = resolve(d.speakerIds, spMap);
+const speakers = speakerSlots.filter((s) => !isPlaceholderSpeaker(s));
+const tbaCount = speakerSlots.length - speakers.length;
+const moderators = resolve(d.moderatorIds, spMap);
+const sessions = resolve(d.sessionIds, seMap);
+const sponsors = resolve(d.sponsorIds, spoMap);
+
+function fmtDate(dt?: string) {
+  if (!dt) return null;
+  const p = new Date(dt);
+  if (isNaN(p.getTime())) return dt;
+  return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+}
+const dateLabel = fmtDate(d.eventDate);
+const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
+const countdownTarget = !isPast && d.eventDate ? `${d.eventDate}T${d.startTime ?? '18:00'}:00` : null;
+
+const mapsQuery = encodeURIComponent([d.locationName, d.locationAddress, d.city].filter(Boolean).join(', '));
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+const ticketHref = !isPast && d.ticketUrl ? d.ticketUrl : '/de/tickets/';
+const ticketExternal = !isPast && Boolean(d.ticketUrl);
+
+const facts: { icon: string; label: string }[] = [
+  { icon: '🎤', label: `${speakerSlots.length || 1} Speakerin${speakerSlots.length === 1 ? '' : 'nen'}${moderators.length ? ' & ' + moderators.length + ' Moderation' : ''}` },
+  { icon: '🌸', label: 'Die Bühne gehört den Frauen' },
+  { icon: '🗂️', label: 'Kurze Impuls-Sessions' },
+  { icon: '🤝', label: 'Raum für echten Austausch' },
+  { icon: '🥂', label: 'Inklusive Drinks & Snacks' },
+];
+
+const faqItems = [
+  { q: 'Wer kann teilnehmen?', a: 'Jede:r ist willkommen — aber die Bühne gehört den Frauen. Die AI Woman Nights bringen gezielt Frauen zusammen, die sich für KI interessieren, sie beruflich einsetzen oder einfach neugierig sind.' },
+  { q: 'Muss ich Vorwissen mitbringen?', a: 'Nein. Es geht um Austausch auf Augenhöhe, nicht um Expertenwissen. Neugier reicht völlig.' },
+  { q: 'Wie funktioniert der Ticketkauf?', a: 'Du sicherst dir dein Ticket hier online und wirst direkt zum Zahlungsanbieter weitergeleitet. Nach dem Kauf bekommst du dein digitales Ticket per E-Mail.' },
+  { q: 'Wollt ihr sponsern oder mitwirken?', a: 'Sehr gerne! Schreib einfach an reindel.andrea@gmail.com oder kontakt@andreas-pabst.de — wir freuen uns über Unterstützung und neue Speakerinnen.' },
+];
+---
+
+<Layout
+  lang="de"
+  title={d.seo?.title ?? `${d.title} — AI Woman Nights`}
+  description={d.seo?.description ?? d.excerpt ?? `${d.title} — ein AI Woman Nights Afterwork-Event${d.city ? ` in ${d.city}` : ''}.`}
+  path={`/events/${d.slug}/`}
+  image={d.image?.src}
+  ogType="event"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: d.title,
+    startDate: d.eventDate,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: d.locationName
+      ? { '@type': 'Place', name: d.locationName, address: d.locationAddress ?? d.city }
+      : undefined,
+    image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
+    description: d.excerpt,
+    performer: speakers.map((s) => ({ '@type': 'Person', name: s.data.title })),
+    organizer: { '@type': 'Organization', name: 'AI Woman Nights', url: 'https://ainights.ai' },
+  }}
+>
+  <Header lang="de" />
+  <main class="wn">
+    <section class="wn-hero">
+      <div class="wn-hero-glow wn-hero-glow-a"></div>
+      <div class="wn-hero-glow wn-hero-glow-b"></div>
+      <div class="container wn-hero-inner">
+        <div class="wn-hero-copy">
+          <a href="/de/tickets/" class="wn-back">← Alle Events</a>
+          <p class="wn-eyebrow">✨ AI Woman Nights{d.city ? ` · ${d.city}` : ''}</p>
+          <h1 class="display-font">{d.title}</h1>
+          {(d.contentHtml || d.excerpt) && (
+            <div class="wn-intro prose">
+              {d.contentHtml ? <div set:html={d.contentHtml} /> : <p>{d.excerpt}</p>}
+            </div>
+          )}
+          <div class="wn-chips">
+            {dateLabel && <span class="wn-chip"><span>📅</span>{dateLabel}</span>}
+            {d.startTime && <span class="wn-chip"><span>🕕</span>{d.startTime} Uhr</span>}
+            {d.locationName && <span class="wn-chip"><span>📍</span>{d.locationName}</span>}
+          </div>
+          <div class="wn-hero-actions">
+            <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+              {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+            </a>
+            {countdownTarget && (
+              <div class="wn-countdown" data-countdown={countdownTarget}>
+                <div class="wn-cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
+                <div class="wn-cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
+                <div class="wn-cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
+                <div class="wn-cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+              </div>
+            )}
+          </div>
+        </div>
+        {d.image?.src && (
+          <div class="wn-hero-visual">
+            <img src={imgVariant(d.image.src, 1024)} alt={d.image.alt ?? d.title} />
+          </div>
+        )}
+      </div>
+    </section>
+
+    <div class="container wn-body">
+      {/* Mission */}
+      <section class="wn-sec wn-mission" data-reveal>
+        <span class="wn-mission-mark">„</span>
+        <p class="wn-mission-lead">
+          KI verändert alles — und keiner kann sich mehr wegducken. Wir sind der Meinung: Frauen müssen ganz vorne dabei sein.
+          Nicht nur auf den Zuschauerplätzen, sondern auf der Bühne, an den Konferenztischen und mitten in Diskussionen dazu.
+        </p>
+        <p class="wn-mission-sub">Bei den AI Woman Nights ist Jede:r willkommen — aber die Bühne gehört den Frauen.</p>
+      </section>
+
+      {/* Facts */}
+      <section class="wn-sec wn-facts" data-reveal>
+        <ul>
+          {facts.map((f) => (
+            <li><span class="wn-fact-icon">{f.icon}</span><span>{f.label}</span></li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Programm, falls vorhanden */}
+      {sessions.length > 0 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Der Abend</p>
+          <h2 class="display-font wn-h2">Programm</h2>
+          <div class="wn-stack">
+            {sessions.map((s) => {
+              const isBreak = /pause|break/i.test(s.data.title);
+              const sp = (s.data.speakerIds ?? []).map((id: number) => spMap.get(id)).filter(Boolean).filter((x: any) => !isPlaceholderSpeaker(x));
+              if (isBreak) {
+                return <div class="wn-break">☕ {s.data.title}{s.data.duration && ` · ${s.data.duration} min`}</div>;
+              }
+              return (
+                <article class="wn-stack-card">
+                  {s.data.startTime && <span class="wn-stack-time">🕕 {s.data.startTime} Uhr</span>}
+                  <h3>{s.data.title}</h3>
+                  {sp.length > 0 && (
+                    <p class="wn-stack-speaker">{sp.map((x: any) => x.data.title).join(', ')}</p>
+                  )}
+                  {s.data.excerpt && <p class="wn-stack-ex">{s.data.excerpt}</p>}
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Organisation */}
+      {moderators.length > 0 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Wer euch durch den Abend führt</p>
+          <h2 class="display-font wn-h2">Organisation</h2>
+          <div class="wn-org-grid">
+            {moderators.map((s) => (
+              <a href={`/speaker/${s.data.slug}/`} class="wn-org-card">
+                {s.data.image?.src && <img src={imgVariant(s.data.image.src, 320)} alt={s.data.title} loading="lazy" />}
+                <h3>{s.data.title}</h3>
+                {s.data.jobTitle && <p class="wn-org-role">{s.data.jobTitle}</p>}
+                {s.data.excerpt && <p class="wn-org-bio">{s.data.excerpt}</p>}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Speakerinnen */}
+      {(speakers.length > 0 || tbaCount > 0) && (
+        <section class="wn-sec" id="lineup" data-reveal>
+          <p class="wn-eyebrow2">Lerne von Frauen, die KI mitgestalten</p>
+          <h2 class="display-font wn-h2">Speakerinnen des Abends</h2>
+          <div class="wn-speaker-grid">
+            {speakers.map((s) => (
+              <div class="wn-speaker-card">
+                <a href={`/speaker/${s.data.slug}/`} class="wn-speaker-photo-link">
+                  {s.data.image?.src
+                    ? <img src={imgVariant(s.data.image.src, 400)} alt={s.data.title} loading="lazy" />
+                    : <span class="wn-speaker-photo-fallback">✨</span>}
+                </a>
+                <h3><a href={`/speaker/${s.data.slug}/`}>{s.data.title}</a></h3>
+                {s.data.jobTitle && <p class="wn-speaker-role">{s.data.jobTitle}</p>}
+                {s.data.bioHtml
+                  ? <div class="wn-speaker-bio prose" set:html={s.data.bioHtml} />
+                  : s.data.excerpt && <p class="wn-speaker-bio">{s.data.excerpt}</p>}
+                {s.data.socials?.linkedin && (
+                  <a href={s.data.socials.linkedin} target="_blank" rel="noopener" class="wn-speaker-social">LinkedIn ↗</a>
+                )}
+              </div>
+            ))}
+            {Array.from({ length: tbaCount }).map(() => (
+              <div class="wn-speaker-card wn-speaker-tba">
+                <span class="wn-speaker-photo-fallback">✨</span>
+                <h3>Wird noch bekanntgegeben</h3>
+                <p class="wn-speaker-role">Speakerin folgt in Kürze</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Sponsoren, falls vorhanden */}
+      {sponsors.length > 0 && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Möglich gemacht von</p>
+          <h2 class="display-font wn-h2">Sponsoren dieses Events</h2>
+          <div class="wn-sponsor-row">
+            {sponsors.map((s) => (
+              <a href={`/sponsor/${s.data.slug}/`} class="wn-sponsor-logo" title={s.data.title}>
+                <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Location */}
+      {d.locationName && (
+        <section class="wn-sec" data-reveal>
+          <p class="wn-eyebrow2">Wo es stattfindet</p>
+          <h2 class="display-font wn-h2">{d.locationName}</h2>
+          <div class="wn-location-card">
+            {d.locationAddress && <p class="wn-location-text">{d.locationAddress}</p>}
+            <p class="wn-location-text">Zentral in {d.city ?? 'der Stadt'} gelegen, entspannte Atmosphäre.</p>
+            <a href={mapsUrl} target="_blank" rel="noopener" class="btn btn-ghost">Auf Google Maps öffnen ↗</a>
+          </div>
+        </section>
+      )}
+
+      {/* Sponsoring gesucht */}
+      <section class="wn-sec wn-sponsor-cta" data-reveal>
+        <div class="wn-sponsor-cta-inner">
+          <h2 class="display-font wn-h2-light">Sponsoring gesucht 🧡</h2>
+          <p>
+            Habt ihr Lust, oder kennt ihr ein Unternehmen, das die AI Woman Nights als Sponsor unterstützen möchte?
+            Schreibt gerne direkt <a href="mailto:reindel.andrea@gmail.com">Andrea</a> oder <a href="mailto:kontakt@andreas-pabst.de">Andreas</a>.
+          </p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section class="wn-sec" data-reveal>
+        <p class="wn-eyebrow2">Fragen zum Event</p>
+        <h2 class="display-font wn-h2">Häufige Fragen</h2>
+        <div class="wn-faq-list">
+          {faqItems.map((f) => (
+            <details class="wn-faq-item">
+              <summary>{f.q}<span class="wn-faq-icon">＋</span></summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="wn-cta" data-reveal>
+        <h2 class="display-font wn-h2-light">{isPast ? 'Bei der nächsten AI Woman Night dabei sein' : 'Bereit, dabei zu sein?'}</h2>
+        {!isPast && <p class="wn-cta-sub">Sichere dir jetzt dein Ticket — die Bühne gehört den Frauen.</p>}
+        <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+          {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
+        </a>
+      </section>
+    </div>
+  </main>
+
+  {ticketExternal && (
+    <div class="wn-sticky-cta" id="wn-sticky-cta">
+      <div class="wn-sticky-inner">
+        <span class="wn-sticky-date">
+          {d.eventDate && new Date(d.eventDate).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
+          {d.city ? ` ${d.city}` : ''}
+        </span>
+        <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary">Tickets sichern</a>
+      </div>
+    </div>
+  )}
+
+  <Footer lang="de" />
+</Layout>
+
+<script>
+  function initCountdowns() {
+    document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => {
+      const target = new Date(el.dataset.countdown ?? '').getTime();
+      if (Number.isNaN(target)) return;
+      const dEl = el.querySelector('[data-cd-d]');
+      const hEl = el.querySelector('[data-cd-h]');
+      const mEl = el.querySelector('[data-cd-m]');
+      const sEl = el.querySelector('[data-cd-s]');
+      let timer: ReturnType<typeof setInterval>;
+      function tick() {
+        const diff = Math.max(0, target - Date.now());
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        if (dEl) dEl.textContent = String(days).padStart(2, '0');
+        if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+        if (mEl) mEl.textContent = String(mins).padStart(2, '0');
+        if (sEl) sEl.textContent = String(secs).padStart(2, '0');
+        if (diff <= 0) clearInterval(timer);
+      }
+      tick();
+      timer = setInterval(tick, 1000);
+    });
+  }
+  function initReveal() {
+    const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+    );
+    els.forEach((el) => io.observe(el));
+  }
+  function initStickyCta() {
+    const bar = document.getElementById('wn-sticky-cta');
+    const trigger = document.querySelector<HTMLElement>('.wn-hero-actions .btn-primary');
+    if (!bar || !trigger || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(([entry]) => bar.classList.toggle('is-visible', !entry.isIntersecting), { threshold: 0 });
+    io.observe(trigger);
+  }
+  initCountdowns();
+  initReveal();
+  initStickyCta();
+</script>
+
+<style>
+  /* AI Woman Nights: eigene warme Magenta→Gold-Palette statt Magenta/Blau/Violett,
+     rundere Formen, editorialere Typografie — bewusst abgesetzt von den normalen
+     AI Nights Event-Seiten. */
+  .wn {
+    --wn-gradient: linear-gradient(120deg, #ff2d7a 0%, #f5b83d 100%);
+    --wn-gold: #f5b83d;
+  }
+  .wn-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3rem, 8vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+  }
+  .wn-hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.55;
+  }
+  .wn-hero-glow-a {
+    width: 520px;
+    height: 520px;
+    top: -200px;
+    right: -160px;
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.55), transparent 70%);
+  }
+  .wn-hero-glow-b {
+    width: 460px;
+    height: 460px;
+    bottom: -220px;
+    left: -140px;
+    background: radial-gradient(circle, rgba(245, 184, 61, 0.4), transparent 70%);
+  }
+  .wn-hero-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+  }
+  .wn-back {
+    display: inline-block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.4rem;
+  }
+  .wn-eyebrow {
+    display: inline-block;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7rem;
+  }
+  .wn-hero-copy h1 {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.2rem;
+  }
+  .wn-intro {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 54ch;
+    margin-bottom: 1.6rem;
+  }
+  .wn-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.8rem;
+  }
+  .wn-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 45, 122, 0.08);
+    border: 1px solid rgba(255, 45, 122, 0.25);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .wn-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.4rem;
+  }
+  .wn-countdown {
+    display: flex;
+    gap: 0.7rem;
+  }
+  .wn-cd-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+  }
+  .wn-cd-box strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.15rem;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .wn-cd-box span {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .wn-hero-visual {
+    border-radius: 32px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 45, 122, 0.25);
+    box-shadow: 0 30px 70px -20px rgba(220, 39, 119, 0.35);
+  }
+  .wn-hero-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (max-width: 860px) {
+    .wn-hero-inner {
+      grid-template-columns: 1fr;
+    }
+    .wn-hero-visual {
+      order: -1;
+    }
+  }
+
+  .wn-body {
+    max-width: 900px;
+    padding-block: 1rem 2rem;
+  }
+  .wn-sec {
+    margin-bottom: 4.5rem;
+  }
+  .wn-eyebrow2 {
+    text-align: center;
+    color: var(--wn-gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .wn-h2 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    text-align: center;
+    margin: 0 0 1.8rem;
+  }
+  .wn-h2-light {
+    font-size: clamp(1.6rem, 4vw, 2.1rem);
+    text-align: center;
+    margin: 0 0 0.8rem;
+  }
+
+  .wn-mission {
+    position: relative;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(255, 45, 122, 0.1), rgba(245, 184, 61, 0.08));
+    border: 1px solid rgba(255, 45, 122, 0.2);
+  }
+  .wn-mission-mark {
+    display: block;
+    font-family: 'Space Grotesk', serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -0.5rem;
+  }
+  .wn-mission-lead {
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    max-width: 60ch;
+    margin: 0 auto 0.8rem;
+  }
+  .wn-mission-sub {
+    color: var(--wn-gold);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .wn-facts ul {
+    list-style: none;
+    margin: 0;
+    padding: 1.6rem 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem 2.2rem;
+    border-radius: 24px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+  }
+  .wn-facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .wn-fact-icon {
+    font-size: 1.15rem;
+  }
+
+  .wn-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .wn-stack-card {
+    padding: 1.6rem 1.8rem;
+    border-radius: 20px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--wn-gold);
+  }
+  .wn-stack-card h3 {
+    font-size: 1.15rem;
+    margin: 0.3rem 0 0.5rem;
+  }
+  .wn-stack-time {
+    color: var(--wn-gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .wn-stack-speaker {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0 0 0.4rem;
+  }
+  .wn-stack-ex {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .wn-break {
+    text-align: center;
+    padding: 0.8rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .wn-org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .wn-org-card {
+    padding: 1.8rem;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: var(--glass-surface);
+    text-align: center;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .wn-org-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 45, 122, 0.4);
+  }
+  .wn-org-card img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+    display: block;
+  }
+  .wn-org-card h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.3rem;
+    color: var(--text-primary);
+  }
+  .wn-org-role {
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--wn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 0.7rem;
+  }
+  .wn-org-bio {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .wn-speaker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.6rem;
+  }
+  .wn-speaker-card {
+    padding: 2rem;
+    border-radius: 28px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .wn-speaker-photo-link img,
+  .wn-speaker-photo-fallback {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1.2rem;
+    display: grid;
+    place-items: center;
+  }
+  .wn-speaker-photo-fallback {
+    background: var(--wn-gradient);
+    font-size: 2.2rem;
+  }
+  .wn-speaker-card h3 {
+    font-size: 1.25rem;
+    margin: 0 0 0.35rem;
+  }
+  .wn-speaker-card h3 a {
+    color: var(--text-primary);
+  }
+  .wn-speaker-role {
+    color: var(--wn-gold);
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin: 0 0 0.9rem;
+  }
+  .wn-speaker-bio {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 0.9rem;
+    text-align: left;
+  }
+  .wn-speaker-social {
+    color: var(--wn-gold);
+    font-weight: 600;
+    font-size: 0.88rem;
+  }
+  .wn-speaker-tba {
+    opacity: 0.7;
+  }
+
+  .wn-sponsor-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .wn-sponsor-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem 2rem;
+    min-width: 180px;
+    min-height: 100px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  .wn-sponsor-logo img {
+    max-height: 56px;
+    max-width: 160px;
+    object-fit: contain;
+  }
+
+  .wn-location-card {
+    padding: 2rem;
+    border-radius: 24px;
+    background: var(--glass-surface);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .wn-location-text {
+    color: var(--text-secondary);
+    margin: 0 0 0.4rem;
+  }
+  .wn-location-card .btn {
+    margin-top: 1rem;
+  }
+
+  .wn-sponsor-cta {
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(255, 45, 122, 0.14), rgba(245, 184, 61, 0.12));
+    border: 1px solid rgba(255, 45, 122, 0.25);
+    padding: 2.4rem;
+    text-align: center;
+  }
+  .wn-sponsor-cta-inner p {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .wn-sponsor-cta-inner a {
+    color: var(--wn-gold);
+    font-weight: 600;
+  }
+
+  .wn-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .wn-faq-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .wn-faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .wn-faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .wn-faq-icon {
+    color: var(--wn-gold);
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+  }
+  .wn-faq-item[open] .wn-faq-icon {
+    transform: rotate(45deg);
+  }
+  .wn-faq-item p {
+    padding: 0 1.5rem 1.3rem;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .wn-cta {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(255, 45, 122, 0.16), rgba(245, 184, 61, 0.1));
+    border: 1px solid rgba(255, 45, 122, 0.25);
+  }
+  .wn-cta-sub {
+    color: var(--text-secondary);
+    margin: -0.6rem 0 1.4rem;
+  }
+
+  .wn-sticky-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    background: #1a0a1a;
+    border-top: 2px solid transparent;
+    border-image: var(--wn-gradient, linear-gradient(120deg, #ff2d7a, #f5b83d)) 1;
+    padding: 0.9rem 1.5rem;
+    transform: translateY(120%);
+    transition: transform 0.3s ease;
+  }
+  .wn-sticky-cta.is-visible {
+    transform: translateY(0);
+  }
+  .wn-sticky-inner {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .wn-sticky-date {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 0.8, 0.3, 1);
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
