@@ -31,6 +31,8 @@ export default defineConfig({
     // Alias für die Städte-Übersicht (kanonisch: /stadt/)
     '/cities/': '/stadt/',
     '/staedte/': '/stadt/',
+    // Conference-Draft wurde auf den AXDN-Slug umbenannt
+    '/conference/2027/': '/conference/axdn-2027/',
     // Events-Archiv wurde zugunsten der Ticket-Seite entfernt
     '/events/': '/de/tickets/',
     // Deutsche Kurz-URLs für Rechtsseiten (u. a. von CMP-Banner-Links erwartet)

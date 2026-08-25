@@ -143,31 +143,29 @@ const titleTag = truncateAtWord(title, 65);
   <body>
     <slot />
 
-    {/* Kampagnen-Tracking für Ticket-Links: eingehendes ?jtr= wird für die
-        Session gemerkt und an alle [data-btn-pos]-Ticketlinks weitergereicht
-        (ds24tr= für Digistore24, jtr= für alles andere/Joinify). Ohne
-        gespeicherten Wert wird die Button-Position als Fallback genutzt,
-        siehe .claude/skills/ticket-tracking. */}
+    {/* Ticket-Tracking-Grundregeln: Joinify bekommt ?jtr= mit der geklickten
+        Button-Position, Digistore24 bekommt ds24tr= plus aff=ainights.
+        Positionen kommen aus data-btn-pos, z. B. AIEVENTLIST_EVENTS_BTN_EVENT_HERO. */}
     <script is:inline>
       (function () {
-        var STORAGE_KEY = 'ainights_jtr';
-        try {
-          var incoming = new URLSearchParams(window.location.search).get('jtr');
-          if (incoming) sessionStorage.setItem(STORAGE_KEY, incoming);
-        } catch (e) {}
+        var TRACKING_PREFIX = 'AIEVENTLIST_EVENTS_BTN_';
 
-        var stored = null;
-        try {
-          stored = sessionStorage.getItem(STORAGE_KEY);
-        } catch (e) {}
-
-        document.querySelectorAll('a[data-btn-pos]').forEach(function (a) {
+        document.querySelectorAll('a[href]').forEach(function (a) {
           try {
             var url = new URL(a.getAttribute('href'), window.location.origin);
             if (url.hostname === window.location.hostname) return;
-            var value = stored || 'AINWEB_' + a.getAttribute('data-btn-pos');
-            var isDigistore = /ds24|digistore/i.test(url.hostname);
-            url.searchParams.set(isDigistore ? 'ds24tr' : 'jtr', value);
+            var isDigistore = /ds24|digistore|checkout-ds24/i.test(url.hostname);
+            var isJoinify = /joinify/i.test(url.hostname);
+            if (!isDigistore && !isJoinify) return;
+            var position = a.getAttribute('data-btn-pos') || 'LINK';
+            var value = TRACKING_PREFIX + position;
+            if (isDigistore) {
+              url.searchParams.set('ds24tr', value);
+              url.searchParams.set('aff', 'ainights');
+            }
+            if (isJoinify) {
+              url.searchParams.set('jtr', value);
+            }
             a.setAttribute('href', url.toString());
           } catch (e) {}
         });

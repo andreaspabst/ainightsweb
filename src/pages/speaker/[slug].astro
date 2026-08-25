@@ -30,6 +30,17 @@ const socialLinks = [
   d.socials?.website && ['Website', d.socials.website],
   ...(d.links ?? []).map((l) => [l.label, l.url]),
 ].filter(Boolean) as [string, string][];
+
+const mediaDownloads = [
+  {
+    label: 'Linkedin Speaker announcement',
+    href: `/media/speaker-announcements/${d.slug}-linkedin.png`,
+  },
+  {
+    label: 'Instagram speaker announcement',
+    href: `/media/speaker-announcements/${d.slug}-instagram.png`,
+  },
+];
 ---
 
 <Layout
@@ -104,6 +115,15 @@ const socialLinks = [
         </ul>
       </section>
     )}
+
+    <section class="downloads">
+      <h2 class="display-font">Media &amp; Downloads</h2>
+      <div class="download-actions">
+        {mediaDownloads.map((item) => (
+          <a href={item.href} download class="download-btn">{item.label}</a>
+        ))}
+      </div>
+    </section>
 
     <section class="value">
       <p class="eyebrow">AI Nights Speaker</p>
@@ -261,6 +281,39 @@ const socialLinks = [
   }
   .talks a:hover {
     color: var(--magenta-bright);
+  }
+  .downloads {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .downloads h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .download-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.75rem 1.1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.055);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .download-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--magenta-bright);
+    background: rgba(255, 45, 122, 0.12);
   }
   .value {
     margin-top: 3.5rem;

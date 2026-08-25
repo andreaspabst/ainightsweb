@@ -179,7 +179,7 @@ const faqItems = [
               <div class="wn-cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
             </div>
           )}
-          <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+          <a href={ticketHref} data-btn-pos="WOMAN_EVENT_HERO" target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
             {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
           </a>
         </div>
@@ -482,7 +482,7 @@ const faqItems = [
       <section class="wn-cta" data-reveal>
         <h2 class="display-font wn-h2-light">{isPast ? 'Bei der nächsten AI Woman Night dabei sein' : 'Bereit, dabei zu sein?'}</h2>
         {!isPast && <p class="wn-cta-sub">Sichere dir jetzt dein Ticket — die Bühne gehört den Frauen.</p>}
-        <a href={ticketHref} target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
+        <a href={ticketHref} data-btn-pos="WOMAN_EVENT_FINALCTA" target={ticketExternal ? '_blank' : undefined} rel={ticketExternal ? 'noopener' : undefined} class="btn btn-primary">
           {isPast ? 'Kommende Events ansehen' : 'Tickets sichern'}
         </a>
       </section>
@@ -496,7 +496,7 @@ const faqItems = [
           {d.eventDate && new Date(d.eventDate).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
           {d.city ? ` ${d.city}` : ''}
         </span>
-        <a href={d.ticketUrl} target="_blank" rel="noopener" class="btn btn-primary">Tickets sichern</a>
+        <a href={d.ticketUrl} data-btn-pos="WOMAN_EVENT_STICKY" target="_blank" rel="noopener" class="btn btn-primary">Tickets sichern</a>
       </div>
     </div>
   )}

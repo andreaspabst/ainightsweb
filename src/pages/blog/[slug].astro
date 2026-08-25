@@ -18,6 +18,27 @@ const { p } = Astro.props;
 const d = p.data;
 const { Content } = await render(p);
 
+const speakerSlugFromPost = d.category === 'speaker-announcements'
+  ? p.body.match(/\/speaker\/([^/)]+)\/?/i)?.[1]
+  : undefined;
+const announcedSpeaker = speakerSlugFromPost
+  ? (await getCollection('speaker')).find((speaker) => speaker.data.slug === speakerSlugFromPost)
+  : undefined;
+const speakerAnnouncementMedia = announcedSpeaker
+  ? [
+      {
+        label: 'LinkedIn',
+        src: `/media/speaker-announcements/${announcedSpeaker.data.slug}-linkedin.png`,
+        alt: `LinkedIn Speaker Announcement für ${announcedSpeaker.data.title} bei den AI Nights zum angekündigten Talk`,
+      },
+      {
+        label: 'Instagram',
+        src: `/media/speaker-announcements/${announcedSpeaker.data.slug}-instagram.png`,
+        alt: `Instagram Speaker Announcement für ${announcedSpeaker.data.title} bei den AI Nights zum angekündigten Talk`,
+      },
+    ]
+  : [];
+
 function fmtDate(dt: Date) {
   return dt.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
 }
@@ -60,6 +81,23 @@ function fmtDate(dt: Date) {
       <div class="prose">
         <Content />
       </div>
+      {speakerAnnouncementMedia.length > 0 && (
+        <section class="announcement-media" aria-labelledby="announcement-media-title">
+          <p class="media-eyebrow">Media &amp; Downloads</p>
+          <h2 id="announcement-media-title" class="display-font">Speaker Announcement</h2>
+          <div class="announcement-media-grid">
+            {speakerAnnouncementMedia.map((item) => (
+              <figure>
+                <img src={item.src} alt={item.alt} loading="lazy" />
+                <figcaption>
+                  <span>{item.label} Speaker Announcement</span>
+                  <a href={item.src} download>Download</a>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
       {d.tags && d.tags.length > 0 && (
         <p class="tags">{d.tags.map((t) => <span class="tag">#{t}</span>)}</p>
       )}
@@ -149,6 +187,55 @@ function fmtDate(dt: Date) {
     font-style: italic;
     margin: 1.5rem 0;
   }
+  .announcement-media {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .media-eyebrow {
+    color: var(--blue-bright);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.45rem;
+    text-transform: uppercase;
+  }
+  .announcement-media h2 {
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+  }
+  .announcement-media-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  .announcement-media figure {
+    margin: 0;
+  }
+  .announcement-media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+  }
+  .announcement-media figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-top: 0.65rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .announcement-media figcaption span {
+    color: var(--text-secondary);
+  }
+  .announcement-media figcaption a {
+    color: var(--magenta-bright);
+    font-weight: 700;
+  }
   .tags {
     display: flex;
     gap: 0.6rem;
@@ -167,5 +254,10 @@ function fmtDate(dt: Date) {
   .cta h2 {
     font-size: 1.5rem;
     margin-bottom: 1.2rem;
+  }
+  @media (max-width: 640px) {
+    .announcement-media-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
