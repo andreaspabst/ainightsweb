@@ -15,13 +15,17 @@ const formats = {
 };
 
 const colors = {
-  bg: '#0d0c12',
-  panel: '#171119',
-  ink: '#fff7fb',
-  muted: '#cbbdcf',
-  pink: '#ef0460',
-  violet: '#3b1e99',
-  gold: '#f2b544',
+  bg: '#0a0118',
+  panel: '#140a2a',
+  glass: 'rgba(24,14,48,.68)',
+  ink: '#f7f4fb',
+  muted: '#c7bfd8',
+  pink: '#dc2777',
+  pinkBright: '#ff2d7a',
+  blue: '#326bff',
+  blueBright: '#2ea3f2',
+  violet: '#6d28d9',
+  orange: '#ff8154',
 };
 
 function escapeXml(value) {
@@ -154,35 +158,75 @@ async function makeAnnouncement({ speaker, talkTitle, format }) {
 
   const svg = `
     <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="aiGradient" x1="0" y1="0" x2="${width}" y2="${height}" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="${colors.pinkBright}"/>
+          <stop offset=".48" stop-color="${colors.violet}"/>
+          <stop offset="1" stop-color="${colors.blue}"/>
+        </linearGradient>
+        <linearGradient id="hotGradient" x1="0" y1="0" x2="${width}" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="${colors.pink}"/>
+          <stop offset="1" stop-color="${colors.orange}"/>
+        </linearGradient>
+        <linearGradient id="textGradient" x1="${copyLeft}" y1="${copyTop}" x2="${copyLeft + 520}" y2="${copyTop + 120}" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="${colors.pinkBright}"/>
+          <stop offset="1" stop-color="${colors.blueBright}"/>
+        </linearGradient>
+        <radialGradient id="blueGlow" cx="18%" cy="4%" r="72%">
+          <stop offset="0" stop-color="${colors.blue}" stop-opacity=".34"/>
+          <stop offset=".58" stop-color="${colors.blue}" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="pinkGlow" cx="88%" cy="18%" r="72%">
+          <stop offset="0" stop-color="${colors.pinkBright}" stop-opacity=".34"/>
+          <stop offset=".62" stop-color="${colors.pinkBright}" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="18" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
       <rect width="${width}" height="${height}" fill="${colors.bg}"/>
-      <path d="M0 0H${Math.round(width * 0.42)}V${height}H0Z" fill="${colors.panel}"/>
-      <rect x="${Math.round(width * 0.66)}" y="-80" width="${Math.round(width * 0.24)}" height="${height + 160}" fill="${colors.violet}" transform="rotate(14 ${Math.round(width * 0.78)} ${height / 2})"/>
-      <rect x="${isSquare ? 686 : 790}" y="${isSquare ? 118 : 72}" width="${isSquare ? 270 : 250}" height="${isSquare ? 178 : 162}" rx="4" fill="${colors.gold}"/>
-      <text x="${isSquare ? 720 : 820}" y="${isSquare ? 184 : 132}" font-family="Inter, Arial, sans-serif" font-size="${isSquare ? 25 : 22}"
-        font-weight="900" letter-spacing="2" fill="#171119">SPEAKER</text>
-      <text x="${isSquare ? 720 : 820}" y="${isSquare ? 238 : 182}" font-family="Space Grotesk, Inter, Arial, sans-serif" font-size="${isSquare ? 54 : 46}"
-        font-weight="900" fill="#171119">2027</text>
+      <rect width="${width}" height="${height}" fill="url(#blueGlow)"/>
+      <rect width="${width}" height="${height}" fill="url(#pinkGlow)"/>
+      <path d="M0 0H${Math.round(width * 0.43)}V${height}H0Z" fill="${colors.panel}" opacity=".72"/>
+      <g opacity=".14">
+        ${Array.from({ length: Math.ceil(width / 78) + 1 }, (_, i) => `<line x1="${i * 78}" y1="0" x2="${i * 78}" y2="${height}" stroke="#fff" stroke-width="1"/>`).join('')}
+        ${Array.from({ length: Math.ceil(height / 78) + 1 }, (_, i) => `<line x1="0" y1="${i * 78}" x2="${width}" y2="${i * 78}" stroke="#fff" stroke-width="1"/>`).join('')}
+      </g>
+      <circle cx="${isSquare ? 948 : 1060}" cy="${isSquare ? 172 : 90}" r="${isSquare ? 310 : 230}" fill="${colors.pink}" opacity=".18" filter="url(#softGlow)"/>
+      <circle cx="${isSquare ? 110 : 74}" cy="${isSquare ? 120 : 74}" r="${isSquare ? 260 : 190}" fill="${colors.blue}" opacity=".18" filter="url(#softGlow)"/>
+      <rect x="${Math.round(width * 0.68)}" y="-90" width="${Math.round(width * 0.22)}" height="${height + 180}" fill="url(#aiGradient)" opacity=".58" transform="rotate(14 ${Math.round(width * 0.79)} ${height / 2})"/>
+      <rect x="${isSquare ? 660 : 785}" y="${isSquare ? 112 : 66}" width="${isSquare ? 308 : 276}" height="${isSquare ? 154 : 132}" rx="18" fill="${colors.glass}" stroke="rgba(255,255,255,.18)"/>
+      <rect x="${isSquare ? 660 : 785}" y="${isSquare ? 112 : 66}" width="${isSquare ? 308 : 276}" height="9" rx="4" fill="url(#aiGradient)"/>
+      <text x="${isSquare ? 690 : 815}" y="${isSquare ? 168 : 118}" font-family="Inter, Arial, sans-serif" font-size="${isSquare ? 22 : 19}"
+        font-weight="900" letter-spacing="2.6" fill="${colors.pinkBright}">AI NIGHTS</text>
+      <text x="${isSquare ? 690 : 815}" y="${isSquare ? 218 : 164}" font-family="Space Grotesk, Inter, Arial, sans-serif" font-size="${isSquare ? 42 : 34}"
+        font-weight="900" fill="${colors.ink}">SPEAKER</text>
       <text x="${isSquare ? 640 : 760}" y="${isSquare ? 274 : 228}" text-anchor="middle"
         font-family="Space Grotesk, Inter, Arial, sans-serif" font-size="${isSquare ? 230 : 178}"
-        font-weight="900" fill="rgba(255,247,251,.08)">AI</text>
+        font-weight="900" fill="rgba(255,255,255,.055)">AI</text>
       <text x="${isSquare ? 760 : 908}" y="${isSquare ? 980 : 592}" text-anchor="middle"
         font-family="Space Grotesk, Inter, Arial, sans-serif" font-size="${isSquare ? 190 : 118}"
-        font-weight="900" fill="rgba(239,4,96,.22)">NIGHTS</text>
+        font-weight="900" fill="${colors.pink}" opacity=".22">NIGHTS</text>
 
       <text x="${copyLeft}" y="${copyTop}" font-family="Inter, Arial, sans-serif" font-size="${isSquare ? 31 : 28}"
-        font-weight="900" letter-spacing="2.5" fill="${colors.gold}">I AM SPEAKER AT</text>
+        font-weight="900" letter-spacing="2.5" fill="${colors.pinkBright}">I AM SPEAKER AT</text>
       <text x="${copyLeft}" y="${copyTop + (isSquare ? 90 : 82)}" font-family="Space Grotesk, Inter, Arial, sans-serif"
-        font-size="${isSquare ? 92 : 76}" font-weight="900" fill="${colors.ink}">AI NIGHTS</text>
-      <rect x="${copyLeft}" y="${copyTop + (isSquare ? 116 : 104)}" width="${isSquare ? 315 : 292}" height="16" fill="${colors.pink}"/>
+        font-size="${isSquare ? 92 : 76}" font-weight="900" fill="url(#textGradient)">AI NIGHTS</text>
+      <rect x="${copyLeft}" y="${copyTop + (isSquare ? 116 : 104)}" width="${isSquare ? 315 : 292}" height="14" rx="7" fill="url(#aiGradient)"/>
 
       <text font-family="Inter, Arial, sans-serif" font-size="${isSquare ? 37 : 31}" font-weight="850" fill="${colors.ink}">
         ${tspans(talkLines, copyLeft, talkY, isSquare ? 46 : 39)}
       </text>
       <text x="${copyLeft}" y="${talkY - (isSquare ? 52 : 36)}" font-family="Inter, Arial, sans-serif" font-size="20"
-        font-weight="900" letter-spacing="2" fill="${colors.pink}">TALK</text>
+        font-weight="900" letter-spacing="2" fill="${colors.blueBright}">TALK</text>
 
-      <circle cx="${avatarLeft + avatarSize / 2 + 14}" cy="${avatarTop + avatarSize / 2 + 14}" r="${avatarSize / 2}" fill="${colors.pink}"/>
-      <circle cx="${avatarLeft + avatarSize / 2}" cy="${avatarTop + avatarSize / 2}" r="${avatarSize / 2 + 7}" fill="${colors.gold}"/>
+      <circle cx="${avatarLeft + avatarSize / 2 + 14}" cy="${avatarTop + avatarSize / 2 + 14}" r="${avatarSize / 2}" fill="${colors.pink}" opacity=".95"/>
+      <circle cx="${avatarLeft + avatarSize / 2}" cy="${avatarTop + avatarSize / 2}" r="${avatarSize / 2 + 9}" fill="none" stroke="url(#aiGradient)" stroke-width="18"/>
+      <circle cx="${avatarLeft + avatarSize / 2}" cy="${avatarTop + avatarSize / 2}" r="${avatarSize / 2 + 18}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
 
       <text font-family="Space Grotesk, Inter, Arial, sans-serif" font-size="${nameFont}" font-weight="900" fill="${colors.ink}">
         ${tspans(speakerLines, isSquare ? 360 : 390, nameY, nameLineHeight)}
@@ -192,7 +236,7 @@ async function makeAnnouncement({ speaker, talkTitle, format }) {
       </text>
 
       <text x="${isSquare ? 92 : 86}" y="${height - 58}" font-family="Inter, Arial, sans-serif" font-size="${isSquare ? 22 : 18}"
-        font-weight="900" letter-spacing="2.2" fill="${colors.muted}">AINIGHTS.AI</text>
+        font-weight="900" letter-spacing="2.2" fill="${colors.blueBright}">AINIGHTS.AI</text>
     </svg>
   `;
 
