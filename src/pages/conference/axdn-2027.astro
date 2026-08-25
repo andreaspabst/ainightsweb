@@ -4,29 +4,32 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { imgVariant } from '../../lib/images';
 
+// AXDN//27 · THE AI Conference — 22.04.2027, KORN'S Nürnberg. Diese Seite ist
+// ein eigenständiger Teaser auf ainights.ai, der auf axdn.io verlinkt. Noch
+// nirgendwo verlinkt (Draft) — deshalb noindex, bis freigegeben.
 const ticketUrl = 'https://axdn.io/?jtr=AINIGHTS_LP';
 const countdownTarget = '2027-04-22T09:00:00+02:00';
 
 const tracks = [
-  { code: 'ENG', name: 'AI for Engineers', text: 'Agenten, Architekturen, Toolchains und Workflows, die nicht nur in der Demo gut aussehen, sondern im Alltag halten.' },
-  { code: 'MKT', name: 'AI for Marketing', text: 'Content, Kampagnen, Personalisierung und Automatisierung mit echtem Output statt noch einer Buzzword-Keynote.' },
-  { code: 'HR', name: 'AI for HR', text: 'Recruiting, People Analytics, Enablement und Change. Für Teams, die KI nicht ankündigen, sondern einführen müssen.' },
-  { code: 'OPEN', name: 'Open Space', text: 'Die Community bringt die Fragen mit. Unconference-Fläche für alles, was nicht in eine fertige Agenda passt.' },
+  { icon: '🛠️', name: 'AI for Engineers', text: 'Agenten, Architekturen und Workflows, die auch in Produktion noch stehen — nicht nur in der Demo.' },
+  { icon: '📣', name: 'AI for Marketing', text: 'Content, Kampagnen und Personalisierung, die tatsächlich Wirkung zeigen statt nur Buzzwords zu bedienen.' },
+  { icon: '🧑‍🤝‍🧑', name: 'AI for HR', text: 'Recruiting, People Analytics und Change-Management — hands-on für Teams, die KI im Alltag einführen müssen.' },
+  { icon: '💬', name: 'Open Space', text: 'Unconference-Fläche für die Themen, die der Community wichtig sind — nicht vorab festgelegt, sondern vor Ort entstanden.' },
 ];
 
 const spaces = [
-  { num: '01', name: 'Main Stage', text: 'Opening, Keynotes und die großen Gespräche des Tages.' },
-  { num: '02', name: '5 Workshop-Räume', text: 'Parallele Sessions zum Mitmachen, Testen und Weiterdenken.' },
-  { num: '03', name: 'Expo Area', text: 'Tools, Teams und Partner zum Anfassen zwischen den Sessions.' },
+  { icon: '🎤', name: 'Main Stage', text: 'Opening, Keynotes und die großen Gespräche des Tages — für alle gemeinsam.' },
+  { icon: '🗂️', name: '5 Workshop-Räume', text: 'Parallele Sessions zu allen vier Tracks plus Open Space, zum Mitmachen statt nur Zuhören.' },
+  { icon: '🏢', name: 'Expo Area', text: 'Wo Tools, Teams und Partner zum Anfassen sind — zwischen den Sessions und in den Pausen.' },
 ];
 
 const korns = [
-  { src: '/wp-content/uploads/2026/08/korns-hall.webp', alt: 'KORN’S Nürnberg - Haupthalle' },
-  { src: '/wp-content/uploads/2026/08/korns-conf-room.webp', alt: 'KORN’S Nürnberg - Konferenzraum' },
-  { src: '/wp-content/uploads/2026/08/korns-dachterasse.jpg', alt: 'KORN’S Nürnberg - Dachterrasse' },
-  { src: '/wp-content/uploads/2026/08/korns-bar.webp', alt: 'KORN’S Nürnberg - Bar und Lounge' },
-  { src: '/wp-content/uploads/2026/08/korns-restaurant.webp', alt: 'KORN’S Nürnberg - Restaurant' },
-  { src: '/wp-content/uploads/2026/08/korns-aussenansicht.jpg', alt: 'KORN’S Nürnberg - Außenansicht' },
+  { src: '/wp-content/uploads/2026/08/korns-hall.webp', alt: 'KORN’S Nürnberg – Haupthalle' },
+  { src: '/wp-content/uploads/2026/08/korns-conf-room.webp', alt: 'KORN’S Nürnberg – Konferenzraum' },
+  { src: '/wp-content/uploads/2026/08/korns-dachterasse.jpg', alt: 'KORN’S Nürnberg – Dachterrasse' },
+  { src: '/wp-content/uploads/2026/08/korns-bar.webp', alt: 'KORN’S Nürnberg – Bar & Lounge' },
+  { src: '/wp-content/uploads/2026/08/korns-restaurant.webp', alt: 'KORN’S Nürnberg – Restaurant' },
+  { src: '/wp-content/uploads/2026/08/korns-aussenansicht.jpg', alt: 'KORN’S Nürnberg – Außenansicht' },
 ];
 
 const communityPhotos = [
@@ -38,6 +41,8 @@ const communityPhotos = [
   '/wp-content/uploads/2026/07/35-ai-night.25mai-35.jpg',
   '/wp-content/uploads/2026/01/1-94.jpg',
   '/wp-content/uploads/2026/01/1-27.jpg',
+  '/wp-content/uploads/2026/01/12-ianight-12-scaled.jpg',
+  '/wp-content/uploads/2026/01/29-ianight-29-scaled.jpg',
 ];
 
 const curators = [
@@ -47,7 +52,6 @@ const curators = [
 ];
 
 const speakerNames = ['Andreas Pabst', 'Alex Key', 'Dr. Konrad Körner', 'Roland Golla', 'Thomas Schönherr'];
-const marqueeItems = ['ENGINEERING', 'MARKETING', 'HR', 'OPEN SPACE', 'NÜRNBERG', 'APRIL 2027'];
 
 const offPoints = [
   'Trends nur aus LinkedIn-Posts und Newslettern',
@@ -65,121 +69,98 @@ const onPoints = [
 
 <Layout
   lang="de"
-  title="AXDN 2027 - THE AI Conference · 22. April 2027, Nürnberg"
-  description="AXDN 2027: ein Tag, vier Tracks, eine Main Stage. Die AI Conference in Nürnberg, powered by AI Nights. 22. April 2027 im KORN'S Nürnberg."
+  title="AXDN // 27 — THE AI Conference · 22. April 2027, Nürnberg"
+  description="AXDN // 27: ein Tag, vier Tracks, eine Main Stage. Die AI Conference in Nürnberg, powered by AI Nights. 22. April 2027 im KORN'S Nürnberg."
   path="/conference/axdn-2027/"
-  image="/wp-content/uploads/2026/08/korns-hall.webp"
   noindex={true}
 >
   <Header lang="de" />
   <main class="ax">
     <section class="ax-hero">
-      <div class="ax-plane ax-plane-a" aria-hidden="true">AX</div>
-      <div class="ax-plane ax-plane-b" aria-hidden="true">DN</div>
-      <div class="ax-plane ax-plane-c" aria-hidden="true">27</div>
-
-      <div class="ax-container ax-hero-grid">
-        <div class="ax-hero-copy">
-          <p class="ax-kicker"><span></span> powered by AI Nights</p>
-          <h1 class="display-font">
-            AXDN<br />
-            2027
-          </h1>
-          <p class="ax-claim">THE AI CONFERENCE</p>
-          <p class="ax-hero-sub">Ein Tag für Leute, die KI nicht nur beobachten. Vier Tracks, eine Main Stage, Hands-on Sessions und eine Community, die baut, testet, diskutiert und weiterzieht.</p>
-          <div class="ax-actions">
-            <a href={ticketUrl} target="_blank" rel="noopener" class="ax-btn ax-btn-primary">Tickets auf axdn.io <span>↗</span></a>
-            <a href="#tracks" class="ax-btn ax-btn-secondary">Tracks ansehen</a>
-          </div>
-          <p class="ax-micro">22. April 2027 · KORN'S Nürnberg · Engineering, Marketing, HR & Open Space</p>
+      <img class="ax-hero-bg" src={imgVariant(communityPhotos[0], 1600)} alt="" role="presentation" />
+      <div class="ax-hero-duotone"></div>
+      <div class="ax-hero-overlay"></div>
+      <div class="container ax-hero-inner">
+        <p class="ax-kicker">✨ AXDN&nbsp;//&nbsp;27 · powered by AI Nights</p>
+        <h1 class="display-font">Eine Konferenz. Vier Tracks.<br />Ein Tag, an dem KI <span class="ax-accent">gebaut</span> statt nur besprochen wird.</h1>
+        <p class="ax-hero-sub">THE AI Conference für alle, die KI-Entscheidungen im Unternehmen wirklich treffen — Engineering, Marketing, HR. Keine Verkaufsshow, sondern ein Tag unter Leuten, die es selbst machen.</p>
+        <div class="ax-chips">
+          <span class="ax-chip">📅 22. April 2027</span>
+          <span class="ax-chip">📍 KORN'S Nürnberg</span>
+          <span class="ax-chip">🗂️ 4 Tracks</span>
+          <span class="ax-chip">🎤 Main Stage</span>
         </div>
-
-        <aside class="ax-hero-panel" aria-label="Konferenzdaten">
-          <div class="ax-panel-label">NUE / 22.04.27</div>
-          <div class="ax-countdown" data-countdown={countdownTarget}>
-            <div><strong data-cd-d>00</strong><span>Tage</span></div>
-            <div><strong data-cd-h>00</strong><span>Std</span></div>
-            <div><strong data-cd-m>00</strong><span>Min</span></div>
-            <div><strong data-cd-s>00</strong><span>Sek</span></div>
-          </div>
-          <div class="ax-info-stack">
-            <span>4 Tracks</span>
-            <span>Main Stage</span>
-            <span>5 Workshop-Räume</span>
-            <span>Expo Area</span>
-          </div>
-        </aside>
+        <div class="ax-hero-actions">
+          <a href={ticketUrl} target="_blank" rel="noopener" class="btn btn-primary">Tickets auf axdn.io ↗</a>
+          <a href="#tracks" class="btn btn-ghost">Programm entdecken</a>
+        </div>
+        <div class="ax-countdown" data-countdown={countdownTarget}>
+          <div class="ax-cd-box"><strong data-cd-d>00</strong><span>Tage</span></div>
+          <div class="ax-cd-box"><strong data-cd-h>00</strong><span>Std</span></div>
+          <div class="ax-cd-box"><strong data-cd-m>00</strong><span>Min</span></div>
+          <div class="ax-cd-box"><strong data-cd-s>00</strong><span>Sek</span></div>
+        </div>
       </div>
     </section>
 
-    <section class="ax-marquee" aria-label="Konferenz-Schwerpunkte">
-      <div>
-        {[...marqueeItems, ...marqueeItems].map((item) => <span>{item}</span>)}
-      </div>
-    </section>
-
-    <div class="ax-container">
+    <div class="container ax-body">
+      {/* Vergleich */}
       <section class="ax-sec ax-compare" data-reveal>
-        <h2 class="display-font">
-          Keine Konferenz für <span>KI-Theater</span>. Eine Konferenz für Teams, die liefern müssen.
+        <h2 class="display-font ax-compare-headline">
+          Die meisten KI-Konferenzen zeigen dir <span class="ax-strike">noch mehr Folien und Buzzwords</span>.<br />
+          Wir zeigen dir, <span class="ax-accent-text">wie andere Teams KI wirklich in Produktion bringen</span>.
         </h2>
         <div class="ax-compare-grid">
-          <div class="ax-list ax-list-muted">
-            <p>Weg damit</p>
+          <div class="ax-compare-col ax-compare-off">
+            <p class="ax-compare-label">— Allein weitermachen</p>
             <ul>
-              {offPoints.map((p) => <li><span>×</span>{p}</li>)}
+              {offPoints.map((p) => <li><span class="ax-x">×</span>{p}</li>)}
             </ul>
           </div>
-          <div class="ax-list ax-list-hot">
-            <p>Her damit</p>
+          <div class="ax-compare-col ax-compare-on">
+            <p class="ax-compare-label">+ Bei AXDN // 27 dabei sein</p>
             <ul>
-              {onPoints.map((p) => <li><span>+</span>{p}</li>)}
+              {onPoints.map((p) => <li><span class="ax-plus">+</span>{p}</li>)}
             </ul>
           </div>
         </div>
       </section>
 
+      {/* Tracks */}
       <section class="ax-sec" id="tracks" data-reveal>
-        <div class="ax-section-head">
-          <p>Vier Perspektiven</p>
-          <h2 class="display-font">Die Tracks</h2>
-        </div>
+        <p class="ax-eyebrow2">Vier Perspektiven, ein Tag</p>
+        <h2 class="display-font ax-h2">Die Tracks</h2>
         <div class="ax-track-grid">
-          {tracks.map((t, i) => (
-            <article class="ax-track-card">
-              <span class="ax-card-num">{String(i + 1).padStart(2, '0')}</span>
-              <strong>{t.code}</strong>
+          {tracks.map((t) => (
+            <div class="ax-track-card">
+              <span class="ax-track-icon">{t.icon}</span>
               <h3>{t.name}</h3>
               <p>{t.text}</p>
-            </article>
+            </div>
           ))}
         </div>
       </section>
 
-      <section class="ax-sec ax-spaces" data-reveal>
-        <div class="ax-section-head">
-          <p>Wo es passiert</p>
-          <h2 class="display-font">Ein Haus, mehrere Modi</h2>
-        </div>
+      {/* Spaces */}
+      <section class="ax-sec" data-reveal>
+        <p class="ax-eyebrow2">Wo es passiert</p>
+        <h2 class="display-font ax-h2">Ein Haus, drei Bühnen</h2>
         <div class="ax-space-grid">
           {spaces.map((s) => (
-            <article class="ax-space-card">
-              <span>{s.num}</span>
+            <div class="ax-space-card">
+              <span class="ax-space-icon">{s.icon}</span>
               <h3>{s.name}</h3>
               <p>{s.text}</p>
-            </article>
+            </div>
           ))}
         </div>
       </section>
-    </div>
 
-    <section class="ax-location ax-sec" data-reveal>
-      <div class="ax-container">
-        <div class="ax-section-head ax-section-head-left">
-          <p>Kornmarkt 5-7</p>
-          <h2 class="display-font">KORN'S Nürnberg</h2>
-        </div>
-        <div class="ax-loc-grid">
+      {/* Location */}
+      <section class="ax-sec ax-wide" data-reveal>
+        <p class="ax-eyebrow2">Wo es stattfindet</p>
+        <h2 class="display-font ax-h2">KORN'S Nürnberg</h2>
+        <div class="ax-loc-split">
           <div class="ax-loc-slider" data-ax-slider>
             <div class="ax-loc-track" data-ax-track>
               {korns.map((img, i) => (
@@ -188,61 +169,67 @@ const onPoints = [
                 </div>
               ))}
             </div>
-            <button type="button" class="ax-loc-nav ax-loc-prev" data-ax-prev aria-label="Vorheriges Bild">←</button>
-            <button type="button" class="ax-loc-nav ax-loc-next" data-ax-next aria-label="Nächstes Bild">→</button>
+            <button type="button" class="ax-loc-nav ax-loc-prev" data-ax-prev aria-label="Vorheriges Bild">‹</button>
+            <button type="button" class="ax-loc-nav ax-loc-next" data-ax-next aria-label="Nächstes Bild">›</button>
             <div class="ax-loc-dots" data-ax-dots>
               {korns.map((_, i) => <button type="button" class="ax-loc-dot" data-ax-dot={i} aria-label={`Bild ${i + 1} anzeigen`}></button>)}
             </div>
           </div>
-          <div class="ax-loc-copy">
-            <p class="ax-big-word">NUE</p>
-            <p>Mitten in der Altstadt, nah am Bahnhof, mit Bar, Restaurant und Dachterrasse. Also genau der Ort, an dem Konferenz nicht nach Messehalle schmeckt.</p>
-            <a href="https://www.google.com/maps/search/?api=1&query=KORN%27S%20Kornmarkt%205-7%20N%C3%BCrnberg" target="_blank" rel="noopener" class="ax-btn ax-btn-secondary">Google Maps öffnen ↗</a>
+          <div class="ax-loc-info">
+            <p class="ax-loc-text">Kornmarkt 5–7, 90402 Nürnberg</p>
+            <ul class="ax-loc-perks">
+              <li><span class="ax-loc-perk-icon">📍</span>Mitten in der Nürnberger Altstadt</li>
+              <li><span class="ax-loc-perk-icon">🎨</span>Bar, Restaurant und Dachterrasse statt steriler Messehalle</li>
+              <li><span class="ax-loc-perk-icon">🚇</span>U-Bahn: U2 bis Opernhaus, dann ca. 5 Minuten zu Fuß</li>
+              <li><span class="ax-loc-perk-icon">🚗</span>Parken: Parkhaus Sterntor gleich um die Ecke</li>
+            </ul>
+            <a href="https://www.google.com/maps/search/?api=1&query=KORN%27S%20Kornmarkt%205-7%20N%C3%BCrnberg" target="_blank" rel="noopener" class="btn btn-ghost">Auf Google Maps öffnen ↗</a>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <div class="ax-container">
-      <section class="ax-sec ax-community" data-reveal>
-        <div class="ax-section-head">
-          <p>Die Community dahinter</p>
-          <h2 class="display-font">Aus AI Nights wird AXDN</h2>
-        </div>
+      {/* Community-Fotos */}
+      <section class="ax-sec" data-reveal>
+        <p class="ax-eyebrow2">Die Community dahinter</p>
+        <h2 class="display-font ax-h2">AXDN wächst aus den AI Nights</h2>
+        <p class="ax-community-sub">Echte Gesichter, echte Gespräche — die Menschen, die AXDN // 27 zur Konferenz machen, treffen sich schon heute bei den AI Nights.</p>
         <div class="ax-photo-grid">
           {communityPhotos.map((src) => (
-            <figure class="ax-photo">
+            <div class="ax-photo">
               <img src={imgVariant(src, 400)} alt="Impression von einer AI Nights" loading="lazy" />
-            </figure>
+            </div>
           ))}
         </div>
       </section>
 
+      {/* Kuratoren & Speaker */}
       <section class="ax-sec" data-reveal>
-        <div class="ax-section-head">
-          <p>Kuratiert vom Fach</p>
-          <h2 class="display-font">Menschen mit Haltung</h2>
-        </div>
+        <p class="ax-eyebrow2">Kuratiert von Menschen vom Fach</p>
+        <h2 class="display-font ax-h2">Kuratorinnen & Kuratoren</h2>
         <div class="ax-curator-grid">
           {curators.map((c) => (
-            <article class="ax-curator-card">
+            <div class="ax-curator-card">
               {c.image
                 ? <img src={imgVariant(c.image, 320)} alt={c.name} loading="lazy" />
-                : <span class="ax-curator-fallback">FM</span>}
+                : <span class="ax-curator-fallback">✨</span>}
               <h3>{c.name}</h3>
               <p>{c.role}</p>
-            </article>
+            </div>
           ))}
         </div>
         <p class="ax-speaker-teaser">
           Erste bestätigte Speaker:innen: <strong>{speakerNames.join(', ')}</strong> und weitere.
         </p>
+        <div class="center">
+          <a href={ticketUrl} target="_blank" rel="noopener" class="btn btn-ghost">Ganzes Line-up auf axdn.io ↗</a>
+        </div>
       </section>
 
-      <section class="ax-final-cta" data-reveal>
-        <span class="ax-final-label">22 APR 2027 · NÜRNBERG</span>
-        <h2 class="display-font">Sei dabei, wenn KI nicht nur erklärt, sondern gebaut wird.</h2>
-        <a href={ticketUrl} target="_blank" rel="noopener" class="ax-btn ax-btn-light">Tickets auf axdn.io <span>↗</span></a>
+      {/* Abschluss-CTA */}
+      <section class="ax-cta" data-reveal>
+        <h2 class="display-font">Sei dabei, wenn KI nicht nur erklärt, sondern <span class="ax-accent-text">gebaut</span> wird.</h2>
+        <p class="ax-cta-sub">22. April 2027 · KORN'S Nürnberg · Main Stage, vier Tracks, eine Community.</p>
+        <a href={ticketUrl} target="_blank" rel="noopener" class="btn btn-primary">Tickets auf axdn.io ↗</a>
       </section>
     </div>
   </main>
@@ -331,767 +318,630 @@ const onPoints = [
 </script>
 
 <style>
+  /* AXDN // 27: eigene Markenfarben (Pink/Violett/Gold aus dem AXDN-Logo),
+     lokal auf diese Seite begrenzt — unabhängig von der AI-Nights-Palette. */
   .ax {
-    --ax-bg: #0d0c12;
-    --ax-panel: #171119;
-    --ax-ink: #fff7fb;
-    --ax-muted: rgba(255, 247, 251, 0.72);
-    --ax-soft: rgba(255, 247, 251, 0.1);
     --ax-pink: #ef0460;
     --ax-violet: #3b1e99;
     --ax-gold: #f2b544;
-    --ax-line: rgba(255, 247, 251, 0.18);
-    background: var(--ax-bg);
-    color: var(--ax-ink);
-    overflow: hidden;
+    --ax-gradient: linear-gradient(120deg, #ef0460 0%, #3b1e99 100%);
+    --ax-surface: linear-gradient(135deg, rgba(239, 4, 96, 0.18), rgba(59, 30, 153, 0.2)), rgba(255, 255, 255, 0.05);
+    --ax-surface-border: rgba(239, 4, 96, 0.32);
   }
-
-  .ax-container {
-    width: min(1180px, calc(100% - 3rem));
-    margin-inline: auto;
+  .ax-accent {
+    background: var(--ax-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ax-accent-text {
+    background: var(--ax-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: italic;
   }
 
   .ax-hero {
     position: relative;
     overflow: hidden;
-    min-height: min(880px, calc(100vh - 1rem));
-    padding: clamp(5rem, 9vw, 8rem) 0 4rem;
-    display: grid;
-    align-items: center;
-    isolation: isolate;
-    background:
-      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
-      var(--ax-bg);
-    background-size: 72px 72px;
+    padding-block: clamp(4rem, 10vw, 7rem) clamp(3.5rem, 8vw, 6rem);
   }
-
-  .ax-plane {
+  .ax-hero-bg {
     position: absolute;
-    z-index: -1;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 900;
-    line-height: 0.82;
-    letter-spacing: 0;
-    color: rgba(255, 255, 255, 0.035);
-    pointer-events: none;
-    user-select: none;
+    inset: -3%;
+    width: 106%;
+    height: 106%;
+    object-fit: cover;
+    opacity: 0.55;
+    filter: blur(3px) saturate(1.1);
   }
-
-  .ax-plane-a {
-    top: 8%;
-    right: -0.1em;
-    font-size: clamp(8rem, 28vw, 24rem);
-    color: rgba(239, 4, 96, 0.2);
+  .ax-hero-duotone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(239, 4, 96, 0.45), rgba(59, 30, 153, 0.4));
+    mix-blend-mode: color;
   }
-
-  .ax-plane-b {
-    left: -0.16em;
-    bottom: 4%;
-    font-size: clamp(7rem, 24vw, 20rem);
-    color: rgba(59, 30, 153, 0.32);
+  .ax-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(12, 4, 24, 0.35), var(--bg-base) 94%);
   }
-
-  .ax-plane-c {
-    right: 8%;
-    bottom: 8%;
-    font-size: clamp(4rem, 12vw, 10rem);
-    color: rgba(242, 181, 68, 0.18);
+  .ax-hero-inner {
+    position: relative;
+    text-align: center;
   }
-
-  .ax-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
-    gap: clamp(2rem, 6vw, 5rem);
-    align-items: end;
-  }
-
-  .ax-kicker,
-  .ax-section-head p,
-  .ax-final-label,
-  .ax-panel-label {
-    display: inline-flex;
-    align-items: center;
-    gap: .55rem;
-    margin: 0 0 1.5rem;
-    color: var(--ax-muted);
-    font-size: .76rem;
-    font-weight: 900;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-  }
-
-  .ax-kicker span {
-    width: 8px;
-    height: 8px;
-    background: var(--ax-pink);
-    border-radius: 2px;
-  }
-
-  .ax-hero h1 {
-    margin: 0;
-    color: var(--ax-ink);
-    font-size: clamp(5.4rem, 16vw, 14rem);
-    line-height: .78;
-    letter-spacing: 0;
-    text-transform: uppercase;
-  }
-
-  .ax-claim {
+  .ax-kicker {
     display: inline-block;
-    margin: 1rem 0 1.4rem;
-    padding: .42rem .75rem;
-    background: var(--ax-pink);
-    color: #fff;
-    font-size: clamp(1.1rem, 2.6vw, 2rem);
-    font-weight: 900;
-    line-height: 1;
-    text-transform: uppercase;
-    box-shadow: 8px 8px 0 var(--ax-violet);
+    background: var(--ax-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.9rem;
   }
-
+  .ax-hero-inner h1 {
+    max-width: 22ch;
+    margin-inline: auto;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.3rem;
+  }
   .ax-hero-sub {
-    max-width: 690px;
-    margin: 0 0 2rem;
-    color: var(--ax-muted);
-    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-    line-height: 1.62;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+    margin: 0 auto 1.8rem;
   }
-
-  .ax-actions {
+  .ax-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.8rem;
   }
-
-  .ax-btn {
+  .ax-chip {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: .55rem;
-    min-height: 50px;
-    padding: .95rem 1.45rem;
-    border-radius: 8px;
-    font-weight: 850;
-    line-height: 1.1;
-    text-align: center;
-    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    gap: 0.5rem;
+    background: rgba(239, 4, 96, 0.1);
+    border: 1px solid rgba(239, 4, 96, 0.28);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
   }
-
-  .ax-btn-primary {
-    background: var(--ax-pink);
-    color: #fff !important;
-    box-shadow: 7px 7px 0 var(--ax-violet);
-  }
-
-  .ax-btn-primary:hover,
-  .ax-btn-light:hover {
-    transform: translate(3px, 3px);
-    box-shadow: 4px 4px 0 var(--ax-violet);
-  }
-
-  .ax-btn-secondary {
-    color: var(--ax-ink) !important;
-    background: var(--ax-panel);
-    border: 1px solid var(--ax-line);
-    box-shadow: 7px 7px 0 rgba(255, 247, 251, .12);
-  }
-
-  .ax-btn-secondary:hover {
-    transform: translate(3px, 3px);
-    box-shadow: 4px 4px 0 rgba(255, 247, 251, .16);
-  }
-
-  .ax-btn-light {
-    color: #171119 !important;
-    background: #fff;
-    box-shadow: 7px 7px 0 #171119;
-  }
-
-  .ax-micro {
-    margin: 1.2rem 0 0;
-    color: rgba(255, 247, 251, .56);
-    font-size: .9rem;
-  }
-
-  .ax-hero-panel {
-    padding: 1.25rem;
-    background: var(--ax-gold);
-    color: #171119;
-    border-radius: 4px;
-    box-shadow: 12px 12px 0 var(--ax-pink);
-    transform: rotate(1.4deg);
-  }
-
-  .ax-panel-label {
-    color: #171119;
-    margin-bottom: 1rem;
-  }
-
-  .ax-countdown {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: .55rem;
-  }
-
-  .ax-countdown div {
-    padding: .8rem .55rem;
-    background: #171119;
-    color: #fff;
-    text-align: center;
-    border-radius: 4px;
-  }
-
-  .ax-countdown strong {
-    display: block;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(1.35rem, 2.6vw, 2.2rem);
-    line-height: 1;
-  }
-
-  .ax-countdown span {
-    display: block;
-    margin-top: .2rem;
-    color: rgba(255,255,255,.68);
-    font-size: .62rem;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-
-  .ax-info-stack {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: .55rem;
-    margin-top: .75rem;
-  }
-
-  .ax-info-stack span {
-    padding: .65rem;
-    background: rgba(23, 17, 25, .12);
-    border: 1px solid rgba(23, 17, 25, .26);
-    border-radius: 4px;
-    color: #171119;
-    font-size: .78rem;
-    font-weight: 850;
-  }
-
-  .ax-marquee {
-    overflow: hidden;
-    border-block: 1px solid var(--ax-line);
-    background: var(--ax-pink);
-  }
-
-  .ax-marquee div {
+  .ax-hero-actions {
     display: flex;
-    width: max-content;
-    animation: ax-marquee 28s linear infinite;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+    margin-bottom: 2rem;
   }
-
-  .ax-marquee span {
-    padding: .85rem 2rem;
-    color: #fff;
+  .ax .btn-primary {
+    background: var(--ax-gradient);
+    position: relative;
+    overflow: hidden;
+  }
+  .ax .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    animation: ax-shine-sweep 3.2s ease-in-out infinite;
+  }
+  @keyframes ax-shine-sweep {
+    0% { left: -60%; }
+    45%, 100% { left: 130%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ax .btn-primary::after { animation: none; display: none; }
+  }
+  .ax-countdown {
+    display: inline-flex;
+    gap: 1rem;
+    background: var(--ax-surface);
+    border: 1px solid var(--ax-surface-border);
+    border-radius: 20px;
+    padding: 1rem 1.6rem;
+  }
+  .ax-cd-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 44px;
+  }
+  .ax-cd-box strong {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(1.2rem, 3vw, 2.2rem);
-    font-weight: 900;
-    line-height: 1;
+    font-size: 1.3rem;
+    background: var(--ax-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ax-cd-box span {
+    font-size: 0.62rem;
+    color: var(--text-muted);
     text-transform: uppercase;
-    white-space: nowrap;
+    letter-spacing: 0.05em;
   }
 
-  @keyframes ax-marquee {
-    to { transform: translateX(-50%); }
+  .ax-body {
+    max-width: 980px;
+    padding-block: 2rem 3rem;
   }
-
   .ax-sec {
-    margin-block: clamp(5rem, 9vw, 8rem);
+    margin-bottom: 5rem;
   }
-
-  .ax-section-head {
-    max-width: 780px;
-    margin: 0 auto 2rem;
+  .ax-eyebrow2 {
     text-align: center;
-  }
-
-  .ax-section-head-left {
-    margin-inline: 0;
-    text-align: left;
-  }
-
-  .ax-section-head h2,
-  .ax-compare h2,
-  .ax-final-cta h2 {
-    margin: 0;
-    color: var(--ax-ink);
-    font-size: clamp(2.6rem, 7vw, 6.4rem);
-    line-height: .9;
-    letter-spacing: 0;
+    color: var(--ax-gold);
+    font-weight: 700;
+    font-size: 0.85rem;
     text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .ax-h2 {
+    font-size: clamp(1.8rem, 4.2vw, 2.5rem);
+    text-align: center;
+    margin: 0 0 1.8rem;
   }
 
-  .ax-compare h2 {
-    max-width: 990px;
-    margin-bottom: 2.5rem;
+  /* Vergleich */
+  .ax-compare {
+    padding-block: 1.5rem;
   }
-
-  .ax-compare h2 span {
-    color: var(--ax-pink);
+  .ax-compare-headline {
+    font-size: clamp(2rem, 4.8vw, 3.2rem);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    text-align: center;
+    max-width: 34ch;
+    margin: 0 auto 3.6rem;
   }
-
+  .ax-strike {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+  }
   .ax-compare-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.3rem;
+    gap: 1.5rem;
   }
-
-  .ax-list {
-    padding: clamp(1.25rem, 3vw, 2rem);
-    border-radius: 4px;
-    border: 1px solid var(--ax-line);
+  .ax-compare-col {
+    padding: 2rem;
+    border-radius: 24px;
+    border: 1px solid var(--border);
   }
-
-  .ax-list-muted {
-    background: var(--ax-panel);
-    color: var(--ax-muted);
+  .ax-compare-off {
+    background: var(--bg-elevated);
   }
-
-  .ax-list-hot {
-    background: var(--ax-violet);
-    box-shadow: 10px 10px 0 var(--ax-pink);
+  .ax-compare-on {
+    background: var(--ax-surface);
+    border-color: var(--ax-surface-border);
+    box-shadow: 0 20px 50px -20px rgba(239, 4, 96, 0.3);
   }
-
-  .ax-list p {
-    margin: 0 0 1rem;
-    font-size: .78rem;
-    font-weight: 900;
-    letter-spacing: .12em;
+  .ax-compare-label {
     text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0 0 1.2rem;
   }
-
-  .ax-list ul {
+  .ax-compare-off .ax-compare-label {
+    color: var(--text-muted);
+  }
+  .ax-compare-on .ax-compare-label {
+    color: var(--ax-gold);
+  }
+  .ax-compare-col ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: .9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
   }
-
-  .ax-list li {
-    display: grid;
-    grid-template-columns: 24px 1fr;
-    gap: .7rem;
-    color: inherit;
-    line-height: 1.48;
+  .ax-compare-col li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
-
-  .ax-list li span {
+  .ax-compare-off li {
+    color: var(--text-muted);
+  }
+  .ax-compare-on li {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .ax-x,
+  .ax-plus {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
     display: grid;
     place-items: center;
-    width: 24px;
-    height: 24px;
-    background: rgba(255,255,255,.12);
-    border-radius: 4px;
-    font-weight: 900;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+  .ax-x {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+  }
+  .ax-plus {
+    background: var(--ax-gradient);
+    color: #fff;
+  }
+  @media (max-width: 720px) {
+    .ax-compare-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
+  /* Tracks */
   .ax-track-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.2rem;
   }
-
   .ax-track-card {
-    position: relative;
-    min-height: 310px;
-    padding: 1.25rem;
-    border-radius: 4px;
-    background: var(--ax-panel);
-    border: 1px solid var(--ax-line);
-    overflow: hidden;
-    transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+    padding: 1.8rem;
+    border-radius: 22px;
+    background: var(--ax-surface);
+    border: 1px solid var(--ax-surface-border);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
   }
-
-  .ax-track-card:nth-child(odd) {
-    background: #21142d;
-  }
-
   .ax-track-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 10px 10px 0 var(--ax-gold);
+    transform: translateY(-5px);
+    border-color: rgba(239, 4, 96, 0.55);
+    box-shadow: 0 20px 44px -18px rgba(239, 4, 96, 0.4);
   }
-
-  .ax-card-num {
-    position: absolute;
-    right: .65rem;
-    top: .55rem;
-    color: rgba(255,255,255,.08);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 5.2rem;
-    font-weight: 900;
-    line-height: .8;
+  .ax-track-icon {
+    display: block;
+    font-size: 1.9rem;
+    margin-bottom: 0.8rem;
+    transition: transform 0.25s ease;
   }
-
-  .ax-track-card strong {
-    display: inline-block;
-    margin-bottom: 3.8rem;
-    padding: .3rem .5rem;
-    background: var(--ax-pink);
-    color: #fff;
-    border-radius: 4px;
-    font-size: .78rem;
-    letter-spacing: .08em;
+  .ax-track-card:hover .ax-track-icon {
+    transform: scale(1.18) rotate(-4deg);
   }
-
-  .ax-track-card h3,
-  .ax-space-card h3,
-  .ax-curator-card h3 {
-    margin: 0 0 .7rem;
-    color: var(--ax-ink);
-    font-size: clamp(1.3rem, 2.1vw, 1.75rem);
-    line-height: 1;
+  .ax-track-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
   }
-
-  .ax-track-card p,
-  .ax-space-card p,
-  .ax-curator-card p,
-  .ax-loc-copy p,
-  .ax-speaker-teaser {
+  .ax-track-card p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
     margin: 0;
-    color: var(--ax-muted);
-    line-height: 1.55;
   }
 
+  /* Spaces */
   .ax-space-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.4rem;
   }
-
   .ax-space-card {
-    padding: 1.35rem;
-    min-height: 230px;
-    background: var(--ax-gold);
-    color: #171119;
-    border-radius: 4px;
-    box-shadow: 8px 8px 0 rgba(255,255,255,.12);
+    padding: 2rem;
+    border-radius: 24px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--ax-gold);
+    text-align: center;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
   }
-
-  .ax-space-card:nth-child(2) {
-    background: var(--ax-pink);
-    color: #fff;
+  .ax-space-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 44px -18px rgba(242, 181, 68, 0.35);
   }
-
-  .ax-space-card:nth-child(3) {
-    background: var(--ax-violet);
-    color: #fff;
-  }
-
-  .ax-space-card span {
+  .ax-space-icon {
     display: block;
-    margin-bottom: 2.4rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 4rem;
-    font-weight: 900;
-    line-height: .85;
+    font-size: 2.2rem;
+    margin-bottom: 0.9rem;
+    transition: transform 0.25s ease;
   }
-
-  .ax-space-card h3,
+  .ax-space-card:hover .ax-space-icon {
+    transform: scale(1.18);
+  }
+  .ax-space-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-primary);
+  }
   .ax-space-card p {
-    color: inherit;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0;
   }
 
-  .ax-location {
-    padding: clamp(4rem, 8vw, 7rem) 0;
-    background: #111016;
+  /* Location — gleiches Muster wie club199 auf den AI Woman Nights */
+  .ax-wide {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding-inline: 1.5rem;
   }
-
-  .ax-loc-grid {
+  .ax-loc-split {
+    max-width: 1180px;
+    margin-inline: auto;
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
-    gap: 1.2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.8rem;
     align-items: stretch;
+    min-width: 0;
   }
-
+  .ax-loc-slider,
+  .ax-loc-info {
+    min-width: 0;
+  }
   .ax-loc-slider {
     position: relative;
+    border-radius: 24px;
     overflow: hidden;
-    min-height: 420px;
-    aspect-ratio: 16 / 10;
-    border-radius: 4px;
-    background: var(--ax-panel);
-    box-shadow: 12px 12px 0 var(--ax-violet);
+    border: 1px solid var(--ax-surface-border);
+    aspect-ratio: 4 / 3;
+    background: var(--bg-elevated);
   }
-
   .ax-loc-track {
     display: flex;
     height: 100%;
-    transition: transform .45s cubic-bezier(.16,.8,.3,1);
+    transition: transform 0.45s cubic-bezier(0.16, 0.8, 0.3, 1);
   }
-
   .ax-loc-slide {
     flex: 0 0 100%;
     height: 100%;
   }
-
   .ax-loc-slide img {
-    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
-
   .ax-loc-nav {
     position: absolute;
-    top: 1rem;
-    z-index: 2;
-    width: 44px;
-    height: 44px;
-    border: 0;
-    border-radius: 4px;
-    background: #fff;
-    color: #171119;
-    font-size: 1.15rem;
-    font-weight: 900;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(20, 8, 16, 0.55);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1;
     cursor: pointer;
-    box-shadow: 5px 5px 0 #171119;
+    display: grid;
+    place-items: center;
   }
-
-  .ax-loc-prev { right: 4.7rem; }
-  .ax-loc-next { right: 1rem; }
-
+  .ax-loc-prev {
+    left: 0.9rem;
+  }
+  .ax-loc-next {
+    right: 0.9rem;
+  }
   .ax-loc-dots {
     position: absolute;
-    left: 1rem;
-    bottom: 1rem;
+    bottom: 0.9rem;
+    left: 0;
+    right: 0;
     display: flex;
-    gap: .45rem;
+    justify-content: center;
+    gap: 0.5rem;
   }
-
   .ax-loc-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
     padding: 0;
-    border: 0;
-    border-radius: 2px;
-    background: rgba(255,255,255,.42);
+    background: rgba(255, 255, 255, 0.35);
     cursor: pointer;
   }
-
   .ax-loc-dot.is-active {
     background: var(--ax-gold);
     transform: scale(1.2);
   }
-
-  .ax-loc-copy {
+  .ax-loc-info {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    gap: 1.4rem;
-    padding: 1.4rem;
-    border-radius: 4px;
-    background: var(--ax-panel);
-    border: 1px solid var(--ax-line);
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 24px;
+    background: var(--ax-surface);
+    border: 1px solid var(--ax-surface-border);
   }
-
-  .ax-big-word {
-    color: var(--ax-pink) !important;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(5rem, 13vw, 10rem);
-    font-weight: 900;
-    line-height: .78 !important;
+  .ax-loc-text {
+    color: var(--text-secondary);
+    margin: 0 0 0.8rem;
   }
-
-  .ax-loc-copy .ax-btn {
+  .ax-loc-perks {
+    list-style: none;
+    margin: 0.4rem 0 1.4rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .ax-loc-perks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+  .ax-loc-perk-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+  }
+  .ax-loc-info .btn {
     align-self: flex-start;
+    white-space: normal;
+    text-align: center;
+  }
+  @media (max-width: 760px) {
+    .ax-loc-split {
+      grid-template-columns: 1fr;
+    }
   }
 
+  /* Community-Fotos */
+  .ax-community-sub {
+    text-align: center;
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin: 0 auto 1.8rem;
+  }
   .ax-photo-grid {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: .65rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.8rem;
   }
-
   .ax-photo {
-    margin: 0;
-    aspect-ratio: 1;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
     overflow: hidden;
-    border-radius: 4px;
-    background: var(--ax-panel);
+    border: 1px solid var(--border);
   }
-
-  .ax-photo:nth-child(2n) {
-    transform: translateY(1.5rem);
-  }
-
   .ax-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(1.1) contrast(1.03);
-    transition: transform .28s ease;
+    transition: transform 0.3s ease;
   }
-
   .ax-photo:hover img {
     transform: scale(1.06);
   }
 
+  /* Kuratoren */
   .ax-curator-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.6rem;
   }
-
   .ax-curator-card {
-    padding: 1.2rem;
-    border-radius: 4px;
-    background: var(--ax-panel);
-    border: 1px solid var(--ax-line);
+    padding: 1.8rem;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: var(--glass-surface);
+    text-align: center;
+    transition: transform 0.22s ease, border-color 0.22s ease;
   }
-
+  .ax-curator-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(239, 4, 96, 0.4);
+  }
   .ax-curator-card img,
   .ax-curator-fallback {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
     display: grid;
     place-items: center;
-    width: 100%;
-    aspect-ratio: 1 / .78;
-    margin-bottom: 1rem;
-    border-radius: 4px;
-    background: var(--ax-pink);
-    color: #fff;
-    object-fit: cover;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 4rem;
-    font-weight: 900;
+    background: var(--ax-gradient);
+    font-size: 2rem;
   }
-
+  .ax-curator-card h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.3rem;
+    color: var(--text-primary);
+  }
+  .ax-curator-card p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin: 0;
+  }
   .ax-speaker-teaser {
-    max-width: 760px;
-    margin: 1.4rem auto 0;
     text-align: center;
-    font-size: 1.02rem;
+    color: var(--text-secondary);
+    max-width: 60ch;
+    margin: 0 auto 1.6rem;
   }
-
   .ax-speaker-teaser strong {
-    color: var(--ax-ink);
+    color: var(--text-primary);
+  }
+  .center {
+    display: flex;
+    justify-content: center;
   }
 
-  .ax-final-cta {
+  /* Abschluss */
+  .ax-cta {
     position: relative;
-    margin-block: clamp(5rem, 9vw, 8rem);
-    padding: clamp(2.2rem, 7vw, 5rem);
-    border-radius: 4px;
-    background: var(--ax-pink);
-    color: #fff;
     overflow: hidden;
-    isolation: isolate;
+    text-align: center;
+    padding: 3.4rem 2rem;
+    border-radius: 28px;
+    background: var(--ax-surface);
+    border: 1px solid var(--ax-surface-border);
   }
-
-  .ax-final-cta::after {
-    content: 'GO';
+  .ax-cta::before {
+    content: '';
     position: absolute;
-    right: -.08em;
-    bottom: -.18em;
-    z-index: -1;
-    color: rgba(23, 17, 25, .2);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(8rem, 26vw, 22rem);
-    font-weight: 900;
-    line-height: .8;
+    inset: -50%;
+    background: radial-gradient(circle at 50% 50%, rgba(239, 4, 96, 0.25), transparent 60%);
+    animation: ax-pulse-glow 4s ease-in-out infinite;
+    pointer-events: none;
   }
-
-  .ax-final-label {
-    color: rgba(255,255,255,.78);
+  @keyframes ax-pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.12); }
   }
-
-  .ax-final-cta h2 {
-    max-width: 860px;
-    margin-bottom: 2rem;
-    color: #fff;
+  @media (prefers-reduced-motion: reduce) {
+    .ax-cta::before { animation: none; }
+  }
+  .ax-cta > * {
+    position: relative;
+  }
+  .ax-cta h2 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    max-width: 24ch;
+    margin: 0 auto 1rem;
+  }
+  .ax-cta-sub {
+    color: var(--text-secondary);
+    margin: 0 0 1.6rem;
   }
 
   [data-reveal] {
     opacity: 0;
-    transform: translateY(22px);
-    transition: opacity .55s ease, transform .55s cubic-bezier(.16,.8,.3,1);
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 0.8, 0.3, 1);
   }
-
   [data-reveal].is-visible {
     opacity: 1;
     transform: none;
   }
-
   @media (prefers-reduced-motion: reduce) {
-    .ax-marquee div,
     [data-reveal] {
-      animation: none;
       opacity: 1;
       transform: none;
       transition: none;
-    }
-  }
-
-  @media (max-width: 960px) {
-    .ax-hero-grid,
-    .ax-loc-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .ax-hero-panel {
-      max-width: 460px;
-      transform: none;
-    }
-
-    .ax-track-grid,
-    .ax-space-grid,
-    .ax-curator-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .ax-photo-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  @media (max-width: 680px) {
-    .ax-container {
-      width: min(100% - 2rem, 1180px);
-    }
-
-    .ax-hero {
-      min-height: auto;
-      padding-top: 4.5rem;
-    }
-
-    .ax-hero h1 {
-      font-size: clamp(4.5rem, 26vw, 7rem);
-    }
-
-    .ax-actions,
-    .ax-btn {
-      width: 100%;
-    }
-
-    .ax-countdown,
-    .ax-info-stack,
-    .ax-compare-grid,
-    .ax-track-grid,
-    .ax-space-grid,
-    .ax-curator-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .ax-loc-slider {
-      min-height: 310px;
-      aspect-ratio: 4 / 3;
-    }
-
-    .ax-photo-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .ax-photo:nth-child(2n) {
-      transform: none;
     }
   }
 </style>
