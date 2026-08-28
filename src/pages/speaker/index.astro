@@ -5,10 +5,26 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import SpeakerCard from '../../components/SpeakerCard.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { imgVariant } from '../../lib/images';
+import { existsSync } from 'node:fs';
 
 const speakers = (await getCollection('speaker'))
   .filter((s) => !isPlaceholderSpeaker(s))
   .sort((a, b) => a.data.title.localeCompare(b.data.title, 'de'));
+
+// Announcement-Grafiken (erzeugt von scripts/generate-speaker-announcements.mjs).
+// Auf der Detailseite hängen sie als Download — hier werden sie auch gezeigt.
+const shareCards = speakers
+  .map((s) => ({
+    d: s.data,
+    square: `/media/speaker-announcements/${s.data.slug}-instagram.png`,
+    wide: `/media/speaker-announcements/${s.data.slug}-linkedin.png`,
+  }))
+  .filter((c) => existsSync(`public${c.square}`));
+
+const cardAlt = (d: { title: string; jobTitle?: string }) =>
+  `Announcement-Grafik für ${d.title}: rundes Portrait im AI-Nights-Design mit Logo, Name` +
+  (d.jobTitle ? ` und Rolle „${d.jobTitle}“` : '');
 ---
 
 <Layout
@@ -54,6 +70,35 @@ const speakers = (await getCollection('speaker'))
       ))}
     </div>
     <p class="empty" id="speaker-empty" hidden>Keine Speaker gefunden. Versuch's mit anderen Filtern.</p>
+
+    {shareCards.length > 0 && (
+      <section class="sharepics">
+        <div class="sp-head">
+          <p class="eyebrow">Zum Teilen &amp; Herunterladen</p>
+          <h2 class="display-font">Speaker-Grafiken</h2>
+          <p class="sub center">
+            Jede Speaker-Ankündigung im AI-Nights-Look — fertig für LinkedIn, Instagram &amp; Co.
+            Klick aufs Bild lädt die quadratische Version, „quer“ das LinkedIn-Format.
+          </p>
+        </div>
+        <div class="sp-grid">
+          {shareCards.map((c) => (
+            <figure class="sp-item card">
+              <a href={c.square} download={`ai-nights-${c.d.slug}.png`} aria-label={`Grafik von ${c.d.title} herunterladen`}>
+                <img src={imgVariant(c.square, 640)} alt={cardAlt(c.d)} loading="lazy" width="1080" height="1080" />
+              </a>
+              <figcaption>
+                <a class="sp-name" href={`/speaker/${c.d.slug}/`}>{c.d.title}</a>
+                <span class="sp-dl">
+                  <a href={c.square} download={`ai-nights-${c.d.slug}.png`}>quadratisch ↓</a>
+                  <a href={c.wide} download={`ai-nights-${c.d.slug}-linkedin.png`}>quer ↓</a>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="become">
       <div class="become-head">
@@ -137,6 +182,62 @@ const speakers = (await getCollection('speaker'))
 </script>
 
 <style>
+  .sharepics {
+    margin-top: 4rem;
+  }
+  .sp-head {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .sp-head h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0.3rem 0 0.7rem;
+  }
+  .sp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.2rem;
+  }
+  .sp-item {
+    overflow: hidden;
+    border-radius: 20px;
+    margin: 0;
+  }
+  .sp-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    transition: transform .4s ease;
+  }
+  .sp-item:hover img {
+    transform: scale(1.03);
+  }
+  .sp-item figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 0.95rem 0.9rem;
+  }
+  .sp-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .sp-name:hover {
+    color: var(--magenta-bright);
+  }
+  .sp-dl {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.78rem;
+  }
+  .sp-dl a {
+    color: var(--blue-bright);
+  }
+  .sp-dl a:hover {
+    color: var(--magenta-bright);
+  }
   .archive {
     padding-block: 3rem 4rem;
   }

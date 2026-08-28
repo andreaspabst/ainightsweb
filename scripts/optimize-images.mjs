@@ -27,6 +27,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const SCAN_DIRS = [
   path.join(ROOT, 'public', 'wp-content', 'uploads'),
   path.join(ROOT, 'public', 'img'),
+  path.join(ROOT, 'public', 'media'),
 ];
 const WIDTHS = [1600, 1024, 640, 320];
 const MIN_SOURCE_WIDTH = 1024;
