@@ -30,6 +30,13 @@ function mediaFor(personSlug: string) {
   };
 }
 
+function lineupFor(eventSlug: string) {
+  return {
+    instagram: exists(`/media/lineup/${eventSlug}-instagram.png`) ? `/media/lineup/${eventSlug}-instagram.png` : null,
+    linkedin: exists(`/media/lineup/${eventSlug}-linkedin.png`) ? `/media/lineup/${eventSlug}-linkedin.png` : null,
+  };
+}
+
 const today = '2026-09-01';
 const sorted = [...events].sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''));
 const upcoming = sorted.filter((e) => (e.data.eventDate ?? '') >= today);
@@ -45,7 +52,7 @@ const rows = orderedEvents.map((e) => {
   const eventSponsors = (e.data.sponsorIds ?? [])
     .map((id) => sponsorById.get(id))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
-  return { event: e.data, people, sponsors: eventSponsors, isUpcoming: (e.data.eventDate ?? '') >= today };
+  return { event: e.data, people, sponsors: eventSponsors, lineup: lineupFor(e.data.slug), isUpcoming: (e.data.eventDate ?? '') >= today };
 });
 ---
 
@@ -62,13 +69,20 @@ const rows = orderedEvents.map((e) => {
       <h1 class="display-font">Produktionsmedien</h1>
       <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
 
-      {rows.map(({ event, people, sponsors, isUpcoming }) => (
+      {rows.map(({ event, people, sponsors, lineup, isUpcoming }) => (
         <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
           <h2>
             {event.title}
             {event.eventDate && <span class="date">{event.eventDate}</span>}
             {!isUpcoming && <span class="badge">vergangen</span>}
           </h2>
+
+          {(lineup.instagram || lineup.linkedin) && (
+            <div class="links lineup-links">
+              {lineup.instagram && <a href={lineup.instagram} target="_blank">Line-up-Grafik (Instagram)</a>}
+              {lineup.linkedin && <a href={lineup.linkedin} target="_blank">Line-up-Grafik (LinkedIn)</a>}
+            </div>
+          )}
 
           {people.length > 0 && (
             <div class="grid">
@@ -203,6 +217,9 @@ const rows = orderedEvents.map((e) => {
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 0.6rem;
+  }
+  .lineup-links {
+    margin-bottom: 1.4rem;
   }
   .links a {
     font-size: 0.78rem;

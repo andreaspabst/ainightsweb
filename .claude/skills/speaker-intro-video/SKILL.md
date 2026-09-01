@@ -64,10 +64,35 @@ Alle Textgrößen schrumpfen automatisch, bis sie in die vorgesehene Breite/Höh
 passen (wie bei `scripts/generate-speaker-announcements.mjs`).
 
 Foto, Name, Rolle, Talk-Titel und Job-Titel blenden nacheinander gestaffelt
-ein (je ~0,45s versetzt, ~0,6s Fade-Dauer) statt von Frame 0 an fertig
-dazustehen — zusätzlich zum Alpha-Fade ein dezenter Slide-in aus ~28px von
-links nach rechts (`SLIDE_PX` im Skript), über eine `overlay=x=<Ausdruck>`-
-Zeitfunktion je Layer statt eines reinen Opacity-Fades auf der Stelle.
+ein statt von Frame 0 an fertig dazustehen — mit drei unterschiedlichen,
+moderneren Eintritts-Effekten statt eines einheitlichen Fades:
+
+- **Foto: Ken-Burns-Zoom** — durchgehender, langsamer Zoom übers ganze Video
+  (`buildKenBurnsPhoto`, PNG-Sequenz statt alpha-codiertem Video, um
+  Codec-Fallstricke zu vermeiden).
+- **Name: Kinetic Typography** — wortweise gerendert und nacheinander
+  eingeblendet statt der ganzen Zeile auf einmal. Da jedes Wort einzeln
+  leicht in `maxWidth` passt, wird zusätzlich die GESAMTBREITE aller Wörter
+  zusammen geprüft und bei Bedarf die Schrift für alle Wörter gemeinsam
+  verkleinert — sonst laufen lange Namen wie „Andreas Pabst („IT Pabst“)“
+  rechts aus dem Bild.
+- **Talk-Titel: Wipe-Reveal** — wächst von links nach rechts ein (`geq` mit
+  `alpha(X,Y)*if(lt(X,(T-ST)/DUR*W),1,0)` direkt auf dem RGBA-Textlayer;
+  **nicht** über `crop` mit wachsender Breite — dessen `w`/`h`-Parameter
+  akzeptieren in dieser ffmpeg-Version keine Zeitausdrücke mit `t` — und
+  **nicht** über eine separate Masken-Datei + `alphamerge`, das den
+  Alphakanal komplett ERSETZEN statt MULTIPLIZIEREN würde und dadurch die
+  eigentlich transparenten Bereiche zwischen den Buchstaben nach dem Reveal
+  zu undurchsichtigem Schwarz macht).
+- **Rolle/Job-Titel**: bisheriger Fade + dezenter Slide-in aus ~28px von
+  links nach rechts (`SLIDE_PX` im Skript, `overlay=x=<Ausdruck>`-
+  Zeitfunktion je Layer).
+
+Für Moderator:innen ohne eigenen Talk-Slot kann `moderatorLabel` im
+Speaker-JSON (z. B. `"Event Host & Moderator"`, `"Moderatorin"`) den
+generischen Rollentext überschreiben — hat die Person einen Talk-Slot
+(`findTalk` liefert einen Titel), wird das Feld ignoriert und der
+generische Text `"AI Nights Host & Moderator"` verwendet.
 
 **Bekannte Abweichungen vom Original** (bewusste Vereinfachung für Version 1,
 bei Bedarf verfeinern):
