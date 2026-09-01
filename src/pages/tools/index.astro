@@ -1,0 +1,233 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// Interne Übersicht über pro Event generierte Produktionsmedien (Speaker-
+// Fotos, Speaker-Intro-Videos, Announcement-Grafiken, Sponsor-Logos) — kein
+// Content für Besucher:innen, deshalb noindex und nirgends verlinkt.
+
+const PUBLIC_DIR = path.join(process.cwd(), 'public');
+const exists = (p: string) => fs.existsSync(path.join(PUBLIC_DIR, p));
+
+const [events, speakers, sponsors] = await Promise.all([
+  getCollection('events'),
+  getCollection('speaker'),
+  getCollection('sponsor'),
+]);
+
+const speakerById = new Map(speakers.map((s) => [s.data.id, s.data]));
+const sponsorById = new Map(sponsors.map((s) => [s.data.id, s.data]));
+
+function mediaFor(personSlug: string) {
+  return {
+    introVideo: exists(`/media/speaker-intros/${personSlug}.mp4`) ? `/media/speaker-intros/${personSlug}.mp4` : null,
+    instagram: exists(`/media/speaker-announcements/${personSlug}-instagram.png`) ? `/media/speaker-announcements/${personSlug}-instagram.png` : null,
+    linkedin: exists(`/media/speaker-announcements/${personSlug}-linkedin.png`) ? `/media/speaker-announcements/${personSlug}-linkedin.png` : null,
+  };
+}
+
+const today = '2026-09-01';
+const sorted = [...events].sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''));
+const upcoming = sorted.filter((e) => (e.data.eventDate ?? '') >= today);
+const past = sorted.filter((e) => (e.data.eventDate ?? '') < today).reverse();
+const orderedEvents = [...upcoming, ...past];
+
+const rows = orderedEvents.map((e) => {
+  const speakerIds = [...(e.data.speakerIds ?? []), ...(e.data.moderatorIds ?? [])];
+  const people = speakerIds
+    .map((id) => speakerById.get(id))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s))
+    .map((s) => ({ ...s, media: mediaFor(s.slug) }));
+  const eventSponsors = (e.data.sponsorIds ?? [])
+    .map((id) => sponsorById.get(id))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
+  return { event: e.data, people, sponsors: eventSponsors, isUpcoming: (e.data.eventDate ?? '') >= today };
+});
+---
+
+<Layout
+  lang="de"
+  title="Tools — Produktionsmedien pro Event"
+  description="Interne Übersicht: Speaker-Fotos, Intro-Videos, Announcement-Grafiken und Sponsor-Logos pro AI-Nights-Event."
+  path="/tools/"
+  noindex={true}
+>
+  <Header lang="de" />
+  <main class="tools">
+    <div class="container">
+      <h1 class="display-font">Produktionsmedien</h1>
+      <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
+
+      {rows.map(({ event, people, sponsors, isUpcoming }) => (
+        <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
+          <h2>
+            {event.title}
+            {event.eventDate && <span class="date">{event.eventDate}</span>}
+            {!isUpcoming && <span class="badge">vergangen</span>}
+          </h2>
+
+          {people.length > 0 && (
+            <div class="grid">
+              {people.map((p) => (
+                <article class="card">
+                  {p.image?.src && <img src={p.image.src} alt={p.title} loading="lazy" />}
+                  <h3>{p.title}</h3>
+                  <p class="role">{p.role === 'moderator' ? 'Moderator:in' : 'Speaker'}</p>
+                  <div class="links">
+                    {p.image?.src && <a href={p.image.src} target="_blank">Foto</a>}
+                    {p.media.introVideo && <a href={p.media.introVideo} target="_blank">Intro-Video</a>}
+                    {p.media.instagram && <a href={p.media.instagram} target="_blank">Instagram-Grafik</a>}
+                    {p.media.linkedin && <a href={p.media.linkedin} target="_blank">LinkedIn-Grafik</a>}
+                    {!p.media.introVideo && !p.media.instagram && !p.media.linkedin && (
+                      <span class="missing">noch nichts generiert</span>
+                    )}
+                  </div>
+                  {p.media.introVideo && (
+                    <video src={p.media.introVideo} controls muted preload="metadata"></video>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+
+          {sponsors.length > 0 && (
+            <>
+              <h3 class="subheading">Sponsoren</h3>
+              <div class="grid">
+                {sponsors.map((s) => (
+                  <article class="card card-sponsor">
+                    {s.logo?.src && <img src={s.logo.src} alt={s.title} loading="lazy" />}
+                    <h3>{s.title}</h3>
+                    <div class="links">
+                      {s.logo?.src && <a href={s.logo.src} target="_blank">Logo</a>}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
+
+          {people.length === 0 && sponsors.length === 0 && <p class="empty">Noch kein Line-up hinterlegt.</p>}
+        </section>
+      ))}
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .tools {
+    padding: 7rem 0 4rem;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--text-primary);
+  }
+  .lead {
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+  }
+  .event-block {
+    margin-bottom: 3.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .event-block h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin-bottom: 1.2rem;
+  }
+  .date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .badge {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    color: var(--text-secondary);
+  }
+  .subheading {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 1.5rem 0 1rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+  }
+  .card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem;
+  }
+  .card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 0.7rem;
+  }
+  .card-sponsor img {
+    aspect-ratio: 16/9;
+    object-fit: contain;
+    background: rgba(255,255,255,.05);
+  }
+  .card h3 {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem;
+  }
+  .role {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.6rem;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  .links a {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.06);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .links a:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .missing {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    opacity: 0.6;
+    font-style: italic;
+  }
+  .card video {
+    width: 100%;
+    border-radius: 10px;
+  }
+  .empty {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+</style>
