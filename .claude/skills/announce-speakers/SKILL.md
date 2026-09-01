@@ -66,3 +66,19 @@ Aufbau des Textes (an bestehenden Posts orientieren, z. B.
 
 Ton: konkret und nahbar wie die Event-Texte, keine erfundenen Fakten,
 keine Superlative, die nicht aus den Daten kommen.
+
+## Wenn das Line-up komplett ist (Slot 3 angekündigt)
+
+Zusätzlich eine kombinierte Line-up-Grafik generieren, die alle Speaker-Slots
+des Abends auf einem Bild zeigt (für Instagram/LinkedIn):
+
+```bash
+node scripts/generate-lineup-graphics.mjs <event-slug>
+```
+
+Erzeugt `public/media/lineup/<event-slug>-instagram.png` (1080×1080) und
+`-linkedin.png` (1200×627), gleicher Look wie die Einzel-Speaker-Grafiken.
+Taucht automatisch auf `/tools/` beim jeweiligen Event auf. Platzhalter-
+Speaker (`ai-nights-speaker-…`) werden übersprungen — bei längeren
+Namen/Jobtiteln schrumpft die Schrift automatisch, damit sich nichts
+überlappt.
