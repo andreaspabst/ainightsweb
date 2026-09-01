@@ -79,7 +79,8 @@ const rows = orderedEvents.map((e) => {
                   <p class="role">{p.role === 'moderator' ? 'Moderator:in' : 'Speaker'}</p>
                   <div class="links">
                     {p.image?.src && <a href={p.image.src} target="_blank">Foto</a>}
-                    {p.media.introVideo && <a href={p.media.introVideo} target="_blank">Intro-Video</a>}
+                    {p.media.introVideo && <a href={p.media.introVideo} target="_blank">Video ansehen</a>}
+                    {p.media.introVideo && <a href={p.media.introVideo} download={`${p.slug}-intro.mp4`}>Video laden (1080p)</a>}
                     {p.media.instagram && <a href={p.media.instagram} target="_blank">Instagram-Grafik</a>}
                     {p.media.linkedin && <a href={p.media.linkedin} target="_blank">LinkedIn-Grafik</a>}
                     {!p.media.introVideo && !p.media.instagram && !p.media.linkedin && (
