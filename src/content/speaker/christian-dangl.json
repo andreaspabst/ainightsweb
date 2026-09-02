@@ -13,6 +13,21 @@
     "linkedin": "https://www.linkedin.com/in/cdangl/",
     "website": "https://www.boxblinkracer.com"
   },
+  "topics": [
+    "KI-Agenten im Entwicklungsalltag orchestrieren",
+    "Instruktionen und Personas für Agenten",
+    "QA-Pipelines und Quality Gates",
+    "Paralleles Arbeiten und Delegieren",
+    "Documentation-driven Development",
+    "Software- und Systemarchitektur, Automatisierung, Testing"
+  ],
+  "keyTakeaways": [
+    "Was man aufbereiten muss, damit ein Team aus Agenten autark arbeiten kann",
+    "Wie gute Agenten-Instruktionen aussehen",
+    "Wie man mit verschiedenen Agenten-Personas arbeitet und Aufgaben delegiert",
+    "Wie man eine QA-Pipeline für das eigene Agenten-Team baut",
+    "Wie Orchestrierung in der Praxis läuft — und was realistisch zu erwarten ist"
+  ],
   "date": "2026-08-24 00:00:00",
   "modified": "2026-08-24 00:00:00",
   "role": "speaker",

@@ -1,0 +1,25 @@
+{
+  "id": 1503,
+  "title": "Agent-Driven Development: From Task to Tested Code",
+  "slug": "agent-driven-development-from-task-to-tested-code",
+  "excerpt": "KI-gestützte Entwicklung verspricht Tempo — Tempo allein reicht aber nicht. Christian Dangl baut live ein kleines Projekt mit einem Team aus KI-Agenten und zeigt, welche Instruktionen, Quality Gates und Feedback-Schleifen es braucht, damit am Ende stabiler Code steht.",
+  "contentHtml": "<p>KI-gestützte Entwicklung verspricht schnellere Lieferung, smartere Workflows und ein neues Level an Automatisierung. Aber Tempo allein reicht nicht: Wer mit KI-Agenten verlässliche Software bauen will, braucht mehr als gute Prompts — klare Instruktionen, harte Quality Gates und einen Entwicklungsprozess, der die Codequalität von der ersten Idee bis zum finalen Review schützt.</p>\n<p>Christian entwickelt im Talk Schritt für Schritt ein kleines Softwareprojekt, lässt die Lösung wachsen und verfeinert sie gemeinsam mit dem Publikum — mit Theorie und viel Live-Demo. Unterwegs geht es um typische Stolperfallen, brauchbare Best Practices und konkrete Muster für die Arbeit mit einem oder mehreren Agenten: paralleles Arbeiten, Delegieren, QA-Gates.</p>\n<p>Das Ziel ist nicht, KI blind zu vertrauen, sondern ein Setup zu bauen, in dem die KI schnell sein darf, während Architektur, Tests und Reviews die Kontrolle behalten.</p>\n<ul>\n <li>Wie man gute Instruktionen für Agenten schreibt</li>\n <li>Wie man mit verschiedenen Agenten-Personas arbeitet und Aufgaben delegiert</li>\n <li>Wie eine QA-Pipeline für das eigene Agenten-Team aussieht</li>\n <li>Was Orchestrierung in der realen Welt leistet — und was nicht</li>\n</ul>",
+  "image": {
+    "src": "/wp-content/uploads/2026/08/christian-dangl.jpg",
+    "alt": "Christian Dangl, Speaker bei den AI Nights Nürnberg"
+  },
+  "speakerSlugs": [
+    "christian-dangl"
+  ],
+  "speakerIds": [
+    1502
+  ],
+  "startTime": "20:00",
+  "time": "20:00",
+  "endTime": "20:45",
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-09-02 00:00:00"
+}
