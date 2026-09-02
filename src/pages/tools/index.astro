@@ -30,6 +30,13 @@ function mediaFor(personSlug: string) {
   };
 }
 
+function lineupFor(eventSlug: string) {
+  return {
+    instagram: exists(`/media/event-lineups/${eventSlug}-instagram.png`) ? `/media/event-lineups/${eventSlug}-instagram.png` : null,
+    linkedin: exists(`/media/event-lineups/${eventSlug}-linkedin.png`) ? `/media/event-lineups/${eventSlug}-linkedin.png` : null,
+  };
+}
+
 const today = '2026-09-01';
 const sorted = [...events].sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''));
 const upcoming = sorted.filter((e) => (e.data.eventDate ?? '') >= today);
@@ -45,7 +52,7 @@ const rows = orderedEvents.map((e) => {
   const eventSponsors = (e.data.sponsorIds ?? [])
     .map((id) => sponsorById.get(id))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
-  return { event: e.data, people, sponsors: eventSponsors, isUpcoming: (e.data.eventDate ?? '') >= today };
+  return { event: e.data, people, sponsors: eventSponsors, lineup: lineupFor(e.data.slug), isUpcoming: (e.data.eventDate ?? '') >= today };
 });
 ---
 
@@ -62,13 +69,30 @@ const rows = orderedEvents.map((e) => {
       <h1 class="display-font">Produktionsmedien</h1>
       <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
 
-      {rows.map(({ event, people, sponsors, isUpcoming }) => (
+      {rows.map(({ event, people, sponsors, lineup, isUpcoming }) => (
         <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
           <h2>
             {event.title}
             {event.eventDate && <span class="date">{event.eventDate}</span>}
             {!isUpcoming && <span class="badge">vergangen</span>}
           </h2>
+
+          {(lineup.instagram || lineup.linkedin) && (
+            <div class="lineup">
+              {lineup.instagram && (
+                <a href={lineup.instagram} target="_blank" class="lineup-preview">
+                  <img src={lineup.instagram} alt="" loading="lazy" />
+                  <span>Line-up · Instagram laden</span>
+                </a>
+              )}
+              {lineup.linkedin && (
+                <a href={lineup.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                  <img src={lineup.linkedin} alt="" loading="lazy" />
+                  <span>Line-up · LinkedIn laden</span>
+                </a>
+              )}
+            </div>
+          )}
 
           {people.length > 0 && (
             <div class="grid">
@@ -159,6 +183,41 @@ const rows = orderedEvents.map((e) => {
     border-radius: 999px;
     background: rgba(255,255,255,.08);
     color: var(--text-secondary);
+  }
+  .lineup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .lineup-preview {
+    display: block;
+    width: 220px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-glass);
+  }
+  .lineup-preview-wide {
+    width: 320px;
+  }
+  .lineup-preview img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  .lineup-preview-wide img {
+    aspect-ratio: 1200/627;
+  }
+  .lineup-preview span {
+    display: block;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+  .lineup-preview:hover span {
+    color: var(--text-primary);
   }
   .subheading {
     font-size: 1rem;
