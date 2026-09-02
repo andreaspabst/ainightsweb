@@ -37,12 +37,13 @@ const PUBLIC = path.join(ROOT, 'public');
 const TEMPLATE = path.join(ROOT, 'scripts/assets/speaker-intro/template-blank.mp4');
 // Fertige .mp4s sind Website-Assets (siehe /tools/) und landen wie die
 // Speaker-Announcement-Grafiken unter public/media/ — nur die Zwischen-
-// Layer-PNGs sind Wegwerf-Dateien und gehören ins OS-Tempverzeichnis.
+// Layer-Dateien sind Wegwerf-Dateien und gehören ins OS-Tempverzeichnis.
 const OUT_DIR = path.join(PUBLIC, 'media/speaker-intros');
 const SCRATCH_DIR = path.join(os.tmpdir(), 'ainights-speaker-intro');
 
 const W = 1920;
 const H = 1080;
+const FPS = 30;
 
 // Kreis-Ausschnitt für das Portrait: frei und vollständig im Bild platziert
 // (das neue Hintergrundvideo hat keine eingebrannte Platzhalterform mehr).
@@ -67,18 +68,6 @@ async function textImg(text, { font, size, color, maxWidth, maxHeight, align = '
     if (fits || px <= minSize) return { data, info };
     px -= 2;
   }
-}
-
-/** Rundes S/W-Portrait, exakt auf die Kreisgeometrie der Vorlage zugeschnitten. */
-async function circlePhoto(photoPath) {
-  const size = CIRCLE.r * 2;
-  const mask = Buffer.from(`<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#fff"/></svg>`);
-  return sharp(photoPath)
-    .resize(size, size, { fit: 'cover', position: 'attention' })
-    .grayscale()
-    .composite([{ input: mask, blend: 'dest-in' }])
-    .png()
-    .toBuffer();
 }
 
 async function loadJson(p) {
@@ -106,7 +95,8 @@ async function findTalk(speaker, eventSlug) {
 
 /** Platziert einen Layer auf vollflächiger transparenter 1920×1080-Leinwand,
  * damit jeder Layer im ffmpeg-Filtergraph einzeln und unabhängig überblendet
- * werden kann (overlay=0:0, keine Positionslogik mehr in ffmpeg nötig). */
+ * werden kann (overlay-Basisposition 0,0, keine weitere Positionslogik in
+ * ffmpeg nötig). */
 async function toFullCanvas(input, left, top) {
   return sharp({ create: { width: W, height: H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
     .composite([{ input, left: Math.round(left), top: Math.round(top) }])
@@ -114,31 +104,98 @@ async function toFullCanvas(input, left, top) {
     .toBuffer();
 }
 
+/**
+ * Ken-Burns-Zoom fürs Portrait: rendert eine PNG-Sequenz (nicht ein
+ * alpha-codiertes Video, um Codec-Fallstricke zu vermeiden) mit einem
+ * langsamen, durchgehenden Zoom übers gesamte Video, kreisrund maskiert.
+ * Wird als eigener Layer mit fester Position (baseX/baseY) statt auf einer
+ * vollflächigen Leinwand geführt, weil er kleiner als 1920×1080 ist.
+ */
+async function buildKenBurnsPhoto(photoPath, duration) {
+  const diameter = CIRCLE.r * 2;
+  const bigSize = Math.round(diameter * 1.18); // Zoom-Reserve, damit nie der Bildrand sichtbar wird
+  const bigPath = path.join(SCRATCH_DIR, 'kenburns-src.png');
+  await sharp(photoPath)
+    .resize(bigSize, bigSize, { fit: 'cover', position: 'attention' })
+    .grayscale()
+    .png()
+    .toFile(bigPath);
+
+  const maskPath = path.join(SCRATCH_DIR, 'kenburns-mask.png');
+  await sharp(Buffer.from(`<svg width="${diameter}" height="${diameter}"><circle cx="${diameter / 2}" cy="${diameter / 2}" r="${diameter / 2}" fill="#fff"/></svg>`))
+    .png()
+    .toFile(maskPath);
+
+  const frameCount = Math.round(duration * FPS);
+  const seqPattern = path.join(SCRATCH_DIR, 'kenburns-%04d.png');
+
+  await run('ffmpeg', [
+    '-y',
+    '-loop', '1', '-i', bigPath,
+    '-loop', '1', '-t', String(duration), '-framerate', String(FPS), '-i', maskPath,
+    '-filter_complex',
+    `[0:v]zoompan=z='min(zoom+0.0006\\,1.18)':d=${frameCount}:s=${diameter}x${diameter}:fps=${FPS}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',format=rgba[zoomed];[1:v]format=gray[m];[zoomed][m]alphamerge[out]`,
+    '-map', '[out]',
+    '-frames:v', String(frameCount),
+    seqPattern,
+  ]);
+
+  return {
+    kind: 'sequence',
+    seqPattern,
+    frameCount,
+    baseX: CIRCLE.cx - CIRCLE.r,
+    baseY: CIRCLE.cy - CIRCLE.r,
+    effect: 'fadeslide',
+    fadeStart: 0,
+    fadeDur: 0.6,
+  };
+}
+
 /** Baut die einzelnen Overlay-Layer, jeweils mit eigener Fade-in-Zeit (Sekunden),
- * für die gestaffelte Eintritts-Animation wie im Original (Foto → Name →
- * Rolle → Talk-Titel → Job-Titel, nacheinander eingeblendet). */
-async function buildLayers(speaker, talkTitle) {
+ * für die gestaffelte Eintritts-Animation. Testversion mit drei modernen
+ * Effekten statt eines einheitlichen Fades:
+ *  - Foto: Ken-Burns-Zoom (durchgehend, ganzes Video)
+ *  - Name: Kinetic Typography (Wort für Wort, statt der ganzen Zeile auf einmal)
+ *  - Talk-Titel: Wipe-Reveal (wächst von links nach rechts ein)
+ *  - Rolle/Job-Titel: bisheriger Fade+Slide (Referenz/Baseline zum Vergleich)
+ */
+async function buildLayers(speaker, talkTitle, duration) {
   const layers = [];
   let t = 0;
   const STEP = 0.45;
+  const WORD_STEP = 0.15;
   const FADE_DUR = 0.6;
 
   if (speaker.image?.src) {
-    const photo = await circlePhoto(path.join(PUBLIC, speaker.image.src));
-    layers.push({ canvas: await toFullCanvas(photo, CIRCLE.cx - CIRCLE.r, CIRCLE.cy - CIRCLE.r), fadeStart: t, fadeDur: FADE_DUR });
+    layers.push(await buildKenBurnsPhoto(path.join(PUBLIC, speaker.image.src), duration));
     t += STEP;
   }
 
   // Textblock beginnt rechts neben dem Kreis-Foto und ist vertikal mittig
   // zum Kreis (cy=540) ausgerichtet.
   const NAME_X = CIRCLE.cx + CIRCLE.r + 80;
-  const name = await textImg(speaker.title, { font: 'Inter Black', size: 110, color: COLOR_WHITE, maxWidth: W - NAME_X - 120, maxHeight: 110, minSize: 60 });
-  layers.push({ canvas: await toFullCanvas(name.data, NAME_X, 280), fadeStart: t, fadeDur: FADE_DUR });
-  t += STEP;
+  const NAME_Y = 280;
+  const NAME_SIZE = 110;
+  const WORD_GAP = 26;
 
-  const roleLabel = speaker.role === 'moderator' ? 'AI Nights Host & Moderator' : 'AI Nights Speaker';
+  // Kinetic Typography: Name wortweise gerendert und nebeneinander platziert
+  // (statt einer Zeile am Stück), jedes Wort blendet leicht versetzt ein.
+  const words = speaker.title.split(' ');
+  let cursorX = NAME_X;
+  for (const word of words) {
+    const img = await textImg(word, { font: 'Inter Black', size: NAME_SIZE, color: COLOR_WHITE, maxWidth: W - NAME_X - 120, maxHeight: NAME_SIZE + 20, minSize: 60 });
+    layers.push({ kind: 'still', canvas: await toFullCanvas(img.data, cursorX, NAME_Y), effect: 'fadeslide', fadeStart: t, fadeDur: FADE_DUR });
+    cursorX += img.info.width + WORD_GAP;
+    t += WORD_STEP;
+  }
+  t += STEP - WORD_STEP;
+
+  const roleLabel = speaker.role === 'moderator'
+    ? (!talkTitle && speaker.moderatorLabel ? speaker.moderatorLabel : 'AI Nights Host & Moderator')
+    : 'AI Nights Speaker';
   const subtitle = await textImg(roleLabel, { font: 'Inter Medium', size: 48, color: COLOR_MUTED, maxWidth: W - NAME_X - 120, maxHeight: 55, minSize: 28 });
-  layers.push({ canvas: await toFullCanvas(subtitle.data, NAME_X, 415), fadeStart: t, fadeDur: FADE_DUR });
+  layers.push({ kind: 'still', canvas: await toFullCanvas(subtitle.data, NAME_X, 415), effect: 'fadeslide', fadeStart: t, fadeDur: FADE_DUR });
   t += STEP;
 
   if (talkTitle) {
@@ -151,7 +208,8 @@ async function buildLayers(speaker, talkTitle) {
       minSize: 30,
       wrap: true,
     });
-    layers.push({ canvas: await toFullCanvas(title.data, NAME_X, 625), fadeStart: t, fadeDur: FADE_DUR });
+    // Wipe-Reveal statt Fade: wächst von links nach rechts ein.
+    layers.push({ kind: 'still', canvas: await toFullCanvas(title.data, NAME_X, 625), effect: 'wipe', fadeStart: t, fadeDur: 0.7 });
     t += STEP;
   }
 
@@ -165,7 +223,7 @@ async function buildLayers(speaker, talkTitle) {
       minSize: 26,
       wrap: true,
     });
-    layers.push({ canvas: await toFullCanvas(job.data, NAME_X, 800), fadeStart: t, fadeDur: FADE_DUR });
+    layers.push({ kind: 'still', canvas: await toFullCanvas(job.data, NAME_X, 800), effect: 'fadeslide', fadeStart: t, fadeDur: FADE_DUR });
     t += STEP;
   }
 
@@ -184,47 +242,68 @@ async function main() {
 
   console.log(`Rendere Intro für ${speaker.title}${talkTitle ? ` — Talk: "${talkTitle}"` : ' (kein Talk verknüpft)'}`);
 
-  const layers = await buildLayers(speaker, talkTitle);
   await fs.mkdir(OUT_DIR, { recursive: true });
   await fs.mkdir(SCRATCH_DIR, { recursive: true });
 
-  const layerPaths = [];
-  for (let i = 0; i < layers.length; i++) {
-    const p = path.join(SCRATCH_DIR, `${slug}-layer${i}.png`);
-    await fs.writeFile(p, layers[i].canvas);
-    layerPaths.push(p);
-  }
-
-  // Jeder Layer bekommt sein eigenes fade=in (Alpha) mit individuellem Start,
-  // danach werden alle nacheinander per overlay auf das Template gelegt —
-  // so entsteht die gestaffelte Eintritts-Animation (Foto → Name → Rolle →
-  // Talk-Titel → Job-Titel), statt dass alles ab Frame 0 fertig dasteht.
   const { stdout: durOut } = await run('ffprobe', [
     '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', TEMPLATE,
   ]);
   const duration = parseFloat(durOut.trim());
 
-  const inputArgs = ['-i', TEMPLATE];
-  // Ohne -loop/-t wäre jedes PNG nur 1 Frame lang — dann kann `fade` die
-  // Animation nicht über die Zeit ausrollen, sondern "sieht" nur den
-  // Zustand bei t=0 (meist fast unsichtbar) und friert dabei ein.
-  layerPaths.forEach((p) => inputArgs.push('-loop', '1', '-framerate', '30', '-t', String(duration), '-i', p));
+  const layers = await buildLayers(speaker, talkTitle, duration);
 
-  // Dezenter Slide-in von links (SLIDE_PX) zusätzlich zum Alpha-Fade, statt
-  // einem reinen Opacity-Fade auf der Stelle — je Layer über die x-Position
-  // des overlay-Filters animiert (nicht übertreiben, daher nur ~28px).
+  const cleanupPaths = [];
+  const inputArgs = ['-i', TEMPLATE];
+  for (const l of layers) {
+    if (l.kind === 'sequence') {
+      inputArgs.push('-framerate', String(FPS), '-i', l.seqPattern);
+    } else {
+      const p = path.join(SCRATCH_DIR, `still-${cleanupPaths.length}.png`);
+      await fs.writeFile(p, l.canvas);
+      cleanupPaths.push(p);
+      // Ohne -loop/-t wäre das PNG nur 1 Frame lang — dann kann `fade`/`geq`
+      // die Animation nicht über die Zeit ausrollen, sondern "sieht" nur den
+      // Zustand bei t=0 und friert dabei ein.
+      inputArgs.push('-loop', '1', '-framerate', String(FPS), '-t', String(duration), '-i', p);
+    }
+  }
+
+  // Dezenter Slide-in von links (SLIDE_PX) zusätzlich zum Alpha-Fade für die
+  // "fadeslide"-Layer; "wipe"-Layer wachsen stattdessen von links nach
+  // rechts ein — per `geq` direkt auf dem eigenen Alphakanal multipliziert
+  // (`alpha(X,Y)` ist in dieser ffmpeg-Version als geq-Funktion verfügbar,
+  // `a(X,Y)` dagegen nicht — und eine separate Masken-Ebene per `alphamerge`
+  // ERSETZT den Alphakanal komplett statt ihn zu multiplizieren, wodurch
+  // eigentlich transparente Bereiche nach dem Reveal auf undurchsichtiges
+  // Schwarz gesetzt würden und die Vorlage darunter verdecken).
   const SLIDE_PX = 28;
   const filterParts = [];
   layers.forEach((l, i) => {
-    filterParts.push(`[${i + 1}:v]format=rgba,fade=t=in:st=${l.fadeStart}:d=${l.fadeDur}:alpha=1[f${i}]`);
+    const idx = i + 1;
+    if (l.effect === 'wipe') {
+      const st = l.fadeStart;
+      const dur = l.fadeDur;
+      filterParts.push(
+        `[${idx}:v]format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='alpha(X,Y)*if(lt(X,(T-${st})/${dur}*${W}),1,0)'[f${i}]`
+      );
+    } else {
+      filterParts.push(`[${idx}:v]format=rgba,fade=t=in:st=${l.fadeStart}:d=${l.fadeDur}:alpha=1[f${i}]`);
+    }
   });
   let prev = '0:v';
   layers.forEach((l, i) => {
     const out = i === layers.length - 1 ? 'vout' : `ov${i}`;
-    const st = l.fadeStart;
-    const end = l.fadeStart + l.fadeDur;
-    const xExpr = `if(lt(t\\,${st})\\,-${SLIDE_PX}\\,if(lt(t\\,${end})\\,-${SLIDE_PX}+${SLIDE_PX}*(t-${st})/${l.fadeDur}\\,0))`;
-    filterParts.push(`[${prev}][f${i}]overlay=x='${xExpr}':y=0:format=auto[${out}]`);
+    const baseX = l.baseX ?? 0;
+    const baseY = l.baseY ?? 0;
+    let xExpr;
+    if (l.effect === 'wipe') {
+      xExpr = `${baseX}`;
+    } else {
+      const st = l.fadeStart;
+      const end = l.fadeStart + l.fadeDur;
+      xExpr = `${baseX}+if(lt(t\\,${st})\\,-${SLIDE_PX}\\,if(lt(t\\,${end})\\,-${SLIDE_PX}+${SLIDE_PX}*(t-${st})/${l.fadeDur}\\,0))`;
+    }
+    filterParts.push(`[${prev}][f${i}]overlay=x='${xExpr}':y='${baseY}':format=auto[${out}]`);
     prev = out;
   });
   const filterComplex = filterParts.join(';');
@@ -241,7 +320,19 @@ async function main() {
     '-pix_fmt', 'yuv420p',
     outPath,
   ]);
-  await Promise.all(layerPaths.map((p) => fs.rm(p, { force: true })));
+
+  await Promise.all(cleanupPaths.map((p) => fs.rm(p, { force: true })));
+  for (const l of layers) {
+    if (l.kind === 'sequence') {
+      const dir = path.dirname(l.seqPattern);
+      const base = path.basename(l.seqPattern).split('%')[0];
+      for (const f of await fs.readdir(dir)) {
+        if (f.startsWith(base)) await fs.rm(path.join(dir, f), { force: true });
+      }
+    }
+  }
+  await fs.rm(path.join(SCRATCH_DIR, 'kenburns-src.png'), { force: true });
+  await fs.rm(path.join(SCRATCH_DIR, 'kenburns-mask.png'), { force: true });
 
   console.log(`Fertig: ${outPath}`);
 }
