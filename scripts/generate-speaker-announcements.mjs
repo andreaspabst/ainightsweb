@@ -14,8 +14,9 @@
  *   node scripts/generate-speaker-announcements.mjs             # alle
  *   node scripts/generate-speaker-announcements.mjs tom-fischer # einzelne Slugs
  *
- * Voraussetzung: Inter und Space Grotesk müssen als Systemschriften
- * installiert sein — Pango rendert den Text (Auto-Shrink für lange Namen).
+ * Die Schriften liegen unter scripts/fonts/ im Repo und werden direkt geladen
+ * — es muss also nichts auf dem Rechner installiert sein. Pango rendert den
+ * Text und verkleinert ihn automatisch, bis lange Namen und Rollen passen.
  * Ergebnisse gehören mit ins Repo (statischer Build, kein Rendern am Server).
  */
 import { promises as fs } from 'node:fs';
@@ -26,6 +27,19 @@ const ROOT = process.cwd();
 const PUBLIC = path.join(ROOT, 'public');
 const OUT_DIR = path.join(PUBLIC, 'media/speaker-announcements');
 const LOGO = path.join(PUBLIC, 'wp-content/uploads/2026/07/AI-Nights-Logo-wAXDN.svg');
+const FONT_DIR = path.join(ROOT, 'scripts/fonts');
+/** Schnittfamilie → Datei. Wird an sharp übergeben, damit nichts installiert sein muss. */
+const FONT_FILES = {
+  'Inter': 'Inter-Regular.ttf',
+  'Inter SemiBold': 'Inter-SemiBold.ttf',
+  'Inter ExtraBold': 'Inter-ExtraBold.ttf',
+  'Inter Black': 'Inter-Black.ttf',
+};
+const fontFile = (family) => {
+  const file = FONT_FILES[family];
+  if (!file) throw new Error(`Keine Schriftdatei für „${family}" hinterlegt (scripts/fonts/)`);
+  return path.join(FONT_DIR, file);
+};
 const TODAY = new Date();
 
 const C = {
@@ -51,7 +65,15 @@ async function textImg(text, { family, size, color, maxWidth, maxHeight, letterS
     const spacing = letterSpacing ? ` letter_spacing="${Math.round(letterSpacing * 1024)}"` : '';
     const markup = `<span foreground="${color}"${spacing}>${esc(text)}</span>`;
     const { data, info } = await sharp({
-      text: { text: markup, font: `${family} ${px}`, rgba: true, dpi: 72, align, width: wrap ? maxWidth : maxWidth * 4 },
+      text: {
+        text: markup,
+        font: `${family} ${px}`,
+        fontfile: fontFile(family),
+        rgba: true,
+        dpi: 72,
+        align,
+        width: wrap ? maxWidth : maxWidth * 4,
+      },
     })
       .png()
       .toBuffer({ resolveWithObject: true });
@@ -85,16 +107,28 @@ async function circlePhoto(speaker, size) {
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
     .join('');
-  return sharp(
+  const disc = sharp(
     Buffer.from(`<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
       <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stop-color="${C.blue}"/><stop offset="100%" stop-color="${C.magenta}"/>
       </linearGradient></defs>
       <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="url(#a)" opacity=".85"/>
-      <text x="50%" y="50%" dy=".34em" text-anchor="middle" font-family="Inter" font-weight="900"
-        font-size="${Math.round(size * 0.34)}" fill="#ffffff">${esc(initials)}</text>
     </svg>`),
-  )
+  );
+  const label = await textImg(initials, {
+    family: 'Inter Black',
+    size: Math.round(size * 0.34),
+    color: '#ffffff',
+    maxWidth: Math.round(size * 0.8),
+  });
+  return disc
+    .composite([
+      {
+        input: label.data,
+        top: Math.round((size - label.info.height) / 2),
+        left: Math.round((size - label.info.width) / 2),
+      },
+    ])
     .png()
     .toBuffer();
 }
