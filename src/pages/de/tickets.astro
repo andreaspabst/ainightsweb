@@ -43,6 +43,11 @@ function fmtDate(dt?: string) {
 
 const cards = upcoming.map((e) => {
   const d = e.data;
+  // Wie im Hero der Event-Detailseite: nur speakerIds (Talk-Slots) zählen als
+  // "Speaker" — Moderator:innen ohne eigenen Talk laufen separat und tauchen
+  // hier bewusst nicht im Avatar-Kreis/der Zahl mit auf.
+  const speakerSlots = (d.speakerIds ?? []).map((id) => spMap.get(id)).filter(Boolean) as any[];
+  const realSpeakers = speakerSlots.filter((s) => !isPlaceholderSpeaker(s));
   return {
     slug: d.slug,
     title: d.title,
@@ -53,6 +58,8 @@ const cards = upcoming.map((e) => {
     dateLabel: fmtDate(d.eventDate),
     timeLabel: d.startTime ? `${d.startTime} Uhr` : null,
     speakers: joinNames(names(d.speakerIds, spMap)),
+    speakerAvatars: realSpeakers.slice(0, 5).map((s) => ({ src: s.data.image?.src, alt: s.data.title })),
+    speakerCount: speakerSlots.length,
     sponsors: names(d.sponsorIds, spoMap).join(', '),
     aftershow: d.aftershow,
   };
@@ -131,7 +138,18 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                     <li>
                       <span class="icon">🎤</span>
                       <span>
-                        <strong>Speaker</strong>
+                        {c.speakerAvatars.length > 0 ? (
+                          <span class="card-speakers-avatars">
+                            {c.speakerAvatars.map((s) => (
+                              s.src
+                                ? <img src={imgVariant(s.src, 96)} alt="" loading="lazy" />
+                                : <span class="card-speakers-fallback">✨</span>
+                            ))}
+                            <strong class="card-speakers-count">{c.speakerCount} Speaker</strong>
+                          </span>
+                        ) : (
+                          <strong>Speaker</strong>
+                        )}
                         <br />
                         {c.speakers}
                       </span>
@@ -326,6 +344,32 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
   }
   .meta strong {
     color: var(--text-primary);
+  }
+  .card-speakers-avatars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-speakers-avatars img,
+  .card-speakers-fallback {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-base);
+    margin-left: -10px;
+    display: grid;
+    place-items: center;
+    background: var(--gradient-accent);
+    font-size: 0.8rem;
+  }
+  .card-speakers-avatars img:first-child,
+  .card-speakers-fallback:first-child {
+    margin-left: 0;
+  }
+  .card-speakers-count {
+    color: var(--text-primary);
+    white-space: nowrap;
   }
   .secure {
     margin-top: auto;

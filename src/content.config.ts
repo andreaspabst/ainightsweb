@@ -51,6 +51,11 @@ const speaker = defineCollection({
     cities: z.array(z.string()).optional(),
     // Für die Speaker-Filter auf /speaker/
     role: z.enum(['speaker', 'moderator']).default('speaker'),
+    // Personen-spezifisches Label für Moderator:innen ohne eigenen Talk-Slot
+    // (z. B. "Event Host & Moderator", "Moderatorin") — überschreibt den
+    // generischen "AI Nights Host & Moderator"-Text im Speaker-Intro-Video.
+    // Hat die Person einen Talk-Slot, wird dieses Feld ignoriert.
+    moderatorLabel: z.string().optional(),
     topicArea: z.enum(['tech', 'non-tech']).optional(),
     seo,
     date: z.string().optional(),
