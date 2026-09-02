@@ -66,3 +66,17 @@ Aufbau des Textes (an bestehenden Posts orientieren, z. B.
 
 Ton: konkret und nahbar wie die Event-Texte, keine erfundenen Fakten,
 keine Superlative, die nicht aus den Daten kommen.
+
+## Danach fragen: Voucher & Einladungsnachricht
+
+Ein neuer Speaker braucht mehr als den Blogpost. Nach dem Anlegen des Posts
+**immer nachfragen**, ob zusätzlich erstellt werden soll:
+
+- der **Voucher-Code** für den Speaker (Schema `S-VOR-NAC-###-###`, 100 %,
+  max. 5 Einlösungen) und
+- die **Einladungsnachricht** für LinkedIn mit Code, Ankündigungsbild und
+  Vorfreude — fertig zum Kopieren.
+
+Beides erledigt der Skill `speaker-vouchers`; dort stehen Namensschema,
+Vorlagen und der Umgang mit fehlenden Joinify-Schreibrechten. Vorher kurz mit
+`list_vouchers` prüfen, ob es den Code schon gibt — dann reicht die Nachricht.
