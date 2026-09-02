@@ -22,7 +22,12 @@ const {
   lang = 'de',
   path = '/',
   alternates,
-  image = '/wp-content/uploads/2026/01/01_ainights_inspire.png',
+  // Generisches, zeitloses Default-Bild (kein Event-Name/Datum eingebrannt) —
+  // vorher stand hier das Promo-Bild von AI Nights Nürnberg #01 "Premiere!",
+  // das dadurch auf jeder Seite ohne eigenes `image`-Prop als veraltetes
+  // Share-Thumbnail auftauchte. Das #01-Event selbst bekommt sein Bild
+  // weiterhin über die eigenen Event-Daten (nicht über diesen Default).
+  image = '/media/og-default.png',
   ogType = 'website',
   jsonLd,
   noindex = false,
