@@ -1,7 +1,7 @@
 ---
 title: 'Agent-Driven Development: From Task to Tested Code – Christian Dangl bei der Anniversary-Ausgabe der AI Nights'
 description: 'Speaker-Ankündigung für die AI Nights Nürnberg #06: Christian Dangl (Head of Technology, dasistweb GmbH) baut live ein Projekt mit einem Team aus KI-Agenten – inklusive Quality Gates und QA-Pipeline.'
-pubDate: 2026-09-02
+pubDate: 2026-10-11
 author: 'AI Nights Team'
 category: speaker-announcements
 image:
