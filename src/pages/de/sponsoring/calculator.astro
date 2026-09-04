@@ -1,0 +1,800 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+
+// Nur echte, kommende Termine stehen als Kontingent zur Auswahl — keine
+// Phantom-Slots für Städte/Serien, die es noch nicht gibt (z. B. Erlangen).
+const TODAY = '2026-09-02';
+const events = (await getCollection('events'))
+  .filter((e) => e.data.eventDate && e.data.eventDate >= TODAY)
+  .sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''))
+  .map((e) => ({
+    slug: e.data.slug,
+    title: e.data.title,
+    city: e.data.city ?? '',
+    series: e.data.slug.startsWith('ai-woman-nights') ? 'AIWN' : 'AIN',
+    date: e.data.eventDate,
+    dateLabel: new Date(e.data.eventDate!).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' }),
+  }));
+
+const CONTACT_EMAIL = 'hello@ainights.ai';
+---
+
+<Layout
+  lang="de"
+  title="Sponsoring-Kalkulator — AI Nights"
+  description="Stell dir dein AI-Nights-Sponsoring-Paket selbst zusammen: Basis-Paket wählen, Termine aus dem aktuellen Kontingent picken, Upgrades dazubuchen — mit Live-Preisberechnung."
+  path="/de/sponsoring/calculator/"
+  alternates={{ de: '/de/sponsoring/calculator/', en: '/en/sponsoring/calculator/' }}
+  noindex={true}
+>
+  <Header lang="de" />
+  <main class="calc">
+    <div class="container">
+      <p class="eyebrow">Sponsoring-Kalkulator</p>
+      <h1 class="display-font">Stell dir dein Paket <span class="gradient-text">selbst zusammen.</span></h1>
+      <p class="lead">
+        Unternehmen, Paket, Termine, Upgrades — in wenigen Klicks siehst du live den Preis und schickst uns
+        deine Anfrage direkt per E-Mail. Unverbindlich, du entscheidest am Ende, ob's passt.
+      </p>
+
+      <section class="field-block">
+        <label for="company">Unternehmensname</label>
+        <input type="text" id="company" placeholder="z. B. Deine Firma GmbH" autocomplete="organization" />
+      </section>
+
+      <section class="packages" id="packages">
+        <h2 class="display-font sec-h">1. Basis-Paket wählen</h2>
+        <div class="package-grid">
+          <button type="button" class="package-card" data-package="spark" data-price="1500" data-events="4" data-cities="1">
+            <span class="pkg-name">SPARK</span>
+            <span class="pkg-price">1.500&nbsp;€</span>
+            <span class="pkg-meta">4 Events · 1 Stadt</span>
+          </button>
+          <button type="button" class="package-card" data-package="pulse" data-price="3000" data-events="8" data-cities="2">
+            <span class="pkg-name">PULSE</span>
+            <span class="pkg-price">3.000&nbsp;€</span>
+            <span class="pkg-meta">8 Events · 2 Städte</span>
+            <span class="pkg-note">oder 4× AI Nights + 4× AI Woman Nights in einer Stadt</span>
+          </button>
+          <button type="button" class="package-card" data-package="nexus" data-price="5000" data-events="12" data-cities="3">
+            <span class="pkg-name">NEXUS</span>
+            <span class="pkg-price">5.000&nbsp;€</span>
+            <span class="pkg-meta">12 Events · 3 Städte</span>
+          </button>
+        </div>
+        <ul class="pkg-includes" id="pkg-includes" hidden>
+          <li><strong data-fill="events"></strong>× Logo auf Website</li>
+          <li><strong data-fill="events"></strong>× Roll-Up am Event</li>
+          <li><strong data-fill="events"></strong>× Logo auf Event-Slides</li>
+          <li><strong data-fill="events"></strong>× Merchandise-Verteilung vor Ort</li>
+          <li><strong>1</strong>× Newsletter-Ankündigung</li>
+          <li><strong>1</strong>× Social-Media-Ankündigungspost</li>
+        </ul>
+      </section>
+
+      <section class="events-section" id="events-section" hidden>
+        <h2 class="display-font sec-h">2. Termine aus dem Kontingent wählen</h2>
+        <p class="sub">
+          <span id="events-counter">0 / 0</span> ausgewählt.
+          Weitere Städte und Termine (z. B. Erlangen) kommen laufend dazu — die genaue Verteilung sprechen wir im
+          Erstgespräch gern final ab.
+        </p>
+        <div class="event-groups" id="event-groups"></div>
+      </section>
+
+      <section class="upgrades-section" id="upgrades-section" hidden>
+        <h2 class="display-font sec-h">3. Upgrades dazubuchen</h2>
+        <div class="upgrades-grid">
+          <article class="upgrade" data-upgrade="branding" data-mode="per-event" data-unit-price="1000">
+            <div class="upgrade-head">
+              <label><input type="checkbox" class="upgrade-toggle" /> Exklusives Abendbranding</label>
+              <span class="upgrade-price">1.000&nbsp;€ <small>pro Abend</small></span>
+            </div>
+            <div class="upgrade-body" hidden>
+              <label class="stepper-label">Für <input type="number" class="upgrade-count" min="1" value="1" /> von deinen Abenden</label>
+              <div class="branding-preview">
+                <p class="preview-hint">So könnte es auf der Eventseite aussehen:</p>
+                <div class="aftershow-badge">
+                  <span class="badge-logo">LOGO</span>
+                  <p>Der heutige Abend wird präsentiert von <span data-fill="company-preview">deinem Unternehmen</span> ✨</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="upgrade" data-upgrade="pitch" data-mode="per-event" data-unit-price="400">
+            <div class="upgrade-head">
+              <label><input type="checkbox" class="upgrade-toggle" /> 5-Minuten Event-Pitch zu Beginn</label>
+              <span class="upgrade-price">400&nbsp;€ <small>pro Abend</small></span>
+            </div>
+            <div class="upgrade-body" hidden>
+              <label class="stepper-label">Für <input type="number" class="upgrade-count" min="1" value="1" /> von deinen Abenden</label>
+            </div>
+          </article>
+
+          <article class="upgrade" data-upgrade="lanyards" data-mode="flat-per-block" data-unit-price="350" data-block-size="4">
+            <div class="upgrade-head">
+              <label><input type="checkbox" class="upgrade-toggle" /> Logo auf Lanyards</label>
+              <span class="upgrade-price">350&nbsp;€ <small>je 4 Events</small></span>
+            </div>
+          </article>
+
+          <article class="upgrade" data-upgrade="youtube" data-mode="flat" data-unit-price="200">
+            <div class="upgrade-head">
+              <label><input type="checkbox" class="upgrade-toggle" /> Logo in YouTube-Intro &amp; -Outro</label>
+              <span class="upgrade-price">200&nbsp;€ <small>je Paket</small></span>
+            </div>
+          </article>
+
+          <article class="upgrade" data-upgrade="standflaeche" data-mode="per-event" data-unit-price="250">
+            <div class="upgrade-head">
+              <label><input type="checkbox" class="upgrade-toggle" /> Standfläche</label>
+              <span class="upgrade-price">250&nbsp;€ <small>pro Abend</small></span>
+            </div>
+            <div class="upgrade-body" hidden>
+              <label class="stepper-label">Für <input type="number" class="upgrade-count" min="1" value="1" /> von deinen Abenden</label>
+            </div>
+          </article>
+
+          <article class="upgrade" data-upgrade="fotowand" data-mode="per-event" data-unit-price="150">
+            <div class="upgrade-head">
+              <label><input type="checkbox" class="upgrade-toggle" /> Logo auf Fotowand</label>
+              <span class="upgrade-price">150&nbsp;€ <small>pro Abend</small></span>
+            </div>
+            <div class="upgrade-body" hidden>
+              <label class="stepper-label">Für <input type="number" class="upgrade-count" min="1" value="1" /> von deinen Abenden</label>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="summary" id="summary" hidden>
+        <h2 class="display-font sec-h">Deine Zusammenfassung</h2>
+        <dl id="summary-lines" class="summary-lines"></dl>
+        <div class="summary-total">
+          <span>Gesamt</span>
+          <strong id="summary-total">0&nbsp;€</strong>
+        </div>
+        <a href="#" id="send-request" class="btn btn-primary" aria-disabled="true">Anfrage per E-Mail senden</a>
+        <p class="summary-note">Öffnet dein E-Mail-Programm mit allen Details vorausgefüllt — unverbindlich.</p>
+      </aside>
+    </div>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<script type="application/json" id="events-data" set:html={JSON.stringify(events)} />
+
+<script define:vars={{ CONTACT_EMAIL }}>
+  const EVENTS = JSON.parse(document.getElementById('events-data').textContent);
+  const fmtEUR = (n) => n.toLocaleString('de-DE') + ' €';
+
+  const state = {
+    company: '',
+    package: null, // {id,name,price,events,cities}
+    selectedEvents: new Set(),
+    upgrades: {}, // id -> count of events (or true for flat)
+  };
+
+  const PACKAGE_NAMES = { spark: 'SPARK', pulse: 'PULSE', nexus: 'NEXUS' };
+
+  const companyInput = document.getElementById('company');
+  companyInput.addEventListener('input', () => {
+    state.company = companyInput.value.trim();
+    document.querySelectorAll('[data-fill="company-preview"]').forEach((el) => {
+      el.textContent = state.company || 'deinem Unternehmen';
+    });
+    renderSummary();
+  });
+
+  // --- Paketwahl ---
+  document.querySelectorAll('.package-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.package-card').forEach((c) => c.classList.remove('active'));
+      card.classList.add('active');
+      state.package = {
+        id: card.dataset.package,
+        name: PACKAGE_NAMES[card.dataset.package],
+        price: Number(card.dataset.price),
+        events: Number(card.dataset.events),
+        cities: Number(card.dataset.cities),
+      };
+      state.selectedEvents = new Set();
+
+      document.getElementById('pkg-includes').hidden = false;
+      document.querySelectorAll('#pkg-includes [data-fill="events"]').forEach((el) => {
+        el.textContent = String(state.package.events);
+      });
+
+      renderEventPicker();
+      document.getElementById('events-section').hidden = false;
+      document.getElementById('upgrades-section').hidden = false;
+      document.getElementById('summary').hidden = false;
+      renderSummary();
+    });
+  });
+
+  // --- Terminauswahl ---
+  const CITY_COLORS = { 'Nürnberg': '#e5484d', 'München': '#326bff' };
+
+  /** Kurztitel fürs Kärtchen — Serie/Stadt stehen schon im Badge/der Gruppe. */
+  function shortTitle(title) {
+    return title
+      .replace(/^AI Woman Nights [^#]*?(#\d+)/, '$1')
+      .replace(/^AI Nights [^|]*\|\s*INSPIRE\s*✨?\s*/, '')
+      .trim();
+  }
+
+  function renderEventPicker() {
+    const container = document.getElementById('event-groups');
+    container.innerHTML = '';
+    const byCity = new Map();
+    EVENTS.forEach((e) => {
+      if (!byCity.has(e.city)) byCity.set(e.city, []);
+      byCity.get(e.city).push(e);
+    });
+    byCity.forEach((list, city) => {
+      const group = document.createElement('div');
+      group.className = 'event-group';
+      group.style.setProperty('--city-color', CITY_COLORS[city] ?? '#dc2777');
+      const h3 = document.createElement('h3');
+      h3.textContent = city;
+      group.appendChild(h3);
+      const grid = document.createElement('div');
+      grid.className = 'event-grid';
+      list.forEach((e) => {
+        const card = document.createElement('label');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <input type="checkbox" value="${e.slug}" />
+          <span class="event-check" aria-hidden="true">✓</span>
+          <span class="event-series series-${e.series}">${e.series === 'AIWN' ? 'AI Woman Nights' : 'AI Nights'}</span>
+          <span class="event-title">${shortTitle(e.title)}</span>
+          <span class="event-date">${e.dateLabel}</span>
+        `;
+        const cb = card.querySelector('input');
+        cb.addEventListener('change', () => {
+          if (cb.checked) {
+            if (state.selectedEvents.size >= state.package.events) {
+              cb.checked = false;
+              return;
+            }
+            state.selectedEvents.add(e.slug);
+          } else {
+            state.selectedEvents.delete(e.slug);
+          }
+          card.classList.toggle('selected', cb.checked);
+          updateEventsCounter();
+          renderSummary();
+        });
+        grid.appendChild(card);
+      });
+      group.appendChild(grid);
+      container.appendChild(group);
+    });
+    updateEventsCounter();
+  }
+
+  function updateEventsCounter() {
+    const max = Math.min(state.package.events, EVENTS.length);
+    document.getElementById('events-counter').textContent = `${state.selectedEvents.size} / ${max}`;
+    const disableRest = state.selectedEvents.size >= state.package.events;
+    document.querySelectorAll('#event-groups input[type="checkbox"]').forEach((cb) => {
+      if (!cb.checked) cb.disabled = disableRest;
+    });
+  }
+
+  // --- Upgrades ---
+  document.querySelectorAll('.upgrade').forEach((card) => {
+    const id = card.dataset.upgrade;
+    const toggle = card.querySelector('.upgrade-toggle');
+    const body = card.querySelector('.upgrade-body');
+    const countInput = card.querySelector('.upgrade-count');
+
+    toggle.addEventListener('change', () => {
+      if (toggle.checked) {
+        if (body) body.hidden = false;
+        state.upgrades[id] = countInput ? Number(countInput.value || 1) : true;
+      } else {
+        if (body) body.hidden = true;
+        delete state.upgrades[id];
+      }
+      renderSummary();
+    });
+
+    if (countInput) {
+      countInput.addEventListener('input', () => {
+        if (!toggle.checked) return;
+        const max = state.package ? state.package.events : 99;
+        const v = Math.max(1, Math.min(max, Number(countInput.value || 1)));
+        countInput.value = String(v);
+        state.upgrades[id] = v;
+        renderSummary();
+      });
+    }
+  });
+
+  const UPGRADE_LABELS = {
+    branding: 'Exklusives Abendbranding',
+    pitch: '5-Minuten Event-Pitch',
+    lanyards: 'Logo auf Lanyards',
+    youtube: 'Logo in YouTube-Intro/-Outro',
+    standflaeche: 'Standfläche',
+    fotowand: 'Logo auf Fotowand',
+  };
+
+  function upgradePrice(card) {
+    const id = card.dataset.upgrade;
+    if (!(id in state.upgrades)) return 0;
+    const mode = card.dataset.mode;
+    const unit = Number(card.dataset.unitPrice);
+    if (mode === 'flat') return unit;
+    if (mode === 'flat-per-block') {
+      const blockSize = Number(card.dataset.blockSize);
+      const events = state.package ? state.package.events : 0;
+      return unit * Math.ceil(events / blockSize);
+    }
+    // per-event
+    return unit * Number(state.upgrades[id]);
+  }
+
+  // --- Zusammenfassung + Mailto ---
+  function renderSummary() {
+    if (!state.package) return;
+    const lines = document.getElementById('summary-lines');
+    lines.innerHTML = '';
+
+    const addLine = (label, value) => {
+      const dt = document.createElement('dt');
+      dt.textContent = label;
+      const dd = document.createElement('dd');
+      dd.textContent = value;
+      lines.appendChild(dt);
+      lines.appendChild(dd);
+    };
+
+    addLine('Paket', `${state.package.name} — ${fmtEUR(state.package.price)}`);
+    addLine('Termine', `${state.selectedEvents.size} / ${state.package.events} ausgewählt`);
+
+    let total = state.package.price;
+    document.querySelectorAll('.upgrade').forEach((card) => {
+      const price = upgradePrice(card);
+      if (price > 0) {
+        const id = card.dataset.upgrade;
+        const countLabel = card.dataset.mode === 'per-event' ? ` (${state.upgrades[id]}×)` : '';
+        addLine(UPGRADE_LABELS[id] + countLabel, fmtEUR(price));
+        total += price;
+      }
+    });
+
+    document.getElementById('summary-total').textContent = fmtEUR(total);
+    updateMailto(total);
+  }
+
+  function updateMailto(total) {
+    const btn = document.getElementById('send-request');
+    const ready = state.company && state.package;
+    btn.setAttribute('aria-disabled', ready ? 'false' : 'true');
+    if (!ready) {
+      btn.removeAttribute('href');
+      return;
+    }
+    const chosenEvents = EVENTS.filter((e) => state.selectedEvents.has(e.slug))
+      .map((e) => `- ${e.title} (${e.dateLabel}, ${e.city})`)
+      .join('\n');
+    const upgradeLines = [];
+    document.querySelectorAll('.upgrade').forEach((card) => {
+      const price = upgradePrice(card);
+      if (price > 0) {
+        const id = card.dataset.upgrade;
+        const countLabel = card.dataset.mode === 'per-event' ? ` (${state.upgrades[id]}x)` : '';
+        upgradeLines.push(`- ${UPGRADE_LABELS[id]}${countLabel}: ${fmtEUR(price)}`);
+      }
+    });
+
+    const subject = `Sponsoring-Anfrage — ${state.company} — ${state.package.name}`;
+    const body = [
+      `Unternehmen: ${state.company}`,
+      `Paket: ${state.package.name} (${fmtEUR(state.package.price)}, ${state.package.events} Events)`,
+      '',
+      'Gewünschte Termine:',
+      chosenEvents || '(noch keine ausgewählt)',
+      '',
+      upgradeLines.length ? 'Upgrades:' : '',
+      ...upgradeLines,
+      '',
+      `Geschätzter Gesamtpreis: ${fmtEUR(total)}`,
+      '',
+      '(Zusammengestellt über den Sponsoring-Kalkulator auf ainights.ai)',
+    ].filter((l) => l !== '').join('\n');
+
+    btn.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+</script>
+
+<style is:global>
+  /* is:global, weil ein Großteil des Markups (Termine, Zusammenfassung) erst
+     zur Laufzeit per JS/innerHTML erzeugt wird — Astros Scoped-CSS-Attribute
+     landen nur auf Elementen, die im Template selbst stehen, nicht auf
+     dynamisch injizierten. Klassennamen sind entsprechend spezifisch gehalten. */
+  /* Eigene display:-Regeln unten würden sonst das native [hidden] überschreiben
+     (Author-Styles gewinnen immer gegen die UA-Regel [hidden]{display:none}). */
+  [hidden] {
+    display: none !important;
+  }
+  .calc {
+    padding: 7rem 0 5rem;
+  }
+  .eyebrow {
+    color: var(--magenta-bright);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .lead {
+    color: var(--text-secondary);
+    max-width: 65ch;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+  .sec-h {
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    margin-bottom: 1rem;
+  }
+  .field-block {
+    margin-bottom: 2.5rem;
+    max-width: 420px;
+  }
+  .field-block label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  .field-block input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  .field-block input:focus {
+    outline: 2px solid var(--magenta-bright);
+    outline-offset: 1px;
+  }
+  .packages {
+    margin-bottom: 2.5rem;
+  }
+  .package-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+  }
+  .package-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+    padding: 1.5rem;
+    border-radius: 18px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-glass);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+  }
+  .package-card:hover {
+    transform: translateY(-2px);
+  }
+  .package-card.active {
+    border-color: var(--magenta-bright);
+    box-shadow: 0 0 0 2px rgba(255, 45, 122, 0.25);
+  }
+  .pkg-name {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .pkg-price {
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .pkg-meta {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+  }
+  .pkg-note {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+  .pkg-includes {
+    list-style: none;
+    padding: 1.2rem 1.4rem;
+    margin: 1.5rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.6rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+  }
+  .pkg-includes strong {
+    color: var(--magenta-bright);
+  }
+  .events-section,
+  .upgrades-section {
+    margin-bottom: 2.5rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    margin-bottom: 1.2rem;
+  }
+  #events-counter {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+  .event-groups {
+    display: grid;
+    gap: 1.8rem;
+  }
+  .event-group h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 0.9rem;
+    font-size: 1rem;
+  }
+  .event-group h3::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--city-color, var(--magenta-bright));
+    flex: none;
+  }
+  .event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.9rem;
+  }
+  .event-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.1rem 1.2rem 1rem;
+    border-radius: 14px;
+    border: 1px solid var(--border-strong);
+    border-top: 3px solid var(--city-color, var(--border-strong));
+    background: var(--bg-glass);
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+  }
+  .event-card:hover {
+    transform: translateY(-2px);
+  }
+  .event-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .event-card .event-check {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    display: grid;
+    place-items: center;
+    font-size: 0.7rem;
+    color: transparent;
+    background: var(--bg-elevated);
+    transition: all 0.15s ease;
+  }
+  .event-card.selected {
+    border-color: var(--magenta-bright);
+    box-shadow: 0 0 0 2px rgba(255, 45, 122, 0.25);
+  }
+  .event-card.selected .event-check {
+    background: var(--gradient-accent);
+    border-color: transparent;
+    color: #fff;
+  }
+  .event-card:has(input:disabled):not(.selected) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .event-series {
+    align-self: flex-start;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+  }
+  .series-AIN {
+    background: rgba(50, 107, 255, 0.18);
+    color: #7fb0ff;
+  }
+  .series-AIWN {
+    background: rgba(255, 45, 122, 0.18);
+    color: #ff9dc0;
+  }
+  .event-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding-right: 1.5rem;
+  }
+  .event-date {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+  .upgrades-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .upgrade {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.1rem 1.3rem;
+  }
+  .upgrade-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .upgrade-head label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .upgrade-price {
+    color: var(--text-secondary);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .upgrade-price small {
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .upgrade-body {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border);
+  }
+  .stepper-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+  }
+  .stepper-label input {
+    width: 60px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+  }
+  .branding-preview {
+    margin-top: 1rem;
+  }
+  .preview-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem;
+  }
+  .aftershow-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(107, 64, 32, 0.55), rgba(53, 28, 12, 0.55));
+    border: 1px solid rgba(255, 168, 92, 0.32);
+    max-width: 420px;
+  }
+  .badge-logo {
+    flex: none;
+    width: 60px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #ffd9b8;
+  }
+  .aftershow-badge p {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: #ffd9b8;
+    font-weight: 600;
+  }
+  .summary {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 1.6rem 1.8rem;
+    max-width: 480px;
+  }
+  .summary-lines {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1rem;
+    margin: 0 0 1.2rem;
+  }
+  .summary-lines dt {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  .summary-lines dd {
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-align: right;
+    font-size: 0.9rem;
+  }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-strong);
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+  }
+  .summary-total strong {
+    font-size: 1.6rem;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  #send-request {
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  #send-request[aria-disabled='true'] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .summary-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.8rem;
+  }
+</style>
