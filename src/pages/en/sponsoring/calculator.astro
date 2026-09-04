@@ -152,16 +152,22 @@ const CONTACT_EMAIL = 'hello@ainights.ai';
         </div>
       </section>
 
-      <aside class="summary" id="summary" hidden>
-        <h2 class="display-font sec-h">Your summary</h2>
-        <dl id="summary-lines" class="summary-lines"></dl>
-        <div class="summary-total">
-          <span>Total</span>
-          <strong id="summary-total">€0</strong>
+      <div class="summary-layout" id="summary" hidden>
+        <aside class="summary">
+          <h2 class="display-font sec-h">Your summary</h2>
+          <dl id="summary-lines" class="summary-lines"></dl>
+          <div class="summary-total">
+            <span>Total</span>
+            <strong id="summary-total">€0</strong>
+          </div>
+          <a href="#" id="send-request" class="btn btn-primary" aria-disabled="true">Send request by email</a>
+          <p class="summary-note">Opens your email app with all details pre-filled — no obligation.</p>
+        </aside>
+        <div class="summary-visual">
+          <h3>What you get</h3>
+          <div class="visual-grid" id="visual-grid"></div>
         </div>
-        <a href="#" id="send-request" class="btn btn-primary" aria-disabled="true">Send request by email</a>
-        <p class="summary-note">Opens your email app with all details pre-filled — no obligation.</p>
-      </aside>
+      </div>
     </div>
   </main>
   <Footer lang="en" />
@@ -327,6 +333,55 @@ const CONTACT_EMAIL = 'hello@ainights.ai';
     fotowand: 'Logo on photo wall',
   };
 
+  // Graphical view in the summary — the user should SEE what they get at a
+  // glance instead of just reading a text list.
+  const INCLUDED_ICONS = [
+    { icon: '🌐', label: 'Logo on website' },
+    { icon: '🪧', label: 'Roll-up at the event' },
+    { icon: '🖥️', label: 'Logo on event slides' },
+    { icon: '🎁', label: 'Merchandise on site' },
+  ];
+  const FIXED_ICONS = [
+    { icon: '📧', label: 'Newsletter announcement' },
+    { icon: '📱', label: 'Social media post' },
+  ];
+  const UPGRADE_ICONS = {
+    branding: '🌟',
+    pitch: '🎤',
+    lanyards: '🪪',
+    youtube: '▶️',
+    standflaeche: '🎪',
+    fotowand: '📸',
+  };
+
+  function renderVisual() {
+    const grid = document.getElementById('visual-grid');
+    grid.innerHTML = '';
+    if (!state.package) return;
+
+    const addTile = (icon, label, count) => {
+      const tile = document.createElement('div');
+      tile.className = 'visual-tile';
+      tile.innerHTML = `
+        <span class="visual-icon">${icon}</span>
+        <span class="visual-label">${label}</span>
+        <span class="visual-count">${count}</span>
+      `;
+      grid.appendChild(tile);
+    };
+
+    INCLUDED_ICONS.forEach((b) => addTile(b.icon, b.label, `${state.package.events}×`));
+    FIXED_ICONS.forEach((b) => addTile(b.icon, b.label, '1×'));
+
+    document.querySelectorAll('.upgrade').forEach((card) => {
+      const id = card.dataset.upgrade;
+      if (!(id in state.upgrades)) return;
+      const mode = card.dataset.mode;
+      const count = mode === 'per-event' ? `${state.upgrades[id]}×` : mode === 'flat-per-block' ? `${state.package.events}×` : '1×';
+      addTile(UPGRADE_ICONS[id], UPGRADE_LABELS[id], count);
+    });
+  }
+
   function upgradePrice(card) {
     const id = card.dataset.upgrade;
     if (!(id in state.upgrades)) return 0;
@@ -372,6 +427,7 @@ const CONTACT_EMAIL = 'hello@ainights.ai';
     });
 
     document.getElementById('summary-total').textContent = fmtEUR(total);
+    renderVisual();
     updateMailto(total);
   }
 
@@ -741,12 +797,63 @@ const CONTACT_EMAIL = 'hello@ainights.ai';
     color: #ffd9b8;
     font-weight: 600;
   }
+  .summary-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .summary-layout {
+      grid-template-columns: 1fr;
+    }
+  }
   .summary {
     background: var(--bg-glass);
     border: 1px solid var(--border-strong);
     border-radius: 18px;
     padding: 1.6rem 1.8rem;
-    max-width: 480px;
+  }
+  .summary-visual {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.6rem 1.8rem;
+  }
+  .summary-visual h3 {
+    margin: 0 0 1.1rem;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+  }
+  .visual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.9rem;
+  }
+  .visual-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.35rem;
+    padding: 1rem 0.6rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .visual-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+  .visual-label {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+  .visual-count {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--magenta-bright);
   }
   .summary-lines {
     display: grid;
