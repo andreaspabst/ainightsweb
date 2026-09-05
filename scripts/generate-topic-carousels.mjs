@@ -17,7 +17,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import {
-  C, FORMATS, PUBLIC, textImg, circlePhoto, background, abstractArt, ring, pillBg,
+  C, FORMATS, PUBLIC, textImg, circlePhoto, background, abstractArt, topicMotif, ring, pillBg,
   footer, loadLogo, loadEventKit, followSlide,
 } from './lib/social-kit.mjs';
 
@@ -25,15 +25,52 @@ const OUT_BASE = path.join(PUBLIC, 'media/topic-carousels');
 
 const cityLabel = (kit) => (kit.isWoman ? `AI Woman Nights ${kit.event.city ?? ''}` : `AI Nights ${kit.event.city ?? ''}`).trim();
 
-/** Slide 1 — Hook: großes Talk-Thema auf abstrakter Grafik. */
+/**
+ * Slide 1 — Hook: großes Talk-Thema. Deko ist entweder das in der Session
+ * hinterlegte Key-Visual (session.image, z. B. aus Airtable) oder ein zum
+ * Titel passendes thematisches Motiv (topicMotif, Fallback „orbits“).
+ */
+async function keyVisualCard(src, boxW, boxH) {
+  try {
+    const img = await sharp(path.join(PUBLIC, src))
+      .resize(boxW - 48, boxH - 48, { fit: 'inside', withoutEnlargement: true })
+      .png()
+      .toBuffer();
+    const meta = await sharp(img).metadata();
+    const card = Buffer.from(`<svg width="${boxW}" height="${boxH}" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="kv" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="${C.blue}" stop-opacity=".55"/><stop offset="100%" stop-color="${C.magenta}" stop-opacity=".55"/>
+      </linearGradient></defs>
+      <rect x="1.5" y="1.5" width="${boxW - 3}" height="${boxH - 3}" rx="26" fill="#ffffff" fill-opacity=".06" stroke="url(#kv)" stroke-width="2"/>
+    </svg>`);
+    return { card, img, meta };
+  } catch {
+    console.warn(`⚠️  Key-Visual nicht lesbar: ${src}`);
+    return null;
+  }
+}
+
 async function hookSlide(fmt, kit, speaker, talk, logo) {
   const { w: W, h: H } = FORMATS[fmt];
   const square = fmt === 'instagram';
   const margin = square ? 72 : 64;
+  const visual = talk.keyVisual ? await keyVisualCard(talk.keyVisual, square ? 400 : 320, square ? 250 : 210) : null;
   const layers = [
-    { input: abstractArt(W, H, 'orbits'), top: 0, left: 0 },
+    { input: visual ? abstractArt(W, H, 'circuit') : topicMotif(W, H, talk.title), top: 0, left: 0 },
     { input: square ? logo.square : logo.landscape, top: square ? 62 : 40, left: margin },
   ];
+  if (visual) {
+    const boxW = square ? 400 : 320;
+    const boxH = square ? 250 : 210;
+    const boxTop = square ? 660 : H - 78 - 30 - boxH;
+    const boxLeft = W - margin - boxW;
+    layers.push({ input: visual.card, top: boxTop, left: boxLeft });
+    layers.push({
+      input: visual.img,
+      top: boxTop + Math.round((boxH - visual.meta.height) / 2),
+      left: boxLeft + Math.round((boxW - visual.meta.width) / 2),
+    });
+  }
 
   const pill = await textImg(`TALK @ ${cityLabel(kit)}`.toUpperCase(), { family: 'Inter ExtraBold', size: square ? 24 : 19, color: '#ffffff', maxWidth: W - margin * 2 - 60, letterSpacing: 1.2 });
   const pillH = square ? 58 : 46;
@@ -44,7 +81,7 @@ async function hookSlide(fmt, kit, speaker, talk, logo) {
 
   const title = await textImg(talk.title, {
     family: 'Inter Black', size: square ? 64 : 48, color: C.text,
-    maxWidth: W - margin * 2, maxHeight: square ? 420 : 240, wrap: true,
+    maxWidth: W - margin * 2 - (visual && !square ? 340 : 0), maxHeight: square ? 420 : 240, wrap: true,
   });
   layers.push({ input: title.data, top: pillY + pillH + (square ? 44 : 28), left: margin });
 

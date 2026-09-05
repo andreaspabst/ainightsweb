@@ -1,0 +1,21 @@
+{
+  "id": 9102,
+  "title": "Tests first gegen AI Coding Slop: Profi Vibe Coding, das in Production hält",
+  "slug": "tests-first-gegen-ai-coding-slop-roland-golla",
+  "excerpt": "KI baut Features in Minuten – ohne klare Qualitätsstandards entstehen jedoch schnell doppelte Logik, kaputte Edge Cases und unwartbarer Code. In dieser Session zeige ich meinen Test-first-Workflow von der lokalen Idee bis Production: mit Astro, Tailwind, statischer Analyse, API-, Unit- und E2E-Tests sowie GitLab CI/CD. Die KI läuft souverän über OpenCode und die Ollama Cloud – ohne Vendor Lock-in. Du nimmst einen Stack mit, den du direkt einsetzen kannst.",
+  "contentHtml": "<p>Der Talk zeigt, wie KI-gestützte Softwareentwicklung über schnelle Prototypen hinaus zuverlässig in Production funktioniert. Im Mittelpunkt steht ein konsequenter Test-first-Workflow, der doppelte Logik, unerkannte Edge Cases und schwer wartbaren AI Coding Slop verhindert.</p>\n<p>Anhand eines vollständigen Stacks wird der Weg von der lokalen Idee bis zum produktiven Deployment gezeigt: Astro und Tailwind, statische Analyse mit TSC und Prettier, eine API-first-Architektur, API-, Unit- und E2E-Tests sowie eine automatisierte GitLab-CI/CD-Pipeline.</p>\n<p>Zusätzlich geht es um einen souveränen und unabhängigen KI-Workflow mit OpenCode und der Ollama Cloud – ohne Vendor Lock-in und ohne Abhängigkeit von einzelnen Anbietern.</p>",
+  "image": {
+    "src": "/media/key-visuals/roland-golla.png",
+    "alt": "Never Code Alone"
+  },
+  "speakerIds": [
+    428
+  ],
+  "speakerSlugs": [
+    "roland-golla"
+  ],
+  "eventSlug": "ai-nights-muenchen-01",
+  "city": "München",
+  "type": "talk",
+  "date": "2026-09-05 20:00:00"
+}
