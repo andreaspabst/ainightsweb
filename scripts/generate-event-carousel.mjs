@@ -18,7 +18,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import {
   C, FORMATS, PUBLIC, textImg, circlePhoto, background, ring, pillBg, footer,
-  loadLogo, loadEventKit, splitEventTitle, followSlide,
+  loadLogo, logoFor, loadEventKit, splitEventTitle, followSlide,
 } from './lib/social-kit.mjs';
 
 const OUT_BASE = path.join(PUBLIC, 'media/event-carousels');
@@ -28,7 +28,7 @@ async function lineupSlide(fmt, kit, logo) {
   const { w: W, h: H } = FORMATS[fmt];
   const square = fmt === 'instagram';
   const margin = square ? 72 : 64;
-  const layers = [{ input: square ? logo.square : logo.landscape, top: square ? 62 : 40, left: margin }];
+  const layers = [{ input: square ? logoFor(kit, logo).square : logoFor(kit, logo).landscape, top: square ? 62 : 40, left: margin }];
 
   const pillText = (kit.isWoman ? 'Das Line-up steht' : 'Das Line-up steht').toUpperCase();
   const pill = await textImg(pillText, { family: 'Inter ExtraBold', size: square ? 26 : 20, color: '#ffffff', maxWidth: W - margin * 2 - 120, letterSpacing: 1.2 });
@@ -78,7 +78,7 @@ async function speakerSlide(fmt, kit, speaker, idx, logo) {
   const square = fmt === 'instagram';
   const margin = square ? 72 : 64;
   const talk = kit.talkFor(speaker);
-  const layers = [{ input: square ? logo.square : logo.landscape, top: square ? 62 : 40, left: margin }];
+  const layers = [{ input: square ? logoFor(kit, logo).square : logoFor(kit, logo).landscape, top: square ? 62 : 40, left: margin }];
 
   const pillText = `TALK ${idx + 1}/${kit.speakers.length}`;
   const pill = await textImg(pillText, { family: 'Inter ExtraBold', size: square ? 26 : 20, color: '#ffffff', maxWidth: 300, letterSpacing: 1.4 });

@@ -338,8 +338,19 @@ export async function footer(W, H, event, { margin = 72, lineY } = {}) {
 export async function loadLogo() {
   const svg = await fs.readFile(LOGO);
   const at = async (width) => sharp(svg, { density: 600 }).resize({ width }).png().toBuffer();
-  return { square: await at(330), landscape: await at(270), big: await at(560), portrait: await at(430) };
+  const logo = { square: await at(330), landscape: await at(270), big: await at(560), portrait: await at(430) };
+  // AI-Woman-Nights-Variante (weißes Lockup, aus dem Event-Cover freigestellt) —
+  // wird bei ai-woman-nights-Events überall anstelle des AI-Nights-Logos gesetzt.
+  try {
+    const womanPng = await fs.readFile(path.join(PUBLIC, 'wp-content/uploads/2026/09/AI-Woman-Nights-Logo-w.png'));
+    const wAt = async (width) => sharp(womanPng).resize({ width }).png().toBuffer();
+    logo.woman = { square: await wAt(400), landscape: await wAt(330), big: await wAt(620), portrait: await wAt(500) };
+  } catch {}
+  return logo;
 }
+
+/** Logo-Satz passend zum Event (Woman-Events bekommen das Woman-Lockup). */
+export const logoFor = (kit, logo) => (kit.isWoman && logo.woman ? logo.woman : logo);
 
 export async function readJsonDir(dir) {
   const files = await fs.readdir(dir);
@@ -408,20 +419,13 @@ export async function followSlide(fmt, kit, logo) {
   const margin = square ? 72 : 64;
   const layers = [];
 
-  const logoImg = square ? logo.big : logo.portrait;
+  const lg = logoFor(kit, logo);
+  const logoImg = square ? lg.big : lg.portrait;
   const logoMeta = await sharp(logoImg).metadata();
   const logoY = square ? 300 : 150;
   layers.push({ input: logoImg, top: logoY, left: Math.round((W - logoMeta.width) / 2) });
 
   let y = logoY + logoMeta.height + (square ? 60 : 40);
-  if (kit.isWoman) {
-    const w1 = await textImg('AI WOMAN NIGHTS', { family: 'Inter ExtraBold', size: square ? 24 : 20, color: '#ffffff', maxWidth: 420, letterSpacing: 2 });
-    const wPillW = w1.info.width + 64;
-    const wPillH = square ? 54 : 46;
-    layers.push({ input: pillBg(wPillW, wPillH, true), top: y - (square ? 36 : 24), left: Math.round((W - wPillW) / 2) });
-    layers.push({ input: w1.data, top: y - (square ? 36 : 24) + Math.round((wPillH - w1.info.height) / 2), left: Math.round((W - w1.info.width) / 2) });
-    y += square ? 44 : 40;
-  }
 
   const head = await textImg('Follow AI Nights', { family: 'Inter Black', size: square ? 72 : 54, color: C.text, maxWidth: W - margin * 2 });
   layers.push({ input: head.data, top: y, left: Math.round((W - head.info.width) / 2) });

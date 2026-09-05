@@ -18,7 +18,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import {
   C, FORMATS, PUBLIC, textImg, circlePhoto, background, abstractArt, topicMotif, ring, pillBg,
-  footer, loadLogo, loadEventKit, followSlide,
+  footer, loadLogo, logoFor, loadEventKit, followSlide,
 } from './lib/social-kit.mjs';
 
 const OUT_BASE = path.join(PUBLIC, 'media/topic-carousels');
@@ -57,7 +57,7 @@ async function hookSlide(fmt, kit, speaker, talk, logo) {
   const visual = talk.keyVisual ? await keyVisualCard(talk.keyVisual, square ? 400 : 320, square ? 250 : 210) : null;
   const layers = [
     { input: visual ? abstractArt(W, H, 'circuit') : topicMotif(W, H, talk.title), top: 0, left: 0 },
-    { input: square ? logo.square : logo.landscape, top: square ? 62 : 40, left: margin },
+    { input: square ? logoFor(kit, logo).square : logoFor(kit, logo).landscape, top: square ? 62 : 40, left: margin },
   ];
   if (visual) {
     const boxW = square ? 400 : 320;
@@ -114,7 +114,7 @@ async function aboutSlide(fmt, kit, speaker, talk, logo) {
   const margin = square ? 72 : 64;
   const layers = [
     { input: abstractArt(W, H, 'circuit'), top: 0, left: 0 },
-    { input: square ? logo.square : logo.landscape, top: square ? 62 : 40, left: margin },
+    { input: square ? logoFor(kit, logo).square : logoFor(kit, logo).landscape, top: square ? 62 : 40, left: margin },
   ];
 
   const label = await textImg("WORUM GEHT'S?", { family: 'Inter ExtraBold', size: square ? 22 : 18, color: C.blueBright, maxWidth: 340, letterSpacing: 2 });
@@ -149,7 +149,7 @@ async function speakerBioSlide(fmt, kit, speaker, talk, logo) {
   const { w: W, h: H } = FORMATS[fmt];
   const square = fmt === 'instagram';
   const margin = square ? 72 : 64;
-  const layers = [{ input: square ? logo.square : logo.landscape, top: square ? 62 : 40, left: margin }];
+  const layers = [{ input: square ? logoFor(kit, logo).square : logoFor(kit, logo).landscape, top: square ? 62 : 40, left: margin }];
   const bio = speaker.excerpt || talk.excerpt || '';
 
   if (square) {
