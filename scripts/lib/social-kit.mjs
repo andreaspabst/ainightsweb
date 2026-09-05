@@ -192,6 +192,91 @@ export function abstractArt(w, h, variant = 'orbits') {
   </svg>`);
 }
 
+
+/**
+ * Thematisches Deko-Motiv für die Hook-Slide der Themen-Karussells:
+ * wählt anhand des Talk-Titels eine passende abstrakte Grafik im
+ * Farbschema (Fallback: 'orbits' aus abstractArt).
+ */
+export function topicMotif(w, h, title = '') {
+  const t = String(title).toLowerCase();
+  const g = `<defs>
+    <linearGradient id="ma" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${C.blue}"/><stop offset="100%" stop-color="${C.magenta}"/>
+    </linearGradient>
+    <linearGradient id="mb" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${C.magenta}"/><stop offset="100%" stop-color="${C.violet}"/>
+    </linearGradient>
+  </defs>`;
+  const X = (f) => Math.round(w * f);
+  const Y = (f) => Math.round(h * f);
+  const wrap = (inner) => Buffer.from(`<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">${g}${inner}</svg>`);
+
+  // Testing / Code-Qualität: Pipeline-Knoten mit Haken
+  if (/test|qualit|code|coding|develop|slop|deploy|software/.test(t)) {
+    const ys = [0.56, 0.68, 0.8];
+    const nodes = ys.map((f, i) => {
+      const x = X(0.66 + i * 0.12);
+      const y = Y(f);
+      return `<circle cx="${x}" cy="${y}" r="26" fill="none" stroke="url(#ma)" stroke-width="3"/>
+        <path d="M${x - 10} ${y} l7 8 l14 -16" fill="none" stroke="${C.blueBright}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>` +
+        (i < ys.length - 1 ? `<path d="M${x} ${y + 26} L${x} ${Y(ys[i + 1]) - 26} L${X(0.66 + (i + 1) * 0.12)} ${Y(ys[i + 1]) - 26}" fill="none" stroke="url(#mb)" stroke-opacity=".6" stroke-width="2"/>` : '');
+    }).join('');
+    return wrap(`${nodes}<path d="M${X(0.62)} ${Y(0.92)} h${X(0.28)}" stroke="url(#ma)" stroke-width="3" stroke-linecap="round" stroke-opacity=".7"/>
+      <circle cx="${X(0.9)}" cy="${Y(0.92)}" r="7" fill="${C.magenta}"/>`);
+  }
+  // Marketing / Produkt / Wachstum: Balken + Pfeil
+  if (/marketing|produkt|format|wachs|kunden|brand|medien/.test(t)) {
+    const bars = [0.16, 0.24, 0.34].map((bh, i) => {
+      const x = X(0.64 + i * 0.09);
+      return `<rect x="${x}" y="${Y(0.88) - Y(bh)}" width="${X(0.05)}" height="${Y(bh)}" rx="8" fill="url(#${i % 2 ? 'mb' : 'ma'})" fill-opacity="${0.75 + i * 0.1}"/>`;
+    }).join('');
+    return wrap(`${bars}<path d="M${X(0.63)} ${Y(0.6)} L${X(0.82)} ${Y(0.46)} l-1 8 m1 -8 l-8 1" fill="none" stroke="${C.blueBright}" stroke-width="4" stroke-linecap="round"/>`);
+  }
+  // Sicherheit / Infrastruktur / Netz: Schild + Netzknoten
+  if (/sicher|angriff|schutz|infrastruktur|netz|strom|wasser|krit/.test(t)) {
+    const cx = X(0.78);
+    const cy = Y(0.68);
+    return wrap(`<path d="M${cx} ${cy - 80} l64 24 v56 c0 48 -40 76 -64 84 c-24 -8 -64 -36 -64 -84 v-56 z" fill="none" stroke="url(#ma)" stroke-width="4"/>
+      <path d="M${cx - 22} ${cy + 4} l16 18 l30 -36" fill="none" stroke="${C.blueBright}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${cx - 110}" cy="${cy + 130}" r="8" fill="${C.magenta}"/><circle cx="${cx + 104}" cy="${cy + 118}" r="6" fill="${C.blueBright}"/>
+      <path d="M${cx - 110} ${cy + 130} L${cx - 40} ${cy + 96} M${cx + 104} ${cy + 118} L${cx + 44} ${cy + 92}" stroke="url(#mb)" stroke-opacity=".55" stroke-width="2"/>`);
+  }
+  // Nachhaltigkeit: Blatt-Bögen
+  if (/nachhalt|klima|umwelt|green|energie/.test(t)) {
+    const cx = X(0.78);
+    const cy = Y(0.68);
+    return wrap(`<path d="M${cx} ${cy + 90} C ${cx - 90} ${cy + 10} ${cx - 40} ${cy - 90} ${cx + 60} ${cy - 90} C ${cx + 60} ${cy + 10} ${cx + 40} ${cy + 70} ${cx} ${cy + 90} z" fill="none" stroke="url(#ma)" stroke-width="4"/>
+      <path d="M${cx} ${cy + 88} C ${cx + 8} ${cy + 20} ${cx + 24} ${cy - 30} ${cx + 52} ${cy - 76}" fill="none" stroke="url(#mb)" stroke-opacity=".7" stroke-width="2.5"/>
+      <circle cx="${cx - 96}" cy="${cy + 96}" r="7" fill="${C.magenta}"/><circle cx="${cx + 84}" cy="${cy + 108}" r="5" fill="${C.blueBright}"/>`);
+  }
+  // Spiele / Gamification: Play-Kacheln + Würfelpunkte
+  if (/spiel|game|gamif/.test(t)) {
+    const bx = X(0.66);
+    const by = Y(0.56);
+    return wrap(`<rect x="${bx}" y="${by}" width="120" height="120" rx="22" fill="none" stroke="url(#ma)" stroke-width="4"/>
+      <path d="M${bx + 46} ${by + 36} l40 24 l-40 24 z" fill="${C.magenta}"/>
+      <rect x="${bx + 90}" y="${by + 150}" width="104" height="104" rx="20" fill="none" stroke="url(#mb)" stroke-width="3"/>
+      ${[[26, 26], [52, 52], [78, 78]].map(([dx, dy]) => `<circle cx="${bx + 90 + dx}" cy="${by + 150 + dy}" r="8" fill="${C.blueBright}"/>`).join('')}`);
+  }
+  // KI-Agenten / Demos: verbundene Bot-Knoten
+  if (/agent|coworker|demo|assist|llm|modell/.test(t)) {
+    const nodes = [[0.68, 0.56, 30], [0.86, 0.66, 22], [0.72, 0.8, 18], [0.9, 0.86, 14]].map(([fx, fy, r]) =>
+      `<circle cx="${X(fx)}" cy="${Y(fy)}" r="${r}" fill="none" stroke="url(#ma)" stroke-width="3"/>
+       <circle cx="${X(fx)}" cy="${Y(fy)}" r="${Math.round(r / 3)}" fill="${C.magenta}"/>`).join('');
+    return wrap(`${nodes}<path d="M${X(0.68)} ${Y(0.56)} L${X(0.86)} ${Y(0.66)} L${X(0.72)} ${Y(0.8)} L${X(0.9)} ${Y(0.86)}" fill="none" stroke="url(#mb)" stroke-opacity=".55" stroke-width="2"/>`);
+  }
+  // Fairness / Bias: Waage-Balken
+  if (/fair|bias|ethik|verantwort/.test(t)) {
+    const cx = X(0.78);
+    const cy = Y(0.62);
+    return wrap(`<path d="M${cx} ${cy - 60} v190 M${cx - 110} ${cy} h220" stroke="url(#ma)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M${cx - 110} ${cy} l-34 74 h68 z M${cx + 110} ${cy} l-34 74 h68 z" fill="none" stroke="url(#mb)" stroke-width="3"/>
+      <circle cx="${cx}" cy="${cy - 66}" r="9" fill="${C.magenta}"/>`);
+  }
+  return abstractArt(w, h, 'orbits');
+}
+
 export function ring(w, h, cx, cy, r, width) {
   return Buffer.from(`<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
   <defs><linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
@@ -294,7 +379,12 @@ export async function loadEventKit(eventSlug) {
     ) ?? sessions.find(
       (se) => se.speakerSlugs?.includes(speaker.slug) || (speaker.id && se.speakerIds?.includes(speaker.id)),
     );
-    return s ? { title: cleanTalkTitle(s.title), excerpt: s.excerpt ?? null } : { title: null, excerpt: null };
+    // Key-Visual nur aus dem dedizierten Ordner (aus Airtable übernommen) —
+    // alte WP-Sessions tragen sonst das Speaker-Portrait als Session-Bild.
+    const kv = s?.image?.src?.startsWith('/media/key-visuals/') ? s.image.src : null;
+    return s
+      ? { title: cleanTalkTitle(s.title), excerpt: s.excerpt ?? null, keyVisual: kv }
+      : { title: null, excerpt: null, keyVisual: null };
   };
   return { event, speakers, talkFor, isWoman: eventSlug.startsWith('ai-woman-nights') };
 }
