@@ -15,7 +15,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { C, PUBLIC, textImg, solidRect, loadEventKit, loadLogo } from './lib/social-kit.mjs';
+import { C, PUBLIC, textImg, solidRect, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
 
 const OUT_BASE = path.join(PUBLIC, 'media/speaker-intro-cards');
 const W = 1080;
@@ -111,17 +111,11 @@ async function card(kit, speaker, logo) {
     layers.push({ input: r.data, top: y + 11, left: W - MARGIN - blockW + padX });
   }
 
-  // Logo mittig unten (+ Woman-Block bei AI Woman Nights)
-  const logoMeta = await sharp(logo.portrait).metadata();
+  // Logo mittig unten (bei AI Woman Nights das Woman-Lockup)
+  const lg = logoFor(kit, logo).portrait;
+  const logoMeta = await sharp(lg).metadata();
   const logoY = H - 150 - logoMeta.height;
-  if (kit.isWoman) {
-    const wn = await textImg('AI WOMAN NIGHTS', { family: 'Inter ExtraBold', size: 30, color: '#ffffff', maxWidth: 520, letterSpacing: 2.4 });
-    const wnW = wn.info.width + 52;
-    const wnH = wn.info.height + 20;
-    layers.push({ input: solidRect(wnW, wnH, PINK), top: logoY - wnH - 18, left: Math.round((W - wnW) / 2) });
-    layers.push({ input: wn.data, top: logoY - wnH - 18 + 10, left: Math.round((W - wn.info.width) / 2) });
-  }
-  layers.push({ input: logo.portrait, top: logoY, left: Math.round((W - logoMeta.width) / 2) });
+  layers.push({ input: lg, top: logoY, left: Math.round((W - logoMeta.width) / 2) });
 
   return sharp(await photoLayer(speaker)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 }
