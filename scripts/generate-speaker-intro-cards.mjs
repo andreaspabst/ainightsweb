@@ -45,11 +45,32 @@ async function photoLayer(speaker) {
       <rect width="${W}" height="${H}" fill="url(#g)"/></svg>`);
     return sharp(fallback).composite([{ input: overlay, top: 0, left: 0 }]).png().toBuffer();
   }
-  return sharp(src)
-    .resize(W, H, { fit: 'cover', position: 'attention' })
+  return sharp(await coverPhoto(src, speaker.image))
     .composite([{ input: overlay, top: 0, left: 0 }])
     .png()
     .toBuffer();
+}
+
+/**
+ * Foto auf 1080×1350 „cover“-skalieren. Standard: sharps automatischer
+ * Bildausschnitt ('attention'). Passt der nicht (Person zu weit am Rand),
+ * kann pro Speaker in der JSON `image.cropX` (0 = linker Rand … 1 = rechter
+ * Rand, 0.5 = mittig) und optional `image.cropY` gesetzt werden – dann wird
+ * der Ausschnitt genau dort gewählt.
+ */
+async function coverPhoto(src, image = {}) {
+  const hasManual = typeof image.cropX === 'number' || typeof image.cropY === 'number';
+  if (!hasManual) {
+    return sharp(src).resize(W, H, { fit: 'cover', position: 'attention' }).png().toBuffer();
+  }
+  const clamp = (v, d) => (typeof v === 'number' ? Math.min(1, Math.max(0, v)) : d);
+  const meta = await sharp(src).metadata();
+  const scale = Math.max(W / meta.width, H / meta.height);
+  const sw = Math.max(W, Math.round(meta.width * scale));
+  const sh = Math.max(H, Math.round(meta.height * scale));
+  const left = Math.round(clamp(image.cropX, 0.5) * (sw - W));
+  const top = Math.round(clamp(image.cropY, 0.5) * (sh - H));
+  return sharp(src).resize(sw, sh).extract({ left, top, width: W, height: H }).png().toBuffer();
 }
 
 /** Name in zwei Zeilen aufteilen: „Tom Fischer“ → [„TOM“, „FISCHER“]. */
