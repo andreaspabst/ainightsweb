@@ -37,6 +37,41 @@ function lineupFor(eventSlug: string) {
   };
 }
 
+const slideNo = (f: string) => Number(f.match(/slide-(\d+)/)?.[1] ?? 0);
+function listDir(rel: string): string[] {
+  const abs = path.join(PUBLIC_DIR, rel);
+  return fs.existsSync(abs) ? fs.readdirSync(abs).filter((f) => f.endsWith('.png')) : [];
+}
+
+/** Event-Karussell (Line-up → Talks → Follow), je Format sortiert. */
+function carouselFor(eventSlug: string) {
+  const files = listDir(`/media/event-carousels/${eventSlug}`);
+  const byFormat = (fmt: string) =>
+    files.filter((f) => f.endsWith(`-${fmt}.png`)).sort((a, b) => slideNo(a) - slideNo(b))
+      .map((f) => `/media/event-carousels/${eventSlug}/${f}`);
+  return { instagram: byFormat('instagram'), linkedin: byFormat('linkedin') };
+}
+
+/** Themen-Karussells (4 Slides pro Talk), gruppiert nach Speaker-Slug. */
+function topicCarouselsFor(eventSlug: string, speakerSlugs: string[]) {
+  const files = listDir(`/media/topic-carousels/${eventSlug}`);
+  return speakerSlugs
+    .map((slug) => {
+      const mine = files.filter((f) => f.startsWith(`${slug}-slide-`));
+      const byFormat = (fmt: string) =>
+        mine.filter((f) => f.endsWith(`-${fmt}.png`)).sort((a, b) => slideNo(a) - slideNo(b))
+          .map((f) => `/media/topic-carousels/${eventSlug}/${f}`);
+      return { slug, instagram: byFormat('instagram'), linkedin: byFormat('linkedin') };
+    })
+    .filter((t) => t.instagram.length > 0);
+}
+
+/** #speakerintro-Karte (Portrait) pro Speaker und Event. */
+function introCardFor(eventSlug: string, speakerSlug: string) {
+  const p = `/media/speaker-intro-cards/${eventSlug}/${speakerSlug}.png`;
+  return exists(p) ? p : null;
+}
+
 const today = '2026-09-01';
 const sorted = [...events].sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''));
 const upcoming = sorted.filter((e) => (e.data.eventDate ?? '') >= today);
@@ -48,11 +83,20 @@ const rows = orderedEvents.map((e) => {
   const people = speakerIds
     .map((id) => speakerById.get(id))
     .filter((s): s is NonNullable<typeof s> => Boolean(s))
-    .map((s) => ({ ...s, media: mediaFor(s.slug) }));
+    .map((s) => ({ ...s, media: mediaFor(s.slug), introCard: introCardFor(e.data.slug, s.slug) }));
   const eventSponsors = (e.data.sponsorIds ?? [])
     .map((id) => sponsorById.get(id))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
-  return { event: e.data, people, sponsors: eventSponsors, lineup: lineupFor(e.data.slug), isUpcoming: (e.data.eventDate ?? '') >= today };
+  const speakerName = (slug: string) => people.find((p) => p.slug === slug)?.title ?? slug;
+  return {
+    event: e.data,
+    people,
+    sponsors: eventSponsors,
+    lineup: lineupFor(e.data.slug),
+    carousel: carouselFor(e.data.slug),
+    topicCarousels: topicCarouselsFor(e.data.slug, people.map((p) => p.slug)).map((t) => ({ ...t, name: speakerName(t.slug) })),
+    isUpcoming: (e.data.eventDate ?? '') >= today,
+  };
 });
 ---
 
@@ -69,7 +113,7 @@ const rows = orderedEvents.map((e) => {
       <h1 class="display-font">Produktionsmedien</h1>
       <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
 
-      {rows.map(({ event, people, sponsors, lineup, isUpcoming }) => (
+      {rows.map(({ event, people, sponsors, lineup, carousel, topicCarousels, isUpcoming }) => (
         <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
           <h2>
             {event.title}
@@ -92,6 +136,59 @@ const rows = orderedEvents.map((e) => {
                 </a>
               )}
             </div>
+          )}
+
+          {carousel.instagram.length > 0 && (
+            <>
+              <h3 class="subheading">Event-Karussell (Line-up → Talks → Follow)</h3>
+              {(['instagram', 'linkedin'] as const).map((fmt) => (
+                <div class="strip">
+                  <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
+                  {carousel[fmt].map((src, i) => (
+                    <a href={src} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : ''}`}>
+                      <img src={src} alt="" loading="lazy" />
+                      <span>Slide {i + 1}</span>
+                    </a>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+
+          {topicCarousels.length > 0 && (
+            <>
+              <h3 class="subheading">Themen-Karussells (Hook → Inhalt → Speaker → Follow)</h3>
+              {topicCarousels.map((t) => (
+                <div>
+                  <p class="strip-title">{t.name}</p>
+                  {(['instagram', 'linkedin'] as const).map((fmt) => (
+                    <div class="strip">
+                      <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
+                      {t[fmt].map((src, i) => (
+                        <a href={src} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : ''}`}>
+                          <img src={src} alt="" loading="lazy" />
+                          <span>Slide {i + 1}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+
+          {people.some((p) => p.introCard) && (
+            <>
+              <h3 class="subheading">#speakerintro-Karten (Portrait 1080×1350)</h3>
+              <div class="strip">
+                {people.filter((p) => p.introCard).map((p) => (
+                  <a href={p.introCard} target="_blank" class="slide slide-tall">
+                    <img src={p.introCard} alt="" loading="lazy" />
+                    <span>{p.title}</span>
+                  </a>
+                ))}
+              </div>
+            </>
           )}
 
           {people.length > 0 && (
@@ -223,6 +320,64 @@ const rows = orderedEvents.map((e) => {
     font-size: 1rem;
     color: var(--text-secondary);
     margin: 1.5rem 0 1rem;
+  }
+  .strip {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+  .strip-label {
+    flex-basis: 100%;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+  .strip-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 1rem 0 0.4rem;
+  }
+  .slide {
+    display: block;
+    width: 132px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-glass);
+  }
+  .slide img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  .slide-wide {
+    width: 200px;
+  }
+  .slide-wide img {
+    aspect-ratio: 1200/627;
+  }
+  .slide-tall {
+    width: 150px;
+  }
+  .slide-tall img {
+    aspect-ratio: 1080/1350;
+  }
+  .slide span {
+    display: block;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .slide:hover span {
+    color: var(--text-primary);
   }
   .grid {
     display: grid;
