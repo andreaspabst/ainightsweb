@@ -85,8 +85,23 @@ async function hookSlide(fmt, kit, speaker, talk, logo) {
   });
   layers.push({ input: title.data, top: pillY + pillH + (square ? 44 : 28), left: margin });
 
-  const by = await textImg(`mit ${speaker.title}`, { family: 'Inter SemiBold', size: square ? 27 : 22, color: C.muted, maxWidth: W - margin * 2 });
-  layers.push({ input: by.data, top: pillY + pillH + (square ? 44 : 28) + title.info.height + (square ? 26 : 16), left: margin });
+  // Speaker-Foto + Byline unten links (über der Fußzeile)
+  const pr = square ? 66 : 52;
+  const lineY = H - 122;
+  const pCY = lineY - pr - (square ? 34 : 24);
+  layers.push({ input: ring(W, H, margin + pr, pCY, pr + 4, 5), top: 0, left: 0 });
+  layers.push({ input: await circlePhoto(speaker, pr * 2), top: pCY - pr, left: margin });
+  const byX = margin + pr * 2 + (square ? 28 : 22);
+  const byMax = (visual ? W - margin - (square ? 400 : 320) : W - margin) - byX - 24;
+  const by = await textImg(`mit ${speaker.title}`, { family: 'Inter ExtraBold', size: square ? 27 : 22, color: C.text, maxWidth: byMax });
+  if (speaker.jobTitle) {
+    const role = await textImg(speaker.jobTitle, { family: 'Inter', size: square ? 20 : 17, color: C.muted, maxWidth: byMax, maxHeight: square ? 52 : 44, wrap: true });
+    const blockH = by.info.height + 8 + role.info.height;
+    layers.push({ input: by.data, top: pCY - Math.round(blockH / 2), left: byX });
+    layers.push({ input: role.data, top: pCY - Math.round(blockH / 2) + by.info.height + 8, left: byX });
+  } else {
+    layers.push({ input: by.data, top: pCY - Math.round(by.info.height / 2), left: byX });
+  }
 
   layers.push(...(await footer(W, H, kit.event, { margin })));
   return sharp(background(W, H)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
