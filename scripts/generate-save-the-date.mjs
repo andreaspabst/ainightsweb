@@ -98,37 +98,63 @@ function swoosh(y, height, bend, flip = false) {
   </svg>`);
 }
 
-/** „SAVE THE DATE“-Stempel: weißes Band mit dunkler Schrift, leicht gedreht. */
-async function stamp(text, { angle = -9, fontSize = 58 } = {}) {
-  const label = await textImg(text.toUpperCase(), {
-    family: 'Inter Black',
-    size: fontSize,
-    color: '#151019',
-    maxWidth: 900,
-    letterSpacing: 2,
-  });
-  const padX = 40;
-  const padY = 20;
-  const w = label.info.width + padX * 2;
-  const h = label.info.height + padY * 2;
-  const bend = 16;
-  // Wölbung nach AUSSEN, damit die Textfläche an jeder Stelle im Weiß liegt —
-  // an den Enden sitzen die Kanten exakt auf bend bzw. bend+h.
-  const banner = Buffer.from(`<svg width="${w}" height="${h + bend * 2}" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 ${bend} Q ${w / 2} 0 ${w} ${bend}
-             L ${w} ${bend + h} Q ${w / 2} ${bend * 2 + h} 0 ${bend + h} Z"
-          fill="#ffffff"/>
-  </svg>`);
-  // Zwei Durchgänge: sharp wendet .rotate() auf das EINGANGSBILD an, also vor
-  // dem Composite — Band und Text müssen erst fertig sein, dann gedreht werden.
-  const flat = await sharp(banner)
-    .composite([{ input: label.data, top: bend + padY, left: padX }])
-    .png()
-    .toBuffer();
-  return sharp(flat)
+/** „SAVE THE DATE“-Stempel: das Original-Asset (weiße Platte mit ausgesparter
+ *  Schrift, weiß auf transparent). Es liegt nur in 300×100 px vor — beim
+ *  Hochskalieren wird der Alphakanal deshalb gehärtet, sonst franst die
+ *  Grafik aus. Fehlt das Asset, wird der Schriftzug gesetzt statt gezeichnet. */
+const STAMP_ASSET = path.join(PUBLIC, 'img/social/save-the-date-stamp.png');
+
+async function stamp({ width = 620, angle = -9 } = {}) {
+  let flat;
+  try {
+    await fs.access(STAMP_ASSET);
+    const up = await sharp(STAMP_ASSET)
+      .trim({ threshold: 5 })
+      .resize({ width, kernel: 'lanczos3' })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const px = Buffer.from(up.data);
+    for (let i = 0; i < px.length; i += 4) {
+      const on = px[i + 3] > 102; // ab ~40 % Deckung: volles Weiß, sonst transparent
+      px[i] = px[i + 1] = px[i + 2] = px[i + 3] = on ? 255 : 0;
+    }
+    flat = await sharp(px, { raw: { width: up.info.width, height: up.info.height, channels: 4 } })
+      .png()
+      .toBuffer();
+  } catch {
+    const label = await textImg('SAVE THE DATE', {
+      family: 'Inter Black', size: 58, color: '#151019', maxWidth: 900, letterSpacing: 2,
+    });
+    const padX = 40;
+    const padY = 20;
+    const w = label.info.width + padX * 2;
+    const h = label.info.height + padY * 2;
+    const bend = 16;
+    const banner = Buffer.from(`<svg width="${w}" height="${h + bend * 2}" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 ${bend} Q ${w / 2} 0 ${w} ${bend} L ${w} ${bend + h} Q ${w / 2} ${bend * 2 + h} 0 ${bend + h} Z" fill="#ffffff"/>
+    </svg>`);
+    flat = await sharp(banner).composite([{ input: label.data, top: bend + padY, left: padX }]).png().toBuffer();
+  }
+  // Zweiter Durchgang: sharp wendet .rotate() auf das Eingangsbild an, also vor
+  // dem Composite — erst fertig zusammensetzen, dann drehen.
+  const rotated = await sharp(flat)
     .rotate(angle, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png()
     .toBuffer();
+  // Plattenfläche in identischer Drehung: dient als Maske für die Abdunklung
+  // unter den ausgesparten Buchstaben.
+  const meta = await sharp(flat).metadata();
+  const plate = await sharp({
+    create: { width: meta.width, height: meta.height, channels: 4, background: { r: 15, g: 1, b: 34, alpha: 0.55 } },
+  })
+    .png()
+    .toBuffer();
+  const plateRotated = await sharp(plate)
+    .rotate(angle, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toBuffer();
+  return { stamp: rotated, plate: plateRotated };
 }
 
 async function card(kit, imageRel, logo) {
@@ -174,10 +200,15 @@ async function card(kit, imageRel, logo) {
     left: Math.round((W - logoMeta.width) / 2),
   });
 
-  // Stempel oben rechts, über das Datum-Band hinweg
-  const st = await stamp('Save the Date');
-  const stMeta = await sharp(st).metadata();
-  layers.push({ input: st, top: 118, left: Math.max(0, W - stMeta.width - 34) });
+  // Stempel oben rechts, über das Datum-Band hinweg. Die Buchstaben sind
+  // ausgespart — damit sie auf hellen Fotos lesbar bleiben, liegt die
+  // abgedunkelte Plattenfläche darunter; sichtbar wird sie nur in den Aussparungen.
+  const st = await stamp();
+  const stMeta = await sharp(st.stamp).metadata();
+  const stTop = 118;
+  const stLeft = Math.max(0, W - stMeta.width - 34);
+  layers.push({ input: st.plate, top: stTop, left: stLeft });
+  layers.push({ input: st.stamp, top: stTop, left: stLeft });
 
   return sharp(await photoLayer(imageRel)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 }
