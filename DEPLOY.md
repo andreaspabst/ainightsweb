@@ -45,6 +45,9 @@ location / {
     try_files $uri $uri/ $uri/index.html =404;
 }
 
+# Custom 404-Seite (Astro baut src/pages/404.astro immer flach nach dist/404.html)
+error_page 404 /404.html;
+
 # Cache-Header für Astro-Assets
 location /_astro/ {
     expires 1y;

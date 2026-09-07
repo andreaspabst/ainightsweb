@@ -1,0 +1,230 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const links = [
+  { label: 'Tickets & upcoming events', href: '/de/tickets/', icon: '🎟️' },
+  { label: 'Speaker line-up', href: '/speaker/', icon: '🎤' },
+  { label: 'Blog', href: '/blog/', icon: '📝' },
+  { label: 'Sponsoring', href: '/de/sponsoring/', icon: '🤝' },
+];
+---
+
+<Layout
+  lang="en"
+  title="404 — This page went off to grab a coffee"
+  description="This page doesn't exist (yet). Head back to AI Nights and find the next event, speaker line-up or blog post instead."
+  path="/404/"
+  noindex={true}
+>
+  <Header lang="en" />
+  <main class="container error-page">
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+
+    <div class="error-stage">
+      <p class="eyebrow">Error 404 · Session not found</p>
+      <h1 class="display-font glitch" data-text="404">404</h1>
+      <h2 class="display-font">This page didn't RSVP.</h2>
+      <p class="sub">
+        Looks like this URL wandered off mid-networking break and never came back. It might have moved,
+        been renamed, or maybe it never existed — happens to the best demos.
+      </p>
+
+      <div class="actions">
+        <a href="/de/" class="btn btn-primary">Take me home ↗</a>
+        <a href="/de/tickets/" class="btn btn-ghost">See upcoming AI Nights</a>
+      </div>
+
+      <div class="quicklinks">
+        <p class="quicklinks-label">Or jump straight to:</p>
+        <div class="quicklinks-grid">
+          {
+            links.map((l) => (
+              <a href={l.href} class="quicklink">
+                <span class="ql-icon" aria-hidden="true">{l.icon}</span>
+                <span>{l.label}</span>
+                <span class="ql-arrow" aria-hidden="true">→</span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer lang="en" />
+</Layout>
+
+<style>
+  .error-page {
+    position: relative;
+    padding-block: clamp(4rem, 10vw, 8rem) clamp(3rem, 8vw, 6rem);
+    overflow: clip;
+    display: grid;
+    place-items: center;
+    min-height: min(78vh, 900px);
+    text-align: center;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb-1 {
+    width: clamp(260px, 34vw, 480px);
+    height: clamp(260px, 34vw, 480px);
+    background: radial-gradient(circle, rgba(255, 45, 122, 0.55), transparent 70%);
+    top: -8%;
+    left: -8%;
+  }
+  .orb-2 {
+    width: clamp(220px, 30vw, 420px);
+    height: clamp(220px, 30vw, 420px);
+    background: radial-gradient(circle, rgba(46, 163, 242, 0.5), transparent 70%);
+    bottom: -10%;
+    right: -6%;
+    animation-delay: -7s;
+    animation-direction: reverse;
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(3%, -4%) scale(1.08); }
+  }
+
+  .error-stage {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .glitch {
+    font-size: clamp(5.5rem, 20vw, 11rem);
+    line-height: 0.9;
+    margin: 0.2rem 0 0.4rem;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+    letter-spacing: -0.02em;
+  }
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0.7;
+  }
+  .glitch::before {
+    animation: glitch-1 4.5s infinite linear;
+    clip-path: inset(0 0 60% 0);
+  }
+  .glitch::after {
+    animation: glitch-2 4.5s infinite linear;
+    clip-path: inset(60% 0 0 0);
+  }
+  @keyframes glitch-1 {
+    0%, 88%, 100% { transform: translate(0, 0); opacity: 0; }
+    89% { transform: translate(-6px, -2px); opacity: 0.8; }
+    91% { transform: translate(5px, 1px); opacity: 0.8; }
+    93% { transform: translate(0, 0); opacity: 0; }
+  }
+  @keyframes glitch-2 {
+    0%, 90%, 100% { transform: translate(0, 0); opacity: 0; }
+    91% { transform: translate(6px, 2px); opacity: 0.8; }
+    93.5% { transform: translate(-5px, -1px); opacity: 0.8; }
+    95% { transform: translate(0, 0); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orb,
+    .glitch::before,
+    .glitch::after {
+      animation: none;
+    }
+  }
+
+  .error-stage h2 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    margin: 0 0 0.9rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 46ch;
+    margin: 0 auto 2.2rem;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .quicklinks {
+    width: 100%;
+  }
+  .quicklinks-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .quicklinks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    text-align: left;
+  }
+  .quicklink {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: border-color 0.2s ease, transform 0.15s ease, background 0.2s ease;
+  }
+  .quicklink:hover {
+    border-color: var(--magenta-bright);
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .ql-icon {
+    font-size: 1.15rem;
+  }
+  .ql-arrow {
+    margin-left: auto;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+  }
+  .quicklink:hover .ql-arrow {
+    transform: translateX(3px);
+    color: var(--magenta-bright);
+  }
+
+  @media (max-width: 600px) {
+    .quicklinks-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
