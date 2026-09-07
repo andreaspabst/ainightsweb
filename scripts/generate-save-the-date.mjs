@@ -10,7 +10,7 @@
  * bestimmtes Bild setzen, mit --seed die Auswahl reproduzieren.
  *
  * Veroeffentlichung: rund zwei Monate vor dem Event auf LinkedIn und Instagram
- * (Terminierung siehe Skill speaker-intro-posts).
+ * (Terminierung siehe Skill event-social-posts).
  *
  * Ausgabe: public/media/save-the-date/<event-slug>.png
  *
