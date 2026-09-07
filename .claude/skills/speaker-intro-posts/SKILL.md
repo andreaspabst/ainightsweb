@@ -1,24 +1,33 @@
 ---
 name: speaker-intro-posts
-description: >-
-  Plant für jeden bestätigten Speaker eines Events den #speakerintro-Post auf
-  Instagram in Linkrex ein (Karte generieren, hochladen, terminieren nach dem
-  5/4/3-Wochen-Schema, dienstags 9:00). Proaktiv anwenden, sobald ein Event
-  neue bestätigte Speaker/Sessions bekommt — zusammen mit announce-speakers
-  (Blogpost) und event-lineup-graphic (Line-up-Grafik).
+description: Plant für jeden bestätigten Speaker eines Events den #speakerintro-Post und für das komplette Line-up den Line-up-Post in Metricool ein (Karte generieren, deployen, terminieren nach dem 5/4/3-Wochen-Schema, dienstags 9:00, Instagram + LinkedIn). Proaktiv anwenden, sobald ein Event neue bestätigte Speaker/Sessions bekommt — zusammen mit announce-speakers (Blogpost) und event-lineup-graphic (Line-up-Grafik).
 ---
 
-# #speakerintro-Posts generieren und in Linkrex einplanen
+# #speakerintro- und Line-up-Posts in Metricool einplanen
 
-Jeder bestätigte Speaker bekommt einen Instagram-Post mit seiner
-#speakerintro-Karte — automatisch terminiert im Wochenrhythmus vor dem Event.
+Jeder bestätigte Speaker bekommt einen Post mit seiner #speakerintro-Karte,
+das vollständige Line-up einen eigenen Post — terminiert im Wochenrhythmus vor
+dem Event.
 
-## Wann anwenden
+## Social Media läuft über Metricool
 
-**Proaktiv daran denken**, wenn in diesem Repo ein Event unter
-`src/content/events/` neue bestätigte Speaker bekommt (Platzhalter
-`ai-nights-speaker-…` zählen nicht). Dann prüfen, ob für jeden Speaker schon
-ein Intro-Post in Linkrex geplant/veröffentlicht ist — fehlende ergänzen.
+**Linkrex nicht mehr verwenden.** Social-Media-Planung für die AI Nights läuft
+ausschließlich über den Metricool-MCP (`mcp__Metricool_…`). Die
+Linkrex-Konnektoren existieren zwar noch, sind aber für die AI Nights raus —
+doppelt geplante Posts gehen sonst zweimal auf denselben Kanälen raus.
+
+- **Brand:** „ainights.ai Social Media", `blogId` **5545128**,
+  Zeitzone `Europe/Berlin` (per `getBrandSettings` gegenprüfen, nicht raten —
+  im selben Konto liegen u. a. „der.pabst", „Agents im Weggla" und
+  „dermannimkleid").
+- **Netzwerke pro Ankündigung: Instagram *und* LinkedIn**, als **zwei
+  getrennte Posts** zur selben Zeit (so liegen die bestehenden Posts vor):
+  - Instagram: Textende „Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️",
+    `instagramData: {"type":"POST","showReelOnFeed":true,"isAiGenerated":false}`
+  - LinkedIn: statt „Link in Bio" die volle Event-URL,
+    `linkedinData: {"previewIncluded":true,"type":"post"}`
+- Hashtags stehen **im Text**, nicht im separaten Feld.
+- `mediaAltText` immer setzen — beschreibt, wer auf der Karte zu sehen ist.
 
 ## Schritt 1: Assets generieren und deployen
 
@@ -26,58 +35,66 @@ ein Intro-Post in Linkrex geplant/veröffentlicht ist — fehlende ergänzen.
 node scripts/generate-speaker-intro-cards.mjs <event-slug>
 node scripts/generate-event-carousel.mjs <event-slug>
 node scripts/generate-topic-carousels.mjs <event-slug>
+node scripts/generate-event-lineup.mjs <event-slug>
 ```
 
-Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn der
-Linkrex-Upload zieht die Karte per URL von der Live-Site:
-`https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>.png`
+Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn
+Metricool lädt die Bilder per öffentlicher URL von der Live-Site:
 
-## Schritt 2: Termin bestimmen
+- `https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>.png`
+- `https://ainights.ai/media/event-lineups/<event-slug>-instagram.png` bzw. `-linkedin.png`
+
+Metricool kopiert die Datei beim Anlegen in die eigene Mediathek; die
+Antwort enthält dann eine `static.metricool.com`-URL. Das ist normal.
+
+## Schritt 2: Termine bestimmen
 
 - Grundregel: **Dienstag 09:00 Uhr**, Speaker in Slot-Reihenfolge auf die
-  Dienstage **~5, ~4 und ~3 Wochen vor dem Event** (bei Nicht-Dienstag-Events
-  zählt der Dienstag der jeweiligen Woche).
-- **Kollision** (in derselben Woche ist bereits ein Post einer anderen Serie
-  geplant, oder der Dienstag ist selbst ein Event-Tag): **anderen Wochentag
-  derselben Woche nehmen** — bevorzugt Donnerstag 09:00.
-- Vorher mit `list_scheduled_posts` (Connection s. u.) prüfen, was schon
-  geplant ist. Ist das Schema zeitlich nicht mehr möglich (< 3 Wochen
-  Vorlauf), kurz beim Nutzer nachfragen statt still zu quetschen.
-- Kommt ein Speaker nachträglich dazu, bekommt er den nächsten freien
-  Dienstag im Schema (oder Ausweichtag).
+  Dienstage **~5, ~4 und ~3 Wochen vor dem Event**.
+- **Line-up-Post**: eigener Termin, wenn alle Slots stehen — bewährt hat sich
+  der Dienstag **eine Woche vor dem Event**.
+- **Vorher immer** `getScheduledPosts` für den Zeitraum abfragen. In derselben
+  Woche laufen oft schon Posts anderer Events (Nürnberg und München
+  überschneiden sich regelmäßig) — bei Kollision einen anderen Wochentag
+  derselben Woche nehmen, bevorzugt Donnerstag 09:00.
+- Ist das Schema zeitlich nicht mehr möglich (< 3 Wochen Vorlauf), kurz beim
+  Nutzer nachfragen statt still zu quetschen.
+- Kommt ein Speaker nachträglich dazu, bekommt er den nächsten freien Termin
+  im Schema.
 
-## Schritt 3: In Linkrex einplanen
+## Schritt 3: Posts anlegen
 
-Es gibt **zwei Linkrex-MCP-Konnektoren** — den verwenden, dessen
-`list_social_decks` das Deck **„AI Nights"** enthält (Deck-ID 3, Instagram-
-Connection-ID 1001; im Zweifel per `list_deck_connections` verifizieren —
-niemals ins falsche Deck wie „DerMannImKleid" planen).
+`createScheduledPost` mit `blogId`, `date` (ISO 8601 mit Offset) und `info`:
 
-1. `upload_media_from_url` mit der Live-URL der Karte,
-   Dateiname `speakerintro-<speaker-slug>.png` → `upload_id` merken.
-2. `create_scheduled_post` mit:
-   - `connection_id`: die AI-Nights-Instagram-Connection
-   - **nur Instagram** — kein TikTok, kein LinkedIn (Stand: bewusst so
-     entschieden; LinkedIn ist in Linkrex ohnehin nicht verbunden)
-   - `scheduled_at`: `YYYY-MM-DD 09:00:00` (Linkrex rechnet Berlin-Zeit)
-   - `title`: `Speakerintro <Name> (<Event-Kürzel>)`
-   - `upload_ids`: [upload_id]
-   - `content` nach diesem Muster (Ton wie bestehende Posts, keine
-     erfundenen Fakten):
+```json
+{
+  "text": "…",
+  "media": ["https://ainights.ai/media/speaker-intro-cards/<event>/<slug>.png"],
+  "mediaAltText": ["…"],
+  "providers": [{"network": "instagram"}],
+  "publicationDate": {"dateTime": "2026-10-27T09:00:00", "timezone": "Europe/Berlin"},
+  "autoPublish": true, "draft": false, "shortener": false,
+  "instagramData": {"type": "POST", "showReelOnFeed": true, "isAiGenerated": false}
+}
+```
 
-     ```
-     #speakerintro <Emoji> <Einstiegszeile mit Event + Datum>: <Name>, <Rolle/Unternehmen>.
+Textmuster (Ton wie die bestehenden Posts, keine erfundenen Fakten):
 
-     Sein/Ihr Talk: „<Talk-Titel>" <Emoji>
+```
+#speakerintro <Emoji> <Einstiegszeile mit Event + Datum>: <Name>, <Rolle/Unternehmen>.
 
-     Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️
-     ```
-   - `hashtags`: immer `ainights` + `ki` + Stadt + 1–2 Themen-Tags;
-     bei AI-Woman-Nights-Events zusätzlich `aiwomannights` + `womenintech`.
+Sein/Ihr Talk: „<Talk-Titel>" <Emoji>
+
+Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️
+
+#ainights #ki #<stadt> #<thema1> #<thema2>
+```
+
+Bei AI-Woman-Nights-Events zusätzlich `#aiwomannights` und `#womenintech`.
 
 ## Danach
 
-Kurz per `list_scheduled_posts` verifizieren und dem Nutzer eine Tabelle
-(Datum, Speaker, Event, Linkrex-ID) zeigen. Nicht vergessen: Blogpost
+Kurz per `getScheduledPosts` verifizieren und dem Nutzer eine Tabelle (Datum,
+Speaker, Netzwerk, Post-ID) zeigen. Nicht vergessen: Blogpost
 (`announce-speakers`) und ggf. Voucher (`speaker-vouchers`) gehören zum
 selben Anlass.
