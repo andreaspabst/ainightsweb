@@ -1,6 +1,7 @@
 {
   "path": "/de/legal-notice/",
   "lang": "de",
+  "alternates": { "de": "/de/legal-notice/", "en": "/en/legal-notice/" },
   "title": "Impressum",
   "seoTitle": "Impressum - AI Nights",
   "description": "testpage",

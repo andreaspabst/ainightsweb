@@ -21,12 +21,12 @@ const sponsorColl = await getCollection('sponsor');
 const byId = (coll: any[]) => new Map(coll.filter((x) => x.data.id).map((x) => [x.data.id, x]));
 const spMap = byId(speakerColl);
 const spoMap = byId(sponsorColl);
-// Namen auflösen; Platzhalter-Slots werden zu „Wird noch bekanntgegeben“
+// Namen auflösen; Platzhalter-Slots werden zu „To be announced“
 const names = (ids: number[] | undefined, m: Map<number, any>) => {
   const slots = (ids ?? []).map((id) => m.get(id)).filter(Boolean);
   const real = slots.filter((s) => !isPlaceholderSpeaker(s)).map((s) => s.data.title) as string[];
   const tba = slots.length - real.length;
-  if (tba > 0) real.push(real.length > 0 ? 'weitere werden noch bekanntgegeben' : 'Wird noch bekanntgegeben');
+  if (tba > 0) real.push(real.length > 0 ? 'more to be announced' : 'To be announced');
   return real;
 };
 
@@ -38,7 +38,7 @@ function fmtDate(dt?: string) {
   if (!dt) return null;
   const p = new Date(dt);
   if (isNaN(p.getTime())) return dt;
-  return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  return p.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 }
 
 const cards = upcoming.map((e) => {
@@ -56,7 +56,7 @@ const cards = upcoming.map((e) => {
     city: d.city,
     locationName: d.locationName,
     dateLabel: fmtDate(d.eventDate),
-    timeLabel: d.startTime ? `${d.startTime} Uhr` : null,
+    timeLabel: d.startTime ?? null,
     speakers: joinNames(names(d.speakerIds, spMap)),
     speakerAvatars: realSpeakers.slice(0, 5).map((s) => ({ src: s.data.image?.src, alt: s.data.title })),
     speakerCount: speakerSlots.length,
@@ -70,25 +70,25 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
 ---
 
 <Layout
-  lang="de"
+  lang="en"
   title="Tickets - AI Nights"
-  description="Holt euch eure Tickets für AI Nights Events und werdet Teil unserer großartigen Community. Alle kommenden Afterwork-Meetups in Nürnberg und München im Überblick."
-  path="/de/tickets/"
+  description="Grab your tickets for AI Nights events and become part of our great community. All upcoming afterwork meetups in Nuremberg and Munich at a glance."
+  path="/en/tickets/"
   alternates={{ de: '/de/tickets/', en: '/en/tickets/' }}
 >
-  <Header lang="de" />
+  <Header lang="en" />
   <main>
     <section id="eventlist" class="meetups section">
       <div class="container">
         <div class="intro">
-          <p class="eyebrow">Jetzt dabei sein</p>
+          <p class="eyebrow">Join us now</p>
           <h1 class="display-font">Tickets</h1>
-          <p class="sub center">Holt euch eure Tickets für AI&nbsp;Nights Events und werdet Teil unserer großartigen Community.</p>
+          <p class="sub center">Grab your tickets for AI&nbsp;Nights events and become part of our great community.</p>
         </div>
 
         {cities.length > 1 && (
-          <div class="city-filter" role="group" aria-label="Nach Stadt filtern">
-            <button type="button" class="filter-btn active" data-city="alle">Alle Städte</button>
+          <div class="city-filter" role="group" aria-label="Filter by city">
+            <button type="button" class="filter-btn active" data-city="alle">All cities</button>
             {cities.map((city) => (
               <button type="button" class="filter-btn" data-city={city} style={`--city-color: ${cityColor(city)}`}>
                 {city}
@@ -121,7 +121,7 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                   {c.timeLabel && (
                     <li>
                       <span class="icon">🕐</span>
-                      <span>Einlass ab {c.timeLabel}</span>
+                      <span>Doors open at {c.timeLabel}</span>
                     </li>
                   )}
                   {(c.city || c.locationName) && (
@@ -145,10 +145,10 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                                 ? <img src={imgVariant(s.src, 96)} alt="" loading="lazy" />
                                 : <span class="card-speakers-fallback">✨</span>
                             ))}
-                            <strong class="card-speakers-count">{c.speakerCount} Speaker</strong>
+                            <strong class="card-speakers-count">{c.speakerCount} Speakers</strong>
                           </span>
                         ) : (
-                          <strong>Speaker</strong>
+                          <strong>Speakers</strong>
                         )}
                         <br />
                         {c.speakers}
@@ -159,7 +159,7 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                     <li>
                       <span class="icon">✨</span>
                       <span>
-                        <strong>Sponsoren</strong>
+                        <strong>Sponsors</strong>
                         <br />
                         {c.sponsors}
                       </span>
@@ -167,7 +167,7 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                   )}
                 </ul>
 
-                <a href={`/events/${c.slug}/`} class="secure">Platz sichern&nbsp;→</a>
+                <a href={`/events/${c.slug}/`} class="secure">Secure your spot&nbsp;→</a>
               </div>
             </article>
           ))}
@@ -175,7 +175,7 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
       </div>
     </section>
   </main>
-  <Footer lang="de" />
+  <Footer lang="en" />
 </Layout>
 
 <script>

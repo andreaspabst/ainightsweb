@@ -9,55 +9,55 @@ const FORM_URL = 'https://airtable.com/embed/appiiUytKG0IcB1Gn/pagwZn8nOT2VxiHrQ
 const benefits = [
   {
     img: '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-168.jpg',
-    alt: 'AI Nights Nürnberg',
-    title: 'Events erleben',
-    text: 'Events sind deine große Leidenschaft? Sei bei den AI Nights Events dabei!',
+    alt: 'AI Nights Nuremberg',
+    title: 'Experience events',
+    text: 'Events are your big passion? Join us at the AI Nights events!',
   },
   {
     img: '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-154.jpg',
-    alt: 'AI Nights Nürnberg',
-    title: 'Food & Drinks for you',
-    text: 'Am Tag des Events erhältst Du Food & Drinks aufs Haus! Als Helping Hand bzw. Volunteer hast Du besonderen Zugang.',
+    alt: 'AI Nights Nuremberg',
+    title: 'Food & drinks for you',
+    text: 'On the day of the event, you get food & drinks on the house! As a helping hand / volunteer you get special access.',
   },
   {
     img: '/wp-content/uploads/2026/01/28-ianight-28-scaled.jpg',
-    alt: 'AI Nights Nürnberg',
-    title: 'Connecte dich',
-    text: 'Du erlebst das Event mal von der anderen Seite! Unsere Speakerinnen und Speaker freuen sich schon darauf, dich kennen zu lernen!',
+    alt: 'AI Nights Nuremberg',
+    title: 'Connect',
+    text: 'Experience the event from the other side for once! Our speakers are already looking forward to meeting you!',
   },
 ];
 ---
 
 <Layout
-  lang="de"
-  title="Volunteer Bewerbung - AI Nights"
-  description="Werde Volunteer bei den AI Nights Events: Blicke hinter die Kulissen, hilf bei Marketing, Technik und Einlass – und genieße Food & Drinks aufs Haus. Jetzt bewerben!"
-  path="/de/volunteer-bewerbung/"
+  lang="en"
+  title="Volunteer Application - AI Nights"
+  description="Become a volunteer at AI Nights events: look behind the scenes, help with marketing, tech and check-in — and enjoy food & drinks on the house. Apply now!"
+  path="/en/volunteer-application/"
   alternates={{ de: '/de/volunteer-bewerbung/', en: '/en/volunteer-application/' }}
 >
-  <Header lang="de" />
+  <Header lang="en" />
   <main>
     <section class="hero section">
       <div class="container">
-        <p class="eyebrow">Volunteer werden</p>
-        <h1 class="display-font">Sei bei den AI&nbsp;Nights Events dabei</h1>
+        <p class="eyebrow">Become a volunteer</p>
+        <h1 class="display-font">Join us at the AI&nbsp;Nights events</h1>
         <p class="sub">
-          Bei unseren Events gibt es immer jede Menge tolle Dinge zu tun und zu lernen!
-          <strong>Allen voran natürlich auch das Networking!</strong>
+          There's always plenty of great things to do and learn at our events!
+          <strong>And, of course, the networking above all!</strong>
         </p>
-        <h2 class="display-font sub-head">Event Volunteers</h2>
-        <p class="sub">Sei beim Marketing dabei, Eventtechnik, Einlass, Showtechnik, Bühnentechnik, Equipment oder den Vorbereitungen!</p>
-        <a href="#signup-form" class="btn btn-primary">Jetzt bewerben</a>
+        <h2 class="display-font sub-head">Event volunteers</h2>
+        <p class="sub">Help out with marketing, event tech, check-in, show tech, stage tech, equipment or the setup!</p>
+        <a href="#signup-form" class="btn btn-primary">Apply now</a>
       </div>
     </section>
 
     <section class="section">
       <div class="container center-head">
-        <p class="eyebrow">Warum Volunteer werden?</p>
-        <h2 class="display-font">Vorteile für Volunteers</h2>
+        <p class="eyebrow">Why become a volunteer?</p>
+        <h2 class="display-font">Benefits for volunteers</h2>
         <p class="sub center">
-          Wenn Du schon immer mal bei regelmäßigen, größeren Events dabei sein wolltest und hinter die Kulissen blicken
-          wolltest, dann ist dies der perfekte Moment für dich!
+          If you've always wanted to be part of regular, larger events and get a look behind the scenes,
+          now's the perfect moment for you!
         </p>
         <div class="grid three">
           {benefits.map((b) => (
@@ -75,17 +75,17 @@ const benefits = [
 
     <section id="signup-form" class="section form-section">
       <div class="container center-head">
-        <p class="eyebrow">Bewirb Dich jetzt</p>
-        <h2 class="display-font">Bereit, das Event anders zu erleben?</h2>
-        <p class="sub center">Einfach das Formular ausfüllen und wir melden uns bei dir!</p>
+        <p class="eyebrow">Apply now</p>
+        <h2 class="display-font">Ready to experience the event differently?</h2>
+        <p class="sub center">Just fill out the form and we'll get back to you!</p>
         <div class="form-embed card">
-          <iframe src={FORM_URL} title="Formular Volunteer Bewerbung" loading="lazy"></iframe>
+          <iframe src={FORM_URL} title="Volunteer application form" loading="lazy"></iframe>
         </div>
-        <a href={FORM_URL} target="_blank" rel="noopener" class="btn btn-ghost">Jetzt in neuem Tab öffnen</a>
+        <a href={FORM_URL} target="_blank" rel="noopener" class="btn btn-ghost">Open in a new tab</a>
       </div>
     </section>
   </main>
-  <Footer lang="de" />
+  <Footer lang="en" />
 </Layout>
 
 <style>

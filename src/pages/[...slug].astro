@@ -28,13 +28,19 @@ export async function getStaticPaths() {
     '/de/',
     '/en/',
     '/de/galerie/',
+    '/en/gallery/',
     '/de/sponsors/',
     '/en/our-sponsors/',
     '/de/tickets/',
+    '/en/tickets/',
     '/de/formate/',
+    '/en/formats/',
     '/de/speaker-application/',
+    '/en/speaker-application/',
     '/de/sponsoring/',
+    '/en/become-sponsor/',
     '/de/volunteer-bewerbung/',
+    '/en/volunteer-application/',
   ]);
   return Object.values(modules)
     .map((m: any) => m.default ?? m)
@@ -62,6 +68,7 @@ const description = page.description || page.heroSubtitle || contentText || page
   title={page.seoTitle ?? `${page.title} — AI Nights`}
   description={description}
   path={page.path}
+  alternates={page.alternates}
 >
   <Header lang={lang} />
   <main class="container page section">

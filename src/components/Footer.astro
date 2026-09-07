@@ -7,7 +7,8 @@ const { lang = 'de' } = Astro.props;
 const year = new Date().getFullYear();
 
 const de = {
-  tagline: 'Die Event-Reihe rund um Künstliche Intelligenz in Nürnberg, München & Erlangen. Live, nahbar, praxisnah.',
+  tagline:
+    'Die Event-Reihe rund um Künstliche Intelligenz in Europa und Deutschland und Städten wie Nürnberg, München, Hamburg und mehr. Live, nahbar, praxisnah. Drei Speaker pro Abend. Networking first.',
   cols: [
     {
       title: 'Events & Afterwork',
@@ -63,16 +64,17 @@ const de = {
 };
 
 const en = {
-  tagline: 'The event series about Artificial Intelligence in Nuremberg, Munich & Erlangen. Live, approachable, hands-on.',
+  tagline:
+    'The event series about Artificial Intelligence in Europe and Germany, in cities like Nuremberg, Munich, Hamburg and more. Live, approachable, hands-on. Three speakers per night. Networking first.',
   cols: [
     {
       title: 'Events & Afterwork',
       links: [
-        ['Tickets', '/de/tickets/'],
-        ['Our Formats', '/de/formate/'],
-        ['Galleries', '/de/galerie/'],
+        ['Tickets', '/en/tickets/'],
+        ['Our Formats', '/en/formats/'],
+        ['Galleries', '/en/gallery/'],
         ['Our Sponsors', '/en/our-sponsors/'],
-        ['All Events', '/de/tickets/'],
+        ['All Events', '/en/tickets/'],
         ['Cities', '/stadt/'],
         ['Speaker', '/speaker/'],
       ],
@@ -80,8 +82,8 @@ const en = {
     {
       title: 'Support & Orga',
       links: [
-        ['Speaker Application', '/de/speaker-application/'],
-        ['Become a Volunteer', '/de/volunteer-bewerbung/'],
+        ['Speaker Application', '/en/speaker-application/'],
+        ['Become a Volunteer', '/en/volunteer-application/'],
       ],
     },
     {
@@ -91,7 +93,7 @@ const en = {
         ['Book a call', 'https://tidycal.com/andreaspabstcom/ainights'],
         ['Blog', '/blog/'],
         ['Social Media', '/en/ai-nights-on-social-media-en/'],
-        ['Newsletter', '/de/newsletter/'],
+        ['Newsletter', '/en/newsletter/'],
         ['AXDN', 'https://axdn.io'],
         ['AI Event List', 'https://aieventlist.ai'],
       ],
@@ -108,9 +110,9 @@ const en = {
     {
       title: 'Legal',
       links: [
-        ['Legal Notice', '/de/legal-notice/'],
-        ['Privacy Policy', '/de/data-protection/'],
-        ['Terms & Conditions', '/de/bedingungen-und-regeln/'],
+        ['Legal Notice', '/en/legal-notice/'],
+        ['Privacy Policy', '/en/data-protection/'],
+        ['Terms & Conditions', '/en/terms-and-conditions/'],
       ],
     },
   ],

@@ -1,36 +1,36 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import Header from '../../../components/Header.astro';
-import Footer from '../../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
 
 const formats = [
   {
     title: 'AI Nights Afterwork',
-    desc: 'Unser Kernformat: fünfmal im Jahr Afterwork-Abende mit kurzen Talks, Live-Demos und viel Raum für Austausch – live, nach der Arbeit.',
+    desc: 'Our core format: five afterwork evenings a year with short talks, live demos and plenty of room to connect — live, after work.',
     href: '/de/tickets/',
-    cta: 'Zu den Events',
+    cta: 'See the events',
   },
   {
     title: 'AI Women’s Night',
-    desc: 'Das neue Format von und für Frauen in der KI-Community – Austausch, Vorbilder und Praxis auf Augenhöhe.',
+    desc: 'The new format by and for women in the AI community — exchange, role models and hands-on learning at eye level.',
     soon: 'More details coming soon',
   },
 ];
 ---
 
 <Layout
-  lang="de"
-  title="Formate — AI Nights"
-  description="Die Formate der AI Nights: regelmäßige Afterwork-Abende rund um Künstliche Intelligenz in Nürnberg und München — Talks, Live-Demos und Community."
-  path="/de/formate/"
+  lang="en"
+  title="Formats — AI Nights"
+  description="The AI Nights formats: regular afterwork evenings about Artificial Intelligence in Nuremberg and Munich — talks, live demos and community."
+  path="/en/formats/"
   alternates={{ de: '/de/formate/', en: '/en/formats/' }}
 >
-  <Header lang="de" />
+  <Header lang="en" />
   <main class="container section">
     <div class="head">
-      <p class="eyebrow">Ein Format. Eine Idee.</p>
-      <h1 class="display-font">Unsere Formate</h1>
-      <p class="sub">KI gemeinsam einordnen – live, nahbar und praxisnah beim entspannten Afterwork.</p>
+      <p class="eyebrow">One format. One idea.</p>
+      <h1 class="display-font">Our Formats</h1>
+      <p class="sub">Making sense of AI together — live, approachable and hands-on over a relaxed afterwork.</p>
     </div>
     <div class="grid">
       {formats.map((f) => (
@@ -42,7 +42,7 @@ const formats = [
       ))}
     </div>
   </main>
-  <Footer lang="de" />
+  <Footer lang="en" />
 </Layout>
 
 <style>
