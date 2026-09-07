@@ -85,6 +85,10 @@ const sessions = defineCollection({
     room: z.string().optional(),
     seo,
     date: z.string().optional(),
+    // Platzhalter-Slots ("#01 Session" — "wird in Kürze announced") sind bis
+    // zur echten Ankündigung inhaltlich identisch und tragen nichts zur
+    // Suche bei — daher noindex statt sie wie echte Talks zu ranken.
+    noindex: z.boolean().optional(),
   }),
 });
 

@@ -37,6 +37,7 @@ const cleanTitle = d.title
   path={`/sessions/${d.slug}/`}
   image={d.image?.src ?? speakers[0]?.data.image?.src}
   ogType="article"
+  noindex={d.noindex}
 >
   <Header lang="de" />
   <main class="container detail section">
