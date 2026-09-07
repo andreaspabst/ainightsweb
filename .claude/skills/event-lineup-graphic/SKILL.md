@@ -41,6 +41,13 @@ Speaker`; jeder Name/Jobtitel schrumpft automatisch in seine Spalte hinein
 Überlappungen bei langen Namen, langen Jobtiteln oder mehr als 3 Speakern.
 Getestet mit 1, 2 und 3 Speakern.
 
+## Danach einplanen
+
+Der Line-up-Post wird über den Skill `speaker-intro-posts` in **Metricool**
+terminiert (Brand „ainights.ai Social Media", `blogId` 5545128) — bewährt hat
+sich der Dienstag eine Woche vor dem Event, Instagram und LinkedIn als zwei
+getrennte Posts. Linkrex wird dafür nicht mehr verwendet.
+
 ## Nicht anfassen
 
 - Layout ist bewusst variabel (kein fester Speaker-Zähler) — bei 4+ Speakern
