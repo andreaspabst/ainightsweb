@@ -9,6 +9,9 @@
  * jedes Event ein anderes Publikumsbild bekommt; mit --image lässt sich ein
  * bestimmtes Bild setzen, mit --seed die Auswahl reproduzieren.
  *
+ * Veroeffentlichung: rund zwei Monate vor dem Event auf LinkedIn und Instagram
+ * (Terminierung siehe Skill speaker-intro-posts).
+ *
  * Ausgabe: public/media/save-the-date/<event-slug>.png
  *
  * Aufruf:

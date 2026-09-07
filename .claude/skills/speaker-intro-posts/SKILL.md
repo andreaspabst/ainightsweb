@@ -62,6 +62,21 @@ Antwort enthält dann eine `static.metricool.com`-URL. Das ist normal.
 - Kommt ein Speaker nachträglich dazu, bekommt er den nächsten freien Termin
   im Schema.
 
+## Save-the-Date-Post
+
+Die Save-the-Date-Karte (`node scripts/generate-save-the-date.mjs <event-slug>`,
+Ausgabe unter `public/media/save-the-date/`) geht **rund zwei Monate vor dem
+Event** raus — auf **LinkedIn und Instagram**, wie die Speaker-Intros als zwei
+getrennte Posts zur selben Zeit.
+
+- Ausgangspunkt: Event-Datum minus zwei Monate, dann auf den nächstgelegenen
+  **Dienstag 09:00** legen.
+- Fällt der Termin auf einen belegten Slot oder auf einen **Event-Tag**
+  (auch den eines anderen Events), auf den Donnerstag derselben Woche
+  ausweichen — vorher `getScheduledPosts` prüfen.
+- Reihenfolge über den Vorlauf hinweg: Save the Date (~8 Wochen) →
+  #speakerintro je Slot (5/4/3 Wochen) → Line-up (1 Woche).
+
 ## Schritt 3: Posts anlegen
 
 `createScheduledPost` mit `blogId`, `date` (ISO 8601 mit Offset) und `info`:
