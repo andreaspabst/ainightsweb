@@ -1,13 +1,14 @@
 ---
-name: speaker-intro-posts
-description: Plant für jeden bestätigten Speaker eines Events den #speakerintro-Post und für das komplette Line-up den Line-up-Post in Metricool ein (Karte generieren, deployen, terminieren nach dem 5/4/3-Wochen-Schema, dienstags 9:00, Instagram + LinkedIn). Proaktiv anwenden, sobald ein Event neue bestätigte Speaker/Sessions bekommt — zusammen mit announce-speakers (Blogpost) und event-lineup-graphic (Line-up-Grafik).
+name: event-social-posts
+description: Plant die Social-Media-Posts rund um ein AI-Nights-Event in Metricool ein — Save the Date (~2 Monate vorher), #speakerintro je Speaker (5/4/3 Wochen vorher) und den Line-up-Post (1 Woche vorher), jeweils auf Instagram und LinkedIn. Proaktiv anwenden, sobald ein Event angelegt wird oder neue bestätigte Speaker/Sessions bekommt — zusammen mit announce-speakers (Blogpost).
 ---
 
-# #speakerintro- und Line-up-Posts in Metricool einplanen
+# Event-Posts in Metricool einplanen
 
-Jeder bestätigte Speaker bekommt einen Post mit seiner #speakerintro-Karte,
-das vollständige Line-up einen eigenen Post — terminiert im Wochenrhythmus vor
-dem Event.
+Rund um jedes Event laufen drei Post-Typen: die **Save-the-Date-Karte** etwa
+zwei Monate vorher, pro Speaker ein **#speakerintro** und zum Schluss der
+**Line-up-Post**. Alle terminiert im Wochenrhythmus vor dem Event, alle auf
+Instagram und LinkedIn.
 
 ## Social Media läuft über Metricool
 
@@ -62,7 +63,7 @@ Antwort enthält dann eine `static.metricool.com`-URL. Das ist normal.
 - Kommt ein Speaker nachträglich dazu, bekommt er den nächsten freien Termin
   im Schema.
 
-## Save-the-Date-Post
+### Save the Date
 
 Die Save-the-Date-Karte (`node scripts/generate-save-the-date.mjs <event-slug>`,
 Ausgabe unter `public/media/save-the-date/`) geht **rund zwei Monate vor dem

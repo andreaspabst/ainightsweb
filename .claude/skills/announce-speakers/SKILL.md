@@ -77,6 +77,9 @@ Ein neuer Speaker braucht mehr als den Blogpost. Nach dem Anlegen des Posts
 - die **Einladungsnachricht** für LinkedIn mit Code, Ankündigungsbild und
   Vorfreude — fertig zum Kopieren.
 
-Beides erledigt der Skill `speaker-vouchers`; dort stehen Namensschema,
+Ebenso gehören die Social-Media-Posts dazu — Save the Date, #speakerintro und
+Line-up-Post plant der Skill `event-social-posts` in Metricool ein.
+
+Voucher und Nachricht erledigt der Skill `speaker-vouchers`; dort stehen Namensschema,
 Vorlagen und der Umgang mit fehlenden Joinify-Schreibrechten. Vorher kurz mit
 `list_vouchers` prüfen, ob es den Code schon gibt — dann reicht die Nachricht.

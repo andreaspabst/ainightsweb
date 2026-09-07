@@ -43,7 +43,7 @@ Getestet mit 1, 2 und 3 Speakern.
 
 ## Danach einplanen
 
-Der Line-up-Post wird über den Skill `speaker-intro-posts` in **Metricool**
+Der Line-up-Post wird über den Skill `event-social-posts` in **Metricool**
 terminiert (Brand „ainights.ai Social Media", `blogId` 5545128) — bewährt hat
 sich der Dienstag eine Woche vor dem Event, Instagram und LinkedIn als zwei
 getrennte Posts. Linkrex wird dafür nicht mehr verwendet.
