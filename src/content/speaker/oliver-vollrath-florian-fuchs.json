@@ -5,12 +5,24 @@
   "jobTitle": "Geschäftsführender Partner & Senior Consultant, VEND consulting GmbH",
   "excerpt": "Oliver Vollrath und Florian Fuchs begleiten bei der VEND consulting GmbH Unternehmen dabei, ihre Innovationsfähigkeit zu stärken und die Potenziale von Daten und KI zu nutzen.",
   "bioHtml": "<p>Oliver Vollrath und Florian Fuchs begleiten bei der VEND consulting GmbH Unternehmen dabei, ihre Innovationsfähigkeit zu stärken und die Potenziale von Daten und KI zu nutzen. Oliver bringt als geschäftsführender Partner langjährige Beratungs- und Lehrerfahrung in Innovationsmanagement, Business Agility und OKR ein, während Florian als Senior Consultant seine Erfahrung aus dem Start-up- und Softwareumfeld mit einem Blick für organisatorische Veränderungen und moderne Zusammenarbeit verbindet.</p>\n<p>Ihr gemeinsamer Fokus liegt darauf, neue Technologien nachhaltig in Innovationsprozesse, Entscheidungsfindung und Unternehmenskultur zu integrieren. Dabei verbinden sie strategische Orientierung und methodische Kompetenz mit praktischer Umsetzung – von der Entwicklung datenbasierter Arbeitsweisen bis zum gezielten Einsatz generativer KI im Innovationsmanagement.</p>",
+  "image": {
+    "src": "/img/speaker/oliver-vollrath-florian-fuchs.jpg",
+    "alt": "Oliver Vollrath und Florian Fuchs, VEND consulting",
+    "width": 616,
+    "height": 924
+  },
   "socials": {
     "website": "https://www.vend-consulting.de/"
   },
   "links": [
-    { "label": "LinkedIn Oliver Vollrath", "url": "https://www.linkedin.com/in/oliver-vollrath-6247485/" },
-    { "label": "LinkedIn Florian Fuchs", "url": "https://www.linkedin.com/in/florian-flo-fuchs/" }
+    {
+      "label": "LinkedIn Oliver Vollrath",
+      "url": "https://www.linkedin.com/in/oliver-vollrath-6247485/"
+    },
+    {
+      "label": "LinkedIn Florian Fuchs",
+      "url": "https://www.linkedin.com/in/florian-flo-fuchs/"
+    }
   ],
   "topics": [
     "Generative KI im Innovationsmanagement",
