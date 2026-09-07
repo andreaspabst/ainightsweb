@@ -1,0 +1,33 @@
+{
+  "id": 1504,
+  "title": "Oliver Vollrath & Florian Fuchs",
+  "slug": "oliver-vollrath-florian-fuchs",
+  "jobTitle": "Geschäftsführender Partner & Senior Consultant, VEND consulting GmbH",
+  "excerpt": "Oliver Vollrath und Florian Fuchs begleiten bei der VEND consulting GmbH Unternehmen dabei, ihre Innovationsfähigkeit zu stärken und die Potenziale von Daten und KI zu nutzen.",
+  "bioHtml": "<p>Oliver Vollrath und Florian Fuchs begleiten bei der VEND consulting GmbH Unternehmen dabei, ihre Innovationsfähigkeit zu stärken und die Potenziale von Daten und KI zu nutzen. Oliver bringt als geschäftsführender Partner langjährige Beratungs- und Lehrerfahrung in Innovationsmanagement, Business Agility und OKR ein, während Florian als Senior Consultant seine Erfahrung aus dem Start-up- und Softwareumfeld mit einem Blick für organisatorische Veränderungen und moderne Zusammenarbeit verbindet.</p>\n<p>Ihr gemeinsamer Fokus liegt darauf, neue Technologien nachhaltig in Innovationsprozesse, Entscheidungsfindung und Unternehmenskultur zu integrieren. Dabei verbinden sie strategische Orientierung und methodische Kompetenz mit praktischer Umsetzung – von der Entwicklung datenbasierter Arbeitsweisen bis zum gezielten Einsatz generativer KI im Innovationsmanagement.</p>",
+  "socials": {
+    "website": "https://www.vend-consulting.de/"
+  },
+  "links": [
+    { "label": "LinkedIn Oliver Vollrath", "url": "https://www.linkedin.com/in/oliver-vollrath-6247485/" },
+    { "label": "LinkedIn Florian Fuchs", "url": "https://www.linkedin.com/in/florian-flo-fuchs/" }
+  ],
+  "topics": [
+    "Generative KI im Innovationsmanagement",
+    "Ergebnisse einer empirischen Benchmark-Studie",
+    "Herausforderungen im Innovationsprozess",
+    "KI-Anwendungsfelder und wahrgenommener Nutzen",
+    "Reifegrad und organisatorische Verankerung",
+    "Datenqualität, Kompetenzen und Governance"
+  ],
+  "keyTakeaways": [
+    "Nutzung ist noch keine Verankerung: Einzelne erfolgreiche Anwendungen brauchen klare Verantwortlichkeiten, gemeinsame Arbeitsweisen und eine Einbindung in den Innovationsprozess",
+    "Zeitersparnis ist der stärkste wahrgenommene Nutzen — ob daraus bessere Innovationsergebnisse entstehen, muss gesondert bewertet werden",
+    "Vertrauen in Ergebnisse, geeignete Daten und interne Kompetenzen sind zentrale Voraussetzungen für einen breiteren Einsatz",
+    "Der nächste sinnvolle Schritt hängt vom Entwicklungsstand ab: gezielt erproben, bewährte Anwendungen verbreiten oder das Zusammenspiel mehrerer Anwendungen steuern"
+  ],
+  "role": "speaker",
+  "topicArea": "non-tech",
+  "date": "2026-09-07 00:00:00",
+  "modified": "2026-09-07 00:00:00"
+}
