@@ -1,6 +1,7 @@
 {
   "path": "/de/newsletter/",
   "lang": "de",
+  "alternates": { "de": "/de/newsletter/", "en": "/en/newsletter/" },
   "title": "AI Nights Newsletter",
   "seoTitle": "Newsletter - AI Nights",
   "description": "",

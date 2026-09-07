@@ -1,0 +1,363 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { imgVariant } from '../../lib/images';
+
+const FORM_URL = 'https://airtable.com/embed/appiiUytKG0IcB1Gn/pagOcSDVtOCczuA2X/form';
+
+const benefits = [
+  {
+    img: '/wp-content/uploads/2026/01/1-82-300x240.jpg',
+    alt: 'AI Nights Nuremberg',
+    title: 'Boost your visibility',
+    text: 'Showcase your expertise to a diverse audience of AI professionals, researchers and enthusiasts across several German cities.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-106-300x240.jpg',
+    alt: 'AI Nights Nuremberg',
+    title: 'Grow your network',
+    text: 'Connect with other AI experts, potential collaborators and industry leaders who share your passion for artificial intelligence.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-128-300x240.jpg',
+    alt: 'AI Nights Nuremberg',
+    title: 'Live demos & real use cases',
+    text: 'No theory. Just examples that show how ideas actually work in the real world.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-68-300x240.jpg',
+    alt: 'AI Nights Nuremberg',
+    title: 'Build your reputation',
+    text: 'Establish yourself as a thought leader in the AI community and earn recognition for your expertise and contributions.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-97.jpg',
+    alt: 'AI Nights Nuremberg',
+    title: 'Learn from others',
+    text: 'Gain insights from other speakers and attendees, stay up to date on the latest AI trends and discover new perspectives.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-21-300x240.jpg',
+    alt: 'AI Nights Nuremberg',
+    title: 'Room for conversation',
+    text: 'With drinks and snacks included, deliberate breaks, and time to keep talking with people after the talks too.',
+  },
+];
+
+const audience = [
+  'C-Level & Management',
+  'Startup Founders',
+  'Project Leads',
+  'IT Decision-Makers',
+  'Marketing Decision-Makers',
+  'HR Leaders',
+];
+
+const topics = [
+  {
+    title: 'AI applications',
+    text: 'Real-world AI implementations, case studies and practical applications across different industries.',
+  },
+  {
+    title: 'Emerging technologies',
+    text: 'Cutting-edge AI research, new technologies and future trends in artificial intelligence.',
+  },
+  {
+    title: 'Machine learning',
+    text: 'Deep learning, neural networks, advanced ML algorithms and their applications.',
+  },
+  {
+    title: 'AI ethics & governance',
+    text: 'Ethical considerations, responsible AI development and governance frameworks.',
+  },
+];
+
+const support = [
+  {
+    img: '/wp-content/uploads/2026/01/1-32.jpg',
+    title: 'Technical support',
+    text: 'Full technical setup and support for your presentation, including audio-visual equipment and presentation software.',
+    text2:
+      'At our events you\'ll have high-resolution projectors, top-quality audio equipment including headset and handheld mics, and professional stage lighting for the right afterwork-event ambience.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-26.jpg',
+    title: 'Event promotion',
+    text: 'We promote your session across our network, on social media and through partner channels to maximize your reach and impact.',
+    text2:
+      'If you provide us with material in advance, we\'ll build audience-targeted content and make sure your message reaches the right people.',
+  },
+  {
+    img: '/wp-content/uploads/2026/01/1-54.jpg',
+    title: 'Speaker feedback',
+    text: 'Get constructive feedback from attendees and organizers to improve your presentation skills.',
+    text2: 'If you\'d like, you\'ll get access to our photo archives, feedback forms and suggestions for improvement.',
+  },
+];
+---
+
+<Layout
+  lang="en"
+  title="Speaker Application - AI Nights"
+  description="Share your AI expertise at AI Nights: become a speaker at our afterwork meetups in Nuremberg and Munich. Apply now and inspire the AI community."
+  path="/en/speaker-application/"
+  alternates={{ de: '/de/speaker-application/', en: '/en/speaker-application/' }}
+>
+  <Header lang="en" />
+  <main>
+    <section class="hero section">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Speaker application</p>
+          <h1 class="display-font">Become a speaker at AI&nbsp;Nights events</h1>
+          <p class="sub">
+            Share your AI expertise and inspire the next generation of AI professionals! Join our network of
+            speakers and present at AI&nbsp;Nights meetups across Germany. We're looking for passionate speakers
+            who can share insights, case studies and practical knowledge about artificial intelligence.
+          </p>
+          <a href="#signup-form" class="btn btn-primary">Apply as a speaker</a>
+        </div>
+        <figure class="hero-media card">
+          <img src={imgVariant('/wp-content/uploads/2026/01/1-34-publikum.jpg', 1024)} alt="Audience at AI Nights Nuremberg" loading="eager" width="800" height="533" />
+          <figcaption>
+            <h2 class="display-font">AI enthusiasts</h2>
+            <p>
+              Reach project leads, IT decision-makers, C-level, startup founders, marketing and HR leaders in one
+              evening. Position your company as an innovation leader in the AI community.
+            </p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <p class="eyebrow">Why speak at AI Nights?</p>
+        <h2 class="display-font">Benefits for speakers</h2>
+        <p class="sub center">
+          Speaking at AI&nbsp;Nights offers plenty of opportunities for professional growth, networking and sharing
+          your expertise with a passionate AI community.
+        </p>
+        <div class="grid three">
+          {benefits.map((b) => (
+            <article class="card benefit">
+              <img src={imgVariant(b.img, 640)} alt={b.alt} loading="lazy" width="300" height="240" />
+              <div class="body">
+                <h3>{b.title}</h3>
+                <p>{b.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Your audience is waiting</h2>
+        <p class="sub center">Our events attract decision-makers from every industry — all with technical curiosity and a drive to innovate.</p>
+        <ul class="chips">
+          {audience.map((a) => (
+            <li>{a}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <h2 class="display-font">Share your expertise</h2>
+        <p class="sub center">
+          We welcome talks on a wide range of AI topics. Whether you're an expert in machine learning, practical
+          AI applications or emerging technologies — we'd love to hear from you.
+        </p>
+        <div class="grid four">
+          {topics.map((t) => (
+            <article class="card topic">
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container center-head">
+        <p class="eyebrow">Speaker support</p>
+        <h2 class="display-font">We support our speakers</h2>
+        <p class="sub center">
+          We provide comprehensive support to make sure our speakers have everything they need for an outstanding
+          presentation.
+        </p>
+        <div class="grid three">
+          {support.map((s) => (
+            <article class="card benefit">
+              <img src={imgVariant(s.img, 640)} alt={s.title} loading="lazy" width="640" height="427" />
+              <div class="body">
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+                <p>{s.text2}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="signup-form" class="section form-section">
+      <div class="container center-head">
+        <p class="eyebrow">Apply now</p>
+        <h2 class="display-font">Ready to share your expertise?</h2>
+        <p class="sub center">
+          Join our network of AI speakers and inspire the next generation of AI professionals. Apply now to speak
+          at upcoming AI&nbsp;Nights events.
+        </p>
+        <div class="form-embed card">
+          <iframe src={FORM_URL} title="Speaker application form" loading="lazy"></iframe>
+        </div>
+        <a href={FORM_URL} target="_blank" rel="noopener" class="btn btn-ghost">Open in a new tab</a>
+      </div>
+    </section>
+  </main>
+  <Footer lang="en" />
+</Layout>
+
+<style>
+  .hero {
+    padding-block: 4rem 3rem;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (max-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+  }
+  .hero-copy .sub {
+    margin-bottom: 2rem;
+  }
+  .hero-media {
+    overflow: hidden;
+  }
+  .hero-media img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-media figcaption {
+    padding: 1.4rem 1.5rem 1.6rem;
+  }
+  .hero-media h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+  }
+  .hero-media p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .section {
+    padding-block: 2.5rem;
+  }
+  .center-head {
+    text-align: center;
+  }
+  .center-head h2 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub.center {
+    margin: 0 auto 2.2rem;
+  }
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    text-align: left;
+  }
+  .grid.three {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .grid.four {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .benefit {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .benefit img {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .benefit .body {
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .benefit h3,
+  .topic h3 {
+    font-size: 1.1rem;
+  }
+  .benefit p,
+  .topic p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .topic {
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .chips {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .chips li {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.55rem 1.2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .form-section {
+    padding-bottom: 4.5rem;
+  }
+  .form-embed {
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .form-embed iframe {
+    width: 100%;
+    height: 900px;
+    border: 0;
+    display: block;
+    background: transparent;
+  }
+</style>
