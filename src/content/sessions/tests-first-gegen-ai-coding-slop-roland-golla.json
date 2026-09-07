@@ -8,6 +8,9 @@
     "src": "/media/key-visuals/roland-golla.png",
     "alt": "Never Code Alone"
   },
+  "startTime": "19:00",
+  "time": "19:00",
+  "endTime": "19:45",
   "speakerIds": [
     428
   ],
@@ -17,5 +20,8 @@
   "eventSlug": "ai-nights-muenchen-01",
   "city": "München",
   "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
   "date": "2026-09-05 20:00:00"
 }
