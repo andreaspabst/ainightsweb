@@ -37,7 +37,7 @@ const tierLabels: Record<string, string> = { platin: 'Platin', gold: 'Gold', sil
       </div>
       <div class="info">
         {d.tier && <span class="tier">{tierLabels[d.tier] ?? d.tier} Sponsor</span>}
-        <h1 class="display-font">{d.title}</h1>
+        <h1 class="display-font">{d.title}<span class="visually-hidden"> — AI Nights Sponsor</span></h1>
         {d.website && <a href={d.website} target="_blank" rel="noopener" class="btn btn-primary web">Website besuchen</a>}
       </div>
     </div>

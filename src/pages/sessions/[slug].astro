@@ -41,7 +41,7 @@ const cleanTitle = d.title
   <Header lang="de" />
   <main class="container detail section">
     <p class="eyebrow">Session</p>
-    <h1 class="display-font">{d.title}</h1>
+    <h1 class="display-font">{cleanTitle}</h1>
     <div class="meta">
       {timeLabel && <span>🕕 {timeLabel}</span>}
       {d.room && <span>🎤 {d.room}</span>}
