@@ -32,8 +32,26 @@ node scripts/generate-topic-carousels.mjs <event-slug>
 ```
 
 Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn
-Metricool zieht die Karte per URL von der Live-Site:
-`https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>.png`
+Metricool zieht die Karte per URL von der Live-Site.
+
+### Zwei Zuschnitte — pro Kanal den richtigen nehmen
+
+`generate-speaker-intro-cards.mjs` erzeugt je Speaker **zwei** Karten:
+
+| Kanal | Datei | Maße |
+|---|---|---|
+| Instagram | `<speaker-slug>-instagram.png` | 1080 × 1350 (Portrait) |
+| LinkedIn | `<speaker-slug>-linkedin.png` | 1200 × 627 (Landscape) |
+
+```
+https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>-instagram.png
+https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>-linkedin.png
+```
+
+**Für LinkedIn ist die `-linkedin.png` Pflicht.** LinkedIn beschneidet
+Portrait-Bilder im Feed auf ca. 1.91:1 und schneidet dabei die Headline
+(„#speakerintro" + Name) weg. Nie die Instagram-Portrait-Karte in einen
+LinkedIn-Post hängen.
 
 ## Schritt 2: Termin bestimmen
 
@@ -63,10 +81,12 @@ Metricool zieht die Karte per URL von der Live-Site:
    Kein TikTok, solange nichts anderes vereinbart ist.
    `createScheduledPost` je Post mit:
    - `providers`: `[{"network":"instagram"}]` bzw. `[{"network":"linkedin"}]`
-     (plus `instagramData: {"type":"POST"}` bzw. `linkedinData: {}`)
-   - Bild in `media`: die Live-URL der #speakerintro-Karte
-     (`https://ainights.ai/media/speaker-intro-cards/…`) — Metricool
-     lädt sie selbst herunter; vorher per curl prüfen, dass sie 200 liefert
+     (plus `instagramData: {"type":"POST"}` bzw.
+     `linkedinData: {"previewIncluded": false}` — siehe Pflichtregel unten)
+   - Bild in `media`: die Live-URL der #speakerintro-Karte im **Format des
+     Kanals** — Instagram `…-instagram.png`, LinkedIn `…-linkedin.png`.
+     Metricool lädt sie selbst herunter; vorher per curl prüfen, dass sie
+     200 liefert
    - Termin: `publicationDate` `{dateTime: "YYYY-MM-DDT09:00:00", timezone: "Europe/Berlin"}`
    - Text nach diesem Muster (Ton wie bestehende Posts, keine
      erfundenen Fakten; Hashtags gehören mit in den `text`):
@@ -83,6 +103,26 @@ Metricool zieht die Karte per URL von der Live-Site:
      ```
    - Hashtags: immer `#ainights` + `#ki` + Stadt + 1–2 Themen-Tags;
      bei AI-Woman-Nights-Events zusätzlich `#aiwomannights` + `#womenintech`.
+
+### Pflichtregel LinkedIn: `previewIncluded: false`
+
+Sobald ein LinkedIn-Post **ein Bild mitschickt UND im Text eine URL steht**,
+muss `linkedinData` `"previewIncluded": false` enthalten:
+
+```json
+"linkedinData": { "previewIncluded": false }
+```
+
+Sonst baut LinkedIn aus der URL eine Link-Vorschau und zeigt das
+hochgeladene Bild **gar nicht** — genau das ist passiert, mehrere
+#speakerintro-Posts gingen ohne Grafik raus.
+
+Alternative, wenn die Link-Vorschau bewusst gewünscht ist: die URL aus dem
+Post-Text nehmen und stattdessen in den ersten Kommentar legen
+(`firstCommentText`) — dann bleibt das Bild das Hauptmotiv.
+
+Vor dem Anlegen einmal gegenprüfen: Jeder LinkedIn-Post mit `media` +
+URL im Text hat `previewIncluded: false`.
 
 ## Danach
 

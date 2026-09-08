@@ -66,10 +66,13 @@ function topicCarouselsFor(eventSlug: string, speakerSlugs: string[]) {
     .filter((t) => t.instagram.length > 0);
 }
 
-/** #speakerintro-Karte (Portrait) pro Speaker und Event. */
+/** #speakerintro-Karten pro Speaker und Event: Portrait (IG) + Landscape (LinkedIn). */
 function introCardFor(eventSlug: string, speakerSlug: string) {
-  const p = `/media/speaker-intro-cards/${eventSlug}/${speakerSlug}.png`;
-  return exists(p) ? p : null;
+  const at = (fmt: string) => {
+    const p = `/media/speaker-intro-cards/${eventSlug}/${speakerSlug}-${fmt}.png`;
+    return exists(p) ? p : null;
+  };
+  return { instagram: at('instagram'), linkedin: at('linkedin') };
 }
 
 const today = '2026-09-01';
@@ -177,17 +180,22 @@ const rows = orderedEvents.map((e) => {
             </>
           )}
 
-          {people.some((p) => p.introCard) && (
+          {people.some((p) => p.introCard.instagram || p.introCard.linkedin) && (
             <>
-              <h3 class="subheading">#speakerintro-Karten (Portrait 1080×1350)</h3>
-              <div class="strip">
-                {people.filter((p) => p.introCard).map((p) => (
-                  <a href={p.introCard} target="_blank" class="slide slide-tall">
-                    <img src={p.introCard} alt="" loading="lazy" />
-                    <span>{p.title}</span>
-                  </a>
-                ))}
-              </div>
+              <h3 class="subheading">#speakerintro-Karten (Instagram 1080×1350 · LinkedIn 1200×627)</h3>
+              {(['instagram', 'linkedin'] as const).map((fmt) => (
+                people.some((p) => p.introCard[fmt]) && (
+                  <div class="strip">
+                    <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
+                    {people.filter((p) => p.introCard[fmt]).map((p) => (
+                      <a href={p.introCard[fmt]} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : 'slide-tall'}`}>
+                        <img src={p.introCard[fmt]} alt="" loading="lazy" />
+                        <span>{p.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                )
+              ))}
             </>
           )}
 
