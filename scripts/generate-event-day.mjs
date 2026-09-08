@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 /**
- * „HEUTE 17:00 UHR“-Karte für den Event-Tag (Portrait 1080×1350) — Nachbau
+ * „HEUTE 17:00 UHR“-Karte für den Event-Tag in zwei Zuschnitten — Nachbau
  * des Instagram-Posts: Publikumsfoto vollflächig als Magenta/Blau-Duotone,
- * oben links das AI-Nights-Logo, unten groß „HEUTE“ + Uhrzeit und darunter
- * die Zeile „Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich“
+ * das AI-Nights-Logo, groß „HEUTE“ + Uhrzeit und darunter die Zeile
+ * „Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich“
  * — alles in Glacial Indifference, der Schrift der AI-Nights-Postkarten.
+ *
+ *   instagram → Portrait 1080×1350: Text unten links über dem Foto.
+ *   linkedin  → Landscape 1200×627: Headline links, das Publikum rechts
+ *               sichtbar (Foto blendet nach links in den Duotone-Grund aus).
+ *
+ * Der Landscape-Zuschnitt ist Pflicht für LinkedIn: LinkedIn beschneidet
+ * Portrait-Bilder im Feed auf ca. 1.91:1 und schneidet dabei die Headline weg.
  *
  * Das Foto kommt per Zufall aus der Galerie (kuratierte Publikumsbilder,
  * mit --any-gallery aus allen Galeriebildern in src/data/gallery.json).
@@ -14,7 +21,9 @@
  * Veroeffentlichung: am Event-Tag morgens auf Instagram und LinkedIn
  * (Terminierung siehe Skill event-social-posts).
  *
- * Ausgabe: public/media/event-day/<event-slug>.png
+ * Ausgabe:
+ *   public/media/event-day/<event-slug>-instagram.png
+ *   public/media/event-day/<event-slug>-linkedin.png
  *
  * Aufruf:
  *   node scripts/generate-event-day.mjs ai-nights-nuernberg-05
@@ -25,12 +34,14 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { PUBLIC, ROOT, esc, textImg, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
+import { FORMATS, PUBLIC, ROOT, esc, textImg, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
 
 const OUT_DIR = path.join(PUBLIC, 'media/event-day');
-const W = 1080;
-const H = 1350;
-const MARGIN = 100;
+/**
+ * Instagram bekommt den Portrait-Zuschnitt (nicht das quadratische
+ * FORMATS.instagram), LinkedIn den Landscape-Zuschnitt aus FORMATS.
+ */
+const SIZE = { instagram: FORMATS.portrait, linkedin: FORMATS.linkedin };
 
 /** Duotone-Verlauf: Schatten → Mitten → Lichter (aus der Instagram-Vorlage
  *  abgenommen: tiefes Indigo, Magenta, rosa Lichter). */
@@ -81,11 +92,10 @@ async function pickGalleryImage(seed, any, used = new Set()) {
 
 const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 
-/** Foto vollflächig als Duotone: Graustufen → Farbverlauf Schatten/Mitten/Lichter,
- *  unten leicht abgedunkelt, damit der Text sicher lesbar bleibt. */
-async function photoLayer(rel) {
+/** Foto als Duotone einfärben: Graustufen → Farbverlauf Schatten/Mitten/Lichter. */
+async function duotone(rel, w, h) {
   const { data, info } = await sharp(path.join(PUBLIC, rel))
-    .resize(W, H, { fit: 'cover', position: 'attention' })
+    .resize(w, h, { fit: 'cover', position: 'attention' })
     .greyscale()
     .normalise()
     .raw()
@@ -104,6 +114,11 @@ async function photoLayer(rel) {
     out[j + 1] = lut[v + 1];
     out[j + 2] = lut[v + 2];
   }
+  return sharp(out, { raw: { width: info.width, height: info.height, channels: 3 } }).png().toBuffer();
+}
+
+/** Portrait: Duotone-Foto vollflächig, unten abgedunkelt für den Textblock. */
+async function portraitPhoto(rel, W, H) {
   const shade = Buffer.from(`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
@@ -115,10 +130,33 @@ async function photoLayer(rel) {
     </defs>
     <rect width="${W}" height="${H}" fill="url(#v)"/>
   </svg>`);
-  return sharp(out, { raw: { width: info.width, height: info.height, channels: 3 } })
-    .composite([{ input: shade, top: 0, left: 0 }])
-    .png()
-    .toBuffer();
+  return sharp(await duotone(rel, W, H)).composite([{ input: shade, top: 0, left: 0 }]).png().toBuffer();
+}
+
+/**
+ * Landscape: Duotone-Foto weiterhin vollflächig (der Look bleibt), aber die
+ * linke Hälfte wird zum Textfeld abgedunkelt — so bleibt das Publikum rechts
+ * sichtbar und die Headline steht auf ruhigem Grund.
+ */
+async function landscapePhoto(rel, W, H) {
+  const shade = Buffer.from(`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="side" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="${DUOTONE.shadow}" stop-opacity=".9"/>
+        <stop offset="34%" stop-color="${DUOTONE.shadow}" stop-opacity=".78"/>
+        <stop offset="62%" stop-color="${DUOTONE.shadow}" stop-opacity=".22"/>
+        <stop offset="100%" stop-color="${DUOTONE.shadow}" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${DUOTONE.shadow}" stop-opacity=".3"/>
+        <stop offset="40%" stop-color="${DUOTONE.shadow}" stop-opacity="0"/>
+        <stop offset="100%" stop-color="${DUOTONE.shadow}" stop-opacity=".38"/>
+      </linearGradient>
+    </defs>
+    <rect width="${W}" height="${H}" fill="url(#side)"/>
+    <rect width="${W}" height="${H}" fill="url(#v)"/>
+  </svg>`);
+  return sharp(await duotone(rel, W, H)).composite([{ input: shade, top: 0, left: 0 }]).png().toBuffer();
 }
 
 /**
@@ -147,22 +185,36 @@ async function richText(markup, { size, maxWidth }) {
     .toBuffer({ resolveWithObject: true });
 }
 
-async function card(kit, imageRel, logo, opts) {
+/**
+ * Maße je Zuschnitt. Landscape hat nur die halbe Höhe, deshalb kleinere
+ * Headline, schmalere Textspalte (rechts steht das Publikum) und ein
+ * kompakterer Rand.
+ */
+const LAYOUT = {
+  instagram: { margin: 100, head: 204, sub: 50, colFactor: 1, logoTop: 64, logoLeft: 56, bottom: 120, gapSub: 44 },
+  linkedin: { margin: 68, head: 116, sub: 30, colFactor: 0.56, logoTop: 40, logoLeft: 52, bottom: 54, gapSub: 26 },
+};
+
+async function card(fmt, kit, imageRel, logo, opts) {
+  const { w: W, h: H } = SIZE[fmt];
+  const L = LAYOUT[fmt];
+  const MARGIN = L.margin;
+  const colW = Math.round((W - MARGIN * 2) * L.colFactor);
   const layers = [];
   const event = kit.event;
 
   // Logo oben links
   const lg = logoFor(kit, logo).landscape;
-  layers.push({ input: lg, top: 64, left: 56 });
+  layers.push({ input: lg, top: L.logoTop, left: L.logoLeft });
 
   // Text-Block unten: HEUTE / <Uhrzeit> UHR / Hinweiszeile — von unten nach
   // oben gesetzt, damit der Abstand zum unteren Rand konstant bleibt.
   const time = (opts.time ?? event.startTime ?? '17:00').replace('.', ':');
   const headline = await textImg(opts.headline ?? 'HEUTE', {
-    family: 'Glacial Indifference Bold', size: 204, color: '#ffffff', maxWidth: W - MARGIN * 2, letterSpacing: 1,
+    family: 'Glacial Indifference Bold', size: L.head, color: '#ffffff', maxWidth: colW, letterSpacing: 1,
   });
   const timeline = await textImg(`${time} UHR`, {
-    family: 'Glacial Indifference Bold', size: 204, color: '#ffffff', maxWidth: W - MARGIN * 2, letterSpacing: 1,
+    family: 'Glacial Indifference Bold', size: L.head, color: '#ffffff', maxWidth: colW, letterSpacing: 1,
   });
 
   const markup = opts.subline
@@ -170,17 +222,18 @@ async function card(kit, imageRel, logo, opts) {
     : 'Für die <b>Spontanen</b>: <i>Tickets sind auch an der <b><u>Abendkasse</u></b> erhältlich</i>';
   const sub = opts.noSubline
     ? { info: { height: 0 } }
-    : await richText(markup, { size: 50, maxWidth: W - MARGIN * 2 + 20 });
+    : await richText(markup, { size: L.sub, maxWidth: colW + 20 });
 
-  const bottom = H - 120;
+  const bottom = H - L.bottom;
   const subTop = bottom - sub.info.height;
-  const timeTop = subTop - (sub.info.height ? 44 : 0) - timeline.info.height;
+  const timeTop = subTop - (sub.info.height ? L.gapSub : 0) - timeline.info.height;
   const headTop = timeTop - 6 - headline.info.height;
   layers.push({ input: headline.data, top: headTop, left: MARGIN - 8 });
   layers.push({ input: timeline.data, top: timeTop, left: MARGIN - 8 });
   if (sub.data) layers.push({ input: sub.data, top: subTop, left: MARGIN });
 
-  return sharp(await photoLayer(imageRel)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
+  const base = fmt === 'instagram' ? await portraitPhoto(imageRel, W, H) : await landscapePhoto(imageRel, W, H);
+  return sharp(base).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 }
 
 const args = process.argv.slice(2);
@@ -201,9 +254,11 @@ for (const slug of slugs) {
   const kit = await loadEventKit(slug);
   const imageRel = opt('image') ?? (await pickGalleryImage(opt('seed') ?? slug, flag('any-gallery'), used));
   used.add(imageRel);
-  const png = await card(kit, imageRel, logo, {
+  const opts = {
     time: opt('time'), headline: opt('headline'), subline: opt('subline'), noSubline: flag('no-subline'),
-  });
-  await fs.writeFile(path.join(OUT_DIR, `${slug}.png`), png);
-  console.log(`✓ ${slug} — Foto: ${imageRel}`);
+  };
+  for (const fmt of ['instagram', 'linkedin']) {
+    await fs.writeFile(path.join(OUT_DIR, `${slug}-${fmt}.png`), await card(fmt, kit, imageRel, logo, opts));
+  }
+  console.log(`✓ ${slug}: 2 Formate — Foto: ${imageRel}`);
 }

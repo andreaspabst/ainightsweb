@@ -10,6 +10,15 @@ zwei Monate vorher, pro Speaker ein **#speakerintro**, der **Line-up-Post**
 eine Woche vorher und am **Event-Tag** die „HEUTE 17:00 UHR"-Karte. Alle
 terminiert im Wochenrhythmus vor dem Event, alle auf Instagram und LinkedIn.
 
+## ⚠️ Die zwei LinkedIn-Regeln, an denen es bisher immer gescheitert ist
+
+1. **Für LinkedIn immer die `-linkedin.png` nehmen**, nie die Instagram-Karte.
+   LinkedIn beschneidet Portrait-Bilder im Feed auf ca. 1.91:1 und schneidet
+   dabei die Headline weg. Jeder Kartentyp liegt in beiden Zuschnitten vor
+   (Tabelle in Schritt 1).
+2. **`linkedinData` braucht `"previewIncluded": false`**, sobald ein Bild
+   mitgeschickt wird *und* im Text eine URL steht (Details unten).
+
 ## Social Media läuft über Metricool
 
 **Linkrex nicht mehr verwenden.** Social-Media-Planung für die AI Nights läuft
@@ -26,7 +35,8 @@ doppelt geplante Posts gehen sonst zweimal auf denselben Kanälen raus.
   - Instagram: Textende „Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️",
     `instagramData: {"type":"POST","showReelOnFeed":true,"isAiGenerated":false}`
   - LinkedIn: statt „Link in Bio" die volle Event-URL,
-    `linkedinData: {"previewIncluded":true,"type":"post"}`
+    `linkedinData: {"previewIncluded":false,"type":"post"}` — **`previewIncluded`
+    muss `false` sein**, siehe Pflichtregel unten
 - Hashtags stehen **im Text**, nicht im separaten Feld.
 - `mediaAltText` immer setzen — beschreibt, wer auf der Karte zu sehen ist.
 - **Schrift der Postkarten (AI Nights und AI Woman Nights): Glacial
@@ -43,15 +53,43 @@ node scripts/generate-speaker-intro-cards.mjs <event-slug>
 node scripts/generate-event-carousel.mjs <event-slug>
 node scripts/generate-topic-carousels.mjs <event-slug>
 node scripts/generate-event-lineup.mjs <event-slug>
+node scripts/generate-save-the-date.mjs <event-slug>
 node scripts/generate-event-day.mjs <event-slug>
 ```
 
-Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn
-Metricool lädt die Bilder per öffentlicher URL von der Live-Site:
+Jedes dieser Skripte schreibt **pro Aufruf beide Formate** (`-instagram.png`
+und `-linkedin.png`) — es gibt keinen Schalter, der nur eines erzeugt.
 
-- `https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>.png`
-- `https://ainights.ai/media/event-lineups/<event-slug>-instagram.png` bzw. `-linkedin.png`
-- `https://ainights.ai/media/event-day/<event-slug>.png`
+Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn
+Metricool lädt die Bilder per öffentlicher URL von der Live-Site.
+
+### Welcher Kartentyp in welchem Format
+
+Alle Kartentypen liegen in **zwei Zuschnitten** vor, unterschieden durch das
+Suffix `-instagram` / `-linkedin` im Dateinamen:
+
+| Kartentyp | Datei | Instagram | LinkedIn |
+|---|---|---|---|
+| Save the Date | `/media/save-the-date/<event-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
+| #speakerintro | `/media/speaker-intro-cards/<event-slug>/<speaker-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
+| Line-up | `/media/event-lineups/<event-slug>-<fmt>.png` | 1080×1080 | 1200×627 |
+| Event-Tag „HEUTE" | `/media/event-day/<event-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
+| Event-/Themen-Karussell | `/media/{event,topic}-carousels/<event-slug>/…-slide-<n>-<fmt>.png` | 1080×1080 | 1200×627 |
+
+**Für LinkedIn ist die `-linkedin.png` Pflicht.** LinkedIn beschneidet
+Portrait- und Quadrat-Bilder im Feed auf ca. 1.91:1 und schneidet dabei die
+Headline weg (bei den #speakerintro-Karten „#speakerintro" + Name, bei der
+Event-Tag-Karte „HEUTE 17:00 UHR"). Nie die Instagram-Karte in einen
+LinkedIn-Post hängen.
+
+Beispiel-URLs:
+
+- `https://ainights.ai/media/save-the-date/<event-slug>-instagram.png` / `-linkedin.png`
+- `https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>-instagram.png` / `-linkedin.png`
+- `https://ainights.ai/media/event-lineups/<event-slug>-instagram.png` / `-linkedin.png`
+- `https://ainights.ai/media/event-day/<event-slug>-instagram.png` / `-linkedin.png`
+
+Vor dem Einplanen jede URL einmal per `curl -I` gegenprüfen (muss 200 liefern).
 
 Muss ein Post angelegt werden, bevor der Branch gemerged ist (z. B. der
 Event-Tag-Post, wenn das Event kurz bevorsteht): Das Repo ist öffentlich, die
@@ -81,8 +119,8 @@ Antwort enthält dann eine `static.metricool.com`-URL. Das ist normal.
 ### Save the Date
 
 Die Save-the-Date-Karte (`node scripts/generate-save-the-date.mjs <event-slug>`,
-Ausgabe unter `public/media/save-the-date/`) geht **rund zwei Monate vor dem
-Event** raus — auf **LinkedIn und Instagram**, wie die Speaker-Intros als zwei
+Ausgabe unter `public/media/save-the-date/<event-slug>-instagram.png` bzw.
+`-linkedin.png`) geht **rund zwei Monate vor dem Event** raus — auf **LinkedIn und Instagram**, wie die Speaker-Intros als zwei
 getrennte Posts zur selben Zeit.
 
 - Ausgangspunkt: Event-Datum minus zwei Monate, dann auf den nächstgelegenen
@@ -97,9 +135,10 @@ getrennte Posts zur selben Zeit.
 
 Am Tag des Events geht morgens die Event-Tag-Karte raus
 (`node scripts/generate-event-day.mjs <event-slug>`, Ausgabe unter
-`public/media/event-day/<event-slug>.png`, Portrait 1080×1350): ein zufälliges
-Publikumsfoto aus der Galerie als Magenta/Blau-Duotone, oben links das Logo,
-unten groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
+`public/media/event-day/<event-slug>-instagram.png` (Portrait 1080×1350) und
+`-linkedin.png` (Landscape 1200×627, Headline links, Publikum rechts): ein
+zufälliges Publikumsfoto aus der Galerie als Magenta/Blau-Duotone, oben links
+das Logo, groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
 „Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich".
 
 - **Termin: Event-Tag, 09:00 Uhr**, Instagram *und* LinkedIn als zwei
@@ -130,12 +169,16 @@ unten groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
 
 ## Schritt 3: Posts anlegen
 
-`createScheduledPost` mit `blogId`, `date` (ISO 8601 mit Offset) und `info`:
+`createScheduledPost` mit `blogId`, `date` (ISO 8601 mit Offset) und `info`.
+Pro Anlass **zwei Posts** zum selben Termin — je Netzwerk mit der Karte im
+Format dieses Netzwerks.
+
+Instagram:
 
 ```json
 {
   "text": "…",
-  "media": ["https://ainights.ai/media/speaker-intro-cards/<event>/<slug>.png"],
+  "media": ["https://ainights.ai/media/speaker-intro-cards/<event>/<slug>-instagram.png"],
   "mediaAltText": ["…"],
   "providers": [{"network": "instagram"}],
   "publicationDate": {"dateTime": "2026-10-27T09:00:00", "timezone": "Europe/Berlin"},
@@ -143,6 +186,42 @@ unten groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
   "instagramData": {"type": "POST", "showReelOnFeed": true, "isAiGenerated": false}
 }
 ```
+
+LinkedIn:
+
+```json
+{
+  "text": "… https://ainights.ai/events/<event-slug>/ …",
+  "media": ["https://ainights.ai/media/speaker-intro-cards/<event>/<slug>-linkedin.png"],
+  "mediaAltText": ["…"],
+  "providers": [{"network": "linkedin"}],
+  "publicationDate": {"dateTime": "2026-10-27T09:00:00", "timezone": "Europe/Berlin"},
+  "autoPublish": true, "draft": false, "shortener": false,
+  "linkedinData": {"previewIncluded": false, "type": "post"}
+}
+```
+
+### Pflichtregel LinkedIn: `previewIncluded: false`
+
+Sobald ein LinkedIn-Post **ein Bild mitschickt UND im Text eine URL steht**,
+muss `linkedinData` `"previewIncluded": false` enthalten:
+
+```json
+"linkedinData": { "previewIncluded": false, "type": "post" }
+```
+
+Sonst baut LinkedIn aus der URL eine Link-Vorschau und zeigt das hochgeladene
+Bild **gar nicht** — genau das ist bei mehreren geplanten Posts passiert, sie
+gingen ohne Grafik raus.
+
+Alternative, wenn die Link-Vorschau bewusst gewünscht ist: die URL **aus dem
+Post-Text nehmen** und stattdessen in den ersten Kommentar legen
+(`firstCommentText`) — dann bleibt das Bild das Hauptmotiv.
+
+Vor dem Anlegen einmal gegenprüfen — für **jeden** LinkedIn-Post:
+
+- `media` zeigt auf die `-linkedin.png` (nicht auf `-instagram.png`),
+- und wenn im `text` eine URL steht: `previewIncluded: false` ist gesetzt.
 
 Textmuster (Ton wie die bestehenden Posts, keine erfundenen Fakten):
 

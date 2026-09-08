@@ -30,17 +30,20 @@ function mediaFor(personSlug: string) {
   };
 }
 
-/** Save-the-Date-Karte (Portrait), erzeugt von scripts/generate-save-the-date.mjs. */
-function saveTheDateFor(eventSlug: string) {
-  const p = `/media/save-the-date/${eventSlug}.png`;
-  return exists(p) ? p : null;
+/** Karte pro Event in beiden Zuschnitten: Instagram (Portrait), LinkedIn (Landscape). */
+function bothFormats(dir: string, eventSlug: string) {
+  const at = (fmt: string) => {
+    const p = `/media/${dir}/${eventSlug}-${fmt}.png`;
+    return exists(p) ? p : null;
+  };
+  return { instagram: at('instagram'), linkedin: at('linkedin') };
 }
 
-/** Event-Tag-Karte „HEUTE 17:00 UHR“ (Portrait), erzeugt von scripts/generate-event-day.mjs. */
-function eventDayFor(eventSlug: string) {
-  const p = `/media/event-day/${eventSlug}.png`;
-  return exists(p) ? p : null;
-}
+/** Save-the-Date-Karten, erzeugt von scripts/generate-save-the-date.mjs. */
+const saveTheDateFor = (eventSlug: string) => bothFormats('save-the-date', eventSlug);
+
+/** Event-Tag-Karten „HEUTE 17:00 UHR“, erzeugt von scripts/generate-event-day.mjs. */
+const eventDayFor = (eventSlug: string) => bothFormats('event-day', eventSlug);
 
 function lineupFor(eventSlug: string) {
   return {
@@ -78,10 +81,13 @@ function topicCarouselsFor(eventSlug: string, speakerSlugs: string[]) {
     .filter((t) => t.instagram.length > 0);
 }
 
-/** #speakerintro-Karte (Portrait) pro Speaker und Event. */
+/** #speakerintro-Karten pro Speaker und Event: Portrait (IG) + Landscape (LinkedIn). */
 function introCardFor(eventSlug: string, speakerSlug: string) {
-  const p = `/media/speaker-intro-cards/${eventSlug}/${speakerSlug}.png`;
-  return exists(p) ? p : null;
+  const at = (fmt: string) => {
+    const p = `/media/speaker-intro-cards/${eventSlug}/${speakerSlug}-${fmt}.png`;
+    return exists(p) ? p : null;
+  };
+  return { instagram: at('instagram'), linkedin: at('linkedin') };
 }
 
 const today = '2026-09-01';
@@ -135,21 +141,37 @@ const rows = orderedEvents.map((e) => {
             {!isUpcoming && <span class="badge">vergangen</span>}
           </h2>
 
-          {saveTheDate && (
+          {(saveTheDate.instagram || saveTheDate.linkedin) && (
             <div class="lineup">
-              <a href={saveTheDate} target="_blank" class="lineup-preview">
-                <img src={saveTheDate} alt="" loading="lazy" />
-                <span>Save the Date laden</span>
-              </a>
+              {saveTheDate.instagram && (
+                <a href={saveTheDate.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
+                  <img src={saveTheDate.instagram} alt="" loading="lazy" />
+                  <span>Save the Date · Instagram (1080×1350)</span>
+                </a>
+              )}
+              {saveTheDate.linkedin && (
+                <a href={saveTheDate.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                  <img src={saveTheDate.linkedin} alt="" loading="lazy" />
+                  <span>Save the Date · LinkedIn (1200×627)</span>
+                </a>
+              )}
             </div>
           )}
 
-          {eventDay && (
+          {(eventDay.instagram || eventDay.linkedin) && (
             <div class="lineup">
-              <a href={eventDay} target="_blank" class="lineup-preview">
-                <img src={eventDay} alt="" loading="lazy" />
-                <span>Event-Tag „HEUTE“ laden</span>
-              </a>
+              {eventDay.instagram && (
+                <a href={eventDay.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
+                  <img src={eventDay.instagram} alt="" loading="lazy" />
+                  <span>Event-Tag „HEUTE“ · Instagram (1080×1350)</span>
+                </a>
+              )}
+              {eventDay.linkedin && (
+                <a href={eventDay.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                  <img src={eventDay.linkedin} alt="" loading="lazy" />
+                  <span>Event-Tag „HEUTE“ · LinkedIn (1200×627)</span>
+                </a>
+              )}
             </div>
           )}
 
@@ -209,17 +231,22 @@ const rows = orderedEvents.map((e) => {
             </>
           )}
 
-          {people.some((p) => p.introCard) && (
+          {people.some((p) => p.introCard.instagram || p.introCard.linkedin) && (
             <>
-              <h3 class="subheading">#speakerintro-Karten (Portrait 1080×1350)</h3>
-              <div class="strip">
-                {people.filter((p) => p.introCard).map((p) => (
-                  <a href={p.introCard} target="_blank" class="slide slide-tall">
-                    <img src={p.introCard} alt="" loading="lazy" />
-                    <span>{p.title}</span>
-                  </a>
-                ))}
-              </div>
+              <h3 class="subheading">#speakerintro-Karten (Instagram 1080×1350 · LinkedIn 1200×627)</h3>
+              {(['instagram', 'linkedin'] as const).map((fmt) => (
+                people.some((p) => p.introCard[fmt]) && (
+                  <div class="strip">
+                    <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
+                    {people.filter((p) => p.introCard[fmt]).map((p) => (
+                      <a href={p.introCard[fmt]} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : 'slide-tall'}`}>
+                        <img src={p.introCard[fmt]} alt="" loading="lazy" />
+                        <span>{p.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                )
+              ))}
             </>
           )}
 
@@ -276,6 +303,15 @@ const rows = orderedEvents.map((e) => {
 <style>
   .tools {
     padding: 7rem 0 4rem;
+  }
+
+  /* Sicherheitsnetz: Die Produktionsmedien sind Retina-Exporte (bis 2160 px
+     breit). Fehlt an einer Stelle die Größenklasse, sprengt ein einziges
+     Bild sonst das Layout. */
+  .tools img,
+  .tools video {
+    max-width: 100%;
+    height: auto;
   }
   h1 {
     font-size: clamp(1.8rem, 4vw, 2.6rem);
@@ -338,6 +374,9 @@ const rows = orderedEvents.map((e) => {
   }
   .lineup-preview-wide img {
     aspect-ratio: 1200/627;
+  }
+  .lineup-preview-tall img {
+    aspect-ratio: 1080/1350;
   }
   .lineup-preview span {
     display: block;

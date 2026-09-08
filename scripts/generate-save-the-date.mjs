@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 /**
- * „Save the Date“-Karten (Portrait 1080×1350) — Nachbau der Instagram-Vorlage:
- * Publikumsfoto vollflächig, geschwungene Magenta-Bänder oben und unten,
- * darauf das Datum, „AFTERWORK“ auf Magenta-Block, „& NETWORKING“ in Magenta,
- * unten mittig das AI-Nights-Logo — dazu der gedrehte „SAVE THE DATE“-Stempel.
+ * „Save the Date“-Karten in zwei Zuschnitten — Nachbau der Instagram-Vorlage:
+ * Publikumsfoto vollflächig, geschwungene Magenta-Bänder, darauf das Datum,
+ * „AFTERWORK“ auf Magenta-Block, „& NETWORKING“ in Magenta, das
+ * AI-Nights-Logo — dazu der gedrehte „SAVE THE DATE“-Stempel.
  * Schrift: Glacial Indifference Bold (Display-Schrift der AI-Nights-Postkarten).
+ *
+ *   instagram → Portrait 1080×1350: Text mittig, Logo mittig unten.
+ *   linkedin  → Landscape 1200×627: Text links, Publikum rechts sichtbar,
+ *               Stempel oben rechts, Logo unten rechts.
+ *
+ * Der Landscape-Zuschnitt ist Pflicht für LinkedIn: LinkedIn beschneidet
+ * Portrait-Bilder im Feed auf ca. 1.91:1 und schneidet dabei die Headline weg.
  *
  * Das Foto kommt per Zufall aus der Galerie (src/data/gallery.json), damit
  * jedes Event ein anderes Publikumsbild bekommt; mit --image lässt sich ein
@@ -13,7 +20,9 @@
  * Veroeffentlichung: rund zwei Monate vor dem Event auf LinkedIn und Instagram
  * (Terminierung siehe Skill event-social-posts).
  *
- * Ausgabe: public/media/save-the-date/<event-slug>.png
+ * Ausgabe:
+ *   public/media/save-the-date/<event-slug>-instagram.png
+ *   public/media/save-the-date/<event-slug>-linkedin.png
  *
  * Aufruf:
  *   node scripts/generate-save-the-date.mjs ai-nights-nuernberg-06
@@ -22,12 +31,14 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { C, PUBLIC, ROOT, textImg, solidRect, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
+import { C, FORMATS, PUBLIC, ROOT, textImg, solidRect, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
 
 const OUT_DIR = path.join(PUBLIC, 'media/save-the-date');
-const W = 1080;
-const H = 1350;
-const MARGIN = 76;
+/**
+ * Instagram bekommt den Portrait-Zuschnitt (nicht das quadratische
+ * FORMATS.instagram), LinkedIn den Landscape-Zuschnitt aus FORMATS.
+ */
+const SIZE = { instagram: FORMATS.portrait, linkedin: FORMATS.linkedin };
 const PINK = C.magentaDeep;
 
 const MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
@@ -70,8 +81,18 @@ async function pickGalleryImage(seed) {
   throw new Error('Kein Publikumsbild gefunden');
 }
 
-/** Foto vollflächig, leicht abgedunkelt — Text muss lesbar bleiben. */
-async function photoLayer(rel) {
+/** Foto vollflächig, leicht abgedunkelt — Text muss lesbar bleiben. Im
+ *  Landscape-Zuschnitt zusätzlich links abgedunkelt, damit der Textblock
+ *  auf ruhigem Grund steht und das Publikum rechts sichtbar bleibt. */
+async function photoLayer(rel, W, H, wide = false) {
+  const side = wide
+    ? `<linearGradient id="s" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#0f0122" stop-opacity=".72"/>
+        <stop offset="38%" stop-color="#0f0122" stop-opacity=".58"/>
+        <stop offset="70%" stop-color="#0f0122" stop-opacity=".1"/>
+        <stop offset="100%" stop-color="#0f0122" stop-opacity="0"/>
+      </linearGradient>`
+    : '';
   const overlay = Buffer.from(`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
@@ -79,8 +100,10 @@ async function photoLayer(rel) {
         <stop offset="45%" stop-color="#0f0122" stop-opacity=".18"/>
         <stop offset="100%" stop-color="#0f0122" stop-opacity=".55"/>
       </linearGradient>
+      ${side}
     </defs>
     <rect width="${W}" height="${H}" fill="url(#v)"/>
+    ${wide ? `<rect width="${W}" height="${H}" fill="url(#s)"/>` : ''}
   </svg>`);
   return sharp(path.join(PUBLIC, rel))
     .resize(W, H, { fit: 'cover', position: 'attention' })
@@ -91,7 +114,7 @@ async function photoLayer(rel) {
 
 /** Geschwungenes Magenta-Band über die volle Breite, als ganzflächiger Layer
  *  (sharp erlaubt keine Composite-Layer, die über den Rand hinausragen). */
-function swoosh(y, height, bend, flip = false) {
+function swoosh(W, H, y, height, bend, flip = false) {
   const b = flip ? -bend : bend;
   const x0 = -40;
   const x1 = W + 40;
@@ -161,60 +184,85 @@ async function stamp({ width = 620, angle = -9 } = {}) {
   return { stamp: rotated, plate: plateRotated };
 }
 
-async function card(kit, imageRel, logo) {
+/**
+ * Maße je Zuschnitt. Landscape hat nur die halbe Höhe: kleinere Schriften,
+ * schmalere Textspalte (rechts bleibt das Publikum sichtbar), Logo unten
+ * rechts statt mittig, kleinerer Stempel.
+ */
+const LAYOUT = {
+  instagram: {
+    margin: 76, bandY: 336, bandH: 34, bandBend: 26, dateGap: 26, dateSize: 118,
+    padX: 30, padY: 16, blockSize: 90, blockGap: 64,
+    lowerFromBottom: 300, lowerH: 30, lowerBend: 24,
+    stampWidth: 620, stampTop: 118, stampRight: 34, colRight: 60,
+  },
+  linkedin: {
+    margin: 68, bandY: 96, bandH: 22, bandBend: 16, dateGap: 18, dateSize: 74,
+    padX: 22, padY: 12, blockSize: 62, blockGap: 34,
+    lowerFromBottom: 112, lowerH: 20, lowerBend: 16,
+    stampWidth: 330, stampTop: 42, stampRight: 40, colRight: 420,
+  },
+};
+
+async function card(fmt, kit, imageRel, logo) {
+  const { w: W, h: H } = SIZE[fmt];
+  const L = LAYOUT[fmt];
+  const MARGIN = L.margin;
+  const wide = fmt === 'linkedin';
+  const colW = W - MARGIN * 2 - L.colRight;
   const layers = [];
   const event = kit.event;
 
   // Datum-Band + Datum
-  const bandY = 336;
-  const bandH = 34;
-  const bandBend = 26;
-  layers.push({ input: swoosh(bandY, bandH, bandBend), top: 0, left: 0 });
+  layers.push({ input: swoosh(W, H, L.bandY, L.bandH, L.bandBend), top: 0, left: 0 });
 
   const date = await textImg(dateLabel(event.eventDate) ?? event.title, {
     family: 'Glacial Indifference Bold',
-    size: 118,
+    size: L.dateSize,
     color: '#ffffff',
-    maxWidth: W - MARGIN * 2 - 60,
+    maxWidth: colW,
   });
-  const dateY = bandY + bandH + bandBend + 26;
+  const dateY = L.bandY + L.bandH + L.bandBend + L.dateGap;
   layers.push({ input: date.data, top: dateY, left: MARGIN });
 
   // AFTERWORK auf Magenta-Block
-  const padX = 30;
-  const padY = 16;
-  const a = await textImg('AFTERWORK', { family: 'Glacial Indifference Bold', size: 90, color: '#ffffff', maxWidth: W - MARGIN * 2 - padX * 2 });
-  const aY = dateY + date.info.height + 64;
+  const { padX, padY } = L;
+  const a = await textImg('AFTERWORK', { family: 'Glacial Indifference Bold', size: L.blockSize, color: '#ffffff', maxWidth: colW - padX * 2 });
+  const aY = dateY + date.info.height + L.blockGap;
   layers.push({ input: solidRect(a.info.width + padX * 2, a.info.height + padY * 2, PINK), top: aY, left: MARGIN });
   layers.push({ input: a.data, top: aY + padY, left: MARGIN + padX });
 
   // & NETWORKING in Magenta darunter
-  const n = await textImg('& NETWORKING', { family: 'Glacial Indifference Bold', size: 90, color: C.magenta, maxWidth: W - MARGIN * 2 });
+  const n = await textImg('& NETWORKING', { family: 'Glacial Indifference Bold', size: L.blockSize, color: C.magenta, maxWidth: colW });
   layers.push({ input: n.data, top: aY + a.info.height + padY * 2 + 12, left: MARGIN });
 
   // Unteres Band + Logo
-  const lowerY = H - 300;
-  layers.push({ input: swoosh(lowerY, 30, 24, true), top: 0, left: 0 });
+  const lowerY = H - L.lowerFromBottom;
+  layers.push({ input: swoosh(W, H, lowerY, L.lowerH, L.lowerBend, true), top: 0, left: 0 });
 
-  const lg = logoFor(kit, logo).portrait;
+  // Portrait: Logo mittig unter dem Band. Landscape: unten rechts, damit die
+  // linke Textspalte frei bleibt.
+  const lg = wide ? logoFor(kit, logo).landscape : logoFor(kit, logo).portrait;
   const logoMeta = await sharp(lg).metadata();
   layers.push({
     input: lg,
-    top: Math.min(lowerY + 96, H - logoMeta.height - 40),
-    left: Math.round((W - logoMeta.width) / 2),
+    top: wide
+      ? Math.min(lowerY + L.lowerH + 26, H - logoMeta.height - 22)
+      : Math.min(lowerY + 96, H - logoMeta.height - 40),
+    left: wide ? W - MARGIN - logoMeta.width : Math.round((W - logoMeta.width) / 2),
   });
 
   // Stempel oben rechts, über das Datum-Band hinweg. Die Buchstaben sind
   // ausgespart — damit sie auf hellen Fotos lesbar bleiben, liegt die
   // abgedunkelte Plattenfläche darunter; sichtbar wird sie nur in den Aussparungen.
-  const st = await stamp();
+  const st = await stamp({ width: L.stampWidth });
   const stMeta = await sharp(st.stamp).metadata();
-  const stTop = 118;
-  const stLeft = Math.max(0, W - stMeta.width - 34);
+  const stTop = L.stampTop;
+  const stLeft = Math.max(0, W - stMeta.width - L.stampRight);
   layers.push({ input: st.plate, top: stTop, left: stLeft });
   layers.push({ input: st.stamp, top: stTop, left: stLeft });
 
-  return sharp(await photoLayer(imageRel)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
+  return sharp(await photoLayer(imageRel, W, H, wide)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 }
 
 const args = process.argv.slice(2);
@@ -232,6 +280,8 @@ const logo = await loadLogo();
 for (const slug of slugs) {
   const kit = await loadEventKit(slug);
   const imageRel = imageArg ?? (await pickGalleryImage(seedArg ?? slug));
-  await fs.writeFile(path.join(OUT_DIR, `${slug}.png`), await card(kit, imageRel, logo));
-  console.log(`✓ ${slug} — Foto: ${imageRel}`);
+  for (const fmt of ['instagram', 'linkedin']) {
+    await fs.writeFile(path.join(OUT_DIR, `${slug}-${fmt}.png`), await card(fmt, kit, imageRel, logo));
+  }
+  console.log(`✓ ${slug}: 2 Formate — Foto: ${imageRel}`);
 }
