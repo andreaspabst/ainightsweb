@@ -55,6 +55,7 @@ node scripts/generate-topic-carousels.mjs <event-slug>
 node scripts/generate-event-lineup.mjs <event-slug>
 node scripts/generate-save-the-date.mjs <event-slug>
 node scripts/generate-event-day.mjs <event-slug>
+node scripts/generate-event-day.mjs <event-slug> --countdown 14,10,2
 ```
 
 Jedes dieser Skripte schreibt **pro Aufruf beide Formate** (`-instagram.png`
@@ -74,6 +75,7 @@ Suffix `-instagram` / `-linkedin` im Dateinamen:
 | #speakerintro | `/media/speaker-intro-cards/<event-slug>/<speaker-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
 | Line-up | `/media/event-lineups/<event-slug>-<fmt>.png` | 1080×1080 | 1200×627 |
 | Event-Tag „HEUTE" | `/media/event-day/<event-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
+| Countdown „NUR NOCH" | `/media/countdown/<event-slug>-<n>-<fmt>.png` | 1080×1350 | 1200×627 |
 | Event-/Themen-Karussell | `/media/{event,topic}-carousels/<event-slug>/…-slide-<n>-<fmt>.png` | 1080×1080 | 1200×627 |
 
 **Für LinkedIn ist die `-linkedin.png` Pflicht.** LinkedIn beschneidet
@@ -88,6 +90,7 @@ Beispiel-URLs:
 - `https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>-instagram.png` / `-linkedin.png`
 - `https://ainights.ai/media/event-lineups/<event-slug>-instagram.png` / `-linkedin.png`
 - `https://ainights.ai/media/event-day/<event-slug>-instagram.png` / `-linkedin.png`
+- `https://ainights.ai/media/countdown/<event-slug>-14-instagram.png` / `-linkedin.png`
 
 Vor dem Einplanen jede URL einmal per `curl -I` gegenprüfen (muss 200 liefern).
 
