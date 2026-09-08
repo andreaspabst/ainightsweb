@@ -29,6 +29,12 @@ doppelt geplante Posts gehen sonst zweimal auf denselben Kanälen raus.
     `linkedinData: {"previewIncluded":true,"type":"post"}`
 - Hashtags stehen **im Text**, nicht im separaten Feld.
 - `mediaAltText` immer setzen — beschreibt, wer auf der Karte zu sehen ist.
+- **Schrift der Postkarten (AI Nights und AI Woman Nights): Glacial
+  Indifference** (`scripts/fonts/GlacialIndifference-*.otf`, SIL OFL, in
+  `social-kit.mjs` als Familien `Glacial Indifference` / `Glacial Indifference
+  Bold` registriert). Save-the-Date- und Event-Tag-Karte nutzen sie; neue
+  Karten-Generatoren ebenfalls damit setzen. Kursiv gibt es nur synthetisch
+  (Pango `<i>`), einen Italic-Schnitt hat die Schrift nicht.
 
 ## Schritt 1: Assets generieren und deployen
 

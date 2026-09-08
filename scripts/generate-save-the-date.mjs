@@ -4,6 +4,7 @@
  * Publikumsfoto vollflächig, geschwungene Magenta-Bänder oben und unten,
  * darauf das Datum, „AFTERWORK“ auf Magenta-Block, „& NETWORKING“ in Magenta,
  * unten mittig das AI-Nights-Logo — dazu der gedrehte „SAVE THE DATE“-Stempel.
+ * Schrift: Glacial Indifference Bold (Display-Schrift der AI-Nights-Postkarten).
  *
  * Das Foto kommt per Zufall aus der Galerie (src/data/gallery.json), damit
  * jedes Event ein anderes Publikumsbild bekommt; mit --image lässt sich ein
@@ -127,7 +128,7 @@ async function stamp({ width = 620, angle = -9 } = {}) {
       .toBuffer();
   } catch {
     const label = await textImg('SAVE THE DATE', {
-      family: 'Inter Black', size: 58, color: '#151019', maxWidth: 900, letterSpacing: 2,
+      family: 'Glacial Indifference Bold', size: 58, color: '#151019', maxWidth: 900, letterSpacing: 2,
     });
     const padX = 40;
     const padY = 20;
@@ -171,7 +172,7 @@ async function card(kit, imageRel, logo) {
   layers.push({ input: swoosh(bandY, bandH, bandBend), top: 0, left: 0 });
 
   const date = await textImg(dateLabel(event.eventDate) ?? event.title, {
-    family: 'Inter Black',
+    family: 'Glacial Indifference Bold',
     size: 118,
     color: '#ffffff',
     maxWidth: W - MARGIN * 2 - 60,
@@ -182,13 +183,13 @@ async function card(kit, imageRel, logo) {
   // AFTERWORK auf Magenta-Block
   const padX = 30;
   const padY = 16;
-  const a = await textImg('AFTERWORK', { family: 'Inter Black', size: 88, color: '#ffffff', maxWidth: W - MARGIN * 2 - padX * 2 });
+  const a = await textImg('AFTERWORK', { family: 'Glacial Indifference Bold', size: 90, color: '#ffffff', maxWidth: W - MARGIN * 2 - padX * 2 });
   const aY = dateY + date.info.height + 64;
   layers.push({ input: solidRect(a.info.width + padX * 2, a.info.height + padY * 2, PINK), top: aY, left: MARGIN });
   layers.push({ input: a.data, top: aY + padY, left: MARGIN + padX });
 
   // & NETWORKING in Magenta darunter
-  const n = await textImg('& NETWORKING', { family: 'Inter Black', size: 88, color: C.magenta, maxWidth: W - MARGIN * 2 });
+  const n = await textImg('& NETWORKING', { family: 'Glacial Indifference Bold', size: 90, color: C.magenta, maxWidth: W - MARGIN * 2 });
   layers.push({ input: n.data, top: aY + a.info.height + padY * 2 + 12, left: MARGIN });
 
   // Unteres Band + Logo

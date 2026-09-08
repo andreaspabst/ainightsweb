@@ -3,7 +3,8 @@
  * „HEUTE 17:00 UHR“-Karte für den Event-Tag (Portrait 1080×1350) — Nachbau
  * des Instagram-Posts: Publikumsfoto vollflächig als Magenta/Blau-Duotone,
  * oben links das AI-Nights-Logo, unten groß „HEUTE“ + Uhrzeit und darunter
- * die Zeile „Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich“.
+ * die Zeile „Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich“
+ * — alles in Glacial Indifference, der Schrift der AI-Nights-Postkarten.
  *
  * Das Foto kommt per Zufall aus der Galerie (kuratierte Publikumsbilder,
  * mit --any-gallery aus allen Galeriebildern in src/data/gallery.json).
@@ -118,20 +119,21 @@ async function photoLayer(rel) {
 }
 
 /**
- * Hinweiszeile mit gemischten Schnitten (regular / semibold / kursiv /
- * unterstrichen) als eine Pango-Markup-Zeile mit Wortumbruch. Damit Pango die
- * Schnitte findet, werden die Schriftdateien vorher einmal geladen
- * (fontconfig merkt sie sich für den Prozess).
+ * Hinweiszeile mit gemischten Schnitten (regular / bold / kursiv /
+ * unterstrichen) als eine Pango-Markup-Zeile mit Wortumbruch, in Glacial
+ * Indifference. Damit Pango den Bold-Schnitt findet, werden die Schriftdateien
+ * vorher einmal geladen (fontconfig merkt sie sich für den Prozess); kursiv
+ * wird synthetisiert, Glacial Indifference hat keinen Italic-Schnitt.
  */
 async function richText(markup, { size, maxWidth }) {
-  for (const family of ['Inter', 'Inter SemiBold', 'Inter Italic', 'Inter Bold Italic']) {
+  for (const family of ['Glacial Indifference', 'Glacial Indifference Bold']) {
     await textImg('x', { family, size: 12, color: '#fff', maxWidth: 100 });
   }
   return sharp({
     text: {
       text: `<span foreground="#ffffff">${markup}</span>`,
-      font: `Inter ${size}`,
-      fontfile: path.join(ROOT, 'scripts/fonts/Inter-Regular.ttf'),
+      font: `Glacial Indifference ${size}`,
+      fontfile: path.join(ROOT, 'scripts/fonts/GlacialIndifference-Regular.otf'),
       rgba: true,
       dpi: 72,
       width: maxWidth,
@@ -154,15 +156,15 @@ async function card(kit, imageRel, logo, opts) {
   // oben gesetzt, damit der Abstand zum unteren Rand konstant bleibt.
   const time = (opts.time ?? event.startTime ?? '17:00').replace('.', ':');
   const headline = await textImg(opts.headline ?? 'HEUTE', {
-    family: 'Inter Black', size: 196, color: '#ffffff', maxWidth: W - MARGIN * 2, letterSpacing: 2,
+    family: 'Glacial Indifference Bold', size: 204, color: '#ffffff', maxWidth: W - MARGIN * 2, letterSpacing: 1,
   });
   const timeline = await textImg(`${time} UHR`, {
-    family: 'Inter Black', size: 196, color: '#ffffff', maxWidth: W - MARGIN * 2, letterSpacing: 2,
+    family: 'Glacial Indifference Bold', size: 204, color: '#ffffff', maxWidth: W - MARGIN * 2, letterSpacing: 1,
   });
 
   const markup = opts.subline
     ? `<i>${esc(opts.subline)}</i>`
-    : 'Für die <span weight="600">Spontanen</span>: <i>Tickets sind auch an der <b><u>Abendkasse</u></b> erhältlich</i>';
+    : 'Für die <b>Spontanen</b>: <i>Tickets sind auch an der <b><u>Abendkasse</u></b> erhältlich</i>';
   const sub = opts.noSubline
     ? { info: { height: 0 } }
     : await richText(markup, { size: 50, maxWidth: W - MARGIN * 2 + 20 });

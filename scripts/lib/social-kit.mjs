@@ -21,6 +21,11 @@ const FONT_FILES = {
   'Inter Black': 'Inter-Black.ttf',
   'Inter Italic': 'Inter-Italic.ttf',
   'Inter Bold Italic': 'Inter-BoldItalic.ttf',
+  // Glacial Indifference (SIL OFL) — die Display-Schrift der AI-Nights-/AI-Woman-
+  // Nights-Postkarten (Event-Tag, Save the Date). Kursiv wird von Pango
+  // synthetisiert (es gibt keinen eigenen Italic-Schnitt).
+  'Glacial Indifference': 'GlacialIndifference-Regular.otf',
+  'Glacial Indifference Bold': 'GlacialIndifference-Bold.otf',
 };
 const fontFile = (family) => {
   const file = FONT_FILES[family];
