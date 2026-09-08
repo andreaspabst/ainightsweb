@@ -62,12 +62,15 @@ async function galleryImages(any) {
   return gallery.flatMap((g) => g.images ?? []);
 }
 
-/** Zufälliges Publikumsbild — pro Event stabil (Seed = Event-Slug). */
-async function pickGalleryImage(seed, any) {
+/** Zufälliges Publikumsbild — pro Event stabil (Seed = Event-Slug). Werden
+ *  mehrere Events in einem Lauf gerendert, bekommt jedes ein anderes Bild
+ *  (`used` sammelt die bereits vergebenen). */
+async function pickGalleryImage(seed, any, used = new Set()) {
   const rand = rng(seed);
   const pool = await galleryImages(any);
   const shuffled = [...pool].sort(() => rand() - 0.5);
-  for (const rel of shuffled) {
+  const fresh = shuffled.filter((rel) => !used.has(rel));
+  for (const rel of fresh.length ? fresh : shuffled) {
     try {
       await fs.access(path.join(PUBLIC, rel));
       return rel;
@@ -193,9 +196,11 @@ if (slugs.length === 0) {
 
 await fs.mkdir(OUT_DIR, { recursive: true });
 const logo = await loadLogo();
+const used = new Set();
 for (const slug of slugs) {
   const kit = await loadEventKit(slug);
-  const imageRel = opt('image') ?? (await pickGalleryImage(opt('seed') ?? slug, flag('any-gallery')));
+  const imageRel = opt('image') ?? (await pickGalleryImage(opt('seed') ?? slug, flag('any-gallery'), used));
+  used.add(imageRel);
   const png = await card(kit, imageRel, logo, {
     time: opt('time'), headline: opt('headline'), subline: opt('subline'), noSubline: flag('no-subline'),
   });
