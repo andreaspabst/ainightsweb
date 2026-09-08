@@ -51,7 +51,7 @@ const AUDIENCE = [
   '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-154.jpg',
   '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-86.jpg',
   '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-158.jpg',
-  '/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-167.jpg',
+  '/wp-content/uploads/2026/01/52-ianight-52-scaled.jpg',
   '/wp-content/uploads/2026/01/37-ianight-37-scaled.jpg',
   '/wp-content/uploads/2026/01/1-34-publikum.jpg',
 ];
