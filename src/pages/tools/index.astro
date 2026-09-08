@@ -36,6 +36,12 @@ function saveTheDateFor(eventSlug: string) {
   return exists(p) ? p : null;
 }
 
+/** Event-Tag-Karte „HEUTE 17:00 UHR“ (Portrait), erzeugt von scripts/generate-event-day.mjs. */
+function eventDayFor(eventSlug: string) {
+  const p = `/media/event-day/${eventSlug}.png`;
+  return exists(p) ? p : null;
+}
+
 function lineupFor(eventSlug: string) {
   return {
     instagram: exists(`/media/event-lineups/${eventSlug}-instagram.png`) ? `/media/event-lineups/${eventSlug}-instagram.png` : null,
@@ -100,6 +106,7 @@ const rows = orderedEvents.map((e) => {
     sponsors: eventSponsors,
     lineup: lineupFor(e.data.slug),
     saveTheDate: saveTheDateFor(e.data.slug),
+    eventDay: eventDayFor(e.data.slug),
     carousel: carouselFor(e.data.slug),
     topicCarousels: topicCarouselsFor(e.data.slug, people.map((p) => p.slug)).map((t) => ({ ...t, name: speakerName(t.slug) })),
     isUpcoming: (e.data.eventDate ?? '') >= today,
@@ -120,7 +127,7 @@ const rows = orderedEvents.map((e) => {
       <h1 class="display-font">Produktionsmedien</h1>
       <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
 
-      {rows.map(({ event, people, sponsors, lineup, saveTheDate, carousel, topicCarousels, isUpcoming }) => (
+      {rows.map(({ event, people, sponsors, lineup, saveTheDate, eventDay, carousel, topicCarousels, isUpcoming }) => (
         <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
           <h2>
             {event.title}
@@ -133,6 +140,15 @@ const rows = orderedEvents.map((e) => {
               <a href={saveTheDate} target="_blank" class="lineup-preview">
                 <img src={saveTheDate} alt="" loading="lazy" />
                 <span>Save the Date laden</span>
+              </a>
+            </div>
+          )}
+
+          {eventDay && (
+            <div class="lineup">
+              <a href={eventDay} target="_blank" class="lineup-preview">
+                <img src={eventDay} alt="" loading="lazy" />
+                <span>Event-Tag „HEUTE“ laden</span>
               </a>
             </div>
           )}

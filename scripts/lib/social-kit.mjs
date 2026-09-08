@@ -19,6 +19,8 @@ const FONT_FILES = {
   'Inter SemiBold': 'Inter-SemiBold.ttf',
   'Inter ExtraBold': 'Inter-ExtraBold.ttf',
   'Inter Black': 'Inter-Black.ttf',
+  'Inter Italic': 'Inter-Italic.ttf',
+  'Inter Bold Italic': 'Inter-BoldItalic.ttf',
 };
 const fontFile = (family) => {
   const file = FONT_FILES[family];

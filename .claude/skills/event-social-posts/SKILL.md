@@ -1,14 +1,14 @@
 ---
 name: event-social-posts
-description: Plant die Social-Media-Posts rund um ein AI-Nights-Event in Metricool ein — Save the Date (~2 Monate vorher), #speakerintro je Speaker (5/4/3 Wochen vorher) und den Line-up-Post (1 Woche vorher), jeweils auf Instagram und LinkedIn. Proaktiv anwenden, sobald ein Event angelegt wird oder neue bestätigte Speaker/Sessions bekommt — zusammen mit announce-speakers (Blogpost).
+description: Plant die Social-Media-Posts rund um ein AI-Nights-Event in Metricool ein — Save the Date (~2 Monate vorher), #speakerintro je Speaker (5/4/3 Wochen vorher), den Line-up-Post (1 Woche vorher) und den „HEUTE 17:00 UHR"-Post am Event-Tag, jeweils auf Instagram und LinkedIn. Proaktiv anwenden, sobald ein Event angelegt wird oder neue bestätigte Speaker/Sessions bekommt — zusammen mit announce-speakers (Blogpost) — sowie in der Woche vor dem Event für den Event-Tag-Post.
 ---
 
 # Event-Posts in Metricool einplanen
 
-Rund um jedes Event laufen drei Post-Typen: die **Save-the-Date-Karte** etwa
-zwei Monate vorher, pro Speaker ein **#speakerintro** und zum Schluss der
-**Line-up-Post**. Alle terminiert im Wochenrhythmus vor dem Event, alle auf
-Instagram und LinkedIn.
+Rund um jedes Event laufen vier Post-Typen: die **Save-the-Date-Karte** etwa
+zwei Monate vorher, pro Speaker ein **#speakerintro**, der **Line-up-Post**
+eine Woche vorher und am **Event-Tag** die „HEUTE 17:00 UHR"-Karte. Alle
+terminiert im Wochenrhythmus vor dem Event, alle auf Instagram und LinkedIn.
 
 ## Social Media läuft über Metricool
 
@@ -37,6 +37,7 @@ node scripts/generate-speaker-intro-cards.mjs <event-slug>
 node scripts/generate-event-carousel.mjs <event-slug>
 node scripts/generate-topic-carousels.mjs <event-slug>
 node scripts/generate-event-lineup.mjs <event-slug>
+node scripts/generate-event-day.mjs <event-slug>
 ```
 
 Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn
@@ -44,6 +45,14 @@ Metricool lädt die Bilder per öffentlicher URL von der Live-Site:
 
 - `https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>.png`
 - `https://ainights.ai/media/event-lineups/<event-slug>-instagram.png` bzw. `-linkedin.png`
+- `https://ainights.ai/media/event-day/<event-slug>.png`
+
+Muss ein Post angelegt werden, bevor der Branch gemerged ist (z. B. der
+Event-Tag-Post, wenn das Event kurz bevorsteht): Das Repo ist öffentlich, die
+Datei ist auf dem Feature-Branch also schon unter
+`https://raw.githubusercontent.com/andreaspabst/ainightsweb/<branch>/public/media/…`
+erreichbar. Metricool kopiert das Bild beim Anlegen sofort in die eigene
+Mediathek — der Branch darf danach gemerged und gelöscht werden.
 
 Metricool kopiert die Datei beim Anlegen in die eigene Mediathek; die
 Antwort enthält dann eine `static.metricool.com`-URL. Das ist normal.
@@ -76,7 +85,42 @@ getrennte Posts zur selben Zeit.
   (auch den eines anderen Events), auf den Donnerstag derselben Woche
   ausweichen — vorher `getScheduledPosts` prüfen.
 - Reihenfolge über den Vorlauf hinweg: Save the Date (~8 Wochen) →
-  #speakerintro je Slot (5/4/3 Wochen) → Line-up (1 Woche).
+  #speakerintro je Slot (5/4/3 Wochen) → Line-up (1 Woche) → Event-Tag.
+
+### Event-Tag: „HEUTE 17:00 UHR"
+
+Am Tag des Events geht morgens die Event-Tag-Karte raus
+(`node scripts/generate-event-day.mjs <event-slug>`, Ausgabe unter
+`public/media/event-day/<event-slug>.png`, Portrait 1080×1350): ein zufälliges
+Publikumsfoto aus der Galerie als Magenta/Blau-Duotone, oben links das Logo,
+unten groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
+„Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich".
+
+- **Termin: Event-Tag, 09:00 Uhr**, Instagram *und* LinkedIn als zwei
+  getrennte Posts. Liegt an dem Tag schon etwas um 09:00 (z. B. ein
+  Speaker-Intro eines anderen Events), auf 11:00 ausweichen — vorher
+  `getScheduledPosts` prüfen.
+- Das Foto ist pro Event stabil (Seed = Event-Slug). Passt es nicht (Buffet,
+  leerer Raum, jemand ungünstig getroffen), mit `--seed <n>` neu würfeln oder
+  mit `--image <pfad>` ein Bild setzen; `--any-gallery` greift in alle
+  Galeriebilder aus `src/data/gallery.json` statt in die kuratierte
+  Publikumsliste. Das PNG **immer ansehen**, bevor es eingeplant wird.
+- Gibt es keine Abendkasse (ausverkauft, reine Vorverkaufs-Location), die
+  Zeile mit `--subline "…"` ersetzen oder mit `--no-subline` weglassen — und
+  den Post-Text entsprechend anpassen.
+- Textmuster (Ton wie die bestehenden Posts, keine erfundenen Fakten):
+
+  ```
+  Heute ist es so weit! 🎉 <Event-Titel> — ab <Uhrzeit> Uhr im <Location>, <Stadt>.
+
+  <Ein Satz zum Abend: Speaker/Talks in Slot-Reihenfolge, Drinks & Networking.>
+
+  Für die Spontanen: Tickets gibt es auch an der Abendkasse. 🎟️
+
+  Wir sehen uns heute Abend! <Instagram: „Alle Infos auf ainights.ai — Link in Bio!" / LinkedIn: volle Event-URL>
+
+  #ainights #ki #<stadt> #heute #afterwork
+  ```
 
 ## Schritt 3: Posts anlegen
 
