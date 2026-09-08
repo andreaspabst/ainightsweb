@@ -34,18 +34,25 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { FORMATS, PUBLIC, ROOT, esc, textImg, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
+import { FORMATS, PUBLIC, ROOT, esc, fmtDate, textImg, loadEventKit, loadLogo, logoFor } from './lib/social-kit.mjs';
 
 const OUT_DIR = path.join(PUBLIC, 'media/event-day');
+const COUNTDOWN_DIR = path.join(PUBLIC, 'media/countdown');
 /**
  * Instagram bekommt den Portrait-Zuschnitt (nicht das quadratische
  * FORMATS.instagram), LinkedIn den Landscape-Zuschnitt aus FORMATS.
  */
 const SIZE = { instagram: FORMATS.portrait, linkedin: FORMATS.linkedin };
 
-/** Duotone-Verlauf: Schatten → Mitten → Lichter (aus der Instagram-Vorlage
- *  abgenommen: tiefes Indigo, Magenta, rosa Lichter). */
-const DUOTONE = { shadow: '#1c0b52', mid: '#c4266f', light: '#ffc6d6' };
+/** Duotone-Verlauf: Schatten → Mitten → Lichter. Standard ist das Magenta aus
+ *  der Instagram-Vorlage (tiefes Indigo, Magenta, rosa Lichter); AI Woman
+ *  Nights bekommen dieselbe Anmutung in Lila. */
+const DUOTONES = {
+  default: { shadow: '#1c0b52', mid: '#c4266f', light: '#ffc6d6' },
+  woman: { shadow: '#180a3f', mid: '#8b2fd8', light: '#e3ccff' },
+};
+/** Palette des gerade gerenderten Events; von card() gesetzt. */
+let DUOTONE = DUOTONES.default;
 
 /** Kleiner deterministischer PRNG, damit --seed reproduzierbar ist. */
 function rng(seed) {
@@ -67,8 +74,21 @@ const AUDIENCE = [
   '/wp-content/uploads/2026/01/1-34-publikum.jpg',
 ];
 
-async function galleryImages(any) {
-  if (!any) return AUDIENCE;
+/**
+ * Für AI Woman Nights eine eigene Auswahl: Motive, auf denen Frauen im
+ * Publikum tatsächlich zu sehen sind. Ein Griff in die allgemeine Liste
+ * landet sonst leicht auf einer reinen Männerrunde — auf einer
+ * AI-Woman-Nights-Karte ein schlechtes Bild.
+ */
+const AUDIENCE_WOMAN = [
+  '/wp-content/uploads/2026/07/44-ai-night.25mai-44.jpg',
+  '/wp-content/uploads/2026/07/33-ai-night.25mai-33.jpg',
+  '/wp-content/uploads/2026/01/37-ianight-37-scaled.jpg',
+  '/wp-content/uploads/2026/01/1-34-publikum.jpg',
+];
+
+async function galleryImages(any, woman = false) {
+  if (!any) return woman ? AUDIENCE_WOMAN : AUDIENCE;
   const gallery = JSON.parse(await fs.readFile(path.join(ROOT, 'src/data/gallery.json'), 'utf8'));
   return gallery.flatMap((g) => g.images ?? []);
 }
@@ -76,16 +96,30 @@ async function galleryImages(any) {
 /** Zufälliges Publikumsbild — pro Event stabil (Seed = Event-Slug). Werden
  *  mehrere Events in einem Lauf gerendert, bekommt jedes ein anderes Bild
  *  (`used` sammelt die bereits vergebenen). */
-async function pickGalleryImage(seed, any, used = new Set()) {
+/**
+ * Zwei Stufen von „schon vergeben":
+ * - `blocked` gilt hart (die anderen Karten desselben Events) — ein Event
+ *   soll nie zweimal dasselbe Foto zeigen.
+ * - `avoid` gilt weich (Karten anderer Events im selben Lauf) — schön für
+ *   Abwechslung, aber die kuratierte Liste ist kurz, also darf sie sich über
+ *   Events hinweg wiederholen, bevor ein Event sich selbst dupliziert.
+ */
+async function pickGalleryImage(seed, any, blocked = new Set(), woman = false, avoid = new Set()) {
   const rand = rng(seed);
-  const pool = await galleryImages(any);
+  const pool = await galleryImages(any, woman);
   const shuffled = [...pool].sort(() => rand() - 0.5);
-  const fresh = shuffled.filter((rel) => !used.has(rel));
-  for (const rel of fresh.length ? fresh : shuffled) {
-    try {
-      await fs.access(path.join(PUBLIC, rel));
-      return rel;
-    } catch {}
+  const tiers = [
+    shuffled.filter((rel) => !blocked.has(rel) && !avoid.has(rel)),
+    shuffled.filter((rel) => !blocked.has(rel)),
+    shuffled,
+  ];
+  for (const tier of tiers) {
+    for (const rel of tier) {
+      try {
+        await fs.access(path.join(PUBLIC, rel));
+        return rel;
+      } catch {}
+    }
   }
   throw new Error('Kein Publikumsbild gefunden');
 }
@@ -196,6 +230,7 @@ const LAYOUT = {
 };
 
 async function card(fmt, kit, imageRel, logo, opts) {
+  DUOTONE = kit.isWoman ? DUOTONES.woman : DUOTONES.default;
   const { w: W, h: H } = SIZE[fmt];
   const L = LAYOUT[fmt];
   const MARGIN = L.margin;
@@ -210,16 +245,25 @@ async function card(fmt, kit, imageRel, logo, opts) {
   // Text-Block unten: HEUTE / <Uhrzeit> UHR / Hinweiszeile — von unten nach
   // oben gesetzt, damit der Abstand zum unteren Rand konstant bleibt.
   const time = (opts.time ?? event.startTime ?? '17:00').replace('.', ':');
-  const headline = await textImg(opts.headline ?? 'HEUTE', {
+  // Mit opts.countdown wird aus „HEUTE / 17:00 UHR" die Countdown-Karte
+  // „NUR NOCH / 14 TAGE".
+  const days = opts.countdown;
+  const headline = await textImg(opts.headline ?? (days ? 'NUR NOCH' : 'HEUTE'), {
     family: 'Glacial Indifference Bold', size: L.head, color: '#ffffff', maxWidth: colW, letterSpacing: 1,
   });
-  const timeline = await textImg(`${time} UHR`, {
+  const timeline = await textImg(days ? `${days} ${days === 1 ? 'TAG' : 'TAGE'}` : `${time} UHR`, {
     family: 'Glacial Indifference Bold', size: L.head, color: '#ffffff', maxWidth: colW, letterSpacing: 1,
   });
 
-  const markup = opts.subline
-    ? `<i>${esc(opts.subline)}</i>`
+  // Am Event-Tag die Abendkasse, im Countdown Datum, Uhrzeit und Stadt — wer
+  // „nur noch 14 Tage" liest, will als Nächstes das Datum. Bewusst kurz,
+  // damit die Zeile einzeilig bleibt; die Location steht im Post-Text (ein
+  // Umbruch mitten im Location-Namen sieht schlecht aus).
+  const dateLine = fmtDate(event.eventDate)?.replace(/ \d{4}$/, '') ?? null;
+  const defaultMarkup = days
+    ? `<b>${esc([dateLine, `${time} Uhr`].filter(Boolean).join(', '))}</b>${event.city ? `<i> · ${esc(event.city)}</i>` : ''}`
     : 'Für die <b>Spontanen</b>: <i>Tickets sind auch an der <b><u>Abendkasse</u></b> erhältlich</i>';
+  const markup = opts.subline ? `<i>${esc(opts.subline)}</i>` : defaultMarkup;
   const sub = opts.noSubline
     ? { info: { height: 0 } }
     : await richText(markup, { size: L.sub, maxWidth: colW + 20 });
@@ -239,26 +283,51 @@ async function card(fmt, kit, imageRel, logo, opts) {
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
 const opt = (name) => (args.includes(`--${name}`) ? args[args.indexOf(`--${name}`) + 1] : null);
-const optNames = ['image', 'seed', 'time', 'headline', 'subline'];
+const optNames = ['image', 'seed', 'time', 'headline', 'subline', 'countdown'];
 const slugs = args.filter((a, i) => !a.startsWith('--') && !optNames.includes(args[i - 1]?.replace(/^--/, '')));
 
 if (slugs.length === 0) {
-  console.error('Aufruf: node scripts/generate-event-day.mjs <event-slug> [...] [--image <pfad>] [--seed <wert>] [--any-gallery] [--time 17:00] [--headline HEUTE] [--subline "…"] [--no-subline]');
+  console.error('Aufruf: node scripts/generate-event-day.mjs <event-slug> [...] [--countdown 14,10,2] [--image <pfad>] [--seed <wert>] [--any-gallery] [--time 17:00] [--headline HEUTE] [--subline "…"] [--no-subline]');
   process.exit(1);
 }
 
-await fs.mkdir(OUT_DIR, { recursive: true });
+const levels = opt('countdown') ? opt('countdown').split(',').map((n) => Number(n.trim())) : [];
+if (levels.some((n) => !Number.isInteger(n) || n < 1)) {
+  console.error(`--countdown erwartet ganze Zahlen ab 1 (z. B. 14 oder 14,10,2), bekam: ${opt('countdown')}`);
+  process.exit(1);
+}
+const targetDir = levels.length ? COUNTDOWN_DIR : OUT_DIR;
+
+await fs.mkdir(targetDir, { recursive: true });
 const logo = await loadLogo();
 const used = new Set();
 for (const slug of slugs) {
   const kit = await loadEventKit(slug);
-  const imageRel = opt('image') ?? (await pickGalleryImage(opt('seed') ?? slug, flag('any-gallery'), used));
-  used.add(imageRel);
-  const opts = {
+  const baseOpts = {
     time: opt('time'), headline: opt('headline'), subline: opt('subline'), noSubline: flag('no-subline'),
   };
-  for (const fmt of ['instagram', 'linkedin']) {
-    await fs.writeFile(path.join(OUT_DIR, `${slug}-${fmt}.png`), await card(fmt, kit, imageRel, logo, opts));
+
+  // Ohne --countdown: eine Event-Tag-Karte. Mit --countdown: eine Karte je
+  // Stufe. Das Foto der Event-Tag-Karte wird dabei gesperrt, damit Countdown
+  // und Event-Tag desselben Events nicht dasselbe Bild zeigen.
+  const jobs = levels.length ? levels : [null];
+  const blocked = new Set();
+  if (levels.length && !opt('image')) {
+    blocked.add(await pickGalleryImage(opt('seed') ?? slug, flag('any-gallery'), new Set(), kit.isWoman));
   }
-  console.log(`✓ ${slug}: 2 Formate — Foto: ${imageRel}`);
+
+  for (const countdown of jobs) {
+    const seed = opt('seed') ?? (countdown ? `${slug}-${countdown}` : slug);
+    const imageRel = opt('image') ?? (await pickGalleryImage(seed, flag('any-gallery'), blocked, kit.isWoman, used));
+    blocked.add(imageRel);
+    used.add(imageRel);
+
+    const opts = { ...baseOpts, countdown };
+    const stem = countdown ? `${slug}-${countdown}` : slug;
+    for (const fmt of ['instagram', 'linkedin']) {
+      await fs.writeFile(path.join(targetDir, `${stem}-${fmt}.png`), await card(fmt, kit, imageRel, logo, opts));
+    }
+    const label = countdown ? `${slug} (T-${countdown})` : slug;
+    console.log(`✓ ${label}${kit.isWoman ? ' (lila)' : ''}: 2 Formate — Foto: ${imageRel}`);
+  }
 }

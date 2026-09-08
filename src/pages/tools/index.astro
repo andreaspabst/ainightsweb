@@ -45,6 +45,21 @@ const saveTheDateFor = (eventSlug: string) => bothFormats('save-the-date', event
 /** Event-Tag-Karten „HEUTE 17:00 UHR“, erzeugt von scripts/generate-event-day.mjs. */
 const eventDayFor = (eventSlug: string) => bothFormats('event-day', eventSlug);
 
+/** Countdown-Karten „NUR NOCH … TAGE", erzeugt mit --countdown <n>. */
+function countdownFor(eventSlug: string) {
+  return listDir('/media/countdown')
+    .filter((f) => f.startsWith(`${eventSlug}-`) && f.endsWith('-instagram.png'))
+    .map((f) => ({
+      days: Number(f.slice(eventSlug.length + 1, -'-instagram.png'.length)),
+      instagram: `/media/countdown/${f}`,
+      linkedin: exists(`/media/countdown/${f.replace('-instagram.png', '-linkedin.png')}`)
+        ? `/media/countdown/${f.replace('-instagram.png', '-linkedin.png')}`
+        : null,
+    }))
+    .filter((c) => Number.isFinite(c.days))
+    .sort((a, b) => b.days - a.days);
+}
+
 function lineupFor(eventSlug: string) {
   return {
     instagram: exists(`/media/event-lineups/${eventSlug}-instagram.png`) ? `/media/event-lineups/${eventSlug}-instagram.png` : null,
@@ -113,6 +128,7 @@ const rows = orderedEvents.map((e) => {
     lineup: lineupFor(e.data.slug),
     saveTheDate: saveTheDateFor(e.data.slug),
     eventDay: eventDayFor(e.data.slug),
+    countdown: countdownFor(e.data.slug),
     carousel: carouselFor(e.data.slug),
     topicCarousels: topicCarouselsFor(e.data.slug, people.map((p) => p.slug)).map((t) => ({ ...t, name: speakerName(t.slug) })),
     isUpcoming: (e.data.eventDate ?? '') >= today,
@@ -133,7 +149,7 @@ const rows = orderedEvents.map((e) => {
       <h1 class="display-font">Produktionsmedien</h1>
       <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
 
-      {rows.map(({ event, people, sponsors, lineup, saveTheDate, eventDay, carousel, topicCarousels, isUpcoming }) => (
+      {rows.map(({ event, people, sponsors, lineup, saveTheDate, eventDay, countdown, carousel, topicCarousels, isUpcoming }) => (
         <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
           <h2>
             {event.title}
@@ -157,6 +173,21 @@ const rows = orderedEvents.map((e) => {
               )}
             </div>
           )}
+
+          {countdown.map((c) => (
+            <div class="lineup">
+              <a href={c.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
+                <img src={c.instagram} alt="" loading="lazy" />
+                <span>Countdown T-{c.days} · Instagram laden</span>
+              </a>
+              {c.linkedin && (
+                <a href={c.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                  <img src={c.linkedin} alt="" loading="lazy" />
+                  <span>Countdown T-{c.days} · LinkedIn laden</span>
+                </a>
+              )}
+            </div>
+          ))}
 
           {(eventDay.instagram || eventDay.linkedin) && (
             <div class="lineup">
