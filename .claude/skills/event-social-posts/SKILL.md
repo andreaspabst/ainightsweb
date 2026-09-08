@@ -137,10 +137,15 @@ Am Tag des Events geht morgens die Event-Tag-Karte raus
 (`node scripts/generate-event-day.mjs <event-slug>`, Ausgabe unter
 `public/media/event-day/<event-slug>-instagram.png` (Portrait 1080×1350) und
 `-linkedin.png` (Landscape 1200×627, Headline links, Publikum rechts): ein
-zufälliges Publikumsfoto aus der Galerie als Magenta/Blau-Duotone, oben links
+zufälliges Publikumsfoto aus der Galerie als Duotone, oben links
 das Logo, groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
 „Für die Spontanen: Tickets sind auch an der Abendkasse erhältlich".
 
+- **AI Woman Nights**: Woman-Lockup als Logo und **Lila-Duotone** statt
+  Magenta — das macht das Script anhand des Slugs von allein. Die Fotos
+  kommen dort aus einer eigenen Liste (`AUDIENCE_WOMAN`) mit Motiven, auf
+  denen Frauen im Publikum zu sehen sind; die allgemeine Liste landet sonst
+  leicht auf einer reinen Männerrunde.
 - **Termin: Event-Tag, 09:00 Uhr**, Instagram *und* LinkedIn als zwei
   getrennte Posts. Liegt an dem Tag schon etwas um 09:00 (z. B. ein
   Speaker-Intro eines anderen Events), auf 11:00 ausweichen — vorher
@@ -166,6 +171,56 @@ das Logo, groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
 
   #ainights #ki #<stadt> #heute #afterwork
   ```
+
+### Countdown: „NUR NOCH 14 TAGE"
+
+Im Vorlauf läuft dieselbe Karte als Countdown
+(`node scripts/generate-event-day.mjs <event-slug> --countdown 14,10,2`,
+Ausgabe unter `public/media/countdown/<event-slug>-<n>-instagram.png` bzw.
+`-linkedin.png`). Gleiche Optik, gleiche zwei Zuschnitte, gleiche Lila-Regel
+für Woman-Events — nur die Headline lautet **NUR NOCH / \<n\> TAGE**, und die
+Hinweiszeile trägt statt der Abendkasse **Datum, Uhrzeit und Stadt**. Die
+Location steht im Post-Text, nicht auf der Karte: sie bricht sonst mitten im
+Namen um.
+
+- Bewährter Rhythmus: **14, 10 und 2 Tage vorher**, jeweils 09:00 Uhr,
+  Instagram und LinkedIn als zwei getrennte Posts.
+- `--countdown` nimmt jede Zahl und mehrere Stufen auf einmal
+  (`--countdown 1` ergibt „NUR NOCH 1 TAG"). Ein Lauf mit mehreren Stufen
+  gibt jeder Stufe automatisch ein anderes Foto — auch verschieden vom Foto
+  der Event-Tag-Karte. Vier Posts desselben Events innerhalb von zwei Wochen
+  mit demselben Bild wirken sonst wie ein Fehler.
+- Die Sperre greift nur innerhalb eines Laufs. Werden Event-Tag- und
+  Countdown-Karten getrennt erzeugt, die Fotos **gegenprüfen** (das Script
+  gibt sie pro Karte aus) und Doppler mit `--image` auflösen. Bei
+  AI-Woman-Nights ist die Fotoliste nur vier Motive lang — Event-Tag plus
+  drei Countdown-Stufen schöpfen sie exakt aus.
+- Der 09:00-Slot kollidiert oft mit einem #speakerintro (die liegen 5/4/3
+  Wochen vorher ebenfalls auf 09:00) — vorher `getScheduledPosts` prüfen und
+  bei Kollision auf **11:00** gehen. Die Countdown-Zahl auf der Karte muss
+  zum Termin passen: lieber die Stufe wechseln (`--countdown 7`) als den
+  Post zu verschieben.
+- Textmuster:
+
+  ```
+  Nur noch <n> Tage bis <Event-Titel>! ⏳
+
+  <Ein Satz zum Abend: Speaker/Talks, wenn das Line-up steht, sonst allgemein.>
+
+  🗓️ <Datum> — ab <Uhrzeit> Uhr
+  📍 <Location>, <Stadt>
+  🥂 Drinks & Snacks inklusive
+
+  Tickets & alle Infos <Instagram: „auf ainights.ai — Link in Bio!" / LinkedIn: volle Event-URL> 🎟️
+
+  #ainights #ki #<stadt> #countdown #afterwork
+  ```
+
+### Reihenfolge im Vorlauf
+
+Save the Date (~8 Wochen) → #speakerintro je Slot (5/4/3 Wochen) →
+**Countdown T-14** → Line-up (1 Woche) → **Countdown T-10 und T-2** →
+Event-Tag (09:00).
 
 ## Schritt 3: Posts anlegen
 
