@@ -34,6 +34,7 @@ doppelt geplante Posts gehen sonst zweimal auf denselben Kanälen raus.
   getrennte Posts** zur selben Zeit (so liegen die bestehenden Posts vor):
   - Instagram: Textende „Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️",
     `instagramData: {"type":"POST","showReelOnFeed":true,"isAiGenerated":false}`
+    plus **Collab mit dem Stadt-Account**, siehe unten
   - LinkedIn: statt „Link in Bio" die volle Event-URL,
     `linkedinData: {"previewIncluded":false,"type":"post"}` — **`previewIncluded`
     muss `false` sein**, siehe Pflichtregel unten
@@ -45,6 +46,43 @@ doppelt geplante Posts gehen sonst zweimal auf denselben Kanälen raus.
   Bold` registriert). Save-the-Date- und Event-Tag-Karte nutzen sie; neue
   Karten-Generatoren ebenfalls damit setzen. Kursiv gibt es nur synthetisch
   (Pango `<i>`), einen Italic-Schnitt hat die Schrift nicht.
+
+### Instagram-Collab mit dem Stadt-Account
+
+**Gepostet wird immer vom Haupt-Account** `ainights.ai` (Brand „ainights.ai
+Social Media"). Hat das Event einen **Stadtbezug**, kommt der Stadt-Account
+derselben Stadt als **Collab-Partner** dazu: Der Post erscheint dann in beiden
+Feeds und Grids, mit beiden Accounts als Absender — der lokale Account baut
+Reichweite auf, ohne dass wir doppelt posten müssen.
+
+| Stadt | Instagram-Account | gilt für |
+|---|---|---|
+| Nürnberg | `ainights.ai_nuernberg` | AI Nights Nürnberg **und** AI Woman Nights |
+| München | — (noch keiner) | kein Collab |
+
+```json
+"instagramData": {
+  "type": "POST", "showReelOnFeed": true, "isAiGenerated": false,
+  "collaborators": [{"username": "ainights.ai_nuernberg", "deleted": false}]
+}
+```
+
+- Die Stadt kommt aus dem Feld `city` des Events in `src/content/events/`.
+  Steht für diese Stadt kein Account in der Tabelle, wird **kein** Collab
+  gesetzt — nicht raten und nicht den Account einer anderen Stadt nehmen.
+  Ein München-Post mit dem Nürnberg-Account als Co-Absender ist schlicht
+  falsch und verwässert den lokalen Feed.
+- Kommt eine Stadt neu dazu (eigener Instagram-Account angelegt), gehört sie
+  in die Tabelle oben — und der Account muss vorher im **Meta-Business-Portfolio
+  „AI Nights"** liegen, sonst nimmt Instagram ihn als Collab nicht an.
+- **Nur Instagram.** LinkedIn kennt keine Collab-Posts; dort bleibt es beim
+  reinen Post vom Haupt-Account.
+- Beim **Entfernen** eines Collabs `"collaborators": []` senden — ein leeres
+  Array löscht das Feld tatsächlich, das Weglassen des Feldes nicht.
+- Die Einladung verschickt Instagram erst **beim Veröffentlichen**, nicht beim
+  Einplanen. Jemand mit Zugriff auf den Stadt-Account muss sie dann annehmen,
+  sonst läuft der Post normal, aber nur auf `ainights.ai`. Beim ersten Post
+  einer neuen Serie kurz in die Benachrichtigungen des Stadt-Accounts schauen.
 
 ## Schritt 1: Assets generieren und deployen
 
