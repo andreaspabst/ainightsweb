@@ -14,7 +14,8 @@
   "city": "Nürnberg",
   "ticketUrl": "https://joinify.net/app/products/x5jehqew/tickets",
   "platforms": {
-    "joinify": "x5jehqew"
+    "joinify": "x5jehqew",
+    "luma": "https://lu.ma/zv6pznlw"
   },
   "speakerIds": [1501],
   "sessionIds": [1505],

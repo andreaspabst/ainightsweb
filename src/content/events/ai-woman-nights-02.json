@@ -12,6 +12,11 @@
   "startTime": "17:00",
   "locationName": "The Cloud One",
   "city": "Nürnberg",
+  "ticketUrl": "https://joinify.net/app/products/xvdp27qn/tickets",
+  "platforms": {
+    "joinify": "xvdp27qn",
+    "luma": "https://lu.ma/03jbbkdf"
+  },
   "moderatorIds": [257, 1500],
   "date": "2026-08-24 00:00:00"
 }
