@@ -38,6 +38,7 @@ import { FORMATS, PUBLIC, ROOT, esc, fmtDate, textImg, loadEventKit, loadLogo, l
 
 const OUT_DIR = path.join(PUBLIC, 'media/event-day');
 const COUNTDOWN_DIR = path.join(PUBLIC, 'media/countdown');
+const RECAP_DIR = path.join(PUBLIC, 'media/recap');
 /**
  * Instagram bekommt den Portrait-Zuschnitt (nicht das quadratische
  * FORMATS.instagram), LinkedIn den Landscape-Zuschnitt aus FORMATS.
@@ -87,6 +88,21 @@ const AUDIENCE_WOMAN = [
   '/wp-content/uploads/2026/01/1-34-publikum.jpg',
 ];
 
+/** „ai-nights-nuernberg-04" → „#04". Für die Recap-Karte, die sonst nur
+ *  „RECAP" ohne Bezug zeigt. */
+function eventNumber(kit) {
+  const m = /-(\d+)$/.exec(kit.event.slug ?? '');
+  return m ? `#${m[1]}` : '';
+}
+
+/** Fotos genau dieses Events aus src/data/gallery.json. Ein Recap zeigt die
+ *  Bilder des Abends, um den es geht — nicht die kuratierte Publikumsliste,
+ *  die quer über alle Events greift. */
+async function eventGalleryImages(slug) {
+  const gallery = JSON.parse(await fs.readFile(path.join(ROOT, 'src/data/gallery.json'), 'utf8'));
+  return gallery.find((g) => g.event === slug)?.images ?? [];
+}
+
 async function galleryImages(any, woman = false) {
   if (!any) return woman ? AUDIENCE_WOMAN : AUDIENCE;
   const gallery = JSON.parse(await fs.readFile(path.join(ROOT, 'src/data/gallery.json'), 'utf8'));
@@ -104,9 +120,9 @@ async function galleryImages(any, woman = false) {
  *   Abwechslung, aber die kuratierte Liste ist kurz, also darf sie sich über
  *   Events hinweg wiederholen, bevor ein Event sich selbst dupliziert.
  */
-async function pickGalleryImage(seed, any, blocked = new Set(), woman = false, avoid = new Set()) {
+async function pickGalleryImage(seed, any, blocked = new Set(), woman = false, avoid = new Set(), ownPool = null) {
   const rand = rng(seed);
-  const pool = await galleryImages(any, woman);
+  const pool = ownPool?.length ? ownPool : await galleryImages(any, woman);
   const shuffled = [...pool].sort(() => rand() - 0.5);
   const tiers = [
     shuffled.filter((rel) => !blocked.has(rel) && !avoid.has(rel)),
@@ -225,8 +241,8 @@ async function richText(markup, { size, maxWidth }) {
  * kompakterer Rand.
  */
 const LAYOUT = {
-  instagram: { margin: 100, head: 204, sub: 50, colFactor: 1, logoTop: 64, logoLeft: 56, bottom: 120, gapSub: 44 },
-  linkedin: { margin: 68, head: 116, sub: 30, colFactor: 0.56, logoTop: 40, logoLeft: 52, bottom: 54, gapSub: 26 },
+  instagram: { margin: 100, head: 204, city: 120, sub: 50, colFactor: 1, logoTop: 64, logoLeft: 56, bottom: 120, gapSub: 44, gapCity: 22 },
+  linkedin: { margin: 68, head: 116, city: 68, sub: 30, colFactor: 0.56, logoTop: 40, logoLeft: 52, bottom: 54, gapSub: 26, gapCity: 14 },
 };
 
 async function card(fmt, kit, imageRel, logo, opts) {
@@ -248,21 +264,38 @@ async function card(fmt, kit, imageRel, logo, opts) {
   // Mit opts.countdown wird aus „HEUTE / 17:00 UHR" die Countdown-Karte
   // „NUR NOCH / 14 TAGE".
   const days = opts.countdown;
-  const headline = await textImg(opts.headline ?? (days ? 'NUR NOCH' : 'HEUTE'), {
+  // Drei Ausprägungen derselben Karte: Event-Tag („HEUTE / 17:00 UHR"),
+  // Countdown („NUR NOCH / 14 TAGE") und Recap („RECAP / #04").
+  const recap = opts.recap;
+  const headline = await textImg(opts.headline ?? (recap ? 'RECAP' : days ? 'NUR NOCH' : 'HEUTE'), {
     family: 'Glacial Indifference Bold', size: L.head, color: '#ffffff', maxWidth: colW, letterSpacing: 1,
   });
-  const timeline = await textImg(days ? `${days} ${days === 1 ? 'TAG' : 'TAGE'}` : `${time} UHR`, {
+  const secondLine = recap ? eventNumber(kit) : days ? `${days} ${days === 1 ? 'TAG' : 'TAGE'}` : `${time} UHR`;
+  const timeline = await textImg(secondLine, {
     family: 'Glacial Indifference Bold', size: L.head, color: '#ffffff', maxWidth: colW, letterSpacing: 1,
   });
 
-  // Am Event-Tag die Abendkasse, im Countdown Datum, Uhrzeit und Stadt — wer
-  // „nur noch 14 Tage" liest, will als Nächstes das Datum. Bewusst kurz,
-  // damit die Zeile einzeilig bleibt; die Location steht im Post-Text (ein
-  // Umbruch mitten im Location-Namen sieht schlecht aus).
+  // Countdown-Karten tragen die Stadt groß als eigene Zeile: in derselben
+  // Woche laufen regelmäßig mehrere Events parallel (Nürnberg, München,
+  // Woman Nights), und „NUR NOCH 14 TAGE" allein sagt im Feed nicht, welches
+  // davon gemeint ist. Akzentfarbe des Duotones, damit sie sich von der
+  // weißen Headline absetzt, ohne mit ihr zu konkurrieren.
+  const cityLine = (days || recap) && event.city
+    ? await textImg(String(event.city).toUpperCase(), {
+        family: 'Glacial Indifference Bold', size: L.city, color: DUOTONE.light, maxWidth: colW, letterSpacing: 2,
+      })
+    : null;
+
+  // Am Event-Tag die Abendkasse, im Countdown Datum und Uhrzeit — wer
+  // „nur noch 14 Tage" liest, will als Nächstes das Datum. Die Stadt steht
+  // eine Zeile höher, die Location im Post-Text (ein Umbruch mitten im
+  // Location-Namen sieht schlecht aus).
   const dateLine = fmtDate(event.eventDate)?.replace(/ \d{4}$/, '') ?? null;
-  const defaultMarkup = days
-    ? `<b>${esc([dateLine, `${time} Uhr`].filter(Boolean).join(', '))}</b>${event.city ? `<i> · ${esc(event.city)}</i>` : ''}`
-    : 'Für die <b>Spontanen</b>: <i>Tickets sind auch an der <b><u>Abendkasse</u></b> erhältlich</i>';
+  const defaultMarkup = recap
+    ? `<b>${esc(fmtDate(event.eventDate) ?? '')}</b><i> · Danke, dass ihr da wart!</i>`
+    : days
+      ? `<b>${esc([dateLine, `${time} Uhr`].filter(Boolean).join(', '))}</b>`
+      : 'Für die <b>Spontanen</b>: <i>Tickets sind auch an der <b><u>Abendkasse</u></b> erhältlich</i>';
   const markup = opts.subline ? `<i>${esc(opts.subline)}</i>` : defaultMarkup;
   const sub = opts.noSubline
     ? { info: { height: 0 } }
@@ -270,10 +303,12 @@ async function card(fmt, kit, imageRel, logo, opts) {
 
   const bottom = H - L.bottom;
   const subTop = bottom - sub.info.height;
-  const timeTop = subTop - (sub.info.height ? L.gapSub : 0) - timeline.info.height;
+  const cityTop = cityLine ? subTop - (sub.info.height ? L.gapCity : 0) - cityLine.info.height : subTop;
+  const timeTop = cityTop - (cityLine || sub.info.height ? L.gapSub : 0) - timeline.info.height;
   const headTop = timeTop - 6 - headline.info.height;
   layers.push({ input: headline.data, top: headTop, left: MARGIN - 8 });
   layers.push({ input: timeline.data, top: timeTop, left: MARGIN - 8 });
+  if (cityLine) layers.push({ input: cityLine.data, top: cityTop, left: MARGIN - 8 });
   if (sub.data) layers.push({ input: sub.data, top: subTop, left: MARGIN });
 
   const base = fmt === 'instagram' ? await portraitPhoto(imageRel, W, H) : await landscapePhoto(imageRel, W, H);
@@ -283,11 +318,11 @@ async function card(fmt, kit, imageRel, logo, opts) {
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
 const opt = (name) => (args.includes(`--${name}`) ? args[args.indexOf(`--${name}`) + 1] : null);
-const optNames = ['image', 'seed', 'time', 'headline', 'subline', 'countdown'];
+const optNames = ['image', 'seed', 'time', 'headline', 'subline', 'countdown', 'recap'];
 const slugs = args.filter((a, i) => !a.startsWith('--') && !optNames.includes(args[i - 1]?.replace(/^--/, '')));
 
 if (slugs.length === 0) {
-  console.error('Aufruf: node scripts/generate-event-day.mjs <event-slug> [...] [--countdown 14,10,2] [--image <pfad>] [--seed <wert>] [--any-gallery] [--time 17:00] [--headline HEUTE] [--subline "…"] [--no-subline]');
+  console.error('Aufruf: node scripts/generate-event-day.mjs <event-slug> [...] [--countdown 14,10,2] [--recap 3] [--image <pfad>] [--seed <wert>] [--any-gallery] [--time 17:00] [--headline HEUTE] [--subline "…"] [--no-subline]');
   process.exit(1);
 }
 
@@ -296,7 +331,19 @@ if (levels.some((n) => !Number.isInteger(n) || n < 1)) {
   console.error(`--countdown erwartet ganze Zahlen ab 1 (z. B. 14 oder 14,10,2), bekam: ${opt('countdown')}`);
   process.exit(1);
 }
-const targetDir = levels.length ? COUNTDOWN_DIR : OUT_DIR;
+// --recap [n] rendert n Recap-Deckblätter (Default 1), jedes mit einem
+// eigenen Motiv aus der Galerie genau dieses Events.
+const recapArg = args.includes('--recap') ? (opt('recap') ?? '1') : null;
+const recapCount = recapArg === null ? 0 : Number(recapArg);
+if (recapArg !== null && (!Number.isInteger(recapCount) || recapCount < 1)) {
+  console.error(`--recap erwartet eine ganze Zahl ab 1 (z. B. 3), bekam: ${recapArg}`);
+  process.exit(1);
+}
+if (recapCount && levels.length) {
+  console.error('--recap und --countdown schließen sich aus.');
+  process.exit(1);
+}
+const targetDir = recapCount ? RECAP_DIR : levels.length ? COUNTDOWN_DIR : OUT_DIR;
 
 await fs.mkdir(targetDir, { recursive: true });
 const logo = await loadLogo();
@@ -310,24 +357,34 @@ for (const slug of slugs) {
   // Ohne --countdown: eine Event-Tag-Karte. Mit --countdown: eine Karte je
   // Stufe. Das Foto der Event-Tag-Karte wird dabei gesperrt, damit Countdown
   // und Event-Tag desselben Events nicht dasselbe Bild zeigen.
-  const jobs = levels.length ? levels : [null];
+  const recapPool = recapCount ? await eventGalleryImages(slug) : null;
+  if (recapCount && !recapPool.length && !opt('image')) {
+    console.error(`⚠️  ${slug}: keine Galeriebilder in src/data/gallery.json — Recap braucht --image.`);
+    process.exit(1);
+  }
+
+  const jobs = recapCount
+    ? Array.from({ length: recapCount }, (_, i) => i + 1)
+    : levels.length ? levels : [null];
   const blocked = new Set();
   if (levels.length && !opt('image')) {
     blocked.add(await pickGalleryImage(opt('seed') ?? slug, flag('any-gallery'), new Set(), kit.isWoman));
   }
 
-  for (const countdown of jobs) {
-    const seed = opt('seed') ?? (countdown ? `${slug}-${countdown}` : slug);
-    const imageRel = opt('image') ?? (await pickGalleryImage(seed, flag('any-gallery'), blocked, kit.isWoman, used));
+  for (const job of jobs) {
+    const countdown = recapCount ? null : job;
+    const seed = opt('seed') ?? (job ? `${slug}-${recapCount ? 'recap-' : ''}${job}` : slug);
+    const imageRel = opt('image')
+      ?? (await pickGalleryImage(seed, flag('any-gallery'), blocked, kit.isWoman, used, recapPool));
     blocked.add(imageRel);
     used.add(imageRel);
 
-    const opts = { ...baseOpts, countdown };
-    const stem = countdown ? `${slug}-${countdown}` : slug;
+    const opts = { ...baseOpts, countdown, recap: Boolean(recapCount) };
+    const stem = job ? `${slug}-${job}` : slug;
     for (const fmt of ['instagram', 'linkedin']) {
       await fs.writeFile(path.join(targetDir, `${stem}-${fmt}.png`), await card(fmt, kit, imageRel, logo, opts));
     }
-    const label = countdown ? `${slug} (T-${countdown})` : slug;
+    const label = recapCount ? `${slug} (Recap ${job})` : countdown ? `${slug} (T-${countdown})` : slug;
     console.log(`✓ ${label}${kit.isWoman ? ' (lila)' : ''}: 2 Formate — Foto: ${imageRel}`);
   }
 }

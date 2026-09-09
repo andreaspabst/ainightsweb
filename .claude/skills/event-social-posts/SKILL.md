@@ -181,9 +181,14 @@ Im Vorlauf läuft dieselbe Karte als Countdown
 (`node scripts/generate-event-day.mjs <event-slug> --countdown 14,10,2`,
 Ausgabe unter `public/media/countdown/<event-slug>-<n>-instagram.png` bzw.
 `-linkedin.png`). Gleiche Optik, gleiche zwei Zuschnitte, gleiche Lila-Regel
-für Woman-Events — nur die Headline lautet **NUR NOCH / \<n\> TAGE**, und die
-Hinweiszeile trägt statt der Abendkasse **Datum, Uhrzeit und Stadt**. Die
-Location steht im Post-Text, nicht auf der Karte: sie bricht sonst mitten im
+für Woman-Events — nur die Headline lautet **NUR NOCH / \<n\> TAGE**, darunter
+steht die **Stadt groß** in der Akzentfarbe des Duotones, und die Hinweiszeile
+trägt statt der Abendkasse **Datum und Uhrzeit**.
+
+Die Stadt gehört groß auf die Karte: In derselben Woche laufen regelmäßig
+mehrere Events parallel (Nürnberg, München, Woman Nights), und „NUR NOCH 14
+TAGE" allein sagt im Feed nicht, welches davon gemeint ist. Die Location
+dagegen steht weiter nur im Post-Text — sie bricht auf der Karte mitten im
 Namen um.
 
 - Bewährter Rhythmus: **14, 10 und 2 Tage vorher**, jeweils 09:00 Uhr,
