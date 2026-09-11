@@ -29,7 +29,7 @@ const posts = (await getCollection('blog'))
   <Header lang="de" />
   <main class="container archive section">
     <p class="eyebrow">AI Nights Blog</p>
-    <h1 class="display-font">{meta.label}</h1>
+    <h1 class="display-font">{meta.label}<span class="visually-hidden"> — AI Nights Blog</span></h1>
     <p class="sub">{meta.description}</p>
 
     <nav class="cat-filter" aria-label="Blog-Kategorien">

@@ -147,7 +147,7 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
       {
         c.cols.map((col) => (
           <div class="col">
-            <h4>{col.title}</h4>
+            <p class="col-title">{col.title}</p>
             <ul>
               {col.links.map(([label, href]) => (
                 <li>
@@ -219,12 +219,12 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
     color: var(--magenta-bright);
     font-weight: 600;
   }
-  .col h4 {
+  .col-title {
     font-size: 0.8rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-primary);
-    margin-bottom: 1rem;
+    margin: 0 0 1rem;
   }
   .col ul {
     list-style: none;

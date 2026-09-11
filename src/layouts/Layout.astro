@@ -38,8 +38,12 @@ const ogImage = image.startsWith('http') ? image : new URL(image, site).href;
 const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
 // SEO-Normalisierung (zentral für ALLE Seiten):
-// - Description: 50–160 Zeichen — zu lange am Wortende kürzen, zu kurze mit Brand-Kontext auffüllen
-// - <title>: auf ~65 Zeichen kürzen (og:title/twitter:title behalten den vollen Titel)
+// - Description: 50–145 Zeichen — zu lange am Wortende kürzen, zu kurze mit Brand-Kontext auffüllen
+// - <title>: auf ~58 Zeichen kürzen (og:title/twitter:title behalten den vollen Titel)
+// Zeichen-Limits bewusst unter den üblichen Richtwerten (60/155 Zeichen): Google
+// schneidet nach *Pixelbreite* ab, nicht nach Zeichenzahl — Emojis, Umlaute und
+// Sonderzeichen (z. B. in Event-Titeln wie "INSPIRE ✨ #05") rendern breiter als
+// normale Zeichen, daher hier mehr Sicherheitsabstand als das Standard-Maß.
 function truncateAtWord(s: string, max: number): string {
   if (s.length <= max) return s;
   const cut = s.slice(0, max - 1);
@@ -48,11 +52,11 @@ function truncateAtWord(s: string, max: number): string {
 const BRAND_SUFFIX = ' | AI Nights — KI-Events & Community in Nürnberg und München.';
 let metaDescription = (description ?? '').trim();
 if (metaDescription.length < 50) {
-  metaDescription = truncateAtWord((metaDescription ? metaDescription.replace(/[.\s]+$/, '') : title) + BRAND_SUFFIX, 160);
-} else if (metaDescription.length > 160) {
-  metaDescription = truncateAtWord(metaDescription, 160);
+  metaDescription = truncateAtWord((metaDescription ? metaDescription.replace(/[.\s]+$/, '') : title) + BRAND_SUFFIX, 145);
+} else if (metaDescription.length > 145) {
+  metaDescription = truncateAtWord(metaDescription, 145);
 }
-const titleTag = truncateAtWord(title, 65);
+const titleTag = truncateAtWord(title, 58);
 ---
 
 <!doctype html>
@@ -360,6 +364,19 @@ const titleTag = truncateAtWord(title, 65);
         border-radius: 24px;
         backdrop-filter: blur(22px) saturate(145%);
         box-shadow: var(--glass-shadow);
+      }
+      /* Nur für Screenreader/Crawler sichtbar — z. B. zusätzlicher Kontext in
+         H1s, die visuell bewusst kurz bleiben (Name/Firma allein). */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       /* Gemeinsame Bühne für Archive, Detailseiten und migrierte Inhalte */

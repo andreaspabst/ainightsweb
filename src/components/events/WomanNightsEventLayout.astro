@@ -109,7 +109,7 @@ const faqItems = [
 
 <Layout
   lang="de"
-  title={d.seo?.title ?? `${d.title} — AI Woman Nights`}
+  title={d.seo?.title ?? d.title}
   description={d.seo?.description ?? d.excerpt ?? `${d.title} — ein AI Woman Nights Afterwork-Event${d.city ? ` in ${d.city}` : ''}.`}
   path={`/events/${d.slug}/`}
   image={d.image?.src}
@@ -164,7 +164,7 @@ const faqItems = [
               <span class="wn-hero-avatars">
                 {speakers.slice(0, 5).map((s) => (
                   s.data.image?.src
-                    ? <img src={imgVariant(s.data.image.src, 96)} alt="" loading="lazy" />
+                    ? <img src={imgVariant(s.data.image.src, 96)} alt={s.data.title} loading="lazy" />
                     : <span class="wn-hero-avatar-fallback">✨</span>
                 ))}
               </span>
