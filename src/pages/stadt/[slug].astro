@@ -17,7 +17,7 @@ const cityName = d.title;
 
 const otherCities = (await getCollection('stadt')).filter((x) => x.data.slug !== d.slug);
 
-const today = new Date('2026-07-14');
+const today = new Date();
 const events = (await getCollection('events')).filter(
   (e) => e.data.city && e.data.city.toLowerCase() === cityName.toLowerCase(),
 );

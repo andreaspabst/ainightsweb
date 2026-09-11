@@ -146,7 +146,7 @@ function fmtDate(dt?: string) {
   return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 }
 const dateLabel = fmtDate(d.eventDate);
-const isPast = d.eventDate ? new Date(d.eventDate) < new Date('2026-07-14') : false;
+const isPast = d.eventDate ? new Date(d.eventDate) < new Date() : false;
 const countdownTarget = !isPast && d.eventDate ? `${d.eventDate}T${d.startTime ?? '18:00'}:00` : null;
 
 // Programm-Struktur für die Kurzfakten: die eigentlichen Talks (ohne Welcome/

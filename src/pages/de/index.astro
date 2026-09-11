@@ -15,7 +15,7 @@ const speakers = (await getCollection('speaker'))
   .sort((a, b) => (b.data.homeFeatured ? 1 : 0) - (a.data.homeFeatured ? 1 : 0))
   .slice(0, 8);
 
-const now = new Date('2026-07-14');
+const now = new Date();
 const allEvents = await getCollection('events');
 const upcoming = allEvents
   .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= now)

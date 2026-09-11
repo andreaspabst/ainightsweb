@@ -9,7 +9,7 @@ import { imgVariant } from '../../lib/images';
 import AftershowBadge from '../../components/AftershowBadge.astro';
 
 // Kommende Events wie auf der Original-Tickets-Seite: chronologisch aufsteigend
-const today = new Date('2026-07-14');
+const today = new Date();
 const events = await getCollection('events');
 const upcoming = events
   .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= today)
