@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { CITIES, mapPosition } from '../lib/cities';
 
 /**
  * Das Programm als JSON, für die AXDN-App.
@@ -12,7 +13,15 @@ import { getCollection } from 'astro:content';
  * Bewusst nur, was die App anzeigt — keine SEO-Felder, kein contentHtml. Was hier steht,
  * ist öffentlich sichtbar; auf der Website steht es ohnehin schon.
  */
-export const GET: APIRoute = async () => {
+/** Bilder liegen relativ auf der Website — die App braucht eine vollständige Adresse. */
+function absolute(path: string | undefined, site: URL | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith('http')) return path;
+
+  return new URL(path, site ?? 'https://ainights.ai').toString();
+}
+
+export const GET: APIRoute = async ({ site }) => {
   const [events, sessions, speaker] = await Promise.all([
     getCollection('events'),
     getCollection('sessions'),
@@ -22,6 +31,15 @@ export const GET: APIRoute = async () => {
   const payload = {
     generated: new Date().toISOString(),
     source: 'ainights.ai',
+    // Die Städtekarte der AI Nights. Die App zeichnet dieselbe Karte; damit folgt sie
+    // der Website, statt eine zweite Liste zu führen, die auseinanderläuft.
+    cities: CITIES.map((city) => ({
+      slug: city.slug,
+      name: city.name,
+      status: city.status,
+      onOverview: city.onOverview,
+      ...mapPosition(city.lat, city.lon),
+    })),
     events: events
       // Ohne Joinify-Code lässt sich das Event nicht zuordnen — dann hilft der Eintrag
       // niemandem und bläht die Datei nur auf.
@@ -54,6 +72,11 @@ export const GET: APIRoute = async () => {
       jobTitle: entry.data.jobTitle,
       company: entry.data.company,
       excerpt: entry.data.excerpt,
+      // Das Kurzprofil als reiner Text: die App zeigt kein HTML an.
+      bio: entry.data.bioHtml?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+      photo: absolute(entry.data.image?.src, site),
+      socials: entry.data.socials ?? {},
+      profileUrl: new URL(`/speaker/${entry.data.slug}/`, site ?? 'https://ainights.ai').toString(),
     })),
   };
 
