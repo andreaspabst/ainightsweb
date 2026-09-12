@@ -53,6 +53,21 @@ export const GET: APIRoute = async ({ site }) => {
         platforms: { joinify: entry.data.platforms?.joinify },
         sessionIds: entry.data.sessionIds ?? [],
         speakerIds: entry.data.speakerIds ?? [],
+        // Die Aftershow gehört zum Abend: wer ein Ticket hat, soll in der App sehen,
+        // dass es danach weitergeht — samt dem, was im Ticket steckt.
+        aftershow: entry.data.aftershow
+          ? {
+              title: entry.data.aftershow.title,
+              kicker: entry.data.aftershow.kicker,
+              text: entry.data.aftershow.text,
+              facts: (entry.data.aftershow.facts ?? []).map((fact) => ({
+                icon: fact.icon,
+                label: fact.label,
+              })),
+              partnerName: entry.data.aftershow.partnerName,
+              partnerLogo: absolute(entry.data.aftershow.partnerLogo?.src, site),
+            }
+          : undefined,
       })),
     sessions: sessions.map((entry) => ({
       id: entry.data.id,
@@ -60,6 +75,10 @@ export const GET: APIRoute = async ({ site }) => {
       title: entry.data.title,
       excerpt: entry.data.excerpt,
       type: entry.data.type,
+      // Die gepflegten Uhrzeiten. Ohne sie müsste eine App den Ablauf aus Dauern
+      // aufaddieren — und läge falsch, sobald zwischen zwei Punkten eine Lücke liegt.
+      startTime: entry.data.startTime,
+      endTime: entry.data.endTime,
       duration: entry.data.duration,
       level: entry.data.level,
       room: entry.data.room,

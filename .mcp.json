@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "digistore24": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.digistore24.com/",
+        "--header",
+        "Authorization: Bearer ${DIGISTORE24_API_KEY}"
+      ]
+    }
+  }
+}

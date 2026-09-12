@@ -7,6 +7,13 @@
       "runtimeArgs": ["-c", "export PATH=\"$HOME/.nvm/versions/node/v22.23.1/bin:$PATH\" && npm run dev"],
       "port": 4321,
       "autoPort": true
+    },
+    {
+      "name": "agenticnuremberg-dev",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": ["-c", "export PATH=\"$HOME/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /Users/andreaspabst/gitrepos/agenticnuremberg && npm run dev -- --port 4333"],
+      "port": 4333,
+      "autoPort": true
     }
   ]
 }

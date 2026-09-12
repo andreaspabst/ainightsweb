@@ -54,6 +54,9 @@ Eventbrite/Meetup/Luma als `ticketUrl` eintragen.
    „glattgezogen" werden soll (pro Plattform bestätigen lassen).
 3. Änderungen per MCP/Browser ausführen und verifizieren (Publish-Status,
    Datum, Ort, Preis nach dem Speichern gegenlesen).
+4. Bei geändertem Line-up (neuer Speaker/Moderator/Sponsor): Skill
+   `free-ticket-vouchers` prüfen — jeder bekommt pro Event einen
+   Freiticket-Gutschein.
 
 ## Plattform-IDs im Event-JSON
 
