@@ -22,10 +22,11 @@ function absolute(path: string | undefined, site: URL | undefined): string | und
 }
 
 export const GET: APIRoute = async ({ site }) => {
-  const [events, sessions, speaker] = await Promise.all([
+  const [events, sessions, speaker, sponsor] = await Promise.all([
     getCollection('events'),
     getCollection('sessions'),
     getCollection('speaker'),
+    getCollection('sponsor'),
   ]);
 
   const payload = {
@@ -53,6 +54,7 @@ export const GET: APIRoute = async ({ site }) => {
         platforms: { joinify: entry.data.platforms?.joinify },
         sessionIds: entry.data.sessionIds ?? [],
         speakerIds: entry.data.speakerIds ?? [],
+        sponsorIds: entry.data.sponsorIds ?? [],
         // Die Aftershow gehört zum Abend: wer ein Ticket hat, soll in der App sehen,
         // dass es danach weitergeht — samt dem, was im Ticket steckt.
         aftershow: entry.data.aftershow
@@ -96,6 +98,16 @@ export const GET: APIRoute = async ({ site }) => {
       photo: absolute(entry.data.image?.src, site),
       socials: entry.data.socials ?? {},
       profileUrl: new URL(`/speaker/${entry.data.slug}/`, site ?? 'https://ainights.ai').toString(),
+    })),
+    // Ohne die Sponsoren gäbe es den Abend nicht — sie stehen auf der Eventseite und
+    // gehören deshalb auch in die App.
+    sponsor: sponsor.map((entry) => ({
+      id: entry.data.id,
+      slug: entry.data.slug,
+      title: entry.data.title,
+      tier: entry.data.tier,
+      website: entry.data.website,
+      logo: absolute(entry.data.logo?.src ?? entry.data.image?.src, site),
     })),
   };
 
