@@ -1,0 +1,42 @@
+{
+  "_comment": "Namenskarten-Gästeliste für AI Nights Nürnberg #05 (17.09.2026). staff = feste Crew, die bei jedem Event dabei ist (immer zuerst auf Karte 1). attendees = echte Käufer aus der Digistore24-Verkaufsübersicht (sales.ainights.ai/tickets, Stand 13.09.2026) — company bewusst leer gelassen (nicht erhoben).",
+  "staff": [
+    { "firstName": "Andreas", "lastName": "Pabst", "company": "Founder AXDN & AI Consultant" },
+    { "firstName": "Tom", "lastName": "Duchow", "company": "Event Tech Manager" },
+    { "firstName": "Orion", "lastName": "Ada", "company": "Door Manager" },
+    { "firstName": "Felix", "lastName": "Rosenthal", "company": "Door Manager" },
+    { "firstName": "Marko", "lastName": "Börner", "company": "Design Offices" },
+    { "firstName": "Cassandra", "lastName": "Perl", "company": "Club Manager club199" }
+  ],
+  "attendees": [
+    { "firstName": "Alexander", "lastName": "Frankowski", "company": "" },
+    { "firstName": "Alexander", "lastName": "Key", "company": "" },
+    { "firstName": "Dominik", "lastName": "Müller", "company": "" },
+    { "firstName": "Maximilian", "lastName": "Merdes", "company": "" },
+    { "firstName": "Matthias", "lastName": "Ganzmann", "company": "" },
+    { "firstName": "Hanna", "lastName": "Zub", "company": "" },
+    { "firstName": "Stephan", "lastName": "Raab", "company": "" },
+    { "firstName": "Sven", "lastName": "Siewers", "company": "" },
+    { "firstName": "Andrea", "lastName": "Reindel", "company": "" },
+    { "firstName": "Daniel", "lastName": "Knapp", "company": "" },
+    { "firstName": "Isabelle", "lastName": "Weickmann", "company": "" },
+    { "firstName": "Markus", "lastName": "Potzel", "company": "" },
+    { "firstName": "Carina", "lastName": "Sehorz", "company": "" },
+    { "firstName": "Pascal", "lastName": "Ehrenfels", "company": "" },
+    { "firstName": "Renate", "lastName": "Freisler", "company": "" },
+    { "firstName": "Markus", "lastName": "Birkel", "company": "" },
+    { "firstName": "Paul Vicente", "lastName": "Hernandez Moreno", "company": "" },
+    { "firstName": "Christina", "lastName": "Weichert", "company": "" },
+    { "firstName": "Cornelia", "lastName": "Hebrank", "company": "" },
+    { "firstName": "Lukas", "lastName": "Volz", "company": "" },
+    { "firstName": "Lukas", "lastName": "Strobel", "company": "" },
+    { "firstName": "Florian", "lastName": "Fuchs", "company": "" },
+    { "firstName": "Marko", "lastName": "Müller", "company": "" },
+    { "firstName": "Johannes", "lastName": "Augustin", "company": "" },
+    { "firstName": "Kristin", "lastName": "Mann", "company": "" },
+    { "firstName": "Anh Dung", "lastName": "Nguyen", "company": "" },
+    { "firstName": "Inga", "lastName": "Kollmar", "company": "" },
+    { "firstName": "Anne-Katrin", "lastName": "Hartmann", "company": "" },
+    { "firstName": "Klara", "lastName": "Kwon", "company": "" }
+  ]
+}
