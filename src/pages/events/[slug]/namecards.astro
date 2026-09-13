@@ -1,0 +1,35 @@
+---
+// Interner Kurzlink für Türsteher/Crew: <event-page-url>/namecards/ leitet
+// direkt auf die druckfertige Namenskarten-PDF weiter (aus
+// public/media/namenskarten/<slug>.pdf, erzeugt vom event-namecards-Skill).
+// Bewusst NIRGENDWO verlinkt, NICHT in der Sitemap (astro.config.mjs
+// filtert die Route raus) und per robots.txt gesperrt — nur wer die URL
+// kennt, kommt hier hin.
+import fs from 'node:fs';
+import path from 'node:path';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  const PUBLIC_DIR = path.join(process.cwd(), 'public');
+  return events
+    .filter((e) => fs.existsSync(path.join(PUBLIC_DIR, `media/namenskarten/${e.data.slug}.pdf`)))
+    .map((e) => ({ params: { slug: e.data.slug } }));
+}
+
+const { slug } = Astro.params;
+const target = `/media/namenskarten/${slug}.pdf`;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <title>Namenskarten</title>
+  </head>
+  <body>
+    <p>Weiterleitung … <a href={target}>hier klicken</a>, falls das nicht automatisch passiert.</p>
+  </body>
+</html>

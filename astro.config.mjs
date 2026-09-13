@@ -45,6 +45,10 @@ export default defineConfig({
         defaultLocale: 'de',
         locales: { de: 'de-DE', en: 'en-US' },
       },
+      // /events/<slug>/namecards/ ist ein interner Kurzlink (Namenskarten-PDF
+      // fürs Türteam) — bewusst nicht in der Sitemap, siehe robots.txt und
+      // den event-namecards-Skill.
+      filter: (page) => !page.includes('/namecards/'),
     }),
   ],
 });

@@ -45,6 +45,9 @@ const saveTheDateFor = (eventSlug: string) => bothFormats('save-the-date', event
 /** Event-Tag-Karten „HEUTE 17:00 UHR“, erzeugt von scripts/generate-event-day.mjs. */
 const eventDayFor = (eventSlug: string) => bothFormats('event-day', eventSlug);
 
+/** Namenskarten-PDF (Vorder-/Rückseite, druckfertig), erzeugt von scripts/generate-namenskarten.mjs. */
+const namenskartenFor = (eventSlug: string) => (exists(`/media/namenskarten/${eventSlug}.pdf`) ? `/media/namenskarten/${eventSlug}.pdf` : null);
+
 /** Countdown-Karten „NUR NOCH … TAGE", erzeugt mit --countdown <n>. */
 function countdownFor(eventSlug: string) {
   return listDir('/media/countdown')
@@ -126,6 +129,7 @@ const rows = orderedEvents.map((e) => {
     people,
     sponsors: eventSponsors,
     lineup: lineupFor(e.data.slug),
+    namenskarten: namenskartenFor(e.data.slug),
     saveTheDate: saveTheDateFor(e.data.slug),
     eventDay: eventDayFor(e.data.slug),
     countdown: countdownFor(e.data.slug),
@@ -149,13 +153,19 @@ const rows = orderedEvents.map((e) => {
       <h1 class="display-font">Produktionsmedien</h1>
       <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
 
-      {rows.map(({ event, people, sponsors, lineup, saveTheDate, eventDay, countdown, carousel, topicCarousels, isUpcoming }) => (
+      {rows.map(({ event, people, sponsors, lineup, namenskarten, saveTheDate, eventDay, countdown, carousel, topicCarousels, isUpcoming }) => (
         <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
           <h2>
             {event.title}
             {event.eventDate && <span class="date">{event.eventDate}</span>}
             {!isUpcoming && <span class="badge">vergangen</span>}
           </h2>
+
+          {namenskarten && (
+            <div class="links" style="margin-bottom: 1.5rem;">
+              <a href={namenskarten} target="_blank">Namenskarten laden (PDF, Vorder-/Rückseite)</a>
+            </div>
+          )}
 
           {(saveTheDate.instagram || saveTheDate.linkedin) && (
             <div class="lineup">
