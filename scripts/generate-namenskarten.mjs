@@ -45,8 +45,18 @@ const SLOT = {
   date: { x: 225.63, w: 67.66, yTop: 48.26, yBottom: 61.87 },
 };
 const PAGE_W = 612;
-const PAGE_H = 792;
+const PAGE_H = 792; // = CropBox-Höhe, worauf sich pdftotext -bbox-layout bezieht
 const CARDS_PER_PAGE = 8; // 2 Spalten × 4 Zeilen
+
+// Die Vorlage hat eine MediaBox mit y-Ursprung ≠ 0 (Canva-Export-Eigenheit,
+// z. B. y=7.92 statt 0) — pdf-lib zeichnet relativ zur MediaBox, während
+// die aus `pdftotext -bbox-layout` entnommenen SLOT-Koordinaten relativ zur
+// CropBox (oben links) sind. Ohne diesen Offset landen alle Boxen ein paar
+// Punkte zu weit unten — sichtbar z. B. daran, dass das Ausweißen des
+// Firmenfelds die durchgezogene Trennlinie direkt darunter mit wegradiert.
+// Wird in main() aus der echten Vorlage gelesen statt hart codiert, damit
+// ein neuer Canva-Export sich nicht wieder unbemerkt verschiebt.
+let PAGE_ORIGIN_Y = 0;
 
 function slotOrigin(index) {
   const col = index % 2;
@@ -69,7 +79,7 @@ function drawCentered(page, font, text, box, { size, color, dx, dy }) {
   const yTopDown = box.yBottom + dy;
   const w = font.widthOfTextAtSize(text, size);
   const left = x + (box.w - w) / 2;
-  const baseline = PAGE_H - yTopDown + size * 0.18; // grobe Baseline-Korrektur (Cap-Height vs. yBottom)
+  const baseline = PAGE_ORIGIN_Y + PAGE_H - yTopDown + size * 0.18; // grobe Baseline-Korrektur (Cap-Height vs. yBottom)
   page.drawText(text, { x: left, y: baseline, size, font, color });
 }
 
@@ -78,7 +88,7 @@ function eraseBox(page, box, { dx, dy, color, padX = 4, padTop = 3, padBottom = 
   const yTopDown = box.yTop + dy - padTop;
   const h = box.yBottom - box.yTop + padTop + padBottom;
   page.drawRectangle({
-    x, y: PAGE_H - yTopDown - h, width: box.w + padX * 2, height: h, color,
+    x, y: PAGE_ORIGIN_Y + PAGE_H - yTopDown - h, width: box.w + padX * 2, height: h, color,
   });
 }
 
@@ -103,6 +113,7 @@ async function main() {
 
   const templateBytes = await fs.readFile(path.join(ASSETS, 'template.pdf'));
   const template = await PDFDocument.load(templateBytes);
+  PAGE_ORIGIN_Y = template.getPage(0).getMediaBox().y;
 
   const out = await PDFDocument.create();
   const bold = await out.embedFont(StandardFonts.HelveticaBold);
