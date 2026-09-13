@@ -61,6 +61,22 @@ node scripts/generate-namenskarten.mjs ai-nights-nuernberg-05
 3. Ohne Gästeliste (Datei fehlt oder leer) bricht das Skript mit einer
    klaren Meldung ab, statt ein leeres PDF zu erzeugen.
 
+## Kurzlink fürs Türteam
+
+`<event-page-url>/namecards/` (z. B. `/events/ai-nights-nuernberg-05/namecards/`)
+leitet direkt auf die PDF weiter — `src/pages/events/[slug]/namecards.astro`,
+generiert per `getStaticPaths()` nur für Events, die tatsächlich eine
+gerenderte `public/media/namenskarten/<slug>.pdf` haben.
+
+**Bewusst nirgendwo verlinkt und nicht auffindbar:**
+- `noindex, nofollow` per Meta-Tag auf der Redirect-Seite selbst.
+- Aus der Sitemap gefiltert (`filter` in der `sitemap()`-Integration,
+  `astro.config.mjs`).
+- Per `robots.txt` gesperrt (`Disallow: /events/*/namecards/`).
+
+Bei einer neuen Route mit sensiblen/internen Dokumenten dieses Dreiklang
+(noindex + Sitemap-Filter + robots.txt) als Vorlage nehmen.
+
 ## Layout
 
 - Vorlage (**nicht anfassen**, Canva-Export mit 2×4-Karten-Raster pro

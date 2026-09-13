@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /events/*/namecards/
 
 Sitemap: https://ainights.ai/sitemap.xml
 Sitemap: https://ainights.ai/sitemap-index.xml
