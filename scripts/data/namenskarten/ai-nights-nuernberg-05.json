@@ -1,5 +1,5 @@
 {
-  "_comment": "Namenskarten-Gästeliste für AI Nights Nürnberg #05 (17.09.2026). staff = feste Crew, die bei jedem Event dabei ist (immer zuerst auf Karte 1). attendees = echte Käufer aus der Digistore24-Verkaufsübersicht (sales.ainights.ai/tickets, Stand 13.09.2026) — company bewusst leer gelassen (nicht erhoben).",
+  "_comment": "Namenskarten-Gästeliste für AI Nights Nürnberg #05 (17.09.2026). staff = feste Crew, die bei jedem Event dabei ist (immer zuerst auf Karte 1). attendees = per node scripts/fetch-namenskarten-guests.mjs aus der Digistore24-API geholt (Testkäufe rausgefiltert) — company bewusst leer gelassen (nicht erhoben). Zuletzt aktualisiert: 13.09.2026.",
   "staff": [
     { "firstName": "Andreas", "lastName": "Pabst", "company": "Founder AXDN & AI Consultant" },
     { "firstName": "Tom", "lastName": "Duchow", "company": "Event Tech Manager" },
@@ -34,7 +34,7 @@
     { "firstName": "Marko", "lastName": "Müller", "company": "" },
     { "firstName": "Johannes", "lastName": "Augustin", "company": "" },
     { "firstName": "Kristin", "lastName": "Mann", "company": "" },
-    { "firstName": "Anh Dung", "lastName": "Nguyen", "company": "" },
+    { "firstName": "Anh", "lastName": "Dung Nguyen", "company": "" },
     { "firstName": "Inga", "lastName": "Kollmar", "company": "" },
     { "firstName": "Anne-Katrin", "lastName": "Hartmann", "company": "" },
     { "firstName": "Klara", "lastName": "Kwon", "company": "" }
