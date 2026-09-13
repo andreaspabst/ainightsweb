@@ -98,6 +98,17 @@ Bei einer neuen Route mit sensiblen/internen Dokumenten dieses Dreiklang
   ```bash
   pdftotext -bbox-layout scripts/assets/namenskarten/template.pdf -
   ```
+- **MediaBox-Falle:** `pdftotext -bbox-layout` misst relativ zur CropBox
+  (Ursprung oben links bei 0), `pdf-lib` zeichnet aber relativ zur
+  MediaBox — und Canva-Exporte haben oft einen MediaBox-y-Ursprung ≠ 0
+  (bei dieser Vorlage 7.92pt). Ohne den Ausgleich landen alle gezeichneten
+  Boxen ein paar Punkte zu weit unten (führte hier dazu, dass das
+  Ausweißen des Firmenfelds die durchgezogene Trennlinie darunter mit
+  wegradierte — unterbrochen statt durchgezogen). Das Skript liest den
+  Offset deshalb zur Laufzeit selbst aus (`template.getPage(0).getMediaBox().y`,
+  Variable `PAGE_ORIGIN_Y`) statt ihn hart zu codieren — bei einem neuen
+  Canva-Export bleibt das also automatisch korrekt. Gleiches Prinzip gilt
+  für jedes andere Skript, das eine bestehende PDF per `pdf-lib` bearbeitet.
 
 ## Nicht anfassen
 
