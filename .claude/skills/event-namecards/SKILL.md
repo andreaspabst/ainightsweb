@@ -55,11 +55,22 @@ node scripts/generate-namenskarten.mjs ai-nights-nuernberg-05
        verkauft (siehe `platforms`-Feld in `src/content/events/<slug>.json`).
    - Offensichtliche Tippfehler im Namen (z. B. "Domink" statt "Dominik",
      erkennbar am Abgleich mit der E-Mail-Adresse) vor dem Drucken korrigieren.
-2. Rendert nach `public/media/namenskarten/<event-slug>.pdf` — taucht
-   automatisch auf der internen `/tools/`-Seite auf
-   (`src/pages/tools/index.astro`, `noindex`, nicht öffentlich gelistet).
+2. Rendert nach `public/media/namenskarten/<event-slug>.pdf`.
 3. Ohne Gästeliste (Datei fehlt oder leer) bricht das Skript mit einer
    klaren Meldung ab, statt ein leeres PDF zu erzeugen.
+
+## Datenschutz — niemals auf /tools/ verlinken
+
+**Die Namenskarten-PDF enthält echte Namen von Ticketkäufer:innen (PII) und
+darf deshalb NIEMALS auf `src/pages/tools/index.astro` verlinkt oder
+gelistet werden**, obwohl diese Seite selbst schon `noindex` ist — `/tools/`
+ist als offen durchsuchbare Übersicht aller Produktionsmedien gedacht, kein
+Ort für personenbezogene Daten. Das war einmal versehentlich passiert (ein
+`namenskartenFor()`-Helper + sichtbarer Link-Block dort) und wurde explizit
+als Datenschutzproblem korrigiert — bei künftigen Änderungen an diesem
+Skill oder an `/tools/` darauf achten, dass das nicht wieder passiert.
+
+Der einzige vorgesehene Zugriffsweg ist der unsichtbare Kurzlink unten.
 
 ## Kurzlink fürs Türteam
 
