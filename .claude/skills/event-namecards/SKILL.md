@@ -14,12 +14,14 @@ Vorderseite → Rückseite, fürs Duplex-Drucken.
 ## Ablauf
 
 ```bash
-node scripts/generate-namenskarten.mjs <event-slug>
+node scripts/fetch-namenskarten-guests.mjs <event-slug>   # Gästeliste per API holen
+node scripts/generate-namenskarten.mjs <event-slug>       # PDF rendern
 ```
 
 Beispiel:
 
 ```bash
+node scripts/fetch-namenskarten-guests.mjs ai-nights-nuernberg-05
 node scripts/generate-namenskarten.mjs ai-nights-nuernberg-05
 ```
 
@@ -38,24 +40,47 @@ node scripts/generate-namenskarten.mjs ai-nights-nuernberg-05
      Marko Börner (Design Offices), Cassandra Perl (Club Manager club199).
      Vor dem Rendern kurz gegenchecken, ob sich die Liste seit dem letzten
      Event geändert hat.
-   - `attendees` ist die echte Gästeliste. **Ticket-Verkäufe laufen über
-     mehrere Kanäle** (siehe `event-platforms`-Skill) — vor dem Rendern
-     prüfen, wo die Namen herkommen:
-     - `sales.ainights.ai/tickets` zeigt eine kanalübergreifende
-       Verkaufsübersicht (aktuell v. a. Digistore24) — Ticket-Event
-       aufklappen, Namen aus der Käuferliste übernehmen. Kein Firmenfeld
-       vorhanden — bewusst leer lassen statt zu raten (nicht aus der
-       E-Mail-Domain ableiten).
-     - Joinify-MCP `list_ticket_holders` braucht den Parameter **`slug`**
-       (nicht `id`/`reference`!), z. B. `slug: "ai-nights-nurnberg-05-autumn"`
-       — den Joinify-Slug über `list_events` auflösen (Referenz ≠ Slug,
-       siehe `free-ticket-vouchers`-Skill). Liefert nur Direktbucher über
-       Joinify selbst, oft `[]` wenn der Ticketshop auf Digistore24 zeigt.
-     - Eventbrite/Luma nur relevant, falls das Event dort tatsächlich
-       verkauft (siehe `platforms`-Feld in `src/content/events/<slug>.json`).
-   - Offensichtliche Tippfehler im Namen (z. B. "Domink" statt "Dominik",
-     erkennbar am Abgleich mit der E-Mail-Adresse) vor dem Drucken korrigieren.
-2. Rendert nach `public/media/namenskarten/<event-slug>.pdf`.
+   - `attendees` ist die echte Gästeliste — **per API holen, nicht mehr
+     manuell abtippen:**
+     ```bash
+     node scripts/fetch-namenskarten-guests.mjs <event-slug>
+     ```
+     Schreibt/ersetzt nur `attendees` in der Datei, `staff` bleibt
+     unangetastet. Holt aus:
+     - **Digistore24** (funktioniert): braucht `DIGISTORE24_API_KEY_READONLY`
+       (oder `DIGISTORE24_API_KEY`) in `.env` im Repo-Root. Auth-Header ist
+       **`X-DS-API-KEY`** (nicht `X-DS24-API-KEY` — leicht zu verwechseln).
+       Filtert automatisch Testkäufe raus (`transaction_pay_method === 'Test'`
+       — Digistore24s eigenes Kennzeichen; taucht in `listPurchases`
+       standardmäßig mit auf, anders als im `sales.ainights.ai`-Dashboard).
+       Produkt-ID kommt aus `platforms.digistore` im Event-JSON (die Zahl
+       am Ende der Checkout-URL).
+     - **Eventbrite** (optional, `EVENTBRITE_API_KEY` in `.env`): nur falls
+       das Event dort tatsächlich verkauft (`platforms.eventbrite` im
+       Event-JSON). **Wichtig:** Eventbrite hat mehrere Schlüsseltypen —
+       nur der **Private Token** (Account-Settings → Developer Links → API
+       Keys) funktioniert als Bearer-Token für `/v3/events/{id}/attendees/`.
+       Der "API Key" / "Client Secret" von der App-Verwaltungsseite
+       authentifiziert NICHT direkt (führt zu `401 INVALID_AUTH`) — das
+       Skript erkennt das, warnt klar und macht mit den übrigen Kanälen
+       weiter statt abzubrechen.
+     - Joinify wird hier bewusst NICHT abgefragt — `list_ticket_holders`
+       liefert für Events mit Digistore24-Checkout erwartungsgemäß `[]`
+       (kein direkter Joinify-Checkout), das per MCP abzufragen bringt
+       nichts zusätzliches. Falls ein Event doch über Joinify verkauft,
+       braucht `list_ticket_holders` den Parameter **`slug`** (nicht
+       `id`/`reference`!) — Joinify-Slug über `list_events` auflösen
+       (Referenz ≠ Slug, siehe `free-ticket-vouchers`-Skill).
+     - Kein Firmenfeld bei Digistore24 — bewusst leer lassen statt zu raten
+       (nicht aus der E-Mail-Domain ableiten).
+   - **Nach dem Abruf kurz gegenlesen**, bevor gerendert wird: Digistore24s
+     `first_name`/`last_name`-Felder übernehmen offensichtliche Tippfehler
+     der Käufer:innen 1:1 (z. B. "Domink" statt "Dominik", erkennbar am
+     Abgleich mit der E-Mail-Adresse) — vor dem Drucken von Hand korrigieren.
+2. Rendert nach `public/media/namenskarten/<event-slug>.pdf`:
+   ```bash
+   node scripts/generate-namenskarten.mjs <event-slug>
+   ```
 3. Ohne Gästeliste (Datei fehlt oder leer) bricht das Skript mit einer
    klaren Meldung ab, statt ein leeres PDF zu erzeugen.
 
