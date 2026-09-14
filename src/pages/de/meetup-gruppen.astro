@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { cityColor } from '../../lib/cities';
+import { imgVariant } from '../../lib/images';
+
+const GROUPS = [
+  { name: 'Nürnberg', image: imgVariant('/img/meetup/nuernberg-cover.jpg', 1024), url: 'https://www.meetup.com/ai-nights-nurnberg/', members: 240 },
+  { name: 'München', image: imgVariant('/img/meetup/muenchen-cover.jpg', 1024), url: 'https://www.meetup.com/ai-nights-munchen/', members: 46 },
+  { name: 'Barcelona', image: imgVariant('/img/meetup/barcelona-cover.jpg', 1024), url: 'https://www.meetup.com/ai-nights-barcelona/', members: 24 },
+  { name: 'Würzburg', image: imgVariant('/img/meetup/wurzburg-cover.jpg', 1024), url: 'https://www.meetup.com/ai-nights-wurzburg-afterwork-networking-event/', members: 1 },
+  { name: 'Hamburg', image: imgVariant('/img/meetup/hamburg-cover.jpg', 1024), url: 'https://www.meetup.com/ai-nights-hamburg-afterwork-events/', members: 1 },
+];
+---
+
+<Layout
+  lang="de"
+  title="Meetup-Gruppen — AI Nights"
+  description="Die AI Nights Meetup-Communities in Nürnberg, München, Barcelona, Würzburg und Hamburg — tritt bei oder werde Organisator:in in deiner Stadt."
+  path="/de/meetup-gruppen/"
+  alternates={{ de: '/de/meetup-gruppen/', en: '/en/meetup-groups/' }}
+>
+  <Header lang="de" />
+  <main class="meetup-page">
+    <section class="hero">
+      <div class="aurora aurora-pink"></div>
+      <div class="aurora aurora-blue"></div>
+      <div class="container hero-inner">
+        <p class="eyebrow glass-label"><span></span> Live. Lokal. Vernetzt.</p>
+        <h1 class="display-font">Finde deine<br /><span class="gradient-text">AI Nights Crew.</span></h1>
+        <p class="sub">
+          Von Nürnberg bis Barcelona: Tritt unseren Meetup-Gruppen bei, verpasse keine Einladung mehr —
+          und wenn deine Stadt noch fehlt, bau sie mit uns auf.
+        </p>
+        <a href="mailto:hello@ainights.ai" class="btn btn-primary">Organisator:in werden</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid">
+          {GROUPS.map((g) => (
+            <a href={g.url} target="_blank" rel="noopener" class="group-card">
+              <div class="group-photo">
+                <img src={g.image} alt={`AI Nights Meetup-Gruppe ${g.name}`} loading="lazy" />
+                <span class="group-badge" style={`--city-color: ${cityColor(g.name)}`}><i></i> Meetup</span>
+              </div>
+              <div class="group-body">
+                <h3 class="display-font">{g.name}</h3>
+                <p>{g.members} {g.members === 1 ? 'Mitglied' : 'Mitglieder'}</p>
+                <span class="more">Zur Meetup-Gruppe <b>↗</b></span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <section class="host card">
+          <p class="eyebrow">Deine Stadt fehlt noch?</p>
+          <h2 class="display-font">Du willst die AI&nbsp;Nights in deine Stadt holen?</h2>
+          <p>
+            Wir unterstützen dich mit Branding, Organisation, Reichweite, Speaker-Management und mehr —
+            schreib uns, und gemeinsam bauen wir deine eigene AI-Nights-Meetup-Gruppe auf.
+          </p>
+          <a href="mailto:hello@ainights.ai" class="btn btn-primary">Organisator:in werden</a>
+        </section>
+      </div>
+    </section>
+  </main>
+  <Footer lang="de" />
+</Layout>
+
+<style>
+  .meetup-page { --glass: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.035)); }
+  .hero { position: relative; overflow: hidden; padding-block: clamp(4rem, 9vw, 7rem); text-align: center; }
+  .aurora { position: absolute; width: 35rem; aspect-ratio: 1; border-radius: 50%; filter: blur(90px); opacity: .22; }
+  .aurora-pink { background: var(--magenta-bright); right: -12rem; top: -8rem; }
+  .aurora-blue { background: var(--blue); left: -15rem; bottom: -18rem; }
+  .hero-inner { position: relative; }
+  .glass-label { display: inline-flex; align-items: center; width: fit-content; margin: 0 auto; padding: .55rem .9rem; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; background: rgba(255,255,255,.06); backdrop-filter: blur(20px); color: var(--text-secondary); -webkit-text-fill-color: currentColor; }
+  .glass-label span { display:inline-block; width:.45rem; height:.45rem; margin-right:.5rem; border-radius:50%; background:#7cffc4; box-shadow:0 0 14px #7cffc4; }
+  h1 { font-size: clamp(3rem, 7vw, 5.8rem); line-height: .96; letter-spacing: -.06em; margin: 1.4rem 0 1.4rem; }
+  .sub { max-width: 56ch; margin: 0 auto 2rem; color: var(--text-secondary); font-size: 1.08rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .group-card { position:relative; overflow:hidden; color:inherit; border:1px solid rgba(255,255,255,.16); border-radius:28px; background:var(--glass); backdrop-filter:blur(22px); box-shadow:0 24px 70px rgba(2,0,18,.3), inset 0 1px rgba(255,255,255,.12); transition:transform .25s ease,border-color .25s ease; }
+  .group-card:hover { transform:translateY(-7px); border-color:rgba(255,255,255,.3); color:inherit; }
+  .group-photo { position:relative; height:200px; overflow:hidden; }
+  .group-photo::after { content:''; position:absolute; inset:0; background:linear-gradient(transparent 40%,rgba(9,1,25,.75)); }
+  .group-photo img { width:100%; height:100%; object-fit:cover; transition:transform .5s ease; }
+  .group-card:hover .group-photo img { transform:scale(1.04); }
+  .group-badge { position:absolute; z-index:2; left:1rem; top:1rem; display:inline-flex; align-items:center; gap:.45rem; padding:.38rem .7rem; border:1px solid rgba(255,255,255,.18); border-radius:999px; background:rgba(10,1,24,.5); backdrop-filter:blur(14px); color:#fff; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+  .group-badge i { width:.45rem; height:.45rem; border-radius:50%; background:var(--city-color,#7cffc4); box-shadow:0 0 12px var(--city-color,#7cffc4); }
+  .group-body { position:relative; padding:1.4rem 1.5rem; }
+  .group-body h3 { color:var(--text-primary); font-size:1.6rem; }
+  .group-body p { color:var(--text-muted); font-size:.88rem; margin:.5rem 0 1.1rem; }
+  .more { display:flex; justify-content:space-between; align-items:center; color:var(--text-secondary); font-size:.82rem; font-weight:600; }
+  .more b { display:grid; place-items:center; width:2rem; height:2rem; border-radius:50%; background:rgba(255,255,255,.08); }
+  .host { margin-top: 1rem; padding: 3rem; text-align: center; border-radius: 30px; }
+  .host h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: .5rem 0 1rem; }
+  .host p { max-width: 56ch; margin: 0 auto 1.6rem; color: var(--text-secondary); }
+  @media (max-width: 600px) { .hero .btn { width: 100%; justify-content: center; } .host { padding: 2rem 1.5rem; } }
+</style>
