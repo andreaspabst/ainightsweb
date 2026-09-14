@@ -1,16 +1,21 @@
 #!/usr/bin/env node
 /**
- * Namenskarten (Namensschilder) für ein AI-Nights-Event: bearbeitet die
- * Canva-Vorlage direkt (weißt die Platzhalterfelder aus, schreibt Name +
+ * Namenskarten (Namensschilder) für ein AI-Nights-Event: bearbeitet zwei
+ * Canva-Vorlagen direkt (weißt die Platzhalterfelder aus, schreibt Name +
  * Firma/Rolle neu rein) statt das Design nachzubauen — Logo, Farbverlauf,
  * Deko-Icons und die generische Rückseite bleiben dadurch 1:1 wie im
  * Original. Immer Vorderseite→Rückseite→Vorderseite→Rückseite fürs
- * Duplex-Drucken.
+ * Duplex-Drucken. Beide Vorlagen landen in EINER PDF-Datei: erst
+ * Team/Speaker-Seiten, danach die Gäste-Seiten.
  *
- * Vorlage (nicht anfassen — Canva-Export, 8 Karten/Seite):
- *   scripts/assets/namenskarten/template.pdf
- * Gästeliste pro Event (Crew zuerst, dann echte Käufer):
- *   scripts/data/namenskarten/<event-slug>.json  { staff: [...], attendees: [...] }
+ * Vorlagen (nicht anfassen — Canva-Export, je 8 Karten/Seite):
+ *   scripts/assets/namenskarten/template.pdf       — für attendees (Gäste)
+ *   scripts/assets/namenskarten/team-template.pdf  — für staff + speakers
+ *     (Slots 0-3 pro Seite sind mit "SPEAKER" beschriftet, Slots 4-7 mit
+ *     "TEAM" — reines Vorlagen-Artwork, wird nicht überschrieben.)
+ * Gästeliste pro Event:
+ *   scripts/data/namenskarten/<event-slug>.json
+ *   { staff: [...], speakers: [...], attendees: [...] }
  *   Eintrag: { firstName, lastName, company }  — company darf leer sein.
  *
  * Aufruf: node scripts/generate-namenskarten.mjs <event-slug>
@@ -130,70 +135,52 @@ function drawDatePatch(page, patchImage, { dx, dy }) {
   page.drawImage(patchImage, { x, y: PAGE_ORIGIN_Y + PAGE_H - yTopDown - h, width: w, height: h });
 }
 
-async function main() {
-  const eventSlug = process.argv[2];
-  if (!eventSlug) {
-    console.error('Aufruf: node scripts/generate-namenskarten.mjs <event-slug>');
-    process.exit(1);
-  }
-  console.log(`Baue Namenskarten für ${eventSlug} …`);
-
-  const kit = await loadEventKit(eventSlug);
-  const dataPath = path.join(DATA_DIR, `${eventSlug}.json`);
-  const guestData = JSON.parse(await fs.readFile(dataPath, 'utf8'));
-  const people = [...(guestData.staff ?? []), ...(guestData.attendees ?? [])];
-  if (!people.length) throw new Error(`Keine Gäste in ${dataPath} (staff/attendees).`);
-
-  // "SEP 26" statt vollem Datum — das Datumsfeld im Header ist nur ~68pt
-  // breit, der volle Tag ist fürs Namensschild ohnehin nicht relevant.
-  const MONTHS_EN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-  const d = new Date(kit.event.eventDate);
-  const dateLabel = `${MONTHS_EN[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`;
-
-  const templateBytes = await fs.readFile(path.join(ASSETS, 'template.pdf'));
+/** Lädt eine Vorlage, liest ihren MediaBox-Offset und schneidet daraus den
+ * textfreien Verlaufs-Streifen fürs Datumsfeld aus (siehe buildDatePatch)
+ * — je Vorlage einmal, weil Team- und Gäste-Vorlage unterschiedliche
+ * Rasterbilder sind (auch wenn ihr Kartenraster identisch ist). */
+async function loadTemplateContext(out, templatePath) {
+  const templateBytes = await fs.readFile(templatePath);
   const template = await PDFDocument.load(templateBytes);
-  PAGE_ORIGIN_Y = template.getPage(0).getMediaBox().y;
+  const originY = template.getPage(0).getMediaBox().y;
 
-  // Vorlage einmal rastern, um daraus den textfreien Verlaufs-Streifen fürs
-  // Datumsfeld zu gewinnen (siehe buildDatePatch) — ein Aufruf reicht, der
-  // Patch ist für alle 8 Kartenslots auf jeder Seite identisch (jede Karte
-  // hat exakt denselben Verlauf an derselben relativen Stelle).
   const RASTER_DPI = 300;
   const scratchDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ainights-namenskarten-'));
   const templatePngBase = path.join(scratchDir, 'template');
-  await run('pdftoppm', ['-png', '-r', String(RASTER_DPI), '-f', '1', '-l', '1', path.join(ASSETS, 'template.pdf'), templatePngBase]);
+  await run('pdftoppm', ['-png', '-r', String(RASTER_DPI), '-f', '1', '-l', '1', templatePath, templatePngBase]);
   // pdftoppm hängt je nach Poppler-Version 1- oder 2-stellig gepaddete
   // Seitenzahlen an — statt zu raten, die tatsächlich erzeugte Datei suchen.
   const producedFile = (await fs.readdir(scratchDir)).find((f) => f.startsWith('template') && f.endsWith('.png'));
   if (!producedFile) throw new Error(`pdftoppm hat kein PNG erzeugt in ${scratchDir}`);
   const datePatchBuf = await buildDatePatch(path.join(scratchDir, producedFile), RASTER_DPI);
   await fs.rm(scratchDir, { recursive: true, force: true });
-
-  const out = await PDFDocument.create();
-  const bold = await out.embedFont(StandardFonts.HelveticaBold);
-  const regular = await out.embedFont(StandardFonts.Helvetica);
   const datePatchImage = await out.embedPng(datePatchBuf);
 
-  const pageCount = Math.ceil(people.length / CARDS_PER_PAGE);
-  for (let p = 0; p < pageCount; p++) {
-    const [front] = await out.copyPages(template, [0]);
-    out.addPage(front);
+  return { template, originY, datePatchImage };
+}
 
+/** Zeichnet eine Vorderseite. `assign(slot)` liefert die Person (oder
+ * undefined) für Slot 0..7 — je nach Vorlage sequenziell (Gäste) oder nach
+ * Speaker/Team-Rolle (Team-Vorlage, Slots 0-3 Speaker / 4-7 Team). */
+function renderFrontPage(out, ctx, bold, regular, dateLabel, assign) {
+  PAGE_ORIGIN_Y = ctx.originY;
+  return out.copyPages(ctx.template, [0]).then(([front]) => {
+    out.addPage(front);
     for (let slot = 0; slot < CARDS_PER_PAGE; slot++) {
-      const person = people[p * CARDS_PER_PAGE + slot];
+      const person = assign(slot);
       const { dx, dy } = slotOrigin(slot);
 
       // Original-Platzhalter "<AIN DATUM>" hat Großbuchstaben-Oberlängen,
       // die über die von pdftotext gemeldete Box hinausragen — der Patch
       // deckt darum großzügig nach oben ab, sonst blitzt der alte Text
       // noch durch (siehe buildDatePatch/drawDatePatch für die Maße).
-      drawDatePatch(front, datePatchImage, { dx, dy });
+      drawDatePatch(front, ctx.datePatchImage, { dx, dy });
       drawCentered(front, bold, dateLabel, SLOT.date, { size: 13, color: WHITE, dx, dy });
 
       eraseBox(front, SLOT.firstName, { dx, dy, color: WHITE });
       eraseBox(front, SLOT.lastName, { dx, dy, color: WHITE });
       eraseBox(front, SLOT.company, { dx, dy, color: WHITE });
-      if (!person) continue; // leerer Slot auf der letzten Seite — Feld bleibt weiß/leer
+      if (!person) continue; // leerer Slot — Feld bleibt weiß/leer
 
       const nameSize = fitSize(bold, person.lastName, SLOT.firstName.w, 20, 10);
       const firstSize = Math.min(nameSize, fitSize(bold, person.firstName, SLOT.firstName.w, 20, 10));
@@ -205,20 +192,77 @@ async function main() {
         drawCentered(front, regular, person.company, { ...SLOT.company, yBottom: SLOT.company.yTop + 16 }, { size: companySize, color: rgb(0.3, 0.3, 0.3), dx, dy });
       }
     }
+  });
+}
 
-    // Rückseite ist für jede Karte identisch generisch — unverändert
-    // duplizieren, kein Textediting nötig.
-    const [back] = await out.copyPages(template, [1]);
-    out.addPage(back);
+// Rückseite ist für jede Karte identisch generisch — unverändert
+// duplizieren, kein Textediting nötig.
+async function renderBackPage(out, ctx) {
+  const [back] = await out.copyPages(ctx.template, [1]);
+  out.addPage(back);
+}
+
+async function main() {
+  const eventSlug = process.argv[2];
+  if (!eventSlug) {
+    console.error('Aufruf: node scripts/generate-namenskarten.mjs <event-slug>');
+    process.exit(1);
+  }
+  console.log(`Baue Namenskarten für ${eventSlug} …`);
+
+  const kit = await loadEventKit(eventSlug);
+  const dataPath = path.join(DATA_DIR, `${eventSlug}.json`);
+  const guestData = JSON.parse(await fs.readFile(dataPath, 'utf8'));
+  const staff = guestData.staff ?? [];
+  const speakers = guestData.speakers ?? [];
+  const attendees = guestData.attendees ?? [];
+  if (!staff.length && !speakers.length && !attendees.length) {
+    throw new Error(`Keine Gäste in ${dataPath} (staff/speakers/attendees).`);
+  }
+
+  // "SEP 26" statt vollem Datum — das Datumsfeld im Header ist nur ~68pt
+  // breit, der volle Tag ist fürs Namensschild ohnehin nicht relevant.
+  const MONTHS_EN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const d = new Date(kit.event.eventDate);
+  const dateLabel = `${MONTHS_EN[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`;
+
+  const out = await PDFDocument.create();
+  const bold = await out.embedFont(StandardFonts.HelveticaBold);
+  const regular = await out.embedFont(StandardFonts.Helvetica);
+
+  let teamPageCount = 0;
+  if (staff.length || speakers.length) {
+    // Team-Vorlage: Slots 0-3 sind als "SPEAKER" beschriftet, 4-7 als
+    // "TEAM" (Vorlagen-Artwork) — Speaker und Crew laufen darum als zwei
+    // getrennte 4er-Warteschlangen statt einer durchlaufenden Liste.
+    const teamCtx = await loadTemplateContext(out, path.join(ASSETS, 'team-template.pdf'));
+    teamPageCount = Math.max(Math.ceil(speakers.length / 4), Math.ceil(staff.length / 4), 1);
+    for (let p = 0; p < teamPageCount; p++) {
+      const speakerSlice = speakers.slice(p * 4, p * 4 + 4);
+      const staffSlice = staff.slice(p * 4, p * 4 + 4);
+      await renderFrontPage(out, teamCtx, bold, regular, dateLabel, (slot) => (slot < 4 ? speakerSlice[slot] : staffSlice[slot - 4]));
+      await renderBackPage(out, teamCtx);
+    }
+  }
+
+  let guestPageCount = 0;
+  if (attendees.length) {
+    const guestCtx = await loadTemplateContext(out, path.join(ASSETS, 'template.pdf'));
+    guestPageCount = Math.ceil(attendees.length / CARDS_PER_PAGE);
+    for (let p = 0; p < guestPageCount; p++) {
+      await renderFrontPage(out, guestCtx, bold, regular, dateLabel, (slot) => attendees[p * CARDS_PER_PAGE + slot]);
+      await renderBackPage(out, guestCtx);
+    }
   }
 
   await fs.mkdir(OUT_DIR, { recursive: true });
   const outPath = path.join(OUT_DIR, `${eventSlug}.pdf`);
   await fs.writeFile(outPath, await out.save());
 
-  const usedSlots = pageCount * CARDS_PER_PAGE;
+  const totalPeople = staff.length + speakers.length + attendees.length;
+  const pageCount = teamPageCount + guestPageCount;
   console.log(`Fertig: ${outPath}`);
-  console.log(`${people.length} Personen (${guestData.staff?.length ?? 0} Crew + ${guestData.attendees?.length ?? 0} Gäste) auf ${pageCount} Vorderseiten (${usedSlots - people.length} Slots leer) + ${pageCount} Rückseiten.`);
+  console.log(`${totalPeople} Personen (${staff.length} Crew + ${speakers.length} Speaker + ${attendees.length} Gäste) auf ${pageCount} Vorderseiten (${teamPageCount} Team-Vorlage + ${guestPageCount} Gäste-Vorlage) + ${pageCount} Rückseiten.`);
 }
 
 main().catch((err) => {

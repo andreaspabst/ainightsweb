@@ -1,6 +1,6 @@
 ---
 name: event-namecards
-description: Erzeugt druckfertige Namenskarten (Vorder-/Rückseite, 8 pro Bogen) für ein AI-Nights-Event, indem die Canva-Vorlage direkt bearbeitet wird — feste Crew immer zuerst, dann die echte Gästeliste. Anwenden, wenn vor einem Event Namensschilder gebraucht werden.
+description: Erzeugt druckfertige Namenskarten (Vorder-/Rückseite, 8 pro Bogen) für ein AI-Nights-Event, indem zwei Canva-Vorlagen direkt bearbeitet werden — Team/Speaker über die Team-Vorlage, echte Gästeliste über die Gäste-Vorlage, alles in einer PDF. Anwenden, wenn vor einem Event Namensschilder gebraucht werden.
 ---
 
 # Namenskarten für ein Event erzeugen
@@ -30,16 +30,24 @@ node scripts/generate-namenskarten.mjs ai-nights-nuernberg-05
    ```json
    {
      "staff": [{ "firstName": "...", "lastName": "...", "company": "Rolle/Firma" }],
+     "speakers": [{ "firstName": "...", "lastName": "...", "company": "Titel/Rolle" }],
      "attendees": [{ "firstName": "...", "lastName": "...", "company": "" }]
    }
    ```
-   - `staff` ist die **feste Standard-Crew, die bei jedem Event dabei ist**
-     und deshalb immer zuerst auf Karte 1 landet:
+   - `staff` ist die **feste Standard-Crew, die bei jedem Event dabei ist**:
      Andreas Pabst (Founder AXDN & AI Consultant), Tom Duchow (Event Tech
      Manager), Orion Ada (Door Manager), Felix Rosenthal (Door Manager),
      Marko Börner (Design Offices), Cassandra Perl (Club Manager club199).
      Vor dem Rendern kurz gegenchecken, ob sich die Liste seit dem letzten
      Event geändert hat.
+   - `speakers` sind die Speaker des Abends (aus `event.speakerIds` /
+     `src/content/speaker/`) — `company` trägt hier Titel/Rolle statt
+     Firma (z. B. "CIO Infra Fürth"). Ein Speaker-Datensatz mit mehreren
+     Personen (z. B. "Tim Junge & Markus Utomo") wird für die Karten in
+     einzelne Einträge gesplittet — jede Person kriegt eine eigene Karte.
+     `staff` + `speakers` laufen über die **Team-Vorlage**
+     (`team-template.pdf`, siehe Layout-Abschnitt), nicht über die
+     Gäste-Vorlage.
    - `attendees` ist die echte Gästeliste — **per API holen, nicht mehr
      manuell abtippen:**
      ```bash
@@ -115,8 +123,21 @@ Bei einer neuen Route mit sensiblen/internen Dokumenten dieses Dreiklang
 
 ## Layout
 
-- Vorlage (**nicht anfassen**, Canva-Export mit 2×4-Karten-Raster pro
-  Seite): `scripts/assets/namenskarten/template.pdf`.
+- **Zwei Vorlagen** (**nicht anfassen**, beide Canva-Exporte mit
+  2×4-Karten-Raster pro Seite und identischem Koordinatenraster):
+  - `scripts/assets/namenskarten/template.pdf` — für `attendees` (Gäste).
+  - `scripts/assets/namenskarten/team-template.pdf` — für `staff` +
+    `speakers`. Slots 0-3 pro Seite sind im Vorlagen-Artwork mit
+    "SPEAKER" beschriftet (seitliche Vertikalschrift), Slots 4-7 mit
+    "TEAM" — reine Deko, wird nie überschrieben. `speakers` und `staff`
+    laufen darum als zwei getrennte 4er-Warteschlangen statt einer
+    durchlaufenden Liste: Seite 1 füllt zuerst die 4 Speaker-Slots (aus
+    `speakers`), dann die 4 Team-Slots (aus `staff`); reicht eine Gruppe
+    über 4 Personen hinaus, entstehen weitere Seiten, auf denen die
+    jeweils andere Gruppe leer bleibt.
+  - Beide Vorlagen landen in **einer** Ausgabedatei: erst alle
+    Team-/Speaker-Seiten, danach alle Gäste-Seiten, jeweils als
+    Vorderseite→Rückseite-Paare.
 - 8 Personen pro Vorderseite; bei mehr Personen als Plätzen entstehen
   mehrere Vorder-/Rückseiten-Paare. Nicht belegte Slots auf der letzten
   Seite bleiben leer (Logo/Datum/Footer bleiben stehen, nur die drei
