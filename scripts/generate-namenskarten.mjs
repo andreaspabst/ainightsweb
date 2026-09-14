@@ -18,19 +18,20 @@
  */
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import sharp from 'sharp';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { ROOT, PUBLIC, loadEventKit } from './lib/social-kit.mjs';
+
+const run = promisify(execFile);
 
 const ASSETS = path.join(ROOT, 'scripts/assets/namenskarten');
 const DATA_DIR = path.join(ROOT, 'scripts/data/namenskarten');
 const OUT_DIR = path.join(PUBLIC, 'media/namenskarten');
 
 const WHITE = rgb(1, 1, 1);
-// Aus der Vorlage abgetastete Hintergrundfarbe des Farbverlaufs genau an
-// der Stelle, an der "<AIN DATUM>" sitzt (beide Spalten identisch, da
-// jede Karte ihren eigenen Verlauf hat) — zum sauberen Ausweißen des
-// Datums-Platzhalters, der auf dem pinken Header sitzt statt auf Weiß.
-const HEADER_BG = rgb(220 / 255, 47 / 255, 108 / 255);
 
 // Zeilen-/Feld-Boxen einer einzelnen Karte (Slot oben links), aus
 // `pdftotext -bbox-layout` der Vorlage entnommen — Koordinaten von oben
@@ -92,6 +93,43 @@ function eraseBox(page, box, { dx, dy, color, padX = 4, padTop = 3, padBottom = 
   });
 }
 
+// Das Datumsfeld sitzt auf dem Verlaufs-Header, nicht auf Weiß — ein
+// flächiger Rechteck-Fill in EINER abgetasteten Farbe sah dort wie ein
+// sichtbar falsch getönter Aufkleber aus, weil der Verlauf über die
+// Feldbreite selbst leicht changiert (siehe SKILL.md, Abschnitt
+// "Datumsfeld"). Stattdessen wird ein echter, textfreier Streifen des
+// Verlaufs aus der Vorlage ausgeschnitten und über die Zielhöhe gestreckt
+// — der Verlauf ändert sich nur horizontal, nicht vertikal, darum ist das
+// Strecken verlustfrei und garantiert pixelgenau statt geraten.
+async function buildDatePatch(templatePngPath, rasterDpi) {
+  const scale = rasterDpi / 72;
+  const padX = 4;
+  const padTop = 8;
+  const padBottom = 3;
+  const box = SLOT.date;
+  const left = Math.round((box.x - padX) * scale);
+  const width = Math.round((box.w + padX * 2) * scale);
+  const targetHeight = Math.round((box.yBottom - box.yTop + padTop + padBottom) * scale);
+  // Textfreier Streifen: Header beginnt bei y≈39pt, Datumstext erst bei
+  // yTop=48.26pt — 43–46pt liegt sicher dazwischen (siehe SKILL.md).
+  const stripTop = Math.round(43 * scale);
+  const stripHeight = Math.max(1, Math.round(3 * scale));
+  const strip = await sharp(templatePngPath).extract({ left, top: stripTop, width, height: stripHeight }).toBuffer();
+  return sharp(strip).resize(width, targetHeight, { fit: 'fill' }).png().toBuffer();
+}
+
+function drawDatePatch(page, patchImage, { dx, dy }) {
+  const padX = 4;
+  const padTop = 8;
+  const padBottom = 3;
+  const box = SLOT.date;
+  const x = box.x + dx - padX;
+  const yTopDown = box.yTop + dy - padTop;
+  const h = box.yBottom - box.yTop + padTop + padBottom;
+  const w = box.w + padX * 2;
+  page.drawImage(patchImage, { x, y: PAGE_ORIGIN_Y + PAGE_H - yTopDown - h, width: w, height: h });
+}
+
 async function main() {
   const eventSlug = process.argv[2];
   if (!eventSlug) {
@@ -106,18 +144,35 @@ async function main() {
   const people = [...(guestData.staff ?? []), ...(guestData.attendees ?? [])];
   if (!people.length) throw new Error(`Keine Gäste in ${dataPath} (staff/attendees).`);
 
-  // Kompaktes Format (TT.MM.JJJJ) statt ausgeschriebenem Monat — das
-  // Datumsfeld im Header ist nur ~68pt breit.
+  // "SEP 26" statt vollem Datum — das Datumsfeld im Header ist nur ~68pt
+  // breit, der volle Tag ist fürs Namensschild ohnehin nicht relevant.
+  const MONTHS_EN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const d = new Date(kit.event.eventDate);
-  const dateLabel = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+  const dateLabel = `${MONTHS_EN[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`;
 
   const templateBytes = await fs.readFile(path.join(ASSETS, 'template.pdf'));
   const template = await PDFDocument.load(templateBytes);
   PAGE_ORIGIN_Y = template.getPage(0).getMediaBox().y;
 
+  // Vorlage einmal rastern, um daraus den textfreien Verlaufs-Streifen fürs
+  // Datumsfeld zu gewinnen (siehe buildDatePatch) — ein Aufruf reicht, der
+  // Patch ist für alle 8 Kartenslots auf jeder Seite identisch (jede Karte
+  // hat exakt denselben Verlauf an derselben relativen Stelle).
+  const RASTER_DPI = 300;
+  const scratchDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ainights-namenskarten-'));
+  const templatePngBase = path.join(scratchDir, 'template');
+  await run('pdftoppm', ['-png', '-r', String(RASTER_DPI), '-f', '1', '-l', '1', path.join(ASSETS, 'template.pdf'), templatePngBase]);
+  // pdftoppm hängt je nach Poppler-Version 1- oder 2-stellig gepaddete
+  // Seitenzahlen an — statt zu raten, die tatsächlich erzeugte Datei suchen.
+  const producedFile = (await fs.readdir(scratchDir)).find((f) => f.startsWith('template') && f.endsWith('.png'));
+  if (!producedFile) throw new Error(`pdftoppm hat kein PNG erzeugt in ${scratchDir}`);
+  const datePatchBuf = await buildDatePatch(path.join(scratchDir, producedFile), RASTER_DPI);
+  await fs.rm(scratchDir, { recursive: true, force: true });
+
   const out = await PDFDocument.create();
   const bold = await out.embedFont(StandardFonts.HelveticaBold);
   const regular = await out.embedFont(StandardFonts.Helvetica);
+  const datePatchImage = await out.embedPng(datePatchBuf);
 
   const pageCount = Math.ceil(people.length / CARDS_PER_PAGE);
   for (let p = 0; p < pageCount; p++) {
@@ -129,9 +184,10 @@ async function main() {
       const { dx, dy } = slotOrigin(slot);
 
       // Original-Platzhalter "<AIN DATUM>" hat Großbuchstaben-Oberlängen,
-      // die über die von pdftotext gemeldete Box hinausragen — großzügig
-      // nach oben ausweißen, sonst blitzt der alte Text noch durch.
-      eraseBox(front, SLOT.date, { dx, dy, color: HEADER_BG, padTop: 12, padBottom: 3 });
+      // die über die von pdftotext gemeldete Box hinausragen — der Patch
+      // deckt darum großzügig nach oben ab, sonst blitzt der alte Text
+      // noch durch (siehe buildDatePatch/drawDatePatch für die Maße).
+      drawDatePatch(front, datePatchImage, { dx, dy });
       drawCentered(front, bold, dateLabel, SLOT.date, { size: 13, color: WHITE, dx, dy });
 
       eraseBox(front, SLOT.firstName, { dx, dy, color: WHITE });
