@@ -142,6 +142,10 @@ Bei einer neuen Route mit sensiblen/internen Dokumenten dieses Dreiklang
   mehrere Vorder-/Rückseiten-Paare. Nicht belegte Slots auf der letzten
   Seite bleiben leer (Logo/Datum/Footer bleiben stehen, nur die drei
   Namensfelder sind weiß).
+- Jede Ausgabe bekommt automatisch **2 Blanko-Gästekarten** dazu
+  (`BLANK_GUEST_CARDS` in `generate-namenskarten.mjs`) — Firmenfeld
+  "Guest", Name leer, für Walk-ins ohne Vorab-Ticket zum Vor-Ort-Ausfüllen.
+  Kein Eintrag in der `<event-slug>.json` nötig, läuft immer mit.
 - Datum kommt aus `event.eventDate`, kompakt als `MON JJ` (z. B. "SEP 26")
   — das Datumsfeld im Header ist nur ~68pt breit, der volle Tag ist fürs
   Namensschild ohnehin nicht relevant.
