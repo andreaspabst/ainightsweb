@@ -44,6 +44,8 @@
     { "firstName": "Marcel", "lastName": "Dittrich", "company": "" },
     { "firstName": "Xenia", "lastName": "Falkner", "company": "" },
     { "firstName": "Devrim", "lastName": "Eroy", "company": "" },
-    { "firstName": "Emily", "lastName": "Schirow", "company": "" }
+    { "firstName": "Emily", "lastName": "Schirow", "company": "" },
+    { "firstName": "Dr. Andreas", "lastName": "Dietrich", "company": "" },
+    { "firstName": "Dominik", "lastName": "Kaltenbach", "company": "Fotograf" }
   ]
 }
