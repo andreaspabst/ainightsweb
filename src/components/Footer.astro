@@ -6,6 +6,10 @@ const { lang = 'de' } = Astro.props;
 
 const year = new Date().getFullYear();
 
+// Sentinel-Eintrag statt [label, href] — Footer rendert ihn als schmale
+// transparente Trennlinie statt als Link (siehe .col ul li.divider unten).
+const DIVIDER = ['__divider__', ''];
+
 const de = {
   tagline:
     'Die Event-Reihe rund um Künstliche Intelligenz in Europa und Deutschland und Städten wie Nürnberg, München, Hamburg und mehr. Live, nahbar, praxisnah. Drei Speaker pro Abend. Networking first.',
@@ -37,6 +41,10 @@ const de = {
       links: [
         ['Speaker Bewerbung', '/de/speaker-application/'],
         ['Volunteer werden', '/de/volunteer-bewerbung/'],
+        DIVIDER,
+        ['Impressum', '/de/legal-notice/'],
+        ['Datenschutzerklärung', '/de/data-protection/'],
+        ['Bedingungen und Regeln', '/de/bedingungen-und-regeln/'],
       ],
     },
     {
@@ -49,23 +57,11 @@ const de = {
         ['Newsletter abonnieren', '/de/newsletter/'],
         ['AXDN', 'https://axdn.io'],
         ['AI Event List', 'https://aieventlist.ai'],
-      ],
-    },
-    {
-      title: 'AI Woman Nights',
-      links: [
-        ['27.10. in Nürnberg', '/events/ai-woman-nights-01/'],
-        ['12.01. im The Cloud One', '/events/ai-woman-nights-02/'],
+        DIVIDER,
+        ['AI Woman Nights: 27.10. in Nürnberg', '/events/ai-woman-nights-01/'],
+        ['AI Woman Nights: 12.01. im The Cloud One', '/events/ai-woman-nights-02/'],
         ['Andreas Pabst', '/speaker/der-pabst/'],
         ['Andrea Reindel', '/speaker/andrea-reindel/'],
-      ],
-    },
-    {
-      title: 'Recht & Datenschutz',
-      links: [
-        ['Impressum', '/de/legal-notice/'],
-        ['Datenschutzerklärung', '/de/data-protection/'],
-        ['Bedingungen und Regeln', '/de/bedingungen-und-regeln/'],
       ],
     },
   ],
@@ -104,6 +100,10 @@ const en = {
       links: [
         ['Speaker Application', '/en/speaker-application/'],
         ['Become a Volunteer', '/en/volunteer-application/'],
+        DIVIDER,
+        ['Legal Notice', '/en/legal-notice/'],
+        ['Privacy Policy', '/en/data-protection/'],
+        ['Terms & Conditions', '/en/terms-and-conditions/'],
       ],
     },
     {
@@ -116,23 +116,11 @@ const en = {
         ['Newsletter', '/en/newsletter/'],
         ['AXDN', 'https://axdn.io'],
         ['AI Event List', 'https://aieventlist.ai'],
-      ],
-    },
-    {
-      title: 'AI Woman Nights',
-      links: [
-        ['Oct 27 in Nuremberg', '/events/ai-woman-nights-01/'],
-        ['Jan 12 at The Cloud One', '/events/ai-woman-nights-02/'],
+        DIVIDER,
+        ['AI Woman Nights: Oct 27 in Nuremberg', '/events/ai-woman-nights-01/'],
+        ['AI Woman Nights: Jan 12 at The Cloud One', '/events/ai-woman-nights-02/'],
         ['Andreas Pabst', '/speaker/der-pabst/'],
         ['Andrea Reindel', '/speaker/andrea-reindel/'],
-      ],
-    },
-    {
-      title: 'Legal',
-      links: [
-        ['Legal Notice', '/en/legal-notice/'],
-        ['Privacy Policy', '/en/data-protection/'],
-        ['Terms & Conditions', '/en/terms-and-conditions/'],
       ],
     },
   ],
@@ -170,9 +158,13 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
             <p class="col-title">{col.title}</p>
             <ul>
               {col.links.map(([label, href]) => (
-                <li>
-                  <a href={href}>{label}</a>
-                </li>
+                label === '__divider__' ? (
+                  <li class="divider" aria-hidden="true"><hr /></li>
+                ) : (
+                  <li>
+                    <a href={href}>{label}</a>
+                  </li>
+                )
               ))}
             </ul>
           </div>
@@ -203,7 +195,7 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
   .footer-cta .btn { flex:none; }
   .grid {
     display: grid;
-    grid-template-columns: 1.6fr repeat(6, 1fr);
+    grid-template-columns: 1.6fr repeat(4, 1fr);
     gap: 2.5rem;
   }
   .brand img {
@@ -260,6 +252,14 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
   }
   .col a:hover {
     color: var(--text-primary);
+  }
+  .col li.divider {
+    margin: 0.2rem 0;
+  }
+  .col li.divider hr {
+    margin: 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
   }
   .bottom {
     margin-top: 3rem;
