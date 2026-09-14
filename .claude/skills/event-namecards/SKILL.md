@@ -121,8 +121,9 @@ Bei einer neuen Route mit sensiblen/internen Dokumenten dieses Dreiklang
   mehrere Vorder-/Rückseiten-Paare. Nicht belegte Slots auf der letzten
   Seite bleiben leer (Logo/Datum/Footer bleiben stehen, nur die drei
   Namensfelder sind weiß).
-- Datum kommt aus `event.eventDate`, kompakt als `TT.MM.JJJJ` (das
-  Datumsfeld im Header ist nur ~68pt breit).
+- Datum kommt aus `event.eventDate`, kompakt als `MON JJ` (z. B. "SEP 26")
+  — das Datumsfeld im Header ist nur ~68pt breit, der volle Tag ist fürs
+  Namensschild ohnehin nicht relevant.
 - Vorname/Nachname/Firma schrumpfen automatisch in ihre Boxbreite
   (gleiches Prinzip wie `textImg` in `scripts/lib/social-kit.mjs`, nur mit
   `pdf-lib`-Textmetriken) — verhindert Überlauf bei langen Namen wie „Paul
@@ -146,11 +147,23 @@ Bei einer neuen Route mit sensiblen/internen Dokumenten dieses Dreiklang
   Canva-Export bleibt das also automatisch korrekt. Gleiches Prinzip gilt
   für jedes andere Skript, das eine bestehende PDF per `pdf-lib` bearbeitet.
 
+- **Datumsfeld:** sitzt auf dem Verlaufs-Header, nicht auf Weiß. Ein
+  flächiges Rechteck in EINER abgetasteten Farbe (die ursprüngliche
+  Lösung) sah dort wie ein sichtbar falsch getönter Aufkleber aus — der
+  Verlauf ändert sich leicht über die Feldbreite, und schon eine
+  Abweichung von wenigen RGB-Werten fällt an einer scharfen Rechteckkante
+  sofort auf. Fix: `buildDatePatch()`/`drawDatePatch()` schneiden einen
+  echten, textfreien Streifen des Verlaufs aus einer gerasterten Version
+  der Vorlage aus (`pdftoppm`, 300dpi) und strecken ihn über die
+  Zielhöhe — der Verlauf ändert sich nur horizontal, nie vertikal, darum
+  ist das Strecken verlustfrei und garantiert pixelgenau statt geraten.
+  Die `padTop`/`padBottom`-Polsterung, die die Großbuchstaben-Oberlängen
+  des alten "<AIN DATUM>"-Platzhalters abdeckt, darf dabei den echten
+  oberen Rand des Headers (topdown y≈39,6pt) nicht überschreiten — sonst
+  entsteht eine sichtbare zusätzliche Stufe oberhalb des Headers, weil
+  der Patch dann über die eigentliche Kopfleiste hinausragt.
+
 ## Nicht anfassen
 
 - Die Rückseite ist für jede Karte identisch und generisch (kein
   Namensfeld) — wird 1:1 aus der Vorlage kopiert, nie bearbeitet.
-- Das Datumsfeld sitzt auf dem pinken Verlaufs-Header, nicht auf Weiß —
-  deshalb wird dort mit der abgetasteten Verlauf-Hintergrundfarbe
-  (`HEADER_BG`) ausgeweißt statt mit Weiß, sonst entsteht ein sichtbarer
-  weißer Fleck.
