@@ -41,6 +41,10 @@ const de = {
       links: [
         ['Speaker Bewerbung', '/de/speaker-application/'],
         ['Volunteer werden', '/de/volunteer-bewerbung/'],
+        DIVIDER,
+        ['Impressum', '/de/legal-notice/'],
+        ['Datenschutzerklärung', '/de/data-protection/'],
+        ['Bedingungen und Regeln', '/de/bedingungen-und-regeln/'],
       ],
     },
     {
@@ -58,14 +62,6 @@ const de = {
         ['AI Woman Nights: 12.01. im The Cloud One', '/events/ai-woman-nights-02/'],
         ['Andreas Pabst', '/speaker/der-pabst/'],
         ['Andrea Reindel', '/speaker/andrea-reindel/'],
-      ],
-    },
-    {
-      title: 'Recht & Datenschutz',
-      links: [
-        ['Impressum', '/de/legal-notice/'],
-        ['Datenschutzerklärung', '/de/data-protection/'],
-        ['Bedingungen und Regeln', '/de/bedingungen-und-regeln/'],
       ],
     },
   ],
@@ -104,6 +100,10 @@ const en = {
       links: [
         ['Speaker Application', '/en/speaker-application/'],
         ['Become a Volunteer', '/en/volunteer-application/'],
+        DIVIDER,
+        ['Legal Notice', '/en/legal-notice/'],
+        ['Privacy Policy', '/en/data-protection/'],
+        ['Terms & Conditions', '/en/terms-and-conditions/'],
       ],
     },
     {
@@ -121,14 +121,6 @@ const en = {
         ['AI Woman Nights: Jan 12 at The Cloud One', '/events/ai-woman-nights-02/'],
         ['Andreas Pabst', '/speaker/der-pabst/'],
         ['Andrea Reindel', '/speaker/andrea-reindel/'],
-      ],
-    },
-    {
-      title: 'Legal',
-      links: [
-        ['Legal Notice', '/en/legal-notice/'],
-        ['Privacy Policy', '/en/data-protection/'],
-        ['Terms & Conditions', '/en/terms-and-conditions/'],
       ],
     },
   ],
@@ -203,7 +195,7 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
   .footer-cta .btn { flex:none; }
   .grid {
     display: grid;
-    grid-template-columns: 1.6fr repeat(5, 1fr);
+    grid-template-columns: 1.6fr repeat(4, 1fr);
     gap: 2.5rem;
   }
   .brand img {
