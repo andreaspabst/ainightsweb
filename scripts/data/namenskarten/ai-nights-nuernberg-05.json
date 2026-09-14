@@ -46,6 +46,7 @@
     { "firstName": "Devrim", "lastName": "Eroy", "company": "" },
     { "firstName": "Emily", "lastName": "Schirow", "company": "" },
     { "firstName": "Dr. Andreas", "lastName": "Dietrich", "company": "" },
-    { "firstName": "Dominik", "lastName": "Kaltenbach", "company": "Fotograf" }
+    { "firstName": "Dominik", "lastName": "Kaltenbach", "company": "Fotograf" },
+    { "firstName": "Kai", "lastName": "Heindel", "company": "Design Offices" }
   ]
 }
