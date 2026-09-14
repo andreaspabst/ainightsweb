@@ -54,6 +54,11 @@ const PAGE_W = 612;
 const PAGE_H = 792; // = CropBox-Höhe, worauf sich pdftotext -bbox-layout bezieht
 const CARDS_PER_PAGE = 8; // 2 Spalten × 4 Zeilen
 
+// In jeder Ausgabe ein paar Blanko-Gästekarten mitgeben — für Walk-ins
+// ohne Vorab-Ticket, die vor Ort von Hand ausgefüllt werden. Name bleibt
+// leer, nur "Guest" steht schon als Firmenfeld drauf.
+const BLANK_GUEST_CARDS = 2;
+
 // Die Vorlage hat eine MediaBox mit y-Ursprung ≠ 0 (Canva-Export-Eigenheit,
 // z. B. y=7.92 statt 0) — pdf-lib zeichnet relativ zur MediaBox, während
 // die aus `pdftotext -bbox-layout` entnommenen SLOT-Koordinaten relativ zur
@@ -215,7 +220,10 @@ async function main() {
   const guestData = JSON.parse(await fs.readFile(dataPath, 'utf8'));
   const staff = guestData.staff ?? [];
   const speakers = guestData.speakers ?? [];
-  const attendees = guestData.attendees ?? [];
+  const attendees = [
+    ...(guestData.attendees ?? []),
+    ...Array.from({ length: BLANK_GUEST_CARDS }, () => ({ firstName: '', lastName: '', company: 'Guest' })),
+  ];
   if (!staff.length && !speakers.length && !attendees.length) {
     throw new Error(`Keine Gäste in ${dataPath} (staff/speakers/attendees).`);
   }
