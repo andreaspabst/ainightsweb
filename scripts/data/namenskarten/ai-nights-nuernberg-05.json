@@ -47,6 +47,10 @@
     { "firstName": "Emily", "lastName": "Schirow", "company": "" },
     { "firstName": "Dr. Andreas", "lastName": "Dietrich", "company": "" },
     { "firstName": "Dominik", "lastName": "Kaltenbach", "company": "Fotograf" },
-    { "firstName": "Kai", "lastName": "Heindel", "company": "Design Offices" }
+    { "firstName": "Kai", "lastName": "Heindel", "company": "Design Offices" },
+    { "firstName": "Martin", "lastName": "Hofmann", "company": "Speaker" },
+    { "firstName": "Tom", "lastName": "Fischer", "company": "Speaker" },
+    { "firstName": "Tim", "lastName": "Junge", "company": "Speaker" },
+    { "firstName": "Markus", "lastName": "Utomo", "company": "Speaker" }
   ]
 }
