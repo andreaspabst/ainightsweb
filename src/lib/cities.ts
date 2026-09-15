@@ -18,7 +18,7 @@ export const CITIES: City[] = [
   { slug: 'nuernberg', name: 'Nürnberg', status: 'active', lat: 49.45, lon: 11.08, onOverview: true, labelPos: 'left' },
   { slug: 'muenchen', name: 'München', status: 'active', lat: 48.14, lon: 11.58, onOverview: true, labelPos: 'right' },
   { slug: 'erlangen', name: 'Erlangen', status: 'active', lat: 49.6, lon: 11.0, onOverview: false, labelPos: 'left' },
-  { slug: 'hamburg', name: 'Hamburg', status: 'soon', lat: 53.55, lon: 9.99, onOverview: true, labelPos: 'left' },
+  { slug: 'hamburg', name: 'Hamburg', status: 'active', lat: 53.55, lon: 9.99, onOverview: true, labelPos: 'left' },
   { slug: 'leipzig', name: 'Leipzig', status: 'soon', lat: 51.34, lon: 12.37, onOverview: true, labelPos: 'right' },
   { slug: 'bayreuth', name: 'Bayreuth', status: 'soon', lat: 49.95, lon: 11.58, onOverview: true, labelPos: 'right' },
   { slug: 'frankfurt', name: 'Frankfurt', status: 'soon', lat: 50.11, lon: 8.68, onOverview: false, labelPos: 'left' },

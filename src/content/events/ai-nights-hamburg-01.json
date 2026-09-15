@@ -1,0 +1,41 @@
+{
+  "id": 1302,
+  "title": "AI Nights Hamburg | INSPIRE ✨ #01 - Premiere!",
+  "slug": "ai-nights-hamburg-01",
+  "excerpt": "🚀 Premiere Event der AI Nights Hamburg – dein Deep-Dive in die Welt von KI, Code & Community. Lust auf echten Austausch statt KI-BlaBla? Dann komm zu den AI Nights Hamburg – dem After-Work-Tech-Event für Entwickler:innen, KI-Enthusiasten und alle, die Bock auf Cutting Edge Technologien haben. Nach dem großen Erfolg der Eventreihe in Nürnberg und München kommen die AI Nights nun an die Elbe! In Kooperation mit hackers&wizards, der Hamburger Software Factory für Agentic Engineering.",
+  "contentHtml": "<p>🚀 <strong>AI Nights | INSPIRE #01</strong> ist dein After-Work-Deep-Dive in <strong>AI für Web & Produkt</strong> – ohne Pitch-Blabla, dafür mit <strong>Hands-on-Talks, Live-Coding und echten Learnings</strong>. Du nimmst <strong>direkt umsetzbare Patterns</strong> für deinen Stack mit: von AI-gestütztem Dev-Workflow über Testing & Accessibility bis zu smarten Automations für Produktteams.</p>\n<p><strong>Warum hinkommen?</strong></p>\n\n<ul>\n \t<li>\n<p><strong>Praxis statt Theorie:</strong> Konkrete Demos, Code, Tools – sofort einsetzbar.</p>\n</li>\n \t<li>\n<p><strong>AI Nights Home of Top Speaker:</strong> u. a. <strong>@it_pabst</strong> (Host) und Praktiker:innen aus der Hamburger Tech-Szene.</p>\n</li>\n \t<li>\n<p><strong>Starkes Netzwerk:</strong> Entwickler:innen, Gründer:innen, CTOs – <strong>echter Austausch</strong>, keine Buzzwords.</p>\n</li>\n \t<li>\n<p><strong>Mehr Wert für Dich an einem Abend</strong> als in Wochen Trial-and-Error.</p>\n</li>\n</ul>\n<p><strong>Wann & wo?</strong> 14. Januar 2027 · <strong>Hamburg</strong> (genauer Ort folgt)<br /><strong>Spannende Vorträge, Austausch und Networking, inkl. Softdrinks</strong> sowie Bier.</p>\n<p>💡 <strong>Komm vorbei, wenn du bauen willst statt nur reden.</strong><br /><strong>Jetzt Ticket sichern – Plätze sind begrenzt.</strong></p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/05/HH-01_ainights_inspire-hamburg.png",
+    "alt": "AI Nights Hamburg | INSPIRE ✨ #01 - Premiere!"
+  },
+  "eventDate": "2027-01-14",
+  "startTime": "17:00",
+  "locationName": "Hamburg (genauer Ort folgt)",
+  "city": "Hamburg",
+  "ticketUrl": "https://joinify.net/app/products/6hd6m6e7/tickets",
+  "platforms": {
+    "joinify": "6hd6m6e7"
+  },
+  "date": "2026-09-15 12:00:00",
+  "coOrganizer": {
+    "label": "Mitorganisator",
+    "name": "hackers&wizards",
+    "text": "Ihre Entwickler:innen arbeiten längst mit Claude Code oder Cursor. Trotzdem wächst das Backlog, und dem generierten Code traut niemand. hackers&wizards baut mit Ihrem Team eine Agentic Engineering Factory: eine Agenten-Pipeline von der Idee bis zum Deploy. Deterministische Quality Gates zwischen den Schritten machen aus Vibe Coding reproduzierbare Entwicklung. Trainings und Embedded Mentoring bringen die Praktiken in den Alltag, die Community hält Ihr Team auf dem Stand der Technik. Die Factory bleibt bei Ihnen, auch wenn wir wieder weg sind.",
+    "bullets": [
+      "Gegründet 2025 in Hamburg von Stefan Munz und Benedikt Stemmildt — über 20 Jahre Engineering-Erfahrung pro Kopf.",
+      "Kund:innen wie IONOS, OTTO, dm, XING, Krombacher und SIGNAL IDUNA vertrauen bereits auf die Agentic Engineering Factory.",
+      "Vom Factory Readiness Assessment über den Pilot bis zu Rollout & Skalierung: der komplette Weg zur Agentic-Engineering-Organisation.",
+      "Aktive Practitioner-Community für Agentic Engineering, die auch nach dem Projekt weiterträgt."
+    ],
+    "website": "https://www.hackersandwizards.dev/de/",
+    "linkedin": "https://www.linkedin.com/company/hackersandwizards",
+    "logo": {
+      "src": "/wp-content/uploads/2026/07/hackers-wizards-logo.svg",
+      "alt": "hackers&wizards"
+    }
+  },
+  "sponsorIds": [1500],
+  "speakerIds": [],
+  "sessionIds": [],
+  "moderatorIds": [257]
+}

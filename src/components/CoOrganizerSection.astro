@@ -1,0 +1,179 @@
+---
+// Mitorganisator-Block: gleiche strukturelle Behandlung wie
+// AftershowSection.astro (eigene, prominente Section statt normaler
+// Sponsor-Kachel), aber eigene Optik — ein Tech-Partner passt nicht zum
+// Holz-/Hopfen-Look der Aftershow-Party. Wird nur gerendert, wenn im
+// Event (src/content/events/*.json) ein `coOrganizer`-Objekt gepflegt ist.
+import { imgVariant } from '../lib/images';
+
+export interface Props {
+  data: {
+    label?: string;
+    name: string;
+    text?: string;
+    bullets?: string[];
+    website?: string;
+    linkedin?: string;
+    logo?: { src?: string; alt?: string };
+  };
+}
+const { data } = Astro.props;
+const logo = data.logo?.src;
+---
+
+<section class="sec co-org" data-reveal>
+  <div class="glow" aria-hidden="true"></div>
+  <svg class="grid-deco" viewBox="0 0 260 260" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="coOrgLine" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#326bff" />
+        <stop offset="100%" stop-color="#ff2d7a" />
+      </linearGradient>
+    </defs>
+    <g fill="none" stroke="url(#coOrgLine)" stroke-width="1.4" opacity=".55">
+      <path d="M20 230 L20 120 L90 120 L90 40 L200 40" />
+      <path d="M50 230 L50 160 L140 160 L140 90 L240 90" />
+      <circle cx="90" cy="120" r="4" fill="url(#coOrgLine)" stroke="none" />
+      <circle cx="200" cy="40" r="4" fill="url(#coOrgLine)" stroke="none" />
+      <circle cx="140" cy="90" r="4" fill="url(#coOrgLine)" stroke="none" />
+    </g>
+  </svg>
+
+  <div class="inner">
+    {logo && (
+      <div class="partner">
+        <img src={imgVariant(logo, 640)} alt={data.logo?.alt ?? data.name} loading="lazy" />
+      </div>
+    )}
+    <p class="eyebrow">{data.label ?? 'Mitorganisator'}</p>
+    <h2 class="display-font sec-h">{data.name}</h2>
+    {data.text && <p class="lead">{data.text}</p>}
+
+    {data.bullets && data.bullets.length > 0 && (
+      <ul class="facts">
+        {data.bullets.map((b) => (
+          <li>{b}</li>
+        ))}
+      </ul>
+    )}
+
+    {(data.website || data.linkedin) && (
+      <div class="links">
+        {data.website && <a href={data.website} target="_blank" rel="noopener" class="btn btn-ghost">Website ↗</a>}
+        {data.linkedin && <a href={data.linkedin} target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .co-org {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    padding: clamp(2rem, 5vw, 3.4rem);
+    background:
+      radial-gradient(120% 90% at 100% 0%, rgba(50, 107, 255, 0.22), transparent 55%),
+      radial-gradient(90% 70% at 0% 100%, rgba(220, 39, 119, 0.2), transparent 55%),
+      linear-gradient(150deg, #150a30 0%, #0f0722 60%, #0a0318 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 80% at 85% 0%, rgba(255, 45, 122, 0.16), transparent 60%);
+    pointer-events: none;
+  }
+
+  .grid-deco {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: clamp(150px, 24vw, 240px);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .inner {
+    position: relative;
+    max-width: 46rem;
+  }
+
+  .partner {
+    margin-bottom: 1.4rem;
+  }
+
+  .partner img {
+    width: min(220px, 55vw);
+    height: auto;
+    display: block;
+  }
+
+  .eyebrow {
+    color: var(--magenta-bright);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+
+  .sec-h {
+    margin: 0 0 0.9rem;
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  .lead {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin: 0 0 1.5rem;
+    max-width: 42rem;
+  }
+
+  .facts {
+    list-style: none;
+    margin: 0 0 1.8rem;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .facts li {
+    position: relative;
+    padding-left: 1.4rem;
+    color: var(--text-primary);
+    font-size: 0.94rem;
+    line-height: 1.5;
+  }
+
+  .facts li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--gradient-text);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  @media (max-width: 720px) {
+    .grid-deco {
+      width: 120px;
+      opacity: 0.5;
+    }
+    .inner {
+      max-width: none;
+    }
+  }
+</style>
