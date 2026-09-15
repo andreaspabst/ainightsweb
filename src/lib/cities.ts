@@ -20,7 +20,7 @@ export const CITIES: City[] = [
   { slug: 'erlangen', name: 'Erlangen', status: 'active', lat: 49.6, lon: 11.0, onOverview: false, labelPos: 'left' },
   { slug: 'hamburg', name: 'Hamburg', status: 'active', lat: 53.55, lon: 9.99, onOverview: true, labelPos: 'left' },
   { slug: 'leipzig', name: 'Leipzig', status: 'soon', lat: 51.34, lon: 12.37, onOverview: true, labelPos: 'right' },
-  { slug: 'bayreuth', name: 'Bayreuth', status: 'soon', lat: 49.95, lon: 11.58, onOverview: true, labelPos: 'right' },
+  { slug: 'bayreuth', name: 'Bayreuth', status: 'active', lat: 49.95, lon: 11.58, onOverview: true, labelPos: 'right' },
   { slug: 'frankfurt', name: 'Frankfurt', status: 'soon', lat: 50.11, lon: 8.68, onOverview: false, labelPos: 'left' },
   { slug: 'barcelona', name: 'Barcelona', status: 'soon', lat: 41.39, lon: 2.17, onOverview: true, labelPos: 'right' },
 ];
