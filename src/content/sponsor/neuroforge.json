@@ -1,0 +1,14 @@
+{
+  "id": 1505,
+  "title": "NeuroForge",
+  "slug": "neuroforge",
+  "excerpt": "KI- und Softwareentwicklung aus Bayreuth.",
+  "logo": {
+    "src": "/wp-content/uploads/2026/07/neuroforge-logo.png",
+    "alt": "NeuroForge"
+  },
+  "website": "https://www.neuroforge.de/de",
+  "tier": "andere",
+  "date": "2026-09-15 00:00:00",
+  "contentHtml": "<p>NeuroForge GmbH &amp; Co. KG wurde 2019 von Bayreuther Studenten gegründet und begleitet Kund:innen von der Idee bis zur Umsetzung individueller KI- und Big-Data-Lösungen — von Technologieberatung über die Analyse großer Datenmengen bis zur maßgeschneiderten Softwareentwicklung für die Industrie. Geführt von Tobias Hertkorn und Martin Braun, beide Absolventen der Universität Bayreuth.</p>"
+}

@@ -12,6 +12,9 @@ export async function getStaticPaths() {
 const { s } = Astro.props;
 const d = s.data;
 const tierLabels: Record<string, string> = { platin: 'Platin', gold: 'Gold', silver: 'Silver', bronce: 'Bronze' };
+// Logos mit dunkler Schrift brauchen eine helle Fläche, sonst kaum lesbar
+// auf dem dunklen Theme — gleiche Liste wie in AiNightsEventLayout.astro.
+const lightBgSlugs = ['1338', 'vend-consulting', 'neuroforge'];
 ---
 
 <Layout
@@ -32,7 +35,7 @@ const tierLabels: Record<string, string> = { platin: 'Platin', gold: 'Gold', sil
   <main class="container detail section">
     <a href="/de/sponsors/" class="back">← Alle Sponsoren</a>
     <div class="card head">
-      <div class="logo">
+      <div class={`logo${lightBgSlugs.includes(d.slug) ? ' logo-light' : ''}`}>
         <img src={d.logo?.src ?? d.image?.src} alt={d.title} />
       </div>
       <div class="info">
@@ -82,6 +85,9 @@ const tierLabels: Record<string, string> = { platin: 'Platin', gold: 'Gold', sil
     max-width: 320px;
     max-height: 140px;
     object-fit: contain;
+  }
+  .logo-light {
+    background: #fff;
   }
   .tier {
     display: inline-block;

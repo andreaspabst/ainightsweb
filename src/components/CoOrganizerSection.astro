@@ -2,7 +2,9 @@
 // Mitorganisator-Block: gleiche strukturelle Behandlung wie
 // AftershowSection.astro (eigene, prominente Section statt normaler
 // Sponsor-Kachel), aber eigene Optik — ein Tech-Partner passt nicht zum
-// Holz-/Hopfen-Look der Aftershow-Party. Wird nur gerendert, wenn im
+// Holz-/Hopfen-Look der Aftershow-Party. Zweispaltiges Layout mit
+// Gradient-Rahmen und Logo-Panel, damit sich der Block klar von den
+// übrigen Glass-Karten der Seite abhebt. Wird nur gerendert, wenn im
 // Event (src/content/events/*.json) ein `coOrganizer`-Objekt gepflegt ist.
 import { imgVariant } from '../lib/images';
 
@@ -21,70 +23,76 @@ const { data } = Astro.props;
 const logo = data.logo?.src;
 ---
 
-<section class="sec co-org" data-reveal>
-  <div class="glow" aria-hidden="true"></div>
-  <svg class="grid-deco" viewBox="0 0 260 260" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id="coOrgLine" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#326bff" />
-        <stop offset="100%" stop-color="#ff2d7a" />
-      </linearGradient>
-    </defs>
-    <g fill="none" stroke="url(#coOrgLine)" stroke-width="1.4" opacity=".55">
-      <path d="M20 230 L20 120 L90 120 L90 40 L200 40" />
-      <path d="M50 230 L50 160 L140 160 L140 90 L240 90" />
-      <circle cx="90" cy="120" r="4" fill="url(#coOrgLine)" stroke="none" />
-      <circle cx="200" cy="40" r="4" fill="url(#coOrgLine)" stroke="none" />
-      <circle cx="140" cy="90" r="4" fill="url(#coOrgLine)" stroke="none" />
-    </g>
-  </svg>
+<section class="sec co-org-wrap" data-reveal>
+  <div class="co-org">
+    <svg class="grid-deco" viewBox="0 0 260 260" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="coOrgLine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#326bff" />
+          <stop offset="100%" stop-color="#ff2d7a" />
+        </linearGradient>
+      </defs>
+      <g fill="none" stroke="url(#coOrgLine)" stroke-width="1.4" opacity=".6">
+        <path d="M20 230 L20 120 L90 120 L90 40 L200 40" />
+        <path d="M50 230 L50 160 L140 160 L140 90 L240 90" />
+        <circle cx="90" cy="120" r="4" fill="url(#coOrgLine)" stroke="none" />
+        <circle cx="200" cy="40" r="4" fill="url(#coOrgLine)" stroke="none" />
+        <circle cx="140" cy="90" r="4" fill="url(#coOrgLine)" stroke="none" />
+      </g>
+    </svg>
 
-  <div class="inner">
-    {logo && (
-      <div class="partner">
-        <img src={imgVariant(logo, 640)} alt={data.logo?.alt ?? data.name} loading="lazy" />
-      </div>
-    )}
-    <p class="eyebrow">{data.label ?? 'Mitorganisator'}</p>
-    <h2 class="display-font sec-h">{data.name}</h2>
-    {data.text && <p class="lead">{data.text}</p>}
+    <div class="panel">
+      {logo && (
+        <div class="logo-plate">
+          <img src={imgVariant(logo, 640)} alt={data.logo?.alt ?? data.name} loading="lazy" />
+        </div>
+      )}
+      {(data.website || data.linkedin) && (
+        <div class="links">
+          {data.website && <a href={data.website} target="_blank" rel="noopener" class="btn btn-ghost">Website ↗</a>}
+          {data.linkedin && <a href={data.linkedin} target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>}
+        </div>
+      )}
+    </div>
 
-    {data.bullets && data.bullets.length > 0 && (
-      <ul class="facts">
-        {data.bullets.map((b) => (
-          <li>{b}</li>
-        ))}
-      </ul>
-    )}
+    <div class="inner">
+      <p class="pill"><span class="dot"></span>{data.label ?? 'Mitorganisator'}</p>
+      <h2 class="display-font sec-h">{data.name}</h2>
+      {data.text && <p class="lead">{data.text}</p>}
 
-    {(data.website || data.linkedin) && (
-      <div class="links">
-        {data.website && <a href={data.website} target="_blank" rel="noopener" class="btn btn-ghost">Website ↗</a>}
-        {data.linkedin && <a href={data.linkedin} target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>}
-      </div>
-    )}
+      {data.bullets && data.bullets.length > 0 && (
+        <ul class="facts">
+          {data.bullets.map((b) => (
+            <li>{b}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   </div>
 </section>
 
 <style>
-  .co-org {
+  .co-org-wrap {
     position: relative;
-    overflow: hidden;
-    border-radius: 28px;
-    padding: clamp(2rem, 5vw, 3.4rem);
-    background:
-      radial-gradient(120% 90% at 100% 0%, rgba(50, 107, 255, 0.22), transparent 55%),
-      radial-gradient(90% 70% at 0% 100%, rgba(220, 39, 119, 0.2), transparent 55%),
-      linear-gradient(150deg, #150a30 0%, #0f0722 60%, #0a0318 100%);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 30px;
+    padding: 2px;
+    background: linear-gradient(120deg, #326bff, #8b2fd8 45%, #ff2d7a 100%);
     box-shadow: var(--glass-shadow);
   }
 
-  .glow {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(120% 80% at 85% 0%, rgba(255, 45, 122, 0.16), transparent 60%);
-    pointer-events: none;
+  .co-org {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: clamp(1.6rem, 4vw, 3rem);
+    align-items: center;
+    border-radius: 28px;
+    padding: clamp(1.8rem, 4.5vw, 3.2rem);
+    background:
+      radial-gradient(120% 90% at 100% 0%, rgba(50, 107, 255, 0.28), transparent 55%),
+      radial-gradient(90% 70% at 0% 100%, rgba(220, 39, 119, 0.26), transparent 55%),
+      linear-gradient(150deg, #180b34 0%, #0f0722 60%, #0a0318 100%);
   }
 
   .grid-deco {
@@ -96,34 +104,78 @@ const logo = data.logo?.src;
     pointer-events: none;
   }
 
-  .inner {
+  .panel {
     position: relative;
-    max-width: 46rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
   }
 
-  .partner {
-    margin-bottom: 1.4rem;
+  .logo-plate {
+    width: 100%;
+    aspect-ratio: 1.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem;
+    border-radius: 22px;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   }
 
-  .partner img {
-    width: min(220px, 55vw);
+  .logo-plate img {
+    max-width: 100%;
+    max-height: 100%;
     height: auto;
     display: block;
   }
 
-  .eyebrow {
-    color: var(--magenta-bright);
+  .links {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.6rem;
+  }
+
+  .links .btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .inner {
+    position: relative;
+    min-width: 0;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #326bff, #ff2d7a);
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.78rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem;
+    letter-spacing: 0.1em;
+    font-size: 0.74rem;
+    font-weight: 800;
+  }
+
+  .pill .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
   }
 
   .sec-h {
     margin: 0 0 0.9rem;
-    font-size: clamp(1.6rem, 4vw, 2.5rem);
-    line-height: 1.15;
+    font-size: clamp(1.7rem, 4vw, 2.7rem);
+    line-height: 1.12;
   }
 
   .lead {
@@ -136,15 +188,15 @@ const logo = data.logo?.src;
 
   .facts {
     list-style: none;
-    margin: 0 0 1.8rem;
+    margin: 0;
     padding: 0;
     display: grid;
-    gap: 0.6rem;
+    gap: 0.7rem;
   }
 
   .facts li {
     position: relative;
-    padding-left: 1.4rem;
+    padding-left: 1.5rem;
     color: var(--text-primary);
     font-size: 0.94rem;
     line-height: 1.5;
@@ -155,25 +207,39 @@ const logo = data.logo?.src;
     position: absolute;
     left: 0;
     top: 0.5em;
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.55rem;
+    height: 0.55rem;
     border-radius: 50%;
     background: var(--gradient-text);
+    box-shadow: 0 0 8px rgba(255, 45, 122, 0.6);
   }
 
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-  }
-
-  @media (max-width: 720px) {
+  @media (max-width: 760px) {
+    .co-org {
+      grid-template-columns: 1fr;
+    }
+    .panel {
+      flex-direction: row;
+      align-items: stretch;
+    }
+    .logo-plate {
+      aspect-ratio: auto;
+      flex: 1;
+      padding: 1rem;
+    }
+    .links {
+      flex: 1;
+      justify-content: center;
+    }
     .grid-deco {
       width: 120px;
       opacity: 0.5;
     }
-    .inner {
-      max-width: none;
+  }
+
+  @media (max-width: 460px) {
+    .panel {
+      flex-direction: column;
     }
   }
 </style>

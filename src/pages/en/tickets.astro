@@ -7,6 +7,7 @@ import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { cityColor } from '../../lib/cities';
 import { imgVariant } from '../../lib/images';
 import AftershowBadge from '../../components/AftershowBadge.astro';
+import CoOrganizerBadge from '../../components/CoOrganizerBadge.astro';
 
 // Kommende Events wie auf der Original-Tickets-Seite: chronologisch aufsteigend
 const today = new Date();
@@ -62,6 +63,7 @@ const cards = upcoming.map((e) => {
     speakerCount: speakerSlots.length,
     sponsors: names(d.sponsorIds, spoMap).join(', '),
     aftershow: d.aftershow,
+    coOrganizer: d.coOrganizer,
   };
 });
 
@@ -109,6 +111,9 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                 {c.excerpt && <p class="excerpt">{c.excerpt}</p>}
                 {c.aftershow?.cardNote && (
                   <AftershowBadge note={c.aftershow.cardNote} logo={c.aftershow.partnerLogo} logoAlt={c.aftershow.partnerName} />
+                )}
+                {c.coOrganizer && (
+                  <CoOrganizerBadge label={c.coOrganizer.label} name={c.coOrganizer.name} logo={c.coOrganizer.logo} />
                 )}
 
                 <ul class="meta">

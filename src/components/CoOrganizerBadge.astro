@@ -1,0 +1,54 @@
+---
+// Kompakter Mitorganisator-Hinweis für Event-Kacheln (Ticket-Übersicht,
+// Startseite, Stadtseiten) — Pendant zu AftershowBadge.astro, nur mit der
+// Tech-Optik der CoOrganizerSection statt Holzton.
+import { imgVariant } from '../lib/images';
+
+export interface Props {
+  label?: string;
+  name: string;
+  logo?: { src?: string; alt?: string };
+}
+const { label = 'Mitorganisator', name, logo } = Astro.props;
+---
+
+<div class="co-badge">
+  {logo?.src && <img src={imgVariant(logo.src, 320)} alt={logo.alt ?? name} loading="lazy" />}
+  <p><span>{label}</span>{name}</p>
+</div>
+
+<style>
+  .co-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 14px;
+    background: linear-gradient(120deg, rgba(50, 107, 255, 0.22), rgba(255, 45, 122, 0.22));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .co-badge img {
+    width: 72px;
+    height: auto;
+    flex: none;
+  }
+
+  .co-badge p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.35;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .co-badge p span {
+    display: block;
+    color: var(--magenta-bright);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.66rem;
+    font-weight: 800;
+    margin-bottom: 0.15rem;
+  }
+</style>

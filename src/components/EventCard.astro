@@ -2,6 +2,7 @@
 import { cityColor } from '../lib/cities';
 import { imgVariant } from '../lib/images';
 import AftershowBadge from './AftershowBadge.astro';
+import CoOrganizerBadge from './CoOrganizerBadge.astro';
 
 export interface Props {
   slug: string;
@@ -16,8 +17,10 @@ export interface Props {
   btnPos?: string;
   /** Aftershow-Party des Events (optional) — zeigt Partner-Logo + Kurzhinweis */
   aftershow?: { cardNote?: string; partnerLogo?: { src?: string; alt?: string }; partnerName?: string };
+  /** Mitorganisator des Events (optional) — zeigt Partner-Logo + Label */
+  coOrganizer?: { label?: string; name: string; logo?: { src?: string; alt?: string } };
 }
-const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD', aftershow } = Astro.props;
+const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD', aftershow, coOrganizer } = Astro.props;
 
 function fmtDate(d?: string) {
   if (!d) return null;
@@ -41,6 +44,7 @@ const dateLabel = fmtDate(eventDate);
     {aftershow?.cardNote && (
       <AftershowBadge note={aftershow.cardNote} logo={aftershow.partnerLogo} logoAlt={aftershow.partnerName} />
     )}
+    {coOrganizer && <CoOrganizerBadge label={coOrganizer.label} name={coOrganizer.name} logo={coOrganizer.logo} />}
     <div class="actions">
       <a href={`/events/${slug}/`} class="btn btn-ghost">Details</a>
       {ticketUrl && <a href={ticketUrl} data-btn-pos={btnPos} class="btn btn-primary">Tickets</a>}
