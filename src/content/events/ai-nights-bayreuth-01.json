@@ -1,0 +1,33 @@
+{
+  "id": 1303,
+  "title": "AI Nights Bayreuth | INSPIRE ✨ #01 - Premiere!",
+  "slug": "ai-nights-bayreuth-01",
+  "excerpt": "🚀 Premiere Event der AI Nights Bayreuth – dein Deep-Dive in die Welt von KI, Code & Community. Lust auf echten Austausch statt KI-BlaBla? Dann komm zu den AI Nights Bayreuth – dem After-Work-Tech-Event für Entwickler:innen, KI-Enthusiasten und alle, die Bock auf Cutting Edge Technologien haben. Nach Nürnberg, München und Hamburg kommen die AI Nights nach Oberfranken! Zu Gast bei NeuroForge, dem Bayreuther Team für maßgeschneiderte KI- und Big-Data-Lösungen.",
+  "contentHtml": "<p>🚀 <strong>AI Nights | INSPIRE #01</strong> ist dein After-Work-Deep-Dive in <strong>AI für Web & Produkt</strong> – ohne Pitch-Blabla, dafür mit <strong>Hands-on-Talks, Live-Coding und echten Learnings</strong>. Du nimmst <strong>direkt umsetzbare Patterns</strong> für deinen Stack mit: von AI-gestütztem Dev-Workflow über Testing & Accessibility bis zu smarten Automations für Produktteams.</p>\n<p><strong>Warum hinkommen?</strong></p>\n\n<ul>\n \t<li>\n<p><strong>Praxis statt Theorie:</strong> Konkrete Demos, Code, Tools – sofort einsetzbar.</p>\n</li>\n \t<li>\n<p><strong>AI Nights Home of Top Speaker:</strong> u. a. <strong>@it_pabst</strong> (Host) und Praktiker:innen aus der oberfränkischen Tech-Szene.</p>\n</li>\n \t<li>\n<p><strong>Starkes Netzwerk:</strong> Entwickler:innen, Gründer:innen, CTOs – <strong>echter Austausch</strong>, keine Buzzwords.</p>\n</li>\n \t<li>\n<p><strong>Mehr Wert für Dich an einem Abend</strong> als in Wochen Trial-and-Error.</p>\n</li>\n</ul>\n<p><strong>Wann & wo?</strong> 1. März 2027 · <strong>Bayreuth</strong> (genauer Ort folgt)<br /><strong>Spannende Vorträge, Austausch und Networking, inkl. Softdrinks</strong> sowie Bier.</p>\n<p>💡 <strong>Komm vorbei, wenn du bauen willst statt nur reden.</strong><br /><strong>Jetzt Ticket sichern – Plätze sind begrenzt.</strong></p>",
+  "eventDate": "2027-03-01",
+  "startTime": "17:00",
+  "locationName": "Bayreuth (genauer Ort folgt)",
+  "city": "Bayreuth",
+  "date": "2026-09-15 12:00:00",
+  "coOrganizer": {
+    "label": "Mitorganisator",
+    "name": "NeuroForge",
+    "text": "KI-Projekte scheitern selten am Modell, sondern an allem drumherum: verstreute Daten, unklare Use Cases, Prototypen, die es nie in den Betrieb schaffen. NeuroForge begleitet Unternehmen deshalb von der Idee bis zur laufenden Lösung — Technologieberatung, Analyse großer Datenmengen und individuelle Softwareentwicklung aus einer Hand. Gegründet 2019 von Studierenden der Universität Bayreuth, heute Partner von DAX-Konzernen genauso wie von Startups.",
+    "bullets": [
+      "2019 in Bayreuth gegründet, geführt von Tobias Hertkorn und Martin Braun — beide Absolventen der Universität Bayreuth.",
+      "Maßgeschneiderte KI- und Big-Data-Lösungen: von der Technologieberatung über die Analyse großer Datenmengen bis zur individuellen Softwareentwicklung für die Industrie.",
+      "Schwerpunkte in Deep Learning, Industrie 4.0, Predictive Maintenance, Prozessoptimierung, Automatisierung und Data Science.",
+      "Kund:innen vom DAX-Konzern bis zum Startup, darunter die Lufthansa Group; das Team arbeitet vollständig remote mit internationalen Talenten."
+    ],
+    "website": "https://www.neuroforge.de/de",
+    "linkedin": "https://www.linkedin.com/company/neuroforge-gmbh-co-kg",
+    "logo": {
+      "src": "/wp-content/uploads/2026/07/neuroforge-logo-weiss.png",
+      "alt": "NeuroForge"
+    }
+  },
+  "sponsorIds": [1505],
+  "speakerIds": [],
+  "sessionIds": [],
+  "moderatorIds": [257]
+}
