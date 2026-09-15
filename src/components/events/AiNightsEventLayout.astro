@@ -7,6 +7,7 @@ import galleryData from '../../data/gallery.json';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { imgVariant } from '../../lib/images';
 import AftershowSection from '../AftershowSection.astro';
+import CoOrganizerSection from '../CoOrganizerSection.astro';
 
 export interface Props {
   e: Awaited<ReturnType<typeof getCollection<'events'>>>[number];
@@ -337,6 +338,9 @@ const facts: { icon: string; label: string }[] = [
           </div>
         </section>
       )}
+
+      {/* Mitorganisator — nur bei Events mit einem echten Co-Organizer-Partner */}
+      {d.coOrganizer && <CoOrganizerSection data={d.coOrganizer} />}
 
       {/* Aftershow-Party — nur bei Events, die eine haben */}
       {d.aftershow && <AftershowSection data={d.aftershow} />}

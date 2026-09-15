@@ -138,6 +138,21 @@ const events = defineCollection({
         cardNote: z.string().optional(),
       })
       .optional(),
+    // Mitorganisator-Partner (z. B. hackers&wizards bei Hamburg) — eigene,
+    // prominente Section auf der Eventseite statt einer normalen
+    // Sponsor-Kachel. Nur gesetzt, wenn es bei diesem Event wirklich einen
+    // Mitorganisator gibt.
+    coOrganizer: z
+      .object({
+        label: z.string().optional(),
+        name: z.string(),
+        text: z.string().optional(),
+        bullets: z.array(z.string()).optional(),
+        website: z.string().optional(),
+        linkedin: z.string().optional(),
+        logo: image,
+      })
+      .optional(),
     // Beziehungen (aus ACF *_slots), als Post-IDs
     speakerIds: z.array(z.number()).optional(),
     sessionIds: z.array(z.number()).optional(),
