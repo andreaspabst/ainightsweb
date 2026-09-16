@@ -1,0 +1,33 @@
+{
+  "id": 1510,
+  "title": "Maximilian Merdes",
+  "slug": "maximilian-merdes",
+  "jobTitle": "Account Director & Head of Account Management, arsmedium",
+  "excerpt": "Maximilian Merdes ist Account Director und Head of Account Management bei arsmedium. Neben der Leitung des Account Managements beschäftigt er sich intensiv mit KI, Automatisierung und Prozessoptimierung im Agenturalltag.",
+  "bioHtml": "<p>Maximilian Merdes ist Account Director und Head of Account Management bei arsmedium. Neben der Leitung des Account Managements beschäftigt er sich intensiv mit KI, Automatisierung und Prozessoptimierung im Agenturalltag.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/07/maximilian-merdes.jpg",
+    "alt": "Speaker AI Nights Maximilian Merdes"
+  },
+  "homeFeatured": true,
+  "date": "2026-09-16 09:00:00",
+  "modified": "2026-09-16 09:00:00",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/maximilian-merdes-55315b1a1",
+    "website": "https://www.arsmedium.com"
+  },
+  "topics": [
+    "Warum die meisten KI-Projekte an Entscheidungen scheitern, nicht an der Technologie",
+    "Ein Denkraster, um Prozesse ehrlich auf KI-Tauglichkeit zu prüfen",
+    "Anhand eines echten Kundenprojekts: welche Muster sich vorhersagbar wiederholen",
+    "Wann \"keine KI\" tatsächlich die bessere Antwort ist"
+  ],
+  "keyTakeaways": [
+    "Drei wiederkehrende Muster, an denen KI-Projekte scheitern, bevor sie starten",
+    "Ein einfaches Denkraster, mit dem du Prozesse auf KI-Tauglichkeit prüfst",
+    "Klare Anhaltspunkte, wann \"keine KI\" die bessere Antwort ist",
+    "Eine Perspektive, die dich vor teuren Investitionen in die falsche Richtung schützt"
+  ],
+  "role": "speaker",
+  "topicArea": "non-tech"
+}

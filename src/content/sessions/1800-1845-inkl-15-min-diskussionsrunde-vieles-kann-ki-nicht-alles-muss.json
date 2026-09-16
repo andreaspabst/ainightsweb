@@ -1,0 +1,22 @@
+{
+  "id": 1511,
+  "title": "18:00 - 18:45 | (inkl. 15 Min Diskussionsrunde) Vieles kann KI. Nicht alles muss.",
+  "slug": "1800-1845-inkl-15-min-diskussionsrunde-vieles-kann-ki-nicht-alles-muss",
+  "excerpt": "Vieles kann KI. Nicht alles muss. Warum die meisten KI-Projekte scheitern, bevor sie beginnen.",
+  "contentHtml": "<p>Jede Woche neue Modelle, neue Tools, neue \"Game Changer\". Und in den Unternehmen entsteht daraus ein Reflex: Wir müssen jetzt auch was mit KI machen.</p>\n<p>Die Wahrheit ist: Die meisten KI-Projekte scheitern nicht an der Technologie. Sie scheitern an Entscheidungen, die getroffen wurden, bevor das erste Tool ausgewählt war. An Prozessen, die niemand wirklich verstanden hat. An Fragen, die nie gestellt wurden.</p>\n<p>In dieser Session schauen wir auf genau diesen blinden Fleck. Anhand eines echten Kundenprojekts, das am Ende ganz anders aussah als geplant, werden die Muster sichtbar, an denen KI-Initiativen vorhersagbar scheitern. Und ihr bekommt ein einfaches Denkraster mit, mit dem ihr eure eigenen Prozesse ehrlich einschätzen könnt: Ist das hier wirklich ein Fall für KI, oder nur einer, der danach aussieht?</p>\n<ul>\n <li>Drei wiederkehrende Muster, an denen KI-Projekte scheitern, bevor sie starten</li>\n <li>Ein einfaches Denkraster, mit dem du Prozesse auf KI-Tauglichkeit prüfst</li>\n <li>Klare Anhaltspunkte, wann \"keine KI\" die bessere Antwort ist</li>\n</ul>",
+  "image": {
+    "src": "/wp-content/uploads/2026/07/maximilian-merdes.jpg",
+    "alt": "Speaker AI Nights Maximilian Merdes"
+  },
+  "startTime": "18:00",
+  "time": "18:00",
+  "endTime": "18:45",
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-09-16 09:00:00",
+  "speakerIds": [
+    1510
+  ]
+}
