@@ -35,7 +35,61 @@ const {
 
 const canonical = new URL(path, site).href;
 const ogImage = image.startsWith('http') ? image : new URL(image, site).href;
-const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const pageJsonLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+// Sitewide Organization + WebSite + (pro Seite) WebPage — automatisch auf
+// JEDER Seite, ohne dass einzelne Templates etwas dafür tun müssen. Bisher
+// hatte praktisch keine Seite strukturierte Daten (Schema-Checker: 14%,
+// Organization/WebSite/WebPage fehlten). Adressdaten stammen 1:1 aus dem
+// Impressum (§5 TMG, ohnehin öffentlich) — hier nichts erfinden, was nicht
+// schon dort steht. `jsonLd`-Prop einzelner Seiten (z. B. Sponsor-Detail)
+// kommt als zusätzlicher, eigenständiger Knoten oben drauf.
+const orgId = `${site}/#organization`;
+const websiteId = `${site}/#website`;
+const organizationLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': orgId,
+  name: 'AI Nights',
+  url: site,
+  logo: `${site}/wp-content/uploads/2026/01/cropped-apple-touch-icon-192x192.png`,
+  description:
+    'Die Event-Reihe rund um Künstliche Intelligenz in Europa und Deutschland — Live-Talks, echte Use Cases und Community in Städten wie Nürnberg, München und Hamburg.',
+  sameAs: ['https://www.instagram.com/ainights.ai/', 'https://www.tiktok.com/@ainights.ai'],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'ping@ainights.ai',
+    telephone: '+49-9126-2769821',
+    contactType: 'customer service',
+  },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Behringstraße 33',
+    addressLocality: 'Eckental',
+    postalCode: '90542',
+    addressCountry: 'DE',
+  },
+};
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': websiteId,
+  name: 'AI Nights',
+  url: site,
+  inLanguage: ['de', 'en'],
+  publisher: { '@id': orgId },
+};
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${canonical}#webpage`,
+  url: canonical,
+  name: title,
+  description,
+  inLanguage: lang,
+  isPartOf: { '@id': websiteId },
+};
+const jsonLdArray = [organizationLd, websiteLd, webPageLd, ...pageJsonLd];
 
 // SEO-Normalisierung (zentral für ALLE Seiten):
 // - Description: 50–145 Zeichen — zu lange am Wortende kürzen, zu kurze mit Brand-Kontext auffüllen
