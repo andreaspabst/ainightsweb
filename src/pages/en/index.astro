@@ -86,7 +86,7 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
         <h2 class="display-font sec-title">Next AI&nbsp;Nights Afterwork Events</h2>
         <div class="events-grid">
           {upcoming.map((e) => (
-            <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} aftershow={e.data.aftershow} coOrganizer={e.data.coOrganizer} btnPos="HOME_EVENTCARD" />
+            <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} aftershow={e.data.aftershow} coOrganizer={e.data.coOrganizer} lang="en" btnPos="HOME_EVENTCARD" />
           ))}
         </div>
         <div class="cities-row">
@@ -254,7 +254,8 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
   .events-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    row-gap: 2.5rem;
+    column-gap: 1.5rem;
     margin-top: 2rem;
   }
   .cities-row {

@@ -113,7 +113,7 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                   <AftershowBadge note={c.aftershow.cardNote} logo={c.aftershow.partnerLogo} logoAlt={c.aftershow.partnerName} />
                 )}
                 {c.coOrganizer && (
-                  <CoOrganizerBadge label={c.coOrganizer.label} name={c.coOrganizer.name} logo={c.coOrganizer.logo} />
+                  <CoOrganizerBadge label={c.coOrganizer.label} name={c.coOrganizer.name} city={c.city} logo={c.coOrganizer.logo} />
                 )}
 
                 <ul class="meta">
@@ -253,7 +253,8 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    row-gap: 2.5rem;
+    column-gap: 1.5rem;
   }
   .ticket-card {
     display: flex;

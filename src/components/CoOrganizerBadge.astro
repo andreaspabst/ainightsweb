@@ -1,20 +1,30 @@
 ---
 // Kompakter Mitorganisator-Hinweis für Event-Kacheln (Ticket-Übersicht,
 // Startseite, Stadtseiten) — Pendant zu AftershowBadge.astro, nur mit der
-// Tech-Optik der CoOrganizerSection statt Holzton.
+// Tech-Optik der CoOrganizerSection statt Holzton. Text nennt bewusst
+// Firma UND Stadt aus ("X ist Mitorganisator dieser Ausgabe … in Y"),
+// nicht nur den nackten Firmennamen — sonst fehlt der Kontext in der
+// Kachel-Übersicht, wo das Event selbst nicht mehr im Fokus ist.
 import { imgVariant } from '../lib/images';
 
 export interface Props {
   label?: string;
   name: string;
+  city?: string;
   logo?: { src?: string; alt?: string };
+  lang?: 'de' | 'en';
 }
-const { label = 'Mitorganisator', name, logo } = Astro.props;
+const { label = 'Mitorganisator', name, city, logo, lang = 'de' } = Astro.props;
+const text = city
+  ? lang === 'de'
+    ? `${name} ist Mitorganisator dieser Ausgabe der AI Nights in ${city}`
+    : `${name} is co-organizing this edition of AI Nights in ${city}`
+  : name;
 ---
 
 <div class="co-badge">
   {logo?.src && <img src={imgVariant(logo.src, 320)} alt={logo.alt ?? name} loading="lazy" />}
-  <p><span>{label}</span>{name}</p>
+  <p><span>{label}</span>{text}</p>
 </div>
 
 <style>

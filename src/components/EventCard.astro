@@ -19,8 +19,9 @@ export interface Props {
   aftershow?: { cardNote?: string; partnerLogo?: { src?: string; alt?: string }; partnerName?: string };
   /** Mitorganisator des Events (optional) — zeigt Partner-Logo + Label */
   coOrganizer?: { label?: string; name: string; logo?: { src?: string; alt?: string } };
+  lang?: 'de' | 'en';
 }
-const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD', aftershow, coOrganizer } = Astro.props;
+const { slug, title, city, eventDate, locationName, image, excerpt, ticketUrl, btnPos = 'EVENTCARD', aftershow, coOrganizer, lang = 'de' } = Astro.props;
 
 function fmtDate(d?: string) {
   if (!d) return null;
@@ -44,7 +45,7 @@ const dateLabel = fmtDate(eventDate);
     {aftershow?.cardNote && (
       <AftershowBadge note={aftershow.cardNote} logo={aftershow.partnerLogo} logoAlt={aftershow.partnerName} />
     )}
-    {coOrganizer && <CoOrganizerBadge label={coOrganizer.label} name={coOrganizer.name} logo={coOrganizer.logo} />}
+    {coOrganizer && <CoOrganizerBadge label={coOrganizer.label} name={coOrganizer.name} city={city} logo={coOrganizer.logo} lang={lang} />}
     <div class="actions">
       <a href={`/events/${slug}/`} class="btn btn-ghost">Details</a>
       {ticketUrl && <a href={ticketUrl} data-btn-pos={btnPos} class="btn btn-primary">Tickets</a>}
