@@ -3,7 +3,7 @@ import { getCollection, getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import PresentationVideo from '../../../components/events/PresentationVideo.astro';
-import { appVideo, conferenceTracks, getPresentationOptions, presentationFormats, slideNames, womanNightsSpotlight } from '../../../data/presentation';
+import { appVideo, conferenceTracks, getPresentationOptions, maikeSlides, presentationFormats, slideNames, womanNightsSpotlight } from '../../../data/presentation';
 import '../../../styles/presentation.css';
 
 export async function getStaticPaths() {
@@ -183,10 +183,16 @@ const womanDate = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'lon
         </div>
         <p class="slide-bottom-note">Schön, euch an unserer Seite zu haben.</p>
       </section>
+
+      {maikeSlides.map((slide) => (
+        <section class="slide slide-image" data-slide aria-label={slide.alt} tabindex="-1" hidden>
+          <div class="slide-image-frame"><img src={slide.src} alt={slide.alt} loading="lazy" /></div>
+        </section>
+      ))}
     </div>
 
     <footer class="deck-controls" aria-label="Präsentationssteuerung">
-      <div class="slide-position"><button type="button" class="overview-button" data-open-overview title="Folienübersicht (O)" aria-haspopup="dialog"><span data-slide-number>01</span><span class="slide-total"> / 07</span></button><span data-slide-name>{slideNames[0]}</span></div>
+      <div class="slide-position"><button type="button" class="overview-button" data-open-overview title="Folienübersicht (O)" aria-haspopup="dialog"><span data-slide-number>01</span><span class="slide-total"> / {String(slideNames.length).padStart(2, '0')}</span></button><span data-slide-name>{slideNames[0]}</span></div>
       <nav class="slide-progress" aria-label="Folie auswählen">
         {slideNames.map((name, i) => <button type="button" data-go-slide={i} aria-label={`Folie ${i + 1}: ${name}`} aria-current={i === 0 ? 'step' : undefined} title={name}></button>)}
       </nav>

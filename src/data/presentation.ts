@@ -88,6 +88,17 @@ export const womanNightsSpotlight = {
   ],
 };
 
+// Auszug aus MAIKEs eigenem Pitchdeck (260917-ai_nights--Pitch-MAIKE.pdf, vom
+// Veranstalter für diese Präsentation geliefert), als Bilder gerendert — die
+// Original-Foliengestaltung bleibt dadurch unverändert erhalten.
+export const maikeSlides = [
+  { src: '/media/presentation/maike-slides/slide-1.webp', alt: 'MAIKE — Wir kümmern uns.' },
+  { src: '/media/presentation/maike-slides/slide-2.webp', alt: 'Signale liefern: Struktur, Kontext, Inhalt, Emotion' },
+  { src: '/media/presentation/maike-slides/slide-3.webp', alt: 'GAIO Konzept: Relevance Grid, Sentiment Radar, GAIO Score' },
+  { src: '/media/presentation/maike-slides/slide-4.webp', alt: 'MAIKE Portfolio: Dienstleistung, Monitoring Tool, Akademie' },
+  { src: '/media/presentation/maike-slides/slide-5.webp', alt: 'Danke!' },
+];
+
 export const slideNames = [
   'Herzlich willkommen',
   'Design Offices',
@@ -96,4 +107,9 @@ export const slideNames = [
   'AXDN // 27',
   'Die AXDN App',
   'Unsere Partner',
+  'MAIKE — Vorstellung',
+  'Signale liefern',
+  'GAIO Konzept',
+  'MAIKE Portfolio',
+  'Danke, MAIKE',
 ];
