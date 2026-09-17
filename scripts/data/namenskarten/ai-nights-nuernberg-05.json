@@ -1,5 +1,5 @@
 {
-  "_comment": "Namenskarten-Gästeliste für AI Nights Nürnberg #05 (17.09.2026). staff = feste Crew, die bei jedem Event dabei ist. speakers = die Speaker des Abends (company = Titel/Rolle). Beide laufen über scripts/assets/namenskarten/team-template.pdf (Speaker-Slots oben, Team-Slots unten). attendees = Digistore24 per node scripts/fetch-namenskarten-guests.mjs (Testkäufe rausgefiltert) + Eventbrite manuell aus dem Teilnehmerbericht im Organizer-Dashboard übernommen (API-Key dort funktioniert nicht als Bearer-Token, siehe Skill), laufen über scripts/assets/namenskarten/template.pdf — company bewusst leer gelassen (nicht erhoben). Zuletzt aktualisiert: 14.09.2026.",
+  "_comment": "Namenskarten-Gästeliste für AI Nights Nürnberg #05 (17.09.2026). staff = feste Crew, die bei jedem Event dabei ist. speakers = die Speaker des Abends (company = Titel/Rolle). Beide laufen über scripts/assets/namenskarten/team-template.pdf (Speaker-Slots oben, Team-Slots unten). attendees = Digistore24 per node scripts/fetch-namenskarten-guests.mjs (Testkäufe rausgefiltert) + Eventbrite manuell aus dem Teilnehmerbericht im Organizer-Dashboard übernommen (API-Key dort funktioniert nicht als Bearer-Token, siehe Skill), laufen über scripts/assets/namenskarten/template.pdf — company bewusst leer gelassen (nicht erhoben). Zuletzt aktualisiert: 17.09.2026.",
   "staff": [
     { "firstName": "Andreas", "lastName": "Pabst", "company": "Founder AXDN & AI Consultant" },
     { "firstName": "Tom", "lastName": "Duchow", "company": "Event Tech Manager" },
@@ -47,7 +47,17 @@
     { "firstName": "Emily", "lastName": "Schirow", "company": "" },
     { "firstName": "Dr. Andreas", "lastName": "Dietrich", "company": "" },
     { "firstName": "Dominik", "lastName": "Kaltenbach", "company": "Fotograf" },
-    { "firstName": "Kai", "lastName": "Heindel", "company": "Design Offices" }
+    { "firstName": "Kai", "lastName": "Heindel", "company": "Design Offices" },
+    { "firstName": "Dalila", "lastName": "Ivankovic", "company": "" },
+    { "firstName": "Tobias", "lastName": "Probst", "company": "" },
+    { "firstName": "Maksim", "lastName": "Negorozhin", "company": "" },
+    { "firstName": "Melanie", "lastName": "Wiesneth", "company": "" },
+    { "firstName": "Joe", "lastName": "Zenk", "company": "" },
+    { "firstName": "Benny", "lastName": "Zagel", "company": "" },
+    { "firstName": "Tobias", "lastName": "Becker", "company": "" },
+    { "firstName": "Diana", "lastName": "Heindl-Kraus", "company": "" },
+    { "firstName": "Thorsten", "lastName": "Zlamal", "company": "" },
+    { "firstName": "Ben", "lastName": "Schneider", "company": "" }
   ],
   "speakers": [
     { "firstName": "Martin", "lastName": "Hofmann", "company": "CIO Infra Fürth" },
