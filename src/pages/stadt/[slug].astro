@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { isUpcoming, isPastEvent } from '../../lib/eventDates';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -17,15 +18,15 @@ const cityName = d.title;
 
 const otherCities = (await getCollection('stadt')).filter((x) => x.data.slug !== d.slug);
 
-const today = new Date();
+
 const events = (await getCollection('events')).filter(
   (e) => e.data.city && e.data.city.toLowerCase() === cityName.toLowerCase(),
 );
 const upcoming = events
-  .filter((e) => e.data.eventDate && new Date(e.data.eventDate) >= today)
+  .filter((e) => isUpcoming(e.data.eventDate))
   .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime());
 const past = events
-  .filter((e) => !e.data.eventDate || new Date(e.data.eventDate) < today)
+  .filter((e) => !e.data.eventDate || isPastEvent(e.data.eventDate))
   .sort((a, b) => new Date(b.data.eventDate ?? 0).getTime() - new Date(a.data.eventDate ?? 0).getTime());
 ---
 

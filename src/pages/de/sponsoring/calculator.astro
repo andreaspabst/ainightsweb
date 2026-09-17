@@ -1,12 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
+import { todayBerlin } from '../../../lib/eventDates';
 import Layout from '../../../layouts/Layout.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
 
 // Nur echte, kommende Termine stehen als Kontingent zur Auswahl — keine
 // Phantom-Slots für Städte/Serien, die es noch nicht gibt (z. B. Erlangen).
-const TODAY = '2026-09-02';
+const TODAY = todayBerlin();
 const events = (await getCollection('events'))
   .filter((e) => e.data.eventDate && e.data.eventDate >= TODAY)
   .sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''))
