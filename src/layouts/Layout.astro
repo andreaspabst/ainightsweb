@@ -13,6 +13,8 @@ export interface Props {
   /** Optionales JSON-LD (als Objekt) */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
+  /** Bühnenansicht ohne Analytics oder Consent-Overlay. Externe Videos laden erst nach Klick. */
+  presentation?: boolean;
 }
 
 const site = 'https://ainights.ai';
@@ -31,6 +33,7 @@ const {
   ogType = 'website',
   jsonLd,
   noindex = false,
+  presentation = false,
 } = Astro.props;
 
 const canonical = new URL(path, site).href;
@@ -119,6 +122,7 @@ const titleTag = truncateAtWord(title, 58);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    {!presentation && <>
     {/* Consent Management (CCM19) — muss vor allen einwilligungspflichtigen Skripten laden */}
     <script
       is:inline
@@ -161,6 +165,7 @@ const titleTag = truncateAtWord(title, 58);
       fbq('init', '1575575307657537');
       fbq('track', 'PageView');
     </script>
+    </>}
 
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />

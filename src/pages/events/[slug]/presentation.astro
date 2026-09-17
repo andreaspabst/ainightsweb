@@ -1,0 +1,212 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import PresentationVideo from '../../../components/events/PresentationVideo.astro';
+import { appVideo, conferenceTracks, getPresentationOptions, presentationFormats, slideNames, womanNightsSpotlight } from '../../../data/presentation';
+import '../../../styles/presentation.css';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  return events.map((event) => ({ params: { slug: event.data.slug }, props: { event } }));
+}
+
+interface Props { event: CollectionEntry<'events'> }
+const { event } = Astro.props;
+const e = event.data;
+const options = getPresentationOptions(e.slug);
+const womanNights = e.slug.startsWith('ai-woman-nights');
+const logo = womanNights ? '/wp-content/uploads/2026/09/AI-Woman-Nights-Logo-w.svg' : '/wp-content/uploads/2026/01/Logo_Partcolor_w.svg';
+const eventName = womanNights ? 'AI Woman Nights' : 'AI Nights';
+const edition = e.title.match(/#\d+/)?.[0];
+const date = e.eventDate ? new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Berlin' }).format(new Date(`${e.eventDate.slice(0, 10)}T12:00:00Z`)) : '';
+const womanEvent = (await getEntry('events', womanNightsSpotlight.eventSlug))!.data;
+const womanDate = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Berlin' }).format(new Date(`${womanEvent.eventDate!.slice(0, 10)}T12:00:00Z`));
+---
+
+<Layout
+  title={`Präsentation – ${e.title}`}
+  description={`Die Bühnenpräsentation für ${e.title}: Willkommen, Gastgeber, Videobotschaft, Formate, AXDN und Partner.`}
+  path={`/events/${e.slug}/presentation/`}
+  noindex={true}
+  presentation={true}
+>
+  <main class="presentation" data-presentation aria-label={`Präsentation ${e.title}`}>
+    <header class="deck-header">
+      <a class="deck-brand" href={`/events/${e.slug}/`} aria-label="Zurück zur Eventseite">
+        <img src={logo} alt={eventName} width="220" height="58" />
+      </a>
+      <p class="deck-event">{e.city && <span>{e.city}</span>}{edition && <strong>{edition}</strong>}</p>
+      <span class="deck-motto">Think AI. Stay human.</span>
+    </header>
+
+    <div class="slide-stage" data-stage>
+      <section class="slide slide-welcome is-active" data-slide aria-labelledby="welcome-title" tabindex="-1">
+        <img class="welcome-photo" src="/wp-content/uploads/2026/04/AI-Nights-Nuernberg-03-88-1600w.webp" alt="Die AI-Nights-Community bei einem Talk in Nürnberg" fetchpriority="high" />
+        <div class="welcome-shade"></div>
+        <div class="slide-content welcome-content">
+          <p class="slide-kicker">{eventName}{e.city ? ` ${e.city}` : ''}{edition ? ` ${edition}` : ''}</p>
+          <h1 id="welcome-title">Herzlich<br /><span class="deck-gradient">willkommen.</span></h1>
+          <p class="welcome-sub">Schön, dass ihr da seid.</p>
+          <div class="welcome-details">
+            {date && <p>{date}</p>}
+            {e.locationName && <p>{e.locationName}</p>}
+          </div>
+        </div>
+        <p class="photo-caption">Eure Community. Euer Abend.</p>
+      </section>
+
+      <section class="slide slide-host" data-slide aria-labelledby="host-title" tabindex="-1" hidden>
+        <div class="slide-content host-content">
+          <div class="host-intro">
+            <p class="slide-kicker">Unser Gastgeber</p>
+            <h2 id="host-title" class="sr-only">Design Offices</h2>
+            <img class="host-logo" src="/wp-content/uploads/2026/01/Logo_Design_Offices_white.svg" alt="DESIGN OFFICES" width="640" height="130" />
+            <p class="host-description">Raum für neue Ideen.<br />Und für einen guten Abend.</p>
+            <p class="host-services">Coworking, Offices, Meetings & Events</p>
+            <a class="text-link" href="https://www.designoffices.de/" target="_blank" rel="noopener noreferrer">designoffices.de ↗</a>
+          </div>
+          <div class="housekeeping">
+            <div class="housekeeping-item">
+              <span class="detail-number" aria-hidden="true">01</span>
+              <div><h3>Drinks & Food</h3><p>Für Getränke und Essen ist gesorgt.<br />Bedient euch und kommt ins Gespräch.</p></div>
+            </div>
+            <div class="housekeeping-item toilets">
+              <span class="toilet-arrow" aria-hidden="true">↰</span>
+              <div><h3>Toiletten</h3><p>{options.toilets}</p></div>
+            </div>
+          </div>
+        </div>
+        <p class="slide-bottom-note">Danke, dass wir heute hier sein dürfen.</p>
+      </section>
+
+      <section class="slide slide-greeting" data-slide aria-labelledby="greeting-title" tabindex="-1" hidden>
+        <div class="slide-content greeting-content">
+          <div class="greeting-copy">
+            <p class="slide-kicker">Eine Videobotschaft für euch</p>
+            <h2 id="greeting-title">Dr. Fabian<br /><span class="deck-gradient">Mehring</span></h2>
+            <p class="minister-role">Bayerischer Staatsminister<br />für Digitales</p>
+            <p class="minister-bio">Seit November 2023 im Amt.</p>
+            {options.greetingVideo ? <span class="greeting-label">Videobotschaft</span> : (
+              <div class="local-video-select">
+                <button type="button" class="deck-button" data-select-greeting><span aria-hidden="true">▶</span> Videobotschaft auswählen</button>
+                <input class="sr-only" type="file" accept="video/*,.mp4,.mov,.webm,.m4v" data-greeting-file tabindex="-1" aria-label="Lokale Videobotschaft auswählen" />
+                <p data-greeting-status>Lokale Videodatei direkt abspielen</p>
+              </div>
+            )}
+            <a class="source-link" href="https://www.stmd.bayern.de/ministerium/staatsminister" target="_blank" rel="noopener noreferrer">Bayerisches Staatsministerium für Digitales ↗</a>
+          </div>
+          <figure class="minister-portrait" data-greeting-portrait>
+            <img src="/media/presentation/fabian-mehring.jpg" alt="Dr. Fabian Mehring" width="1280" height="1920" />
+            <figcaption>Bildquelle: Bayerisches Staatsministerium für Digitales</figcaption>
+          </figure>
+          {options.greetingVideo && <div class="greeting-configured-video"><PresentationVideo video={options.greetingVideo} title="Videobotschaft von Dr. Fabian Mehring" /></div>}
+        </div>
+        <div class="greeting-local-player" data-greeting-player hidden>
+          <button type="button" class="deck-button back-to-greeting" data-close-greeting>← Zur Vorstellung</button>
+          <video controls playsinline preload="metadata" aria-label="Videobotschaft von Dr. Fabian Mehring" data-greeting-video></video>
+        </div>
+      </section>
+
+      <section class="slide slide-formats slide-formats-spotlight" data-slide aria-labelledby="formats-title" tabindex="-1" hidden>
+        <div class="slide-content formats-content">
+          <p class="slide-kicker">Die AXDN Community</p>
+          <h2 id="formats-title">Vier Formate. <span class="deck-gradient">Eine Community.</span></h2>
+          <div class="formats-grid">
+            {presentationFormats.map((format, i) => (
+              <a class={`format format-${i}`} href={format.href} target="_blank" rel="noopener noreferrer">
+                <div class="format-logo"><img src={format.logo} alt={format.name} /></div>
+                <h3>{format.name}</h3>
+              </a>
+            ))}
+          </div>
+          <section class="woman-spotlight" aria-labelledby="woman-spotlight-title">
+            <div class="woman-spotlight-heading">
+              <h3 id="woman-spotlight-title">AI Woman Nights <span>#01 · Premiere</span></h3>
+              <p>{womanEvent.locationName} · {womanEvent.city}</p>
+            </div>
+            <div class="woman-spotlight-content">
+              <figure class="woman-speakers">
+                <div class="woman-speaker-photos">
+                  {womanNightsSpotlight.portraits.map((src) => <img src={src} alt="" width="400" height="400" />)}
+                </div>
+                <figcaption><span>Mit</span> {womanNightsSpotlight.speakerNames.join(', ')}</figcaption>
+              </figure>
+              <a class="woman-tickets" href={womanEvent.ticketUrl} target="_blank" rel="noopener noreferrer" aria-label={`Tickets für AI Woman Nights am ${womanDate}`}>
+                <time datetime={womanEvent.eventDate}>{womanDate}</time>
+                <img src={womanNightsSpotlight.ticketQr} alt={`QR-Code zu den Tickets für AI Woman Nights am ${womanDate}`} width="512" height="512" />
+                <span>Jetzt Tickets sichern <span aria-hidden="true">↗</span></span>
+              </a>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="slide slide-conference" data-slide aria-labelledby="conference-title" tabindex="-1" hidden>
+        <div class="slide-content conference-content">
+          <div class="conference-intro">
+            <p class="slide-kicker">THE AI CONFERENCE</p>
+            <h2 id="conference-title">AXDN<span class="deck-gradient">//27</span></h2>
+            <p class="conference-date">22. April 2027</p>
+            <figure class="conference-location">
+              <img src="/media/presentation/korns-hall.jpg" alt="Die Eventhalle im KORN’S Nürnberg" width="900" height="600" />
+              <figcaption><strong>KORN’S Nürnberg</strong><span>Kornmarkt 5–7, mitten in der Altstadt</span></figcaption>
+            </figure>
+          </div>
+          <div class="conference-program">
+            <p class="program-heading">6 Tracks <span>+ Main Stage</span></p>
+            <ol class="track-list">
+              {conferenceTracks.map((track, i) => <li><span>0{i + 1}</span><strong>{track}</strong></li>)}
+            </ol>
+            <div class="conference-extras"><span>Fine Dining</span><span>Networking</span><span>Aftershow</span></div>
+            <a class="text-link" href="https://axdn.io/" target="_blank" rel="noopener noreferrer">Programm & Tickets auf <strong>axdn.io ↗</strong></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide slide-app" data-slide aria-labelledby="app-title" tabindex="-1" hidden>
+        <div class="slide-content app-content">
+          <div class="app-heading"><div><p class="slide-kicker">Für euren Abend</p><h2 id="app-title">Die <span class="deck-gradient">AXDN App</span></h2></div><p>Dein Ticket.<br />Dein Programm. Deine Community.</p></div>
+          <PresentationVideo video={appVideo} title="Die AXDN App entdecken" />
+          <div class="app-features"><span>Ticket & Einlass</span><span>Programm & Speaker</span><span>Feedback & Abzeichen</span></div>
+        </div>
+      </section>
+
+      <section class="slide slide-partner" data-slide aria-labelledby="partner-title" tabindex="-1" hidden>
+        <div class="slide-content partner-content">
+          <div class="partner-copy"><p class="slide-kicker">Danke für euren Support</p><h2 id="partner-title">Unsere<br /><span class="deck-gradient">Partner.</span></h2><p>Gemeinsam machen wir<br />die AI Nights möglich.</p></div>
+          <a class="partner-brand" href="https://maike.today/" target="_blank" rel="noopener noreferrer">
+            <img src="/wp-content/uploads/2026/07/maike-logo.svg" alt="mAIke Today" width="360" height="360" />
+            <span class="partner-domain">mAIke.today <span aria-hidden="true">↗</span></span>
+            <span class="partner-description">Sichtbarkeit in KI-Antworten.</span>
+          </a>
+        </div>
+        <p class="slide-bottom-note">Schön, euch an unserer Seite zu haben.</p>
+      </section>
+    </div>
+
+    <footer class="deck-controls" aria-label="Präsentationssteuerung">
+      <div class="slide-position"><button type="button" class="overview-button" data-open-overview title="Folienübersicht (O)" aria-haspopup="dialog"><span data-slide-number>01</span><span class="slide-total"> / 07</span></button><span data-slide-name>{slideNames[0]}</span></div>
+      <nav class="slide-progress" aria-label="Folie auswählen">
+        {slideNames.map((name, i) => <button type="button" data-go-slide={i} aria-label={`Folie ${i + 1}: ${name}`} aria-current={i === 0 ? 'step' : undefined} title={name}></button>)}
+      </nav>
+      <div class="deck-actions">
+        <span class="keyboard-hint">Klick oder ← →</span>
+        <button type="button" class="control-button" data-prev aria-label="Vorherige Folie" title="Zurück (←)" disabled>←</button>
+        <button type="button" class="control-button" data-next aria-label="Nächste Folie" title="Weiter (→)">→</button>
+        <button type="button" class="control-button fullscreen-button" data-fullscreen aria-label="Vollbild starten" title="Vollbild (F)" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" /></svg></button>
+      </div>
+    </footer>
+    <p class="sr-only" aria-live="polite" aria-atomic="true" data-slide-announcement></p>
+    <p class="deck-toast" role="status" data-deck-status hidden></p>
+    <dialog class="slide-overview" data-overview aria-labelledby="overview-title">
+      <div class="overview-heading"><h2 id="overview-title">Folienübersicht</h2><button class="control-button" type="button" data-close-overview aria-label="Übersicht schließen">×</button></div>
+      <div class="overview-list">{slideNames.map((name, i) => <button type="button" data-overview-slide={i}><span>0{i + 1}</span>{name}<span aria-hidden="true">↗</span></button>)}</div>
+      <p>← → Folie wechseln <span>F Vollbild</span> <span>Esc Schließen</span></p>
+    </dialog>
+  </main>
+</Layout>
+
+<script>
+  import '../../../scripts/presentation';
+</script>
