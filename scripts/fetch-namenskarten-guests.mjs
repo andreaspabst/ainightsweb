@@ -2,9 +2,11 @@
 /**
  * Holt die echte Gästeliste für die Namenskarten direkt per API statt
  * manuell aus sales.ainights.ai abzutippen — Digistore24 (funktioniert)
- * und Eventbrite (optional, siehe unten). Schreibt/aktualisiert nur das
- * `attendees`-Array in scripts/data/namenskarten/<event-slug>.json, die
- * feste `staff`-Crew bleibt unangetastet.
+ * und Eventbrite (optional, siehe unten). Aktualisiert das `attendees`-Array
+ * in scripts/data/namenskarten/<event-slug>.json per MERGE (nicht
+ * überschreiben!) — von Hand ergänzte Personen (Eventbrite-CSV-Import,
+ * Presse, Fotograf, o. Ä.) bleiben dadurch erhalten. `staff` und `speakers`
+ * bleiben unangetastet.
  *
  * Aufruf: node scripts/fetch-namenskarten-guests.mjs <event-slug>
  * Voraussetzung: .env mit DIGISTORE24_API_KEY_READONLY (oder
@@ -112,15 +114,6 @@ async function main() {
     }
   }
 
-  // Über alle Kanäle nach Name deduplizieren (jemand könnte theoretisch auf
-  // mehreren Plattformen auftauchen) — Groß-/Kleinschreibung ignorieren.
-  const seen = new Map();
-  for (const a of results) {
-    const key = `${a.firstName.toLowerCase()}|${a.lastName.toLowerCase()}`;
-    if (!seen.has(key)) seen.set(key, a);
-  }
-  const attendees = [...seen.values()];
-
   const dataPath = path.join(DATA_DIR, `${eventSlug}.json`);
   let existing = { staff: [] };
   try {
@@ -128,15 +121,32 @@ async function main() {
   } catch {
     // Noch keine Datei — staff bleibt leer, muss dann manuell ergänzt werden.
   }
+
+  // Über alle Kanäle UND die bereits vorhandene Liste nach Name
+  // deduplizieren — Groß-/Kleinschreibung ignorieren. Wichtig: von Hand
+  // ergänzte Personen (z. B. per Browser aus Eventbrite kopiert, oder
+  // Presse/Fotograf/Gäste ohne Ticket) sind nicht erneut über die APIs
+  // abrufbar und würden bei einem reinen Überschreiben verloren gehen —
+  // darum hier mergen statt ersetzen.
+  const seen = new Map();
+  for (const a of [...(existing.attendees ?? []), ...results]) {
+    const key = `${a.firstName.toLowerCase()}|${a.lastName.toLowerCase()}`;
+    if (!seen.has(key)) seen.set(key, a);
+  }
+  const attendees = [...seen.values()];
   existing.attendees = attendees;
 
   await fs.mkdir(DATA_DIR, { recursive: true });
   // Kompaktes Format (eine Zeile pro Person) statt pretty-printed — bleibt
   // von Hand genauso lesbar/korrigierbar wie beim ursprünglichen Anlegen.
   const personLine = (p) => `{ "firstName": ${JSON.stringify(p.firstName)}, "lastName": ${JSON.stringify(p.lastName)}, "company": ${JSON.stringify(p.company)} }`;
-  const out = `{\n  "_comment": ${JSON.stringify(existing._comment ?? '')},\n  "staff": [\n${(existing.staff ?? []).map((p) => `    ${personLine(p)}`).join(',\n')}\n  ],\n  "attendees": [\n${attendees.map((p) => `    ${personLine(p)}`).join(',\n')}\n  ]\n}\n`;
+  const speakers = existing.speakers ?? [];
+  const speakersBlock = speakers.length
+    ? `,\n  "speakers": [\n${speakers.map((p) => `    ${personLine(p)}`).join(',\n')}\n  ]`
+    : '';
+  const out = `{\n  "_comment": ${JSON.stringify(existing._comment ?? '')},\n  "staff": [\n${(existing.staff ?? []).map((p) => `    ${personLine(p)}`).join(',\n')}\n  ],\n  "attendees": [\n${attendees.map((p) => `    ${personLine(p)}`).join(',\n')}\n  ]${speakersBlock}\n}\n`;
   await fs.writeFile(dataPath, out);
-  console.log(`Geschrieben: ${dataPath} (${existing.staff?.length ?? 0} Crew + ${attendees.length} Gäste)`);
+  console.log(`Geschrieben: ${dataPath} (${existing.staff?.length ?? 0} Crew + ${speakers.length} Speaker + ${attendees.length} Gäste)`);
 }
 
 main().catch((err) => {
