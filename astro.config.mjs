@@ -38,6 +38,8 @@ export default defineConfig({
     // Deutsche Kurz-URLs für Rechtsseiten (u. a. von CMP-Banner-Links erwartet)
     '/datenschutz/': '/de/data-protection/',
     '/impressum/': '/de/legal-notice/',
+    // Kurzlink fürs Feedback-Formular (Airtable)
+    '/current-feedback/': 'https://airtable.com/appiiUytKG0IcB1Gn/paguapfx0numJXXNN/form',
   },
   integrations: [
     sitemap({
