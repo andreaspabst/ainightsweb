@@ -1,0 +1,28 @@
+---
+import type { PresentationVideo } from '../../data/presentation';
+
+interface Props {
+  video: PresentationVideo;
+  title: string;
+}
+
+const { video, title } = Astro.props;
+---
+
+{video.kind === 'youtube' ? (
+  <div class="presentation-video youtube-video" data-youtube={video.id} data-video-title={title}>
+    <div class="video-launch">
+      <button type="button" class="video-play" data-play-youtube>
+        <span class="play-symbol" aria-hidden="true">▶</span>
+        <span>{title}<small>Video abspielen</small></span>
+      </button>
+      <p class="video-disclosure">Beim Abspielen wird eine Verbindung zu YouTube hergestellt.</p>
+    </div>
+    <div class="video-player" data-video-player hidden></div>
+    <a class="youtube-fallback" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">Auf YouTube öffnen ↗</a>
+  </div>
+) : (
+  <div class="presentation-video">
+    <video src={video.src} controls playsinline preload="none" aria-label={title}></video>
+  </div>
+)}
