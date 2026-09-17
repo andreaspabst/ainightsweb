@@ -40,6 +40,8 @@ export default defineConfig({
     '/impressum/': '/de/legal-notice/',
     // Kurzlink fürs Feedback-Formular (Airtable)
     '/current-feedback/': 'https://airtable.com/appiiUytKG0IcB1Gn/paguapfx0numJXXNN/form',
+    // Kurzlink zur Live-Agenda (Vigoba, Bühnenbildschirm)
+    '/current-agenda/': 'https://app.vigoba.de/e/ai-nights/agenda/agenda?autoscroll=1&screen=1',
   },
   integrations: [
     sitemap({
