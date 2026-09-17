@@ -12,15 +12,19 @@ export interface PresentationOptions {
   toilets: string;
 }
 
-// Die Videobotschaft wurde noch nicht mitgeliefert. Hier nach Erhalt hinterlegen.
-// Alternativ lässt sich während der Präsentation eine lokale Videodatei auswählen.
+// Fallback, falls für ein Event (noch) keine Videobotschaft hinterlegt ist:
+// lokale Videodatei während der Präsentation auswählen (siehe eventOverrides).
 const defaults: PresentationOptions = {
   greetingVideo: null,
   toilets: 'Durch die Glastür raus, dann links neben den Aufzügen.',
 };
 
 // Bei abweichenden Räumen oder Videobotschaften pro Event ergänzen.
-const eventOverrides: Record<string, Partial<PresentationOptions>> = {};
+const eventOverrides: Record<string, Partial<PresentationOptions>> = {
+  'ai-nights-nuernberg-05': {
+    greetingVideo: { kind: 'youtube', id: 'A5HuYFfkCcM' },
+  },
+};
 
 export function getPresentationOptions(slug: string): PresentationOptions {
   return { ...defaults, ...eventOverrides[slug] };
