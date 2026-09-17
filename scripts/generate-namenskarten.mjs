@@ -208,12 +208,18 @@ async function renderBackPage(out, ctx) {
 }
 
 async function main() {
-  const eventSlug = process.argv[2];
+  const args = process.argv.slice(2);
+  const eventSlug = args.find((a) => !a.startsWith('--'));
+  // Nachzügler-Druck: nur die Gäste-Seiten (spart die Team-/Speaker-Bögen,
+  // die beim ersten Druck schon rausgingen) und eine eigene Ausgabedatei.
+  const guestsOnly = args.includes('--guests-only');
+  const suffixArg = args.includes('--suffix') ? args[args.indexOf('--suffix') + 1] : null;
+  const suffix = suffixArg ? `_${String(suffixArg).replace(/^_/, '')}` : '';
   if (!eventSlug) {
-    console.error('Aufruf: node scripts/generate-namenskarten.mjs <event-slug>');
+    console.error('Aufruf: node scripts/generate-namenskarten.mjs <event-slug> [--guests-only] [--suffix v2]');
     process.exit(1);
   }
-  console.log(`Baue Namenskarten für ${eventSlug} …`);
+  console.log(`Baue Namenskarten für ${eventSlug}${guestsOnly ? ' (nur Gäste)' : ''} …`);
 
   const kit = await loadEventKit(eventSlug);
   const dataPath = path.join(DATA_DIR, `${eventSlug}.json`);
@@ -224,6 +230,9 @@ async function main() {
     ...(guestData.attendees ?? []),
     ...Array.from({ length: BLANK_GUEST_CARDS }, () => ({ firstName: '', lastName: '', company: 'Guest' })),
   ];
+  if (guestsOnly && !(guestData.attendees ?? []).length) {
+    throw new Error(`Keine Gäste in ${dataPath} — mit --guests-only gibt es dann nichts zu drucken.`);
+  }
   if (!staff.length && !speakers.length && !attendees.length) {
     throw new Error(`Keine Gäste in ${dataPath} (staff/speakers/attendees).`);
   }
@@ -239,7 +248,7 @@ async function main() {
   const regular = await out.embedFont(StandardFonts.Helvetica);
 
   let teamPageCount = 0;
-  if (staff.length || speakers.length) {
+  if (!guestsOnly && (staff.length || speakers.length)) {
     // Team-Vorlage: Slots 0-3 sind als "SPEAKER" beschriftet, 4-7 als
     // "TEAM" (Vorlagen-Artwork) — Speaker und Crew laufen darum als zwei
     // getrennte 4er-Warteschlangen statt einer durchlaufenden Liste.
@@ -264,13 +273,14 @@ async function main() {
   }
 
   await fs.mkdir(OUT_DIR, { recursive: true });
-  const outPath = path.join(OUT_DIR, `${eventSlug}.pdf`);
+  const outPath = path.join(OUT_DIR, `${eventSlug}${suffix}.pdf`);
   await fs.writeFile(outPath, await out.save());
 
-  const totalPeople = staff.length + speakers.length + attendees.length;
+  const totalPeople = (guestsOnly ? 0 : staff.length + speakers.length) + attendees.length;
   const pageCount = teamPageCount + guestPageCount;
   console.log(`Fertig: ${outPath}`);
-  console.log(`${totalPeople} Personen (${staff.length} Crew + ${speakers.length} Speaker + ${attendees.length} Gäste) auf ${pageCount} Vorderseiten (${teamPageCount} Team-Vorlage + ${guestPageCount} Gäste-Vorlage) + ${pageCount} Rückseiten.`);
+  const crewLabel = guestsOnly ? '0 Crew + 0 Speaker (übersprungen)' : `${staff.length} Crew + ${speakers.length} Speaker`;
+  console.log(`${totalPeople} Personen (${crewLabel} + ${attendees.length} Gäste) auf ${pageCount} Vorderseiten (${teamPageCount} Team-Vorlage + ${guestPageCount} Gäste-Vorlage) + ${pageCount} Rückseiten.`);
 }
 
 main().catch((err) => {

@@ -16,7 +16,12 @@ Vorderseite → Rückseite, fürs Duplex-Drucken.
 ```bash
 node scripts/fetch-namenskarten-guests.mjs <event-slug>   # Gästeliste per API holen
 node scripts/generate-namenskarten.mjs <event-slug>       # PDF rendern
+node scripts/generate-namenskarten.mjs <event-slug> --guests-only --suffix v2   # Nachzügler
 ```
+
+**Läuft nur lokal:** Der Abruf braucht `.env` mit dem Digistore24-Key, und
+`digistore24.com` ist aus der Cloud-Session nicht erreichbar. Zum Rendern
+selbst braucht es ausserdem `poppler-utils` (`pdftoppm`, `pdftotext`).
 
 Beispiel:
 
@@ -85,6 +90,16 @@ node scripts/generate-namenskarten.mjs ai-nights-nuernberg-05
      `first_name`/`last_name`-Felder übernehmen offensichtliche Tippfehler
      der Käufer:innen 1:1 (z. B. "Domink" statt "Dominik", erkennbar am
      Abgleich mit der E-Mail-Adresse) — vor dem Drucken von Hand korrigieren.
+   - **Nachzügler-Druck (`_v2`)**: Kommen nach dem ersten Druck weitere
+     Käufer:innen dazu, nur diese in `attendees` stehen lassen (die bereits
+     gedruckten rausnehmen) und so rendern:
+     ```bash
+     node scripts/generate-namenskarten.mjs <event-slug> --guests-only --suffix v2
+     ```
+     `--guests-only` lässt die Team-/Speaker-Bögen weg (die sind beim ersten
+     Druck schon rausgegangen — spart Papier), `--suffix v2` schreibt nach
+     `<event-slug>_v2.pdf`, damit die erste Fassung erhalten bleibt. Die
+     2 Blanko-Gästekarten laufen auch hier mit.
 2. Rendert nach `public/media/namenskarten/<event-slug>.pdf`:
    ```bash
    node scripts/generate-namenskarten.mjs <event-slug>
