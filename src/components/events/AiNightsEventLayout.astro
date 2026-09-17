@@ -192,7 +192,8 @@ const facts: { icon: string; label: string }[] = [
     '@context': 'https://schema.org',
     '@type': 'Event',
     name: d.title,
-    startDate: d.eventDate,
+    startDate: d.startTime ? `${d.eventDate}T${d.startTime}` : d.eventDate,
+    endDate: d.endTime ? `${d.eventDate}T${d.endTime}` : undefined,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     location: d.locationName
@@ -225,7 +226,7 @@ const facts: { icon: string; label: string }[] = [
 
         <div class="hero-chips">
           {dateLabel && <span class="hero-chip"><span class="hc-icon">📅</span>{dateLabel}</span>}
-          {d.startTime && <span class="hero-chip"><span class="hc-icon">🕕</span>{d.startTime} Uhr</span>}
+          {d.startTime && <span class="hero-chip"><span class="hc-icon">🕕</span>{d.endTime ? `${d.startTime} – ${d.endTime}` : d.startTime} Uhr</span>}
           {d.locationName && <span class="hero-chip"><span class="hc-icon">📍</span>{d.locationName}</span>}
         </div>
 
