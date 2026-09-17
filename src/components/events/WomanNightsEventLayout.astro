@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { isPastEvent } from '../../lib/eventDates';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../Header.astro';
 import Footer from '../Footer.astro';
@@ -55,7 +56,7 @@ function fmtDate(dt?: string) {
   return p.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 }
 const dateLabel = fmtDate(d.eventDate);
-const isPast = d.eventDate ? new Date(d.eventDate) < new Date() : false;
+const isPast = isPastEvent(d.eventDate);
 const countdownTarget = !isPast && d.eventDate ? `${d.eventDate}T${d.startTime ?? '18:00'}:00` : null;
 
 const mapsQuery = encodeURIComponent([d.locationName, d.locationAddress, d.city].filter(Boolean).join(', '));

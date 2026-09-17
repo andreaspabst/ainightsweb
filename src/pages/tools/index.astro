@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getCollection } from 'astro:content';
+import { todayBerlin } from '../../lib/eventDates';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -105,7 +106,7 @@ function introCardFor(eventSlug: string, speakerSlug: string) {
   return { instagram: at('instagram'), linkedin: at('linkedin') };
 }
 
-const today = '2026-09-01';
+const today = todayBerlin();
 const sorted = [...events].sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''));
 const upcoming = sorted.filter((e) => (e.data.eventDate ?? '') >= today);
 const past = sorted.filter((e) => (e.data.eventDate ?? '') < today).reverse();

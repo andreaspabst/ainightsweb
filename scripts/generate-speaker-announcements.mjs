@@ -40,7 +40,16 @@ const fontFile = (family) => {
   if (!file) throw new Error(`Keine Schriftdatei für „${family}" hinterlegt (scripts/fonts/)`);
   return path.join(FONT_DIR, file);
 };
-const TODAY = new Date();
+// Ein Event gilt bis zum ENDE seines Tages als kommend — am Eventtag selbst
+// darf die Grafik nicht auf die neutrale Variante umspringen. Deshalb
+// Datums-Strings vergleichen statt Date-Objekte (siehe src/lib/eventDates.ts).
+const TODAY = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Europe/Berlin',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+}).format(new Date());
+const isUpcoming = (eventDate) => Boolean(eventDate) && String(eventDate).slice(0, 10) >= TODAY;
 
 const C = {
   bg0: '#0f0122',
@@ -205,7 +214,7 @@ const footLeft = (event, upcoming) =>
 /** Quadratisch (Instagram): Portrait mittig, Text darunter — wie die Vorlage. */
 async function square(speaker, event, logo) {
   const { w: W, h: H } = FORMATS.instagram;
-  const upcoming = event && new Date(event.eventDate) >= TODAY;
+  const upcoming = event && isUpcoming(event.eventDate);
   const layers = [];
   const R = 200;
   const CX = W / 2;
@@ -249,7 +258,7 @@ async function square(speaker, event, logo) {
 /** Quer (LinkedIn): Portrait links, Text rechts — gleiche Bausteine. */
 async function landscape(speaker, event, talkTitle, logo) {
   const { w: W, h: H } = FORMATS.linkedin;
-  const upcoming = event && new Date(event.eventDate) >= TODAY;
+  const upcoming = event && isUpcoming(event.eventDate);
   const layers = [];
   const R = 158;
   const CX = 260;
@@ -333,7 +342,7 @@ function eventFor(id) {
   const mine = events
     .filter((e) => (e.speakerIds ?? []).includes(id) || (e.moderatorIds ?? []).includes(id))
     .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
-  return mine.find((e) => new Date(e.eventDate) >= TODAY) ?? mine[mine.length - 1] ?? null;
+  return mine.find((e) => isUpcoming(e.eventDate)) ?? mine[mine.length - 1] ?? null;
 }
 
 function talkFor(speaker) {
