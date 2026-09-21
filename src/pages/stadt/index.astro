@@ -3,11 +3,28 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import CityMap from '../../components/CityMap.astro';
+import { getCollection } from 'astro:content';
 import { CITIES, cityColor } from '../../lib/cities';
+import { isUpcoming } from '../../lib/eventDates';
+import { imgVariant } from '../../lib/images';
 
 const shown = CITIES.filter((c) => c.onOverview);
 const active = shown.filter((c) => c.status === 'active');
 const soon = shown.filter((c) => c.status === 'soon');
+
+// Pro Stadt ein eigenes Bild: zuerst das Bild der Stadt-Datei, sonst das Key-Visual
+// des nächsten AI-Nights-Events dieser Stadt (bzw. des letzten, wenn keines mehr
+// ansteht). AI Woman Nights zählen nicht — die haben ein eigenes Lila-Motiv.
+const [stadt, events] = await Promise.all([getCollection('stadt'), getCollection('events')]);
+const cityImage = (c: (typeof CITIES)[number]): string | undefined => {
+  const own = stadt.find((s) => s.data.slug === c.slug)?.data.image?.src;
+  if (own) return own;
+  const mine = events
+    .filter((e) => e.data.city === c.name && e.data.slug.startsWith('ai-nights-') && e.data.image?.src)
+    .sort((a, b) => (a.data.eventDate ?? '').localeCompare(b.data.eventDate ?? ''));
+  const next = mine.find((e) => isUpcoming(e.data.eventDate));
+  return (next ?? mine[mine.length - 1])?.data.image?.src;
+};
 ---
 
 <Layout
@@ -63,7 +80,7 @@ const soon = shown.filter((c) => c.status === 'soon');
             <a href={`/stadt/${c.slug}/`} class="city city-active">
               <div class="city-photo">
                 <img
-                  src={i === 0 ? '/wp-content/uploads/2026/01/city_nuernberg_summer.png' : '/wp-content/uploads/2026/01/39-ianight-39-scaled-640w.webp'}
+                  src={imgVariant(cityImage(c) ?? '/wp-content/uploads/2026/01/city_nuernberg_summer.png', 640)}
                   alt={`AI Nights in ${c.name}`}
                   loading="lazy"
                 />
