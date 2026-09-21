@@ -1,0 +1,326 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import { imgVariant } from '../lib/images';
+
+export interface Props {
+  lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+
+const WEB_APP = 'https://app.axdn.io';
+const APPLE = lang === 'de'
+  ? 'https://apps.apple.com/de/app/axdn/id6811352825'
+  : 'https://apps.apple.com/app/id6811352825';
+
+const copy = {
+  de: {
+    title: 'AXDN App — Ticket, Programm & Speaker',
+    description:
+      'Die AXDN App zu AI Nights, AI Woman Nights, Agents im Weggla und AXDN Konferenzen: Ticket mit Einlass-Code, Programm, Speaker und Feedback.',
+    path: '/de/app/',
+    eyebrow: 'Die AXDN App',
+    h1a: 'Dein Ticket. Dein Programm.',
+    h1b: 'Dein Abend.',
+    sub: 'Die App zu allen Events von AXDN — AI Nights, AI Woman Nights, Agents im Weggla und den AXDN Konferenzen. Anmeldung per Link, ganz ohne Passwort.',
+    appStore: 'Laden im App Store',
+    webApp: 'Web-App öffnen',
+    google: 'Google Play',
+    soon: 'bald',
+    featuresEyebrow: 'Was die App kann',
+    featuresTitle: 'Alles zum Abend, an einem Ort.',
+    features: [
+      ['Ticket mit Einlass-Code', 'Dein Code für den Einlass — auch ohne Netz lesbar, samt Inklusivleistungen.'],
+      ['Das Programm des Abends', 'Zeiten, Pausen und Diskussionsrunden: wer spricht wann, worüber — und wo.'],
+      ['Die Speaker', 'Profil, Themen und Links zu allen, die auf der Bühne stehen — ein Tipp genügt.'],
+      ['Infos vom Veranstalter', 'WLAN, Anfahrt und Verpflegung — dort, wo du sie im Moment brauchst.'],
+      ['Nachrichten', 'Aktuelles während des Events, auf Wunsch als Benachrichtigung.'],
+      ['Feedback je Vortrag', 'Gesamteindruck, Inhalt, Präsentation und ein Freitext — anonym gegenüber den Speakern.'],
+      ['Abzeichen', 'Fürs Dabeisein und fürs Bewerten. Keine Rangliste: Sie sind für dich, nicht gegen andere.'],
+      ['Entdecken', 'Die Karte mit allen Städten und die nächsten Termine.'],
+      ['Sponsoren & Aftershow', 'Die Partner des Abends und, wenn es eine gibt, die Aftershow-Party.'],
+    ],
+    galleryEyebrow: 'So sieht’s aus',
+    galleryTitle: 'Sieben Blicke in die App.',
+    stepsEyebrow: 'So startest du',
+    stepsTitle: 'In drei Schritten im Abend.',
+    steps: [
+      ['Ticket sichern', 'Tickets gibt es wie gewohnt bei uns auf ainights.ai.'],
+      ['Anmelden', 'App öffnen und mit der Adresse anmelden, mit der du gekauft hast. Du bekommst einen Link — kein Passwort. Alternativ mit Apple oder Google.'],
+      ['Los geht’s', 'Ticket, Programm und Infos sind da — auch am Einlass.'],
+    ],
+    ticketsCta: 'Zu den Tickets',
+    ticketsHref: '/de/tickets/',
+    downloadEyebrow: 'Jetzt holen',
+    downloadTitle: 'Die App für deinen nächsten Abend.',
+    downloadNote:
+      'In Deutsch, Englisch, Bulgarisch und Spanisch, mit hellem und dunklem Modus. Das offizielle Ticket-PDF und der Wallet-Pass bleiben in deiner Bestellbestätigung.',
+    shotAlt: [
+      'Meine Events: alle Tickets an einem Ort',
+      'Das Programm des Abends mit Zeiten und Speakern',
+      'Das Ticket mit Einlass-Code',
+      'Abzeichen fürs Dabeisein und Bewerten',
+      'Speaker-Profile mit Themen und Links',
+      'Sponsoren und Aftershow-Party',
+      'Entdecken: Karte mit allen Städten und nächste Termine',
+    ],
+    alternates: { de: '/de/app/', en: '/en/app/' },
+  },
+  en: {
+    title: 'AXDN App — Ticket, Programme & Speakers',
+    description:
+      'The AXDN app for AI Nights, AI Woman Nights, Agents im Weggla and AXDN conferences: ticket with entry code, programme, speakers and feedback.',
+    path: '/en/app/',
+    eyebrow: 'The AXDN app',
+    h1a: 'Your ticket. Your programme.',
+    h1b: 'Your night.',
+    sub: 'The app for all AXDN events — AI Nights, AI Woman Nights, Agents im Weggla and the AXDN conferences. Sign in with a link, no password needed.',
+    appStore: 'Download on the App Store',
+    webApp: 'Open web app',
+    google: 'Google Play',
+    soon: 'coming soon',
+    featuresEyebrow: 'What the app does',
+    featuresTitle: 'Everything for the night, in one place.',
+    features: [
+      ['Ticket with entry code', 'Your code for the door — readable even without a connection, including what’s included.'],
+      ['The night’s programme', 'Times, breaks and discussion rounds: who speaks when, about what — and where.'],
+      ['The speakers', 'Profile, topics and links for everyone on stage — one tap away.'],
+      ['Info from the organiser', 'Wi-Fi, how to get there and catering — right where you need it.'],
+      ['Messages', 'Updates during the event, as a notification if you like.'],
+      ['Feedback per talk', 'Overall impression, content, presentation and free text — anonymous to the speakers.'],
+      ['Badges', 'For showing up and for rating. No leaderboard: they’re for you, not against others.'],
+      ['Discover', 'The map with all cities and the next dates.'],
+      ['Sponsors & aftershow', 'The night’s partners and, when there is one, the aftershow party.'],
+    ],
+    galleryEyebrow: 'Take a look',
+    galleryTitle: 'Seven glimpses into the app.',
+    stepsEyebrow: 'Get started',
+    stepsTitle: 'Into the night in three steps.',
+    steps: [
+      ['Get your ticket', 'Tickets are available from us on ainights.ai, as usual.'],
+      ['Sign in', 'Open the app and sign in with the email address you bought with. You’ll get a link — no password. Or sign in with Apple or Google.'],
+      ['You’re in', 'Ticket, programme and info are right there — at the door, too.'],
+    ],
+    ticketsCta: 'Get tickets',
+    ticketsHref: '/en/tickets/',
+    downloadEyebrow: 'Get it now',
+    downloadTitle: 'The app for your next night.',
+    downloadNote:
+      'In German, English, Bulgarian and Spanish, with light and dark mode. The official ticket PDF and wallet pass stay in your order confirmation.',
+    shotAlt: [
+      'My events: all tickets in one place',
+      'The night’s programme with times and speakers',
+      'The ticket with entry code',
+      'Badges for showing up and rating',
+      'Speaker profiles with topics and links',
+      'Sponsors and aftershow party',
+      'Discover: map with all cities and next dates',
+    ],
+    alternates: { de: '/de/app/', en: '/en/app/' },
+  },
+}[lang];
+
+const SHOTS = ['01-meine-events', '02-programm', '03-ticket', '04-abzeichen', '05-speaker', '06-aftershow', '07-entdecken'];
+const shot = (n: string, w: 320 | 640 | 1024 = 640) => imgVariant(`/img/app/${lang}/${n}.jpg`, w);
+// Hero: Ticket vorn, Programm und Abzeichen dahinter
+const HERO = ['04-abzeichen', '03-ticket', '02-programm'];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'AXDN',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'iOS, Web',
+  url: `https://ainights.ai${copy.path}`,
+  installUrl: APPLE,
+  description: copy.description,
+  inLanguage: ['de', 'en', 'bg', 'es'],
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  publisher: { '@id': 'https://ainights.ai/#organization' },
+};
+---
+
+<Layout
+  lang={lang}
+  title={copy.title}
+  description={copy.description}
+  path={copy.path}
+  alternates={copy.alternates}
+  image={shot('03-ticket', 1024)}
+  jsonLd={jsonLd}
+>
+  <Header lang={lang} />
+  <main class="app-page">
+    <section class="hero">
+      <div class="aurora aurora-pink"></div>
+      <div class="aurora aurora-blue"></div>
+      <div class="container hero-layout">
+        <div class="hero-copy">
+          <p class="eyebrow">{copy.eyebrow}</p>
+          <h1 class="display-font">{copy.h1a}<br /><span class="gradient-text">{copy.h1b}</span></h1>
+          <p class="sub">{copy.sub}</p>
+          <div class="store-row">
+            <a class="store store-primary" href={APPLE} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"></path></svg>
+              <span>{copy.appStore}</span>
+            </a>
+            <a class="store" href={WEB_APP} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.300 6.400-3.800 9c-2.500-2.600-3.800-5.600-3.800-9s1.300-6.400 3.800-9z"></path></svg>
+              <span>{copy.webApp} <b aria-hidden="true">↗</b></span>
+            </a>
+            <span class="store store-soon" aria-disabled="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5v17c0 .8.9 1.300 1.600.9l14-8.500c.7-.4.7-1.400 0-1.800l-14-8.500C5.900 2.200 5 2.700 5 3.500z"></path></svg>
+              <span>{copy.google} <em>{copy.soon}</em></span>
+            </span>
+          </div>
+        </div>
+        <div class="hero-shots" aria-hidden="false">
+          {HERO.map((n, i) => (
+            <img class={`hs hs-${i}`} src={shot(n, 640)} alt={copy.shotAlt[SHOTS.indexOf(n)]} width="900" height="1956" loading={i === 1 ? 'eager' : 'lazy'} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">{copy.featuresEyebrow}</p>
+          <h2 class="display-font">{copy.featuresTitle}</h2>
+        </div>
+        <div class="features">
+          {copy.features.map(([t, d]) => (
+            <article class="feature card">
+              <h3 class="display-font">{t}</h3>
+              <p>{d}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section gallery-section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">{copy.galleryEyebrow}</p>
+          <h2 class="display-font">{copy.galleryTitle}</h2>
+        </div>
+      </div>
+      <div class="strip" tabindex="0" role="group" aria-label={copy.galleryTitle}>
+        {SHOTS.map((n, i) => (
+          <figure class="shot"><img src={shot(n, 640)} alt={copy.shotAlt[i]} width="900" height="1956" loading="lazy" /></figure>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">{copy.stepsEyebrow}</p>
+          <h2 class="display-font">{copy.stepsTitle}</h2>
+        </div>
+        <ol class="steps">
+          {copy.steps.map(([t, d], i) => (
+            <li class="step card">
+              <span class="step-no display-font">{i + 1}</span>
+              <div><h3 class="display-font">{t}</h3><p>{d}</p></div>
+            </li>
+          ))}
+        </ol>
+        <p class="steps-cta"><a class="btn btn-ghost" href={copy.ticketsHref}>{copy.ticketsCta}</a></p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="download card">
+          <p class="eyebrow">{copy.downloadEyebrow}</p>
+          <h2 class="display-font">{copy.downloadTitle}</h2>
+          <div class="store-row store-row-center">
+            <a class="store store-primary" href={APPLE} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"></path></svg>
+              <span>{copy.appStore}</span>
+            </a>
+            <a class="store" href={WEB_APP} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.300 6.400-3.800 9c-2.500-2.600-3.800-5.600-3.800-9s1.300-6.400 3.800-9z"></path></svg>
+              <span>{copy.webApp} <b aria-hidden="true">↗</b></span>
+            </a>
+            <span class="store store-soon" aria-disabled="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5v17c0 .8.9 1.300 1.600.9l14-8.500c.7-.4.7-1.400 0-1.800l-14-8.500C5.900 2.200 5 2.700 5 3.500z"></path></svg>
+              <span>{copy.google} <em>{copy.soon}</em></span>
+            </span>
+          </div>
+          <p class="note">{copy.downloadNote}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer lang={lang} />
+</Layout>
+
+<style>
+  .app-page { --glass: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.035)); }
+  .hero { position: relative; overflow: hidden; padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+  .aurora { position: absolute; width: 35rem; aspect-ratio: 1; border-radius: 50%; filter: blur(90px); opacity: .22; pointer-events: none; }
+  .aurora-pink { background: var(--magenta-bright); right: -12rem; top: -8rem; }
+  .aurora-blue { background: var(--blue); left: -15rem; bottom: -18rem; }
+  .hero-layout { position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 6vw, 5rem); align-items: center; }
+  h1 { font-size: clamp(2.6rem, 6vw, 5rem); line-height: .98; letter-spacing: -.055em; margin: 1rem 0 1.3rem; text-wrap: balance; }
+  .sub { max-width: 52ch; color: var(--text-secondary); font-size: 1.08rem; }
+
+  .store-row { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+  .store-row-center { justify-content: center; }
+  .store { display: inline-flex; align-items: center; gap: .7rem; padding: .8rem 1.25rem; border: 1px solid rgba(255,255,255,.2); border-radius: 16px; background: rgba(255,255,255,.06); color: var(--text-primary); font-weight: 600; font-size: .98rem; line-height: 1.2; backdrop-filter: blur(18px); transition: transform .15s ease, border-color .2s ease, background .2s ease; }
+  .store svg { width: 1.5rem; height: 1.5rem; flex: none; fill: currentColor; }
+  .store svg[fill='none'] { fill: none; }
+  a.store:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.1); color: var(--text-primary); }
+  .store-primary { background: #fff; color: #0a0118; border-color: #fff; }
+  a.store-primary:hover { background: #fff; color: #0a0118; border-color: #fff; }
+  .store b { font-weight: 500; margin-left: .15rem; }
+  .store-soon { opacity: .6; cursor: default; border-style: dashed; }
+  .store-soon em { display: block; font-style: normal; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+
+  .hero-shots { position: relative; display: flex; justify-content: center; align-items: center; min-height: clamp(22rem, 46vw, 40rem); }
+  .hs { position: absolute; width: clamp(9rem, 17vw, 15rem); height: auto; border-radius: 26px; box-shadow: 0 30px 80px rgba(2,0,18,.55); border: 1px solid rgba(255,255,255,.14); }
+  .hs-0 { transform: translateX(-54%) rotate(-7deg) scale(.92); z-index: 1; }
+  .hs-1 { z-index: 3; }
+  .hs-2 { transform: translateX(54%) rotate(7deg) scale(.92); z-index: 2; }
+
+  .section-heading { max-width: 42rem; margin-bottom: 2.2rem; }
+  .section-heading h2 { font-size: clamp(1.9rem, 4vw, 3rem); letter-spacing: -.04em; text-wrap: balance; }
+
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1.1rem; }
+  .feature { padding: 1.5rem; }
+  .feature h3 { font-size: 1.2rem; margin-bottom: .55rem; }
+  .feature p { color: var(--text-secondary); font-size: .98rem; line-height: 1.6; }
+
+  .gallery-section { padding-inline: 0; }
+  .strip { display: flex; gap: 1.1rem; overflow-x: auto; scroll-snap-type: x proximity; padding: .5rem max(1.5rem, calc((100% - var(--maxw)) / 2 + 1.5rem)) 1.5rem; scrollbar-width: thin; }
+  .strip:focus-visible { outline: 2px solid var(--blue-bright); outline-offset: -2px; }
+  .shot { margin: 0; flex: none; width: clamp(13rem, 24vw, 17rem); scroll-snap-align: center; }
+  .shot img { width: 100%; height: auto; border-radius: 22px; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 60px rgba(2,0,18,.4); }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1.1rem; }
+  .step { display: flex; gap: 1.1rem; padding: 1.5rem; }
+  .step-no { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; background: var(--gradient-accent); color: #fff; font-weight: 700; }
+  .step h3 { font-size: 1.15rem; margin-bottom: .4rem; }
+  .step p { color: var(--text-secondary); font-size: .96rem; line-height: 1.6; }
+  .steps-cta { margin-top: 1.6rem; }
+
+  .download { padding: clamp(2rem, 5vw, 3.5rem); text-align: center; border-radius: 30px; }
+  .download h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: .4rem 0 0; text-wrap: balance; }
+  .download .note { max-width: 56ch; margin: 1.6rem auto 0; color: var(--text-muted); font-size: .9rem; }
+
+  @media (max-width: 860px) {
+    .hero-layout { grid-template-columns: 1fr; }
+    .hero-shots { min-height: 24rem; }
+    .hs-0 { transform: translateX(-52%) rotate(-7deg) scale(.9); }
+    .hs-2 { transform: translateX(52%) rotate(7deg) scale(.9); }
+  }
+  @media (max-width: 520px) {
+    .store { width: 100%; justify-content: center; }
+    .hs { width: 9.2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .store { transition: none; } }
+</style>
