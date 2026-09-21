@@ -111,3 +111,19 @@ location @r2media {
     return 301 https://media.ainights.ai$request_uri;
 }
 ```
+
+## Zusatzdomains und Sprachweiche (nginx, in Forge eingetragen)
+
+Hauptdomain bleibt **ainights.ai**. `ai-nights.com`, `ai-nights.de` und `ainights.de` (jeweils + `www.`) sind in Forge als Domains der Site angelegt (DNS bei Hetzner, A-Record auf den Forge-Server, eigenes Let's-Encrypt-Zertifikat je Domain) und leiten per 301 mit Pfad und Query auf `https://ainights.ai` weiter. `www.<alias>` geht zuerst per Forge-Standardregel auf `<alias>` und von dort auf `.ai` (zwei Hops).
+
+Ergänzt in Forge → Site → Domains → „Edit Nginx configuration“ → **General site configuration** (am Ende):
+
+```nginx
+# Zusatzdomains -> Hauptdomain ainights.ai (301, Pfad bleibt erhalten)
+if ($host ~* "^(www\.)?(ai-nights\.(com|de)|ainights\.de)$") { return 301 https://ainights.ai$request_uri; }
+# Startseite: Sprache aus Accept-Language (de -> /de/, sonst /en/)
+location = / { add_header Vary Accept-Language always; set $ain_home /de/; if ($http_accept_language ~* "^\s*(?!de)[a-z]{2}") { set $ain_home /en/; } return 302 $ain_home; }
+```
+
+- `/` leitet per **302** (nicht 301, weil sprachabhängig) auf `/de/` oder `/en/`. Ohne oder mit unbekanntem `Accept-Language` (Crawler) gilt Deutsch. Die Meta-Refresh-Seite aus `astro.config.mjs` (`'/': '/de/'`) bleibt nur als Fallback im Build.
+- Zertifikate erneuern sich über Forge automatisch (Let's Encrypt, ~30 Tage vor Ablauf).
