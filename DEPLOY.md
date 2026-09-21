@@ -88,3 +88,42 @@ which npm    # → /usr/bin/npm
 - Push auf `master` → Forge zieht, baut mit `npm run build`, serviert `dist/`
 - `ainights.ai` via HTTPS erreichbar, alle alten URLs funktionieren weiter
 - `www.ainights.ai` → 301 auf `https://ainights.ai`
+
+## Medien auf Cloudflare R2 (media.ainights.ai)
+
+Bilder, Videos und generierte Karten liegen in einem R2-Bucket (`ainights-media`, Custom Domain `media.ainights.ai`, Cache über Cloudflare). Der Pfad ist 1:1 wie bisher — `public/wp-content/uploads/…` ↔ `https://media.ainights.ai/wp-content/uploads/…`.
+
+- **Hochladen:** `node scripts/r2-sync.mjs` (überspringt vorhandene Dateien; `--only <prefix>`, `--dry-run`). Braucht in `.env` `CLOUDFLARE_API_TOKEN` (R2 Edit) und `CLOUDFLARE_ACCOUNT_ID`. Nach jedem neuen Bild/Karte ausführen, **bevor** deployt wird.
+- **Build:** `scripts/postbuild.mjs` schreibt im Produktions-Build alle Medien-URLs auf `media.ainights.ai` um. Ausnahme: `/media/namenskarten/` (Gästenamen) bleibt auf `ainights.ai`. Lokal ohne Bucket: `MEDIA_LOCAL=1 npm run build`.
+- **Alte URLs (301):** Solange die Dateien noch in `public/` liegen, werden sie lokal ausgeliefert. Für Dateien, die nur noch im Bucket liegen, in der nginx-Konfiguration (Forge → Site → Nginx Configuration) ergänzen:
+
+```nginx
+# Namenskarten bleiben lokal (Datenschutz)
+location ^~ /media/namenskarten/ {
+    try_files $uri =404;
+}
+
+# Medien-Pfade: lokal ausliefern, falls vorhanden — sonst 301 auf den Bucket
+location ~ ^/(wp-content/uploads|img|media)/ {
+    try_files $uri @r2media;
+}
+location @r2media {
+    return 301 https://media.ainights.ai$request_uri;
+}
+```
+
+## Zusatzdomains und Sprachweiche (nginx, in Forge eingetragen)
+
+Hauptdomain bleibt **ainights.ai**. `ai-nights.com`, `ai-nights.de` und `ainights.de` (jeweils + `www.`) sind in Forge als Domains der Site angelegt (DNS bei Hetzner, A-Record auf den Forge-Server, eigenes Let's-Encrypt-Zertifikat je Domain) und leiten per 301 mit Pfad und Query auf `https://ainights.ai` weiter. `www.<alias>` geht zuerst per Forge-Standardregel auf `<alias>` und von dort auf `.ai` (zwei Hops).
+
+Ergänzt in Forge → Site → Domains → „Edit Nginx configuration“ → **General site configuration** (am Ende):
+
+```nginx
+# Zusatzdomains -> Hauptdomain ainights.ai (301, Pfad bleibt erhalten)
+if ($host ~* "^(www\.)?(ai-nights\.(com|de)|ainights\.de)$") { return 301 https://ainights.ai$request_uri; }
+# Startseite: Sprache aus Accept-Language (de -> /de/, sonst /en/)
+location = / { add_header Vary Accept-Language always; set $ain_home /de/; if ($http_accept_language ~* "^\s*(?!de)[a-z]{2}") { set $ain_home /en/; } return 302 $ain_home; }
+```
+
+- `/` leitet per **302** (nicht 301, weil sprachabhängig) auf `/de/` oder `/en/`. Ohne oder mit unbekanntem `Accept-Language` (Crawler) gilt Deutsch. Die Meta-Refresh-Seite aus `astro.config.mjs` (`'/': '/de/'`) bleibt nur als Fallback im Build.
+- Zertifikate erneuern sich über Forge automatisch (Let's Encrypt, ~30 Tage vor Ablauf).
