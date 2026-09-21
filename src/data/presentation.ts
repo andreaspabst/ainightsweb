@@ -1,6 +1,6 @@
 /**
  * Redaktionelle Inhalte für /events/<slug>/presentation/.
- * Quellen und Herkunft der unveränderten Logos: public/media/presentation/SOURCES.md.
+ * Quellen und Herkunft der unveränderten Logos: docs/presentation-quellen.md.
  * Titel, Stadt, Datum und Location kommen aus dem jeweiligen Event.
  */
 export type PresentationVideo =

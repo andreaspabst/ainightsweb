@@ -93,6 +93,54 @@ which npm    # → /usr/bin/npm
 
 Bilder, Videos und generierte Karten liegen in einem R2-Bucket (`ainights-media`, Custom Domain `media.ainights.ai`, Cache über Cloudflare). Der Pfad ist 1:1 wie bisher — `public/wp-content/uploads/…` ↔ `https://media.ainights.ai/wp-content/uploads/…`.
 
+- **Nicht im Repo:** `public/wp-content/uploads/`, `public/img/` und `public/media/` (außer `namenskarten/`) sind gitignored. Auf einer frischen Maschine: `npm run media:pull` (holt fehlende Dateien laut `src/data/media-manifest.json`, ohne Zugangsdaten).
+- **Hochladen:** `npm run media:push` (= `node scripts/r2-sync.mjs`; überspringt vorhandene Dateien; `--only <prefix>`, `--dry-run`). Braucht in `.env` `CLOUDFLARE_API_TOKEN` (R2 Edit) und `CLOUDFLARE_ACCOUNT_ID`. Nach jedem neuen Bild/jeder erzeugten Karte ausführen und `src/data/media-manifest.json` committen — Seiten fragen damit ab, ob eine Datei existiert (`src/lib/media.ts`), und der CI-Link-Check (`scripts/check-links.mjs`) prüft alle Medien-URLs dagegen. Ein Deploy ist zum Veröffentlichen von Medien nicht nötig.
+- **Build:** `scripts/postbuild.mjs` schreibt im Produktions-Build alle Medien-URLs auf `media.ainights.ai` um. Ausnahme: `/media/namenskarten/` (Gästenamen) bleibt auf `ainights.ai`. Lokal mit Dateien auf der Platte: `MEDIA_LOCAL=1 npm run build`. Die Speaker-Announcement-Grafiken werden **nicht mehr im Build** erzeugt: nach Speaker-Änderungen `node scripts/generate-speaker-announcements.mjs` und `npm run media:push`.
+- **Alte URLs (301):** Google und Social-Media-Vorschauen kennen noch `https://ainights.ai/wp-content/uploads/…`, `/img/…`, `/media/…`. Diese Pfade leitet nginx (Forge → Site → Domains → Edit Nginx configuration → General site configuration) per 301 auf den Bucket:
+
+```nginx
+# Namenskarten bleiben lokal (Datenschutz)
+location ^~ /media/namenskarten/ { try_files $uri =404; }
+# Medien-Pfade: lokal ausliefern, falls vorhanden — sonst 301 auf den Bucket
+location ~ ^/(wp-content/uploads|img|media)/ { try_files $uri @r2media; }
+location @r2media { return 301 https://media.ainights.ai$request_uri; }
+```
+
+- **CORS:** Der Bucket erlaubt GET/HEAD von `https://ainights.ai` (und `localhost:4321`), damit Browser-`fetch`/Canvas auf Medien funktionieren. Bilder in `<img>` brauchen das nicht.
+- **Achtung Download-Links:** Das `download`-Attribut wirkt nicht über Domaingrenzen — ein `<a download>` auf ein Medium öffnet es dann statt es zu speichern.
+
+### Wichtig: alte WordPress-URLs
+
+Die neue Site bildet die bestehenden URLs 1:1 ab (inkl. trailing slash, `/de/`, `/en/`, `/speaker/…`, `/sessions/…` usw.). Es sind daher normalerweise **keine** zusätzlichen Redirects nötig. Sollte doch eine URL wegfallen, hier einen `301` ergänzen. Der Root `/` leitet auf `/de/` (Default-Sprache).
+
+## DNS
+
+| Host             | Type | Wert                |
+| ---------------- | ---- | ------------------- |
+| `ainights.ai`    | A    | `<forge-server-ip>` |
+| `www.ainights.ai`| A    | `<forge-server-ip>` |
+
+## Server-Voraussetzungen
+
+Node 22 **systemweit** installieren (einmalig via SSH als `forge`-User). NVM funktioniert in Forge-Deploy-Shells nicht zuverlässig.
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node -v      # → v22.x
+which npm    # → /usr/bin/npm
+```
+
+## Erwartetes Ergebnis
+
+- Push auf `master` → Forge zieht, baut mit `npm run build`, serviert `dist/`
+- `ainights.ai` via HTTPS erreichbar, alle alten URLs funktionieren weiter
+- `www.ainights.ai` → 301 auf `https://ainights.ai`
+
+## Medien auf Cloudflare R2 (media.ainights.ai)
+
+Bilder, Videos und generierte Karten liegen in einem R2-Bucket (`ainights-media`, Custom Domain `media.ainights.ai`, Cache über Cloudflare). Der Pfad ist 1:1 wie bisher — `public/wp-content/uploads/…` ↔ `https://media.ainights.ai/wp-content/uploads/…`.
+
 - **Hochladen:** `node scripts/r2-sync.mjs` (überspringt vorhandene Dateien; `--only <prefix>`, `--dry-run`). Braucht in `.env` `CLOUDFLARE_API_TOKEN` (R2 Edit) und `CLOUDFLARE_ACCOUNT_ID`. Nach jedem neuen Bild/Karte ausführen, **bevor** deployt wird.
 - **Build:** `scripts/postbuild.mjs` schreibt im Produktions-Build alle Medien-URLs auf `media.ainights.ai` um. Ausnahme: `/media/namenskarten/` (Gästenamen) bleibt auf `ainights.ai`. Lokal ohne Bucket: `MEDIA_LOCAL=1 npm run build`.
 - **Alte URLs (301):** Solange die Dateien noch in `public/` liegen, werden sie lokal ausgeliefert. Für Dateien, die nur noch im Bucket liegen, in der nginx-Konfiguration (Forge → Site → Nginx Configuration) ergänzen:

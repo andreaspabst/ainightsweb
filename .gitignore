@@ -30,3 +30,11 @@ pnpm-debug.log*
 
 # roher Crawl-Archiv-Import (nur Referenz, nicht Teil der Site)
 _crawl/
+
+# Medien liegen im R2-Bucket (media.ainights.ai) — nicht im Repo.
+# Holen: `npm run media:pull` · Hochladen: `npm run media:push` (siehe DEPLOY.md).
+# Namenskarten-PDFs (Gästenamen) bleiben bewusst im Repo.
+/public/wp-content/uploads/
+/public/img/
+/public/media/*
+!/public/media/namenskarten/

@@ -84,7 +84,7 @@ Reichweite auf, ohne dass wir doppelt posten müssen.
   sonst läuft der Post normal, aber nur auf `ainights.ai`. Beim ersten Post
   einer neuen Serie kurz in die Benachrichtigungen des Stadt-Accounts schauen.
 
-## Schritt 1: Assets generieren und deployen
+## Schritt 1: Assets generieren und hochladen
 
 ```bash
 node scripts/generate-speaker-intro-cards.mjs <event-slug>
@@ -99,8 +99,11 @@ node scripts/generate-event-day.mjs <event-slug> --countdown 14,10,2
 Jedes dieser Skripte schreibt **pro Aufruf beide Formate** (`-instagram.png`
 und `-linkedin.png`) — es gibt keinen Schalter, der nur eines erzeugt.
 
-Ergebnis committen und deployen (PR → Merge → Forge) — **wichtig**, denn
-Metricool lädt die Bilder per öffentlicher URL von der Live-Site.
+Ergebnis mit `npm run media:push` in den R2-Bucket hochladen — **wichtig**, denn
+Metricool lädt die Bilder per öffentlicher URL. Medien liegen nicht mehr im
+Repo (nur lokal, gitignored); ein Deploy ist dafür **nicht** nötig, die Bilder
+sind sofort unter `https://media.ainights.ai/media/…` erreichbar. Das
+aktualisierte `src/data/media-manifest.json` gehört mit in den Commit.
 
 ### Welcher Kartentyp in welchem Format
 
@@ -124,20 +127,13 @@ LinkedIn-Post hängen.
 
 Beispiel-URLs:
 
-- `https://ainights.ai/media/save-the-date/<event-slug>-instagram.png` / `-linkedin.png`
-- `https://ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>-instagram.png` / `-linkedin.png`
-- `https://ainights.ai/media/event-lineups/<event-slug>-instagram.png` / `-linkedin.png`
-- `https://ainights.ai/media/event-day/<event-slug>-instagram.png` / `-linkedin.png`
-- `https://ainights.ai/media/countdown/<event-slug>-14-instagram.png` / `-linkedin.png`
+- `https://media.ainights.ai/media/save-the-date/<event-slug>-instagram.png` / `-linkedin.png`
+- `https://media.ainights.ai/media/speaker-intro-cards/<event-slug>/<speaker-slug>-instagram.png` / `-linkedin.png`
+- `https://media.ainights.ai/media/event-lineups/<event-slug>-instagram.png` / `-linkedin.png`
+- `https://media.ainights.ai/media/event-day/<event-slug>-instagram.png` / `-linkedin.png`
+- `https://media.ainights.ai/media/countdown/<event-slug>-14-instagram.png` / `-linkedin.png`
 
 Vor dem Einplanen jede URL einmal per `curl -I` gegenprüfen (muss 200 liefern).
-
-Muss ein Post angelegt werden, bevor der Branch gemerged ist (z. B. der
-Event-Tag-Post, wenn das Event kurz bevorsteht): Das Repo ist öffentlich, die
-Datei ist auf dem Feature-Branch also schon unter
-`https://raw.githubusercontent.com/andreaspabst/ainightsweb/<branch>/public/media/…`
-erreichbar. Metricool kopiert das Bild beim Anlegen sofort in die eigene
-Mediathek — der Branch darf danach gemerged und gelöscht werden.
 
 Metricool kopiert die Datei beim Anlegen in die eigene Mediathek; die
 Antwort enthält dann eine `static.metricool.com`-URL. Das ist normal.

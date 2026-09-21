@@ -17,7 +17,7 @@ Dieses Repo (`ainightsweb`) ist die neue, in **Astro** gebaute Version von **ain
 - `src/layouts/Layout.astro` — HTML-Gerüst, globale Styles und Design-Tokens (CSS Custom Properties), SEO-Meta, hreflang.
 - `src/content/` — Inhalte der Custom Post Types als Datendateien (Speaker, Sessions, Events, Sponsoren, Städte, AI-Assistants), aus WordPress migriert.
 - `src/data/` — Seiteninhalte/Navigation.
-- `public/img/` — alle Bilder (aus WordPress `wp-content/uploads` übernommen, per cURL geladen).
+- Medien (`public/wp-content/uploads/`, `public/img/`, `public/media/`) liegen **nicht im Repo**, sondern im Cloudflare-R2-Bucket `ainights-media` unter `https://media.ainights.ai/<pfad>` (gleiche Pfade wie bisher). Lokal sind sie gitignored: `npm run media:pull` holt sie, `npm run media:push` lädt neue/erzeugte Dateien hoch und pflegt `src/data/media-manifest.json` (mit committen). Im Code bleiben die Pfade `/wp-content/…`, `/img/…`, `/media/…`; der Produktions-Build (`scripts/postbuild.mjs`) schreibt sie auf `media.ainights.ai` um. Ausnahme: `public/media/namenskarten/` (Gästenamen) bleibt im Repo. Details: `DEPLOY.md`.
 
 ## Konventionen
 

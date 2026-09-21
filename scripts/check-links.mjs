@@ -27,6 +27,11 @@ async function* walk(dir) {
 const exists = async (p) => fs.access(p).then(() => true, () => false);
 
 // interne URL → Ziel im dist prüfen (trailingSlash: 'always' → Ordner/index.html)
+// Medien liegen im R2-Bucket: https://media.ainights.ai/<pfad> muss im Manifest
+// (src/data/media-manifest.json, gepflegt von scripts/r2-sync.mjs) stehen.
+const MEDIA_BASE = 'https://media.ainights.ai/';
+const mediaKeys = new Set(JSON.parse(await fs.readFile(path.join(ROOT, 'src/data/media-manifest.json'), 'utf8')));
+
 const checked = new Map();
 async function targetExists(url) {
   if (checked.has(url)) return checked.get(url);
@@ -63,6 +68,12 @@ for await (const file of walk(DIST)) {
   }
 
   for (const u of urls) {
+    if (u.startsWith(MEDIA_BASE)) {
+      refs++;
+      const key = decodeURI(u.slice(MEDIA_BASE.length).split('#')[0].split('?')[0]);
+      if (!mediaKeys.has(key)) problems.push(`${page}  →  Medium nicht im Bucket-Manifest: ${u}`);
+      continue;
+    }
     // extern, Anker, Mail/Tel, data-URIs überspringen
     if (!u.startsWith('/') || u.startsWith('//')) continue;
     refs++;

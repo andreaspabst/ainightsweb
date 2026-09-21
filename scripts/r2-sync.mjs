@@ -4,6 +4,10 @@
  * hoch — erreichbar unter https://media.ainights.ai/<pfad>. Bereits vorhandene
  * Objekte mit gleicher Größe werden übersprungen.
  *
+ * Pflegt außerdem das Manifest src/data/media-manifest.json (alle Schlüssel im
+ * Bucket) — der Build fragt damit ab, ob eine Datei existiert, statt Dateien
+ * von der Platte zu lesen. Manifest nach jedem Lauf mit committen.
+ *
  * Aufruf:
  *   node scripts/r2-sync.mjs [--dry-run] [--only <prefix>] [--concurrency 16]
  * Standard: wp-content/uploads, img und media (ohne media/namenskarten/ — die
@@ -19,6 +23,7 @@ import { ROOT, PUBLIC } from './lib/social-kit.mjs';
 process.loadEnvFile(path.join(ROOT, '.env'));
 
 const BUCKET = 'ainights-media';
+const MANIFEST = path.join(ROOT, 'src/data/media-manifest.json');
 const ROOTS = ['wp-content/uploads', 'img', 'media'];
 const EXCLUDE = ['media/namenskarten/'];
 const TYPES = {
@@ -46,7 +51,7 @@ async function* walk(dir) {
   for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) yield* walk(full);
-    else if (!entry.name.startsWith('.')) yield full;
+    else if (!entry.name.startsWith('.') && !entry.name.endsWith('.md')) yield full;
   }
 }
 
@@ -123,6 +128,18 @@ async function main() {
     }
   }
   await Promise.all(Array.from({ length: concurrency }, worker));
+
+  if (!dryRun && failed === 0) {
+    // Vereinigung, nie Löschen: auf einer Maschine mit unvollständigem lokalem Cache
+    // darf das Manifest nicht schrumpfen.
+    let known = [];
+    try { known = JSON.parse(await fs.readFile(MANIFEST, 'utf8')); } catch { /* neu anlegen */ }
+    const merged = [...new Set([...known, ...files.map((f) => f.key)])].sort();
+    if (merged.length !== known.length) {
+      await fs.writeFile(MANIFEST, JSON.stringify(merged, null, 0).replace(/","/g, '",\n"').replace(/^\[/, '[\n').replace(/\]$/, '\n]') + '\n');
+      console.log(`Manifest: ${merged.length} Schlüssel (${merged.length - known.length} neu) → src/data/media-manifest.json`);
+    }
+  }
   console.log(`Fertig: ${uploaded} ${dryRun ? 'würden hochgeladen' : 'hochgeladen'} (${(bytes / 1e6).toFixed(0)} MB), ${skipped} übersprungen, ${failed} Fehler.`);
   if (failed) process.exit(1);
 }

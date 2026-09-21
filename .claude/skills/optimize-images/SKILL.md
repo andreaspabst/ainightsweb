@@ -48,9 +48,11 @@ Web-Originalgröße eingebunden, sondern als passende WebP-Variante.
    Richtwerte: Hero/Vollbreite → `1600` oder `1024`, Karten/Grids → `640`,
    kleine Thumbnails → `320`.
 
-3. **Varianten + Manifest mit committen.** Die erzeugten `.webp`-Dateien und
-   `src/data/image-variants.json` gehören ins Repo (statischer Build, kein
-   Build-Step auf dem Server).
+3. **Hochladen und Manifeste committen.** Bilder und Varianten liegen nicht im
+   Repo, sondern im R2-Bucket (`https://media.ainights.ai`): `npm run media:push`
+   lädt sie hoch. Committet werden `src/data/image-variants.json` und
+   `src/data/media-manifest.json` (der Build prüft damit, welche Dateien
+   existieren). Auf einer frischen Maschine erst `npm run media:pull`.
 
 ## Nicht anfassen
 
