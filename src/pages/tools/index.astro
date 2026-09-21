@@ -1,9 +1,8 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
 import { getCollection } from 'astro:content';
 import { todayBerlin } from '../../lib/eventDates';
 import Layout from '../../layouts/Layout.astro';
+import { mediaExists, mediaList } from '../../lib/media';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
@@ -11,8 +10,7 @@ import Footer from '../../components/Footer.astro';
 // Fotos, Speaker-Intro-Videos, Announcement-Grafiken, Sponsor-Logos) — kein
 // Content für Besucher:innen, deshalb noindex und nirgends verlinkt.
 
-const PUBLIC_DIR = path.join(process.cwd(), 'public');
-const exists = (p: string) => fs.existsSync(path.join(PUBLIC_DIR, p));
+const exists = (p: string) => mediaExists(p);
 
 const [events, speakers, sponsors] = await Promise.all([
   getCollection('events'),
@@ -70,8 +68,7 @@ function lineupFor(eventSlug: string) {
 
 const slideNo = (f: string) => Number(f.match(/slide-(\d+)/)?.[1] ?? 0);
 function listDir(rel: string): string[] {
-  const abs = path.join(PUBLIC_DIR, rel);
-  return fs.existsSync(abs) ? fs.readdirSync(abs).filter((f) => f.endsWith('.png')) : [];
+  return mediaList(rel, '.png');
 }
 
 /** Event-Karussell (Line-up → Talks → Follow), je Format sortiert. */

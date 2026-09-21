@@ -6,7 +6,7 @@ import Footer from '../../components/Footer.astro';
 import SpeakerCard from '../../components/SpeakerCard.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { imgVariant } from '../../lib/images';
-import { existsSync } from 'node:fs';
+import { mediaExists } from '../../lib/media';
 
 const speakers = (await getCollection('speaker'))
   .filter((s) => !isPlaceholderSpeaker(s))
@@ -20,7 +20,7 @@ const shareCards = speakers
     square: `/media/speaker-announcements/${s.data.slug}-instagram.png`,
     wide: `/media/speaker-announcements/${s.data.slug}-linkedin.png`,
   }))
-  .filter((c) => existsSync(`public${c.square}`));
+  .filter((c) => mediaExists(c.square));
 
 const cardAlt = (d: { title: string; jobTitle?: string }) =>
   `Announcement-Grafik für ${d.title}: rundes Portrait im AI-Nights-Design mit Logo, Name` +

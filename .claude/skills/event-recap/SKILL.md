@@ -35,14 +35,13 @@ das Event-Datum.
 - Passt ein Motiv nicht, mit `--seed <n>` neu würfeln oder mit `--image <pfad>`
   setzen. **Jedes PNG vor dem Einplanen ansehen.**
 
-## Schritt 2: Ausliefern — Pflicht vor dem Planen
+## Schritt 2: Hochladen — Pflicht vor dem Planen
 
-Branch → PR → Merge → Forge-Deploy abwarten, dann jede Bild-URL per
-`curl -I` auf 200 prüfen. **Metricool zieht die Bilder per öffentlicher URL.**
-
-Muss ein Post vor dem Merge angelegt werden, geht auch die Roh-URL des
-Feature-Branches (`https://raw.githubusercontent.com/andreaspabst/ainightsweb/<branch>/public/media/…`) —
-Metricool kopiert das Bild sofort in die eigene Mediathek.
+`npm run media:push` lädt Deckblätter (und neue Galeriebilder) in den
+R2-Bucket; danach jede Bild-URL `https://media.ainights.ai/media/recap/…` per
+`curl -I` auf 200 prüfen. **Metricool zieht die Bilder per öffentlicher URL** —
+ein Deploy ist dafür nicht nötig. Die Galerie selbst (`gallery.json`,
+`media-manifest.json`, `image-variants.json`) geht wie gewohnt per PR live.
 
 ## Schritt 3: Sechs Posts in Metricool einplanen
 

@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "assets:speaker-announcements": "node scripts/generate-speaker-announcements.mjs",
-    "build": "node scripts/fetch-legal.mjs && npm run assets:speaker-announcements && astro build && node scripts/postbuild.mjs",
-    "preview": "node scripts/fetch-legal.mjs && npm run assets:speaker-announcements && SHOW_SCHEDULED=1 astro build && node scripts/postbuild.mjs && astro preview",
-    "astro": "astro"
+    "build": "node scripts/fetch-legal.mjs && astro build && node scripts/postbuild.mjs",
+    "preview": "node scripts/fetch-legal.mjs && SHOW_SCHEDULED=1 astro build && node scripts/postbuild.mjs && astro preview",
+    "astro": "astro",
+    "media:push": "node scripts/r2-sync.mjs",
+    "media:pull": "node scripts/r2-pull.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
