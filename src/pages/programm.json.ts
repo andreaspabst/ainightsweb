@@ -108,6 +108,10 @@ export const GET: APIRoute = async ({ site }) => {
       tier: entry.data.tier,
       website: entry.data.website,
       logo: absolute(entry.data.logo?.src ?? entry.data.image?.src, site),
+      // Für das Sponsorprofil in der App: ein Satz für die Liste, der Text der
+      // Sponsorseite für das Profil. Als HTML — die App macht daraus Absätze.
+      excerpt: entry.data.excerpt ?? null,
+      description: entry.data.contentHtml ?? null,
     })),
   };
 
