@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { CITIES, mapPosition } from '../lib/cities';
+import galleryData from '../data/gallery.json';
+import { imgVariant } from '../lib/images';
 
 /**
  * Das Programm als JSON, für die AXDN-App.
@@ -19,6 +21,25 @@ function absolute(path: string | undefined, site: URL | undefined): string | und
   if (path.startsWith('http')) return path;
 
   return new URL(path, site ?? 'https://ainights.ai').toString();
+}
+
+/**
+ * Die Fotos eines Abends — je Bild zwei Größen.
+ *
+ * Klein fürs Raster in der App, groß fürs Vollbild. Dieselben WebP-Varianten wie auf
+ * /galerie; fehlt eine Variante, fällt `imgVariant` auf das Original zurück.
+ */
+type GalleryGroup = { num: string; event: string; images: string[] };
+
+function galleryFor(slug: string, site: URL | undefined) {
+  const group = (galleryData as GalleryGroup[]).find((entry) => entry.event === slug);
+
+  if (!group) return [];
+
+  return group.images.map((image) => ({
+    thumb: absolute(imgVariant(image, 640), site),
+    full: absolute(imgVariant(image, 1600), site),
+  }));
 }
 
 export const GET: APIRoute = async ({ site }) => {
@@ -55,6 +76,8 @@ export const GET: APIRoute = async ({ site }) => {
         sessionIds: entry.data.sessionIds ?? [],
         speakerIds: entry.data.speakerIds ?? [],
         sponsorIds: entry.data.sponsorIds ?? [],
+        // Die Fotos des Abends für die Galerie in der App.
+        gallery: galleryFor(entry.data.slug, site),
         // Die Aftershow gehört zum Abend: wer ein Ticket hat, soll in der App sehen,
         // dass es danach weitergeht — samt dem, was im Ticket steckt.
         aftershow: entry.data.aftershow
