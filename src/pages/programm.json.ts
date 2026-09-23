@@ -41,6 +41,27 @@ export const GET: APIRoute = async ({ site }) => {
       onOverview: city.onOverview,
       ...mapPosition(city.lat, city.lon),
     })),
+    // Die Bildergalerien — unabhängig vom Ticketverkauf.
+    //
+    // Die vier ersten AI Nights liefen vor Joinify und tauchen deshalb nicht unter
+    // `events` auf. Ihre Fotos gibt es trotzdem, also stehen die Galerien hier für sich:
+    // mit Titel und Datum aus den Inhalten, und mit dem Joinify-Code, wo es einen gibt.
+    galleries: (galleryData as GalleryGroup[])
+      .map((group) => {
+        const event = events.find((entry) => entry.data.slug === group.event);
+
+        return {
+          slug: group.event,
+          title: event?.data.title ?? `AI Nights #${group.num}`,
+          date: event?.data.eventDate ?? null,
+          joinify: event?.data.platforms?.joinify ?? null,
+          images: group.images.map((image) => ({
+            thumb: absolute(imgVariant(image, 640), site),
+            full: absolute(imgVariant(image, 1600), site),
+          })),
+        };
+      })
+      .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')),
     events: events
       // Ohne Joinify-Code lässt sich das Event nicht zuordnen — dann hilft der Eintrag
       // niemandem und bläht die Datei nur auf.
