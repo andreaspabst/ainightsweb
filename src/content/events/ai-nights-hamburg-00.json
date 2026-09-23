@@ -11,6 +11,13 @@
   "eventDate": "2026-12-04",
   "city": "Hamburg",
   "date": "2026-09-23 00:00:00",
+  "startTime": "17:00",
+  "ticketUrl": "https://joinify.net/app/products/6hjq6jy2/tickets",
+  "platforms": {
+    "joinify": "6hjq6jy2",
+    "meetup": "316675242",
+    "luma": "https://luma.com/i272eph4"
+  },
   "coOrganizer": {
     "label": "Mitorganisator",
     "name": "LangChain",
