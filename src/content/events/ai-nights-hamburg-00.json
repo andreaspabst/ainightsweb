@@ -1,0 +1,34 @@
+{
+  "id": 1304,
+  "title": "AI Nights Hamburg | INSPIRE ✨ #01 - Nikolaus Edition!",
+  "slug": "ai-nights-hamburg-00",
+  "excerpt": "🎅 Nikolaus Edition der AI Nights Hamburg – der erste Afterwork-Abend der Reihe an der Elbe, vor der eigentlichen Premiere im Januar. Talks, Live-Demos und Austausch mit der Hamburger KI- und Tech-Community, mitorganisiert von der LangChain Community und präsentiert von hackers&wizards.",
+  "contentHtml": "<p>🎅 Bevor die <strong>AI Nights Hamburg</strong> im Januar offiziell Premiere feiern, gibt es schon vorher einen ersten Abend: die <strong>Nikolaus Edition</strong>. Ein entspannter Afterwork mit Talks, Live-Demos und echtem Austausch – für alle, die auf Cutting-Edge-KI und Agentic Engineering stehen.</p>\n<p>Mitorganisiert von der <strong>LangChain Community</strong> – dem globalen Netzwerk rund um das gleichnamige Open-Source-Framework für LLM-Anwendungen und KI-Agenten – und präsentiert von <strong>hackers&wizards</strong>, der Hamburger Software Factory für Agentic Engineering.</p>\n<p><strong>Ort:</strong> wird noch bekannt gegeben.</p>\n<p>💡 <strong>Save the Date: 4. Dezember 2026.</strong> Alle Details zu Location, Programm und Tickets folgen in Kürze.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/09/HH-00_ainights_inspire-hamburg.png",
+    "alt": "AI Nights Hamburg | INSPIRE ✨ #01 - Nikolaus Edition!"
+  },
+  "eventDate": "2026-12-04",
+  "city": "Hamburg",
+  "date": "2026-09-23 00:00:00",
+  "coOrganizer": {
+    "label": "Mitorganisator",
+    "name": "LangChain",
+    "text": "LangChain baut das gleichnamige Open-Source-Framework für LLM-Anwendungen und KI-Agenten, entwickelt von einem Team um Mitgründer und CEO Harrison Chase. Über sein globales Community-Programm vernetzt LangChain Entwickler:innen und Praktiker:innen rund um Agentic Engineering – mit eigenem Kalender, Community-Slack und Unterstützung für lokale Meetups. Für die Nikolaus Edition bringt die LangChain Community ihr Netzwerk als Mitorganisator ein.",
+    "bullets": [
+      "Open-Source-Framework für LLM-Anwendungen und KI-Agenten, entwickelt von einem Team um Mitgründer und CEO Harrison Chase.",
+      "Globales Community-Programm: eigener Event-Kalender, Community-Slack und Unterstützung für lokale Meetups weltweit.",
+      "Bringt Vernetzung, Sichtbarkeit und Reichweite in der internationalen Agentic-Engineering-Community mit."
+    ],
+    "website": "https://www.langchain.com",
+    "linkedin": "https://www.linkedin.com/company/langchain",
+    "logo": {
+      "src": "/wp-content/uploads/2026/09/langchain-logo.svg",
+      "alt": "LangChain"
+    }
+  },
+  "sponsorIds": [1500, 1506],
+  "speakerIds": [],
+  "sessionIds": [],
+  "moderatorIds": [257]
+}
