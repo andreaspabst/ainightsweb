@@ -10,6 +10,11 @@
     "alt": "Thomas Schönherr"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "CTO, Seobility GmbH",
+    "excerpt": "As CTO of Seobility, Thomas Schönherr works daily on software shaped heavily by automation and AI. His focus is on how software development changes when AI no longer just assists but actively writes code. At the AI Nights he shows why programming with AI mostly means thinking clearly about requirements, architecture and design.",
+    "bioHtml": "<p>As CTO of Seobility, Thomas Schönherr works daily on software shaped heavily by automation and AI. His focus is on how software development changes when AI no longer just assists but actively writes code. At the AI Nights he shows why programming with AI mostly means <strong>thinking clearly about requirements, architecture and design</strong> – and how specifications become the actual foundation of modern development.</p>"
+  },
   "date": "2026-01-01 20:43:47",
   "modified": "2026-01-14 12:24:21",
   "role": "speaker",

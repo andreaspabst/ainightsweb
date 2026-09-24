@@ -10,6 +10,20 @@
     "alt": "Maximilian Schreiber"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Co-Founder at Pantares AI",
+    "excerpt": "Maximilian is co-founder of Pantares AI, where he is responsible for building a multi-model AI platform. His focus areas therefore include model benchmarking and the design of intelligent routing structures and data flows.",
+    "bioHtml": "<p>Maximilian is co-founder of Pantares AI, where he is responsible for building a multi-model AI platform. His focus areas therefore include model benchmarking and the design of intelligent routing structures and data flows.</p>",
+    "topics": [
+      "Benchmarking AI models",
+      "Cost/benefit analysis and trade-offs between AI models",
+      "Prompt routing and multi-model AI"
+    ],
+    "keyTakeaways": [
+      "What the differences between AI models are, and how to spot and assess them to find the best one",
+      "How to identify the right AI models for your own needs, weighing quality criteria against cost"
+    ]
+  },
   "date": "2026-05-16 18:06:44",
   "modified": "2026-05-16 18:06:44",
   "socials": {

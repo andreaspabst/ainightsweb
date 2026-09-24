@@ -1,0 +1,425 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import { imgVariant } from '../../lib/images';
+import { speakerHref, speakersHref, foreignLang, type Lang } from '../../lib/i18n';
+
+export interface Props {
+  lang: Lang;
+  s: CollectionEntry<'speaker'>;
+}
+const { lang, s } = Astro.props;
+const d = s.data;
+
+// Englische Fassung des redaktionellen Teils; fehlt ein Feld, greift das
+// deutsche Original, damit nie eine leere Stelle entsteht.
+const en = lang === 'en' ? d.en : undefined;
+const jobTitle = en?.jobTitle ?? d.jobTitle;
+const excerpt = en?.excerpt ?? d.excerpt;
+const bioHtml = en?.bioHtml ?? d.bioHtml;
+const topics = en?.topics ?? d.topics;
+const keyTakeaways = en?.keyTakeaways ?? d.keyTakeaways;
+const seo = en?.seo ?? (lang === 'de' ? d.seo : undefined);
+
+// Sessions sind deutsch verfasst und liegen nur unter /sessions/<slug>/.
+const deLink = foreignLang(lang);
+
+const t = {
+  de: {
+    back: '← Alle Speaker',
+    eyebrow: 'Speaker',
+    srSuffix: ' — AI Nights Speaker',
+    topicsHead: 'Themen & Schwerpunkte',
+    takeawaysHead: 'Key Takeaways',
+    sessionsHead: 'Sessions',
+    downloadsHead: 'Media & Downloads',
+    dlLinkedin: 'Linkedin Speaker announcement',
+    dlInstagram: 'Instagram speaker announcement',
+    valueEyebrow: 'AI Nights Speaker',
+    valueHead: 'Speaker bei den AI\u00a0Nights',
+    values: [
+      ['Ausgezeichnete Fachexpertise', 'Menschen, die KI wirklich einsetzen – mit echter Praxis statt Buzzwords.'],
+      ['Unterhaltsamer Vortragsstil', 'Kurze, pointierte Sessions, die informieren und Spaß machen.'],
+      ['Topaktuelles Wissen', 'Frische Perspektiven auf die Themen, die gerade wirklich zählen.'],
+    ],
+    becomeEyebrow: 'Gemeinsam mehr Wert liefern',
+    becomeHead: 'Speaker werden',
+    becomeText: 'Du hast ein spannendes Thema und möchtest selbst auf der AI\u00a0Nights Bühne stehen?',
+    becomeCta: 'Jetzt Speaker werden',
+    applyHref: '/de/speaker-application/',
+    metaTitle: `${d.title} — AI Nights Speaker`,
+    metaDesc: `${d.title}${d.jobTitle ? `, ${d.jobTitle}` : ''} — Speaker bei den AI Nights.`,
+  },
+  en: {
+    back: '← All speakers',
+    eyebrow: 'Speaker',
+    srSuffix: ' — AI Nights speaker',
+    topicsHead: 'Topics & focus areas',
+    takeawaysHead: 'Key takeaways',
+    sessionsHead: 'Sessions',
+    downloadsHead: 'Media & downloads',
+    dlLinkedin: 'LinkedIn speaker announcement',
+    dlInstagram: 'Instagram speaker announcement',
+    valueEyebrow: 'AI Nights speakers',
+    valueHead: 'Speaking at the AI\u00a0Nights',
+    values: [
+      ['Outstanding expertise', 'People who genuinely use AI – real practice instead of buzzwords.'],
+      ['An entertaining delivery', 'Short, sharp sessions that inform and are fun to watch.'],
+      ['Right up to date', 'Fresh perspectives on the topics that actually matter right now.'],
+    ],
+    becomeEyebrow: 'Delivering more value together',
+    becomeHead: 'Become a speaker',
+    becomeText: 'Got a compelling topic and want to stand on the AI\u00a0Nights stage yourself?',
+    becomeCta: 'Become a speaker',
+    applyHref: '/en/speaker-application/',
+    metaTitle: `${d.title} — AI Nights speaker`,
+    metaDesc: `${d.title}${en?.jobTitle ?? d.jobTitle ? `, ${en?.jobTitle ?? d.jobTitle}` : ''} — speaker at the AI Nights.`,
+  },
+}[lang];
+
+// Sessions dieses Speakers
+const allSessions = await getCollection('sessions');
+const sessions = allSessions.filter(
+  (se) => se.data.speakerSlugs?.includes(d.slug) || (d.id && se.data.speakerIds?.includes(d.id)),
+);
+
+const socialLinks = [
+  d.socials?.instagram && ['Instagram', d.socials.instagram.startsWith('http') ? d.socials.instagram : `https://instagram.com/${d.socials.instagram.replace('@', '')}`],
+  d.socials?.tiktok && ['TikTok', d.socials.tiktok.startsWith('http') ? d.socials.tiktok : `https://tiktok.com/@${d.socials.tiktok.replace('@', '')}`],
+  d.socials?.x && ['X', d.socials.x.startsWith('http') ? d.socials.x : `https://x.com/${d.socials.x.replace('@', '')}`],
+  d.socials?.linkedin && ['LinkedIn', d.socials.linkedin],
+  d.socials?.website && ['Website', d.socials.website],
+  ...(d.links ?? []).map((l) => [l.label, l.url]),
+].filter(Boolean) as [string, string][];
+
+const mediaDownloads = [
+  { label: t.dlLinkedin, href: `/media/speaker-announcements/${d.slug}-linkedin.png` },
+  { label: t.dlInstagram, href: `/media/speaker-announcements/${d.slug}-instagram.png` },
+];
+---
+
+<Layout
+  lang={lang}
+  title={seo?.title ?? t.metaTitle}
+  description={seo?.description ?? excerpt ?? t.metaDesc}
+  path={speakerHref(d.slug, lang)}
+  alternates={{ de: speakerHref(d.slug, 'de'), en: speakerHref(d.slug, 'en') }}
+  image={d.image?.src}
+  ogType="profile"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: d.title,
+    jobTitle,
+    description: excerpt,
+    image: d.image?.src ? `https://ainights.ai${d.image.src}` : undefined,
+    url: `https://ainights.ai${speakerHref(d.slug, lang)}`,
+  }}
+>
+  <Header lang={lang} switchHref={speakerHref(d.slug, lang === 'de' ? 'en' : 'de')} />
+  <main class="container detail">
+    <a href={speakersHref(lang)} class="back">{t.back}</a>
+    <div class="head">
+      {d.image?.src && (
+        <div class="portrait">
+          <img src={imgVariant(d.image.src, 640)} alt={d.image.alt ?? d.title} width="480" height="480" />
+        </div>
+      )}
+      <div class="intro">
+        <p class="eyebrow">{t.eyebrow}</p>
+        <h1 class="display-font">{d.title}<span class="visually-hidden">{t.srSuffix}</span></h1>
+        {jobTitle && <p class="role">{jobTitle}</p>}
+        {socialLinks.length > 0 && (
+          <div class="socials">
+            {socialLinks.map(([label, href]) => (
+              <a href={href} target="_blank" rel="noopener">{label}</a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    {bioHtml && <div class="prose" set:html={bioHtml} />}
+
+    {(topics?.length ?? 0) > 0 && (
+      <section class="extra">
+        <h2 class="display-font">{t.topicsHead}</h2>
+        <ul class="topic-list">
+          {topics!.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {(keyTakeaways?.length ?? 0) > 0 && (
+      <section class="extra">
+        <h2 class="display-font">{t.takeawaysHead}</h2>
+        <ul class="takeaways">
+          {keyTakeaways!.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {sessions.length > 0 && (
+      <section class="talks">
+        <h2 class="display-font">{t.sessionsHead}</h2>
+        <ul>
+          {sessions.map((se) => (
+            <li>
+              <a href={`/sessions/${se.data.slug}/`} hreflang={deLink}>{se.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section class="downloads">
+      <h2 class="display-font">{t.downloadsHead}</h2>
+      <div class="download-actions">
+        {mediaDownloads.map((item) => (
+          <a href={item.href} download class="download-btn">{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <section class="value">
+      <p class="eyebrow">{t.valueEyebrow}</p>
+      <h2 class="display-font">{t.valueHead}</h2>
+      <div class="value-grid">
+        {t.values.map(([head, text]) => (
+          <div class="v"><strong>{head}</strong><span>{text}</span></div>
+        ))}
+      </div>
+    </section>
+
+    <section class="become card">
+      <p class="eyebrow">{t.becomeEyebrow}</p>
+      <h2 class="display-font">{t.becomeHead}</h2>
+      <p>{t.becomeText}</p>
+      <a href={t.applyHref} class="btn btn-primary">{t.becomeCta}</a>
+    </section>
+  </main>
+  <Footer lang={lang} />
+</Layout>
+
+<style>
+  .detail {
+    padding-block: 2.5rem 3rem;
+    max-width: 860px;
+  }
+  .back {
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .back:hover {
+    color: var(--magenta-bright);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    background: var(--glass-surface);
+    backdrop-filter: blur(24px) saturate(150%);
+    box-shadow: var(--glass-shadow);
+  }
+  .portrait img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 55px rgba(2,0,18,.4);
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: 0.4rem 0 0.6rem;
+  }
+  .role {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .socials {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .socials a {
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,.055);
+    backdrop-filter: blur(14px);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .socials a:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+  .prose {
+    color: var(--text-secondary);
+    font-size: 1.08rem;
+    line-height: 1.75;
+  }
+  .prose :global(p) {
+    margin-bottom: 1.2rem;
+  }
+  .extra {
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .extra h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .topic-list,
+  .takeaways {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .topic-list li,
+  .takeaways li {
+    position: relative;
+    padding-left: 1.6rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .topic-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--blue-bright);
+    font-weight: 700;
+  }
+  .takeaways li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--magenta-bright);
+    font-weight: 700;
+  }
+  .talks {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .talks h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .talks ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .talks a {
+    color: var(--text-primary);
+  }
+  .talks a:hover {
+    color: var(--magenta-bright);
+  }
+  .downloads {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  .downloads h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .download-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.75rem 1.1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.055);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .download-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--magenta-bright);
+    background: rgba(255, 45, 122, 0.12);
+  }
+  .value {
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+  }
+  .value h2 {
+    font-size: 1.5rem;
+    margin: 0.4rem 0 1.5rem;
+  }
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+  }
+  .value .v {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .value .v strong {
+    color: var(--text-primary);
+    font-size: 1.02rem;
+  }
+  .value .v span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .become {
+    margin-top: 2.5rem;
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .become h2 {
+    font-size: 1.8rem;
+    margin: 0.3rem 0 0.8rem;
+  }
+  .become p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 640px) {
+    .head {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .portrait {
+      max-width: 240px;
+    }
+  }
+</style>

@@ -10,6 +10,16 @@
     "alt": "Speaker AI Nights Martin Hofmann"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Head of IT, infra fürth group",
+    "excerpt": "Martin Hofmann is Head of IT at the infra fürth group, where he is responsible for planning, operating and developing highly available IT systems in critical infrastructure. For more than ten years he has also advised companies as a freelance consultant on complex IT transformation projects — from architecture design to operational rollout in regulated, safety-critical environments.",
+    "bioHtml": "<p>Martin Hofmann is Head of IT at the infra fürth group, where he is responsible for planning, operating and developing highly available IT systems in critical infrastructure. For more than ten years he has also advised companies as a freelance consultant on complex IT transformation projects — from architecture design to operational rollout in regulated, safety-critical environments.</p>",
+    "topics": [
+      "AI as a chance to make critical infrastructure services safer – for example through predictive maintenance",
+      "Risks from data leakage and dynamic, AI-driven attacks on critical systems",
+      "Service visibility as the single most important metric for spotting patterns"
+    ]
+  },
   "date": "2026-06-27 08:53:58",
   "modified": "2026-06-27 09:14:35",
   "socials": {

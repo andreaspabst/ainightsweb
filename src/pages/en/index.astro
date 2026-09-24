@@ -5,6 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import SpeakerCard from '../../components/SpeakerCard.astro';
+import { cityHref, speakersHref } from '../../lib/i18n';
 import EventCard from '../../components/EventCard.astro';
 import SponsorTiers from '../../components/SponsorTiers.astro';
 
@@ -70,7 +71,7 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
         </p>
         <div class="hero-cta">
           <a href="/en/tickets/" class="btn btn-primary">Get tickets</a>
-          <a href="/events/" class="btn btn-ghost">See all events</a>
+          <a href="/events/" class="btn btn-ghost" hreflang="de">See all events</a>
         </div>
         <div class="hero-stats">
           {stats.map(([num, label]) => (
@@ -91,7 +92,7 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
         </div>
         <div class="cities-row">
           <span>AI Nights in more cities:</span>
-          {cities.map((c) => <a href={`/stadt/${c.data.slug}/`} class="city-pill">{c.data.title}</a>)}
+          {cities.map((c) => <a href={cityHref(c.data.slug, 'en')} class="city-pill">{c.data.title}</a>)}
         </div>
       </div>
     </section>
@@ -121,10 +122,10 @@ const impressions = [1, 10, 12, 17, 21, 27, 39, 44].map(
         <h2 class="display-font sec-title">Learn from industry experts & thought leaders</h2>
         <div class="speaker-grid">
           {speakers.map((s) => (
-            <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} />
+            <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.en?.jobTitle ?? s.data.jobTitle} image={s.data.image} excerpt={s.data.en?.excerpt ?? s.data.excerpt} lang="en" />
           ))}
         </div>
-        <div class="center"><a href="/speaker/" class="btn btn-ghost">See all speakers</a></div>
+        <div class="center"><a href={speakersHref('en')} class="btn btn-ghost">See all speakers</a></div>
       </div>
     </section>
 

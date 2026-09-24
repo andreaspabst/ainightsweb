@@ -12,6 +12,23 @@
     "height": 1333
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Software Developer & Software Architect, Tantive GmbH",
+    "excerpt": "Cornelia Hebrank works at Tantive GmbH as a software developer and architect, and in that role is increasingly exploring where AI can be put to use. Her background in biological data analysis brings experience in data cleaning and training analytical AI models, and she is glad to offer a female perspective on the fair use of AI.",
+    "bioHtml": "<p>Cornelia Hebrank works at Tantive GmbH as a software developer and architect, and in that role is increasingly exploring where AI can be put to use. Her background in biological data analysis brings experience in data cleaning and training analytical AI models, and she is glad to offer a female perspective on the fair use of AI.</p>",
+    "topics": [
+      "AI systems",
+      "LLMs",
+      "Bias and fairness in technology",
+      "Training AI models"
+    ],
+    "keyTakeaways": [
+      "Fairness has to be part of AI systems from the very beginning",
+      "Where bias in AI models comes from and how it plays out",
+      "How data analysis and prompting put fairness in focus from the start",
+      "Why a diverse team and exchange with other groups of people help"
+    ]
+  },
   "date": "2026-08-17 00:00:00",
   "modified": "2026-08-17 00:00:00",
   "socials": {

@@ -40,6 +40,25 @@
   ],
   "role": "speaker",
   "topicArea": "non-tech",
+  "en": {
+    "jobTitle": "Managing Partner & Senior Consultant, VEND consulting GmbH",
+    "excerpt": "At VEND consulting GmbH, Oliver Vollrath and Florian Fuchs help companies strengthen their capacity to innovate and make use of the potential in data and AI.",
+    "bioHtml": "<p>At VEND consulting GmbH, Oliver Vollrath and Florian Fuchs help companies strengthen their capacity to innovate and make use of the potential in data and AI. As managing partner, Oliver brings years of consulting and teaching experience in innovation management, business agility and OKR, while Florian as senior consultant combines his experience from the start-up and software world with an eye for organisational change and modern collaboration.</p>\n<p>Their shared focus is on embedding new technologies lastingly in innovation processes, decision-making and company culture. They combine strategic orientation and methodological skill with practical delivery — from developing data-based ways of working to the targeted use of generative AI in innovation management.</p>",
+    "topics": [
+      "Generative AI in innovation management",
+      "Results of an empirical benchmark study",
+      "Challenges in the innovation process",
+      "AI use cases and perceived benefit",
+      "Maturity and organisational anchoring",
+      "Data quality, skills and governance"
+    ],
+    "keyTakeaways": [
+      "Use is not yet anchoring: individual successful applications need clear ownership, shared ways of working and integration into the innovation process",
+      "Time saved is the strongest perceived benefit — whether it produces better innovation outcomes has to be assessed separately",
+      "Trust in the results, suitable data and in-house skills are central prerequisites for wider adoption",
+      "The sensible next step depends on your stage: run targeted pilots, scale proven applications, or orchestrate how several applications work together"
+    ]
+  },
   "date": "2026-09-07 00:00:00",
   "modified": "2026-09-07 00:00:00"
 }

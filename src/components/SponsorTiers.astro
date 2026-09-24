@@ -6,6 +6,11 @@ export interface Props {
 }
 const { lang = 'de' } = Astro.props;
 
+import { foreignLang } from '../lib/i18n';
+
+// Sponsorenprofile liegen nur unter /sponsor/<slug>/ und sind deutsch verfasst.
+const deLink = foreignLang(lang);
+
 const sponsors = await getCollection('sponsor');
 const tierOrder = ['platin', 'gold', 'silver', 'bronce'];
 const labels: Record<string, Record<string, string>> = {
@@ -23,7 +28,7 @@ const groups = tierOrder
       <h2 class="tier-label">{group.label}</h2>
       <div class="row">
         {group.items.map((s) => (
-          <a href={`/sponsor/${s.data.slug}/`} class="sponsor card" title={s.data.title}>
+          <a href={`/sponsor/${s.data.slug}/`} class="sponsor card" title={s.data.title} hreflang={deLink}>
             <div class="logo">
               <img src={s.data.logo?.src ?? s.data.image?.src} alt={s.data.title} loading="lazy" />
             </div>

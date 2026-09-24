@@ -10,6 +10,11 @@
     "alt": "Julian B. Schulze"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Tech Lead @Codersgarden",
+    "excerpt": "Tech lead at Codersgarden and founder of the Digital Leaders Lounge. What surprises most people: before I wrote software, I was a police officer — and exactly that combination is what drives “Let's Talk!”, an AI training platform for policing students and trainee teachers.",
+    "bioHtml": "<p>Tech lead at Codersgarden and founder of the Digital Leaders Lounge. What surprises most people: before I wrote software, I was a police officer — and exactly that combination is what drives \"Let's Talk!\", an AI training platform for policing students and trainee teachers.</p>"
+  },
   "date": "2026-01-01 20:44:23",
   "modified": "2026-01-06 18:12:21",
   "role": "speaker",

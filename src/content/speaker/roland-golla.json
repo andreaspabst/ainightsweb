@@ -10,6 +10,17 @@
     "alt": "Roland Golla"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "AI Engineer & YouTuber, Never Code Alone",
+    "excerpt": "Roland Golla campaigns for software quality, better working conditions and the mental health of developers. He is an open source enthusiast and YouTuber at Never Code Alone, an award-winning Cypress Ambassador, keynote speaker and AI engineer, and has published more than 30 technical articles in Entwickler Magazin.",
+    "bioHtml": "<p>Roland Golla campaigns for software quality, better working conditions and the mental health of developers. He is an open source enthusiast and YouTuber at Never Code Alone, an award-winning Cypress Ambassador, keynote speaker and AI engineer, and has published more than 30 technical articles in Entwickler Magazin.</p>",
+    "keyTakeaways": [
+      "A test-first workflow for production-ready AI coding — from idea to deployment",
+      "Securing AI-generated code: static analysis, API-first, unit and E2E tests",
+      "Automated quality checks with GitLab CI/CD",
+      "A sovereign AI stack without vendor lock-in: OpenCode + Ollama Cloud"
+    ]
+  },
   "date": "2026-01-03 12:55:57",
   "modified": "2026-09-05 20:00:00",
   "role": "speaker",

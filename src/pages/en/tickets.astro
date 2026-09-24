@@ -102,12 +102,12 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
         <div class="grid">
           {cards.map((c) => (
             <article class="ticket-card card" data-city={c.city}>
-              <a href={`/events/${c.slug}/`} class="cover">
+              <a href={`/events/${c.slug}/`} class="cover" hreflang="de">
                 {c.image?.src && <img src={imgVariant(c.image.src, 640)} alt={c.image.alt ?? c.title} loading="lazy" width="640" height="400" />}
                 {c.city && <span class="city-badge" style={`background: ${cityColor(c.city)}`}>{c.city}</span>}
               </a>
               <div class="body">
-                <h3><a href={`/events/${c.slug}/`}>{c.title}</a></h3>
+                <h3><a href={`/events/${c.slug}/`} hreflang="de">{c.title}</a></h3>
                 {c.excerpt && <p class="excerpt">{c.excerpt}</p>}
                 {c.aftershow?.cardNote && (
                   <AftershowBadge note={c.aftershow.cardNote} logo={c.aftershow.partnerLogo} logoAlt={c.aftershow.partnerName} />
@@ -172,7 +172,7 @@ const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))] as string[
                   )}
                 </ul>
 
-                <a href={`/events/${c.slug}/`} class="secure">Secure your spot&nbsp;→</a>
+                <a href={`/events/${c.slug}/`} class="secure" hreflang="de">Secure your spot&nbsp;→</a>
               </div>
             </article>
           ))}

@@ -1,9 +1,9 @@
 ---
-// Deutsches Speaker-Profil. URL bleibt /speaker/<slug>/ (WordPress-Bestand);
-// die englische Fassung liegt unter /en/speakers/<slug>/.
+// Englisches Speaker-Profil — gleiche Komponente wie /speaker/<slug>/.
+// Der redaktionelle Teil kommt aus dem `en`-Block der Speaker-Datei.
 import { getCollection } from 'astro:content';
-import { isPlaceholderSpeaker } from '../../lib/speakers';
-import SpeakerPage from '../../components/pages/SpeakerPage.astro';
+import { isPlaceholderSpeaker } from '../../../lib/speakers';
+import SpeakerPage from '../../../components/pages/SpeakerPage.astro';
 
 export async function getStaticPaths() {
   const speakers = await getCollection('speaker');
@@ -15,4 +15,4 @@ export async function getStaticPaths() {
 const { s } = Astro.props;
 ---
 
-<SpeakerPage lang="de" s={s} />
+<SpeakerPage lang="en" s={s} />

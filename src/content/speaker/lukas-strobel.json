@@ -10,6 +10,14 @@
     "alt": "Lukas Strobel"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "AI Specialist",
+    "excerpt": "Lukas Strobel came to artificial intelligence through his geography studies. From classic machine learning methods to convolutional neural networks he trained himself, he has been working on AI projects for years — professionally and privately. For his bachelor's thesis he predicted snowdrifts on satellite-like imagery, cutting processes that used to take days down to minutes.",
+    "bioHtml": "<p>Lukas Strobel came to artificial intelligence through his geography studies. From classic machine learning methods to convolutional neural networks he trained himself, he has been working on AI projects for years — professionally and privately. For his bachelor's thesis he predicted snowdrifts on satellite-like imagery, cutting processes that used to take days down to minutes. Without a classic IT background, Lukas develops and codes hands-on AI solutions, drawing on Mistral, Codex and OCR models among others. His focus is on how AI is put to sensible use as a tool — and how teams actually come to embrace it.</p>",
+    "topics": [
+      "AI in HR – Presenting the Lorenz In-House AI"
+    ]
+  },
   "date": "2026-01-24 20:22:01",
   "modified": "2026-03-12 09:59:21",
   "socials": {

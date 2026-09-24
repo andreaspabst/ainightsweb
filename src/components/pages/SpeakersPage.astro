@@ -1,0 +1,439 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import SpeakerCard from '../SpeakerCard.astro';
+import { isPlaceholderSpeaker } from '../../lib/speakers';
+import { imgVariant } from '../../lib/images';
+import { speakersHref, speakerHref, type Lang } from '../../lib/i18n';
+import { mediaExists } from '../../lib/media';
+
+export interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+
+const speakers = (await getCollection('speaker'))
+  .filter((s) => !isPlaceholderSpeaker(s))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'de'));
+
+// Announcement-Grafiken (erzeugt von scripts/generate-speaker-announcements.mjs).
+// Auf der Detailseite hängen sie als Download — hier werden sie auch gezeigt.
+const shareCards = speakers
+  .map((s) => ({
+    d: s.data,
+    square: `/media/speaker-announcements/${s.data.slug}-instagram.png`,
+    wide: `/media/speaker-announcements/${s.data.slug}-linkedin.png`,
+  }))
+  .filter((c) => mediaExists(c.square));
+
+const cardAlt = (d: { title: string; jobTitle?: string }) =>
+  lang === 'en'
+    ? `Announcement graphic for ${d.title}: round portrait in the AI Nights design with logo, name` +
+      (d.jobTitle ? ` and role “${d.jobTitle}”` : '')
+    : `Announcement-Grafik für ${d.title}: rundes Portrait im AI-Nights-Design mit Logo, Name` +
+      (d.jobTitle ? ` und Rolle „${d.jobTitle}“` : '');
+
+const t = {
+  de: {
+    title: 'Unsere Speaker — AI Nights Expert:innen',
+    description:
+      'Alle Speaker der AI Nights: Branchen-Expert:innen und Vordenker:innen, die auf unseren Bühnen über KI aus Praxis, Business und Entwicklung sprechen.',
+    eyebrow: 'Auf unseren Bühnen',
+    h1: 'Speaker der AI\u00a0Nights',
+    sub: 'Lerne von Menschen, die KI tatsächlich einsetzen – mit Erfolgen, Umwegen und ehrlichen Learnings.',
+    searchPlaceholder: 'Speaker suchen, z. B. Name oder Thema…',
+    searchLabel: 'Speaker suchen',
+    roleGroup: 'Nach Rolle filtern',
+    roleAll: 'Alle',
+    roleSpeaker: 'Speaker',
+    roleModeration: 'Moderation',
+    topicGroup: 'Nach Themenbereich filtern',
+    topicAll: 'Alle Themen',
+    topicTech: 'Tech',
+    topicNonTech: 'Non-Tech (HR, Marketing …)',
+    emptyState: 'Keine Speaker gefunden. Versuch\u2019s mit anderen Filtern.',
+    shareEyebrow: 'Zum Teilen & Herunterladen',
+    shareHead: 'Speaker-Grafiken',
+    shareSub:
+      'Jede Speaker-Ankündigung im AI-Nights-Look — fertig für LinkedIn, Instagram & Co. Klick aufs Bild lädt die quadratische Version, „quer“ das LinkedIn-Format.',
+    downloadLabel: (n: string) => `Grafik von ${n} herunterladen`,
+    square: 'quadratisch ↓',
+    wide: 'quer ↓',
+    becomeEyebrow: 'Deine Bühne wartet',
+    becomeHead: 'Werde selbst Speaker!',
+    becomeSub:
+      'Du setzt KI in der Praxis ein und hast etwas zu erzählen? Dann gehörst du auf die AI\u00a0Nights Bühne — egal ob erster Talk oder hundertster.',
+    reasons: [
+      ['👀', 'Sichtbarkeit erhöhen', 'Präsentiere dein Expertise vor KI-Profis, Entscheidern und Enthusiasten — auf der Bühne und in unserem Content danach.'],
+      ['🤝', 'Netzwerk erweitern', 'Direkter Kontakt zu C-Level, IT-Entscheidern, Gründern und anderen Speakern — in entspannter Afterwork-Atmosphäre.'],
+      ['🏆', 'Ruf aufbauen', 'Etabliere dich als Vordenker in der KI-Community — mit eigenem Speaker-Profil und Session-Seite auf ainights.ai.'],
+      ['🎬', 'Voller Support', 'Profi-Technik, Bühnenlicht, Event-Promotion in unseren Kanälen und Fotos vom Abend — wir kümmern uns drum.'],
+    ],
+    ctaPrimary: 'Jetzt als Speaker bewerben',
+    ctaSecondary: 'Mehr zum Speaker-Programm',
+    applyHref: '/de/speaker-application/',
+  },
+  en: {
+    title: 'Our Speakers — the AI Nights experts',
+    description:
+      'All AI Nights speakers: industry experts and forward thinkers who take our stages to talk about AI in practice, business and development.',
+    eyebrow: 'On our stages',
+    h1: 'Speakers of the AI\u00a0Nights',
+    sub: 'Learn from people who actually put AI to work — with wins, detours and honest learnings.',
+    searchPlaceholder: 'Search speakers, e.g. name or topic…',
+    searchLabel: 'Search speakers',
+    roleGroup: 'Filter by role',
+    roleAll: 'All',
+    roleSpeaker: 'Speakers',
+    roleModeration: 'Hosts',
+    topicGroup: 'Filter by topic area',
+    topicAll: 'All topics',
+    topicTech: 'Tech',
+    topicNonTech: 'Non-tech (HR, marketing …)',
+    emptyState: 'No speakers found. Try a different filter.',
+    shareEyebrow: 'Share & download',
+    shareHead: 'Speaker graphics',
+    shareSub:
+      'Every speaker announcement in the AI Nights look — ready for LinkedIn, Instagram & co. Clicking the image downloads the square version, “wide” gives you the LinkedIn format.',
+    downloadLabel: (n: string) => `Download the graphic for ${n}`,
+    square: 'square ↓',
+    wide: 'wide ↓',
+    becomeEyebrow: 'Your stage is waiting',
+    becomeHead: 'Become a speaker yourself!',
+    becomeSub:
+      'You use AI in practice and have something to share? Then you belong on the AI\u00a0Nights stage — whether it is your first talk or your hundredth.',
+    reasons: [
+      ['👀', 'Grow your visibility', 'Present your expertise to AI professionals, decision makers and enthusiasts — on stage and in our content afterwards.'],
+      ['🤝', 'Expand your network', 'Direct contact with C-level, IT decision makers, founders and fellow speakers — in a relaxed afterwork atmosphere.'],
+      ['🏆', 'Build your reputation', 'Establish yourself as a thought leader in the AI community — with your own speaker profile and session page on ainights.ai.'],
+      ['🎬', 'Full support', 'Professional tech, stage lighting, event promotion across our channels and photos from the night — we take care of it.'],
+    ],
+    ctaPrimary: 'Apply as a speaker',
+    ctaSecondary: 'More about the speaker programme',
+    applyHref: '/en/speaker-application/',
+  },
+}[lang];
+
+---
+
+<Layout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  path={speakersHref(lang)}
+  alternates={{ de: speakersHref('de'), en: speakersHref('en') }}
+>
+  <Header lang={lang} switchHref={speakersHref(lang === 'de' ? 'en' : 'de')} />
+  <main class="container archive section">
+    <p class="eyebrow">{t.eyebrow}</p>
+    <h1 class="display-font">{t.h1}</h1>
+    <p class="sub">{t.sub}</p>
+
+    <div class="filters">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="search" id="speaker-search" placeholder={t.searchPlaceholder} aria-label={t.searchLabel} />
+      </div>
+      <div class="pill-group" role="group" aria-label={t.roleGroup}>
+        <button type="button" class="pill active" data-filter="role" data-value="all">{t.roleAll}</button>
+        <button type="button" class="pill" data-filter="role" data-value="speaker">{t.roleSpeaker}</button>
+        <button type="button" class="pill" data-filter="role" data-value="moderator">{t.roleModeration}</button>
+      </div>
+      <div class="pill-group" role="group" aria-label={t.topicGroup}>
+        <button type="button" class="pill active" data-filter="topic" data-value="all">{t.topicAll}</button>
+        <button type="button" class="pill" data-filter="topic" data-value="tech">{t.topicTech}</button>
+        <button type="button" class="pill" data-filter="topic" data-value="non-tech">{t.topicNonTech}</button>
+      </div>
+    </div>
+
+    <div class="grid" id="speaker-grid">
+      {speakers.map((s) => (
+        <div
+          class="speaker-item"
+          data-role={s.data.role ?? 'speaker'}
+          data-topic={s.data.topicArea ?? ''}
+          data-search={`${s.data.title} ${(lang === 'en' && s.data.en?.jobTitle) || s.data.jobTitle || ''} ${(lang === 'en' && s.data.en?.excerpt) || s.data.excerpt || ''}`.toLowerCase()}
+        >
+          <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={(lang === 'en' && s.data.en?.jobTitle) || s.data.jobTitle} image={s.data.image} excerpt={(lang === 'en' && s.data.en?.excerpt) || s.data.excerpt} lang={lang} />
+        </div>
+      ))}
+    </div>
+    <p class="empty" id="speaker-empty" hidden>{t.emptyState}</p>
+
+    {shareCards.length > 0 && (
+      <section class="sharepics">
+        <div class="sp-head">
+          <p class="eyebrow">{t.shareEyebrow}</p>
+          <h2 class="display-font">{t.shareHead}</h2>
+          <p class="sub center">{t.shareSub}</p>
+        </div>
+        <div class="sp-grid">
+          {shareCards.map((c) => (
+            <figure class="sp-item card">
+              <a href={c.square} download={`ai-nights-${c.d.slug}.png`} aria-label={t.downloadLabel(c.d.title)}>
+                <img src={imgVariant(c.square, 640)} alt={cardAlt(c.d)} loading="lazy" width="1080" height="1080" />
+              </a>
+              <figcaption>
+                <a class="sp-name" href={speakerHref(c.d.slug, lang)}>{c.d.title}</a>
+                <span class="sp-dl">
+                  <a href={c.square} download={`ai-nights-${c.d.slug}.png`}>{t.square}</a>
+                  <a href={c.wide} download={`ai-nights-${c.d.slug}-linkedin.png`}>{t.wide}</a>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="become">
+      <div class="become-head">
+        <p class="eyebrow">{t.becomeEyebrow}</p>
+        <h2 class="display-font">{t.becomeHead}</h2>
+        <p class="sub center">{t.becomeSub}</p>
+      </div>
+      <div class="reasons">
+        {t.reasons.map(([icon, head, text]) => (
+          <div class="reason card">
+            <span class="r-icon">{icon}</span>
+            <h3>{head}</h3>
+            <p>{text}</p>
+          </div>
+        ))}
+      </div>
+      <div class="become-cta">
+        <a href={`${t.applyHref}#signup-form`} class="btn btn-primary">{t.ctaPrimary}</a>
+        <a href={t.applyHref} class="btn btn-ghost">{t.ctaSecondary}</a>
+      </div>
+    </section>
+  </main>
+  <Footer lang={lang} />
+</Layout>
+
+<script>
+  const searchInput = document.getElementById('speaker-search') as HTMLInputElement | null;
+  const grid = document.getElementById('speaker-grid');
+  const empty = document.getElementById('speaker-empty');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.speaker-item'));
+  const pillGroups = Array.from(document.querySelectorAll<HTMLElement>('.pill-group'));
+
+  const state = { search: '', role: 'all', topic: 'all' };
+
+  function applyFilters() {
+    let visibleCount = 0;
+    for (const item of items) {
+      const matchesSearch = !state.search || (item.dataset.search ?? '').includes(state.search);
+      const matchesRole = state.role === 'all' || item.dataset.role === state.role;
+      const matchesTopic = state.topic === 'all' || item.dataset.topic === state.topic;
+      const visible = matchesSearch && matchesRole && matchesTopic;
+      item.hidden = !visible;
+      if (visible) visibleCount++;
+    }
+    if (grid) grid.hidden = visibleCount === 0;
+    if (empty) empty.hidden = visibleCount !== 0;
+  }
+
+  searchInput?.addEventListener('input', () => {
+    state.search = searchInput.value.trim().toLowerCase();
+    applyFilters();
+  });
+
+  for (const group of pillGroups) {
+    const filterKey = group.querySelector<HTMLElement>('[data-filter]')?.dataset.filter as 'role' | 'topic' | undefined;
+    if (!filterKey) continue;
+    group.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.pill');
+      if (!btn) return;
+      state[filterKey] = btn.dataset.value ?? 'all';
+      for (const p of group.querySelectorAll('.pill')) p.classList.toggle('active', p === btn);
+      applyFilters();
+    });
+  }
+</script>
+
+<style>
+  .sharepics {
+    margin-top: 4rem;
+  }
+  .sp-head {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .sp-head h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0.3rem 0 0.7rem;
+  }
+  .sp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.2rem;
+  }
+  .sp-item {
+    overflow: hidden;
+    border-radius: 20px;
+    margin: 0;
+  }
+  .sp-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    transition: transform .4s ease;
+  }
+  .sp-item:hover img {
+    transform: scale(1.03);
+  }
+  .sp-item figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 0.95rem 0.9rem;
+  }
+  .sp-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .sp-name:hover {
+    color: var(--magenta-bright);
+  }
+  .sp-dl {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.78rem;
+  }
+  .sp-dl a {
+    color: var(--blue-bright);
+  }
+  .sp-dl a:hover {
+    color: var(--magenta-bright);
+  }
+  .archive {
+    padding-block: 3rem 4rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 2rem;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--glass-surface);
+    color: var(--text-muted);
+    flex: 1 1 240px;
+    max-width: 340px;
+  }
+  .search input {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    width: 100%;
+  }
+  .search input:focus {
+    outline: none;
+  }
+  .search input::placeholder {
+    color: var(--text-muted);
+  }
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .pill {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .pill:hover {
+    color: var(--text-primary);
+    border-color: var(--glass-border-hover);
+  }
+  .pill.active {
+    background: var(--gradient-text);
+    border-color: transparent;
+    color: #fff;
+  }
+  .empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+  .become {
+    margin-top: 4rem;
+    border-top: 1px solid var(--border);
+    padding-top: 3rem;
+  }
+  .become-head {
+    text-align: center;
+  }
+  .become-head h2 {
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .sub.center {
+    text-align: center;
+    margin: 0 auto 2.2rem;
+  }
+  .reasons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+  .reason {
+    padding: 1.5rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .r-icon {
+    font-size: 1.6rem;
+  }
+  .reason h3 {
+    font-size: 1.08rem;
+    color: var(--text-primary);
+  }
+  .reason p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .become-cta {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2.2rem;
+  }
+</style>

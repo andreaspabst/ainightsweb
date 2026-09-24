@@ -58,6 +58,20 @@ const speaker = defineCollection({
     moderatorLabel: z.string().optional(),
     topicArea: z.enum(['tech', 'non-tech']).optional(),
     seo,
+    // Englische Fassung des redaktionellen Teils für /en/speakers/<slug>/.
+    // Fehlt ein Feld, fällt die englische Seite auf das deutsche Original
+    // zurück — ein Profil ohne `en` erscheint also weiterhin, nur eben
+    // deutsch, statt zu verschwinden.
+    en: z
+      .object({
+        jobTitle: z.string().optional(),
+        excerpt: z.string().optional(),
+        bioHtml: z.string().optional(),
+        topics: z.array(z.string()).optional(),
+        keyTakeaways: z.array(z.string()).optional(),
+        seo: seo,
+      })
+      .optional(),
     date: z.string().optional(),
     modified: z.string().optional(),
   }),

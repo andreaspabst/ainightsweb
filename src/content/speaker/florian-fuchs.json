@@ -10,6 +10,19 @@
     "alt": "Florian Fuchs"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Senior Consultant at VEND consulting GmbH",
+    "excerpt": "Florian Fuchs is a senior consultant at VEND consulting GmbH and guides companies on their way to becoming data-driven organisations. His experience in the start-up and software world combines technical understanding with a clear eye for organisational change and modern collaboration.",
+    "bioHtml": "<p>Florian Fuchs is a senior consultant at VEND consulting GmbH and guides companies on their way to becoming data-driven organisations. His experience in the start-up and software world combines technical understanding with a clear eye for organisational change and modern collaboration.</p><p>His focus is on helping companies not just make data technically available, but embed it lastingly in decision-making, collaboration and company culture. He works in particular on data culture, digital transformation and the successful rollout of data-based ways of working.</p>",
+    "topics": [
+      "Data culture – what is it, and if so, how many? Lessons from practice"
+    ],
+    "keyTakeaways": [
+      "Understand which knowledge and skills are needed to make good use of data in daily work and decisions",
+      "Practical insight into where organisations are heading and how data-based collaboration can be lived in a company",
+      "Orientation on which first steps and behaviours foster a successful data culture"
+    ]
+  },
   "date": "2026-05-16 14:40:39",
   "modified": "2026-05-16 17:54:36",
   "socials": {

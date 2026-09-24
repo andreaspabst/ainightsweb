@@ -10,6 +10,11 @@
     "alt": "Tim Junge & Markus Utomo"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Associate Partner @ IBM & game development for brands, hotels and consulting firms | TEDx speaker",
+    "excerpt": "Tim Junge brings more than 15 years of experience in technology, business and transformation, with a clear focus on artificial intelligence and automation. As account partner he helps companies and the public sector deliver strategic initiatives. Markus Utomo, a qualified game and learning designer, develops innovative learning concepts that convey knowledge playfully and lastingly.",
+    "bioHtml": "<p>Tim Junge brings more than 15 years of experience in technology, business and transformation, with a clear focus on artificial intelligence and automation. As account partner he helps companies and the public sector deliver strategic initiatives. Markus Utomo, a qualified game and learning designer, develops innovative learning concepts that convey knowledge playfully and lastingly. Together they show how AI, strategy and gamification excite people, rethink learning and make transformation work.</p>"
+  },
   "date": "2026-07-09 22:22:42",
   "modified": "2026-07-11 14:37:46",
   "role": "speaker",

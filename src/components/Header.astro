@@ -1,13 +1,26 @@
 ---
 export interface Props {
   lang?: 'de' | 'en';
+  /**
+   * Ziel des Sprachschalters. Seiten mit einem Gegenstück in der anderen
+   * Sprache (z. B. /stadt/ ↔ /en/cities/) geben es hier an, damit der Wechsel
+   * auf derselben Seite bleibt statt auf der Startseite zu landen.
+   */
+  switchHref?: string;
 }
-const { lang = 'de' } = Astro.props;
+const { lang = 'de', switchHref } = Astro.props;
+
+import { citiesHref, cityHref, speakersHref, foreignLang } from '../lib/i18n';
+
+// Blog gibt es nur auf Deutsch — Sprachwechsel am Link auszeichnen,
+// statt englische Besucher wortlos auf eine deutsche Seite zu schicken.
+const deLink = foreignLang(lang);
 
 const t = {
   de: {
     home: '/de/',
     cities: 'Städte',
+    allCities: 'Alle Städte',
     speaker: 'Speaker',
     sponsors: 'Sponsoren',
     blog: 'Blog',
@@ -26,7 +39,8 @@ const t = {
   en: {
     home: '/en/',
     cities: 'Cities',
-    speaker: 'Speaker',
+    allCities: 'All cities',
+    speaker: 'Speakers',
     sponsors: 'Sponsors',
     blog: 'Blog',
     gallery: 'Gallery',
@@ -42,6 +56,8 @@ const t = {
     switchHref: '/de/',
   },
 }[lang];
+
+const langSwitchHref = switchHref ?? t.switchHref;
 ---
 
 <header class="site-header">
@@ -57,20 +73,20 @@ const t = {
           <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="drop-menu">
-          <a href="/stadt/nuernberg/">{t.nuernberg}</a>
-          <a href="/stadt/muenchen/">{t.muenchen}</a>
-          <a href="/stadt/bayreuth/">{t.bayreuth}</a>
-          <a href="/stadt/hamburg/">{t.hamburg}</a>
-          <a href="/stadt/">{lang === 'de' ? 'Alle Städte' : 'All cities'}</a>
+          <a href={cityHref('nuernberg', lang)}>{t.nuernberg}</a>
+          <a href={cityHref('muenchen', lang)}>{t.muenchen}</a>
+          <a href={cityHref('bayreuth', lang)}>{t.bayreuth}</a>
+          <a href={cityHref('hamburg', lang)}>{t.hamburg}</a>
+          <a href={citiesHref(lang)}>{t.allCities}</a>
         </div>
       </div>
-      <a href="/speaker/">{t.speaker}</a>
+      <a href={speakersHref(lang)}>{t.speaker}</a>
       <a href={t.sponsorsHref}>{t.sponsors}</a>
-      <a href="/blog/">{t.blog}</a>
+      <a href="/blog/" hreflang={deLink}>{t.blog}</a>
     </nav>
 
     <div class="actions">
-      <a href={t.switchHref} class="lang" aria-label="Sprache wechseln">{t.switchLabel}</a>
+      <a href={langSwitchHref} class="lang" hreflang={lang === 'de' ? 'en' : 'de'} aria-label="Sprache wechseln">{t.switchLabel}</a>
       <a href={t.ticketsHref} class="btn btn-primary tickets">{t.tickets}</a>
       <button type="button" class="burger" aria-label="Menü" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -79,16 +95,16 @@ const t = {
   </div>
 
   <div class="mobile-menu" hidden>
-    <a href="/stadt/nuernberg/">{t.nuernberg}</a>
-    <a href="/stadt/muenchen/">{t.muenchen}</a>
-    <a href="/stadt/bayreuth/">{t.bayreuth}</a>
-    <a href="/stadt/hamburg/">{t.hamburg}</a>
-    <a href="/stadt/">{lang === 'de' ? 'Alle Städte' : 'All cities'}</a>
-    <a href="/speaker/">{t.speaker}</a>
+    <a href={cityHref('nuernberg', lang)}>{t.nuernberg}</a>
+    <a href={cityHref('muenchen', lang)}>{t.muenchen}</a>
+    <a href={cityHref('bayreuth', lang)}>{t.bayreuth}</a>
+    <a href={cityHref('hamburg', lang)}>{t.hamburg}</a>
+    <a href={citiesHref(lang)}>{t.allCities}</a>
+    <a href={speakersHref(lang)}>{t.speaker}</a>
     <a href={t.sponsorsHref}>{t.sponsors}</a>
-    <a href="/blog/">{t.blog}</a>
+    <a href="/blog/" hreflang={deLink}>{t.blog}</a>
     <a href={t.ticketsHref} class="btn btn-primary">{t.tickets}</a>
-    <a href={t.switchHref}>{lang === 'de' ? 'English' : 'Deutsch'}</a>
+    <a href={langSwitchHref} hreflang={lang === 'de' ? 'en' : 'de'}>{lang === 'de' ? 'English' : 'Deutsch'}</a>
   </div>
 </header>
 
