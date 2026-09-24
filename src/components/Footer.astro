@@ -82,8 +82,8 @@ const en = {
         ['Galleries', '/en/gallery/'],
         ['Our Sponsors', '/en/our-sponsors/'],
         ['All Events', '/en/tickets/'],
-        ['Cities', '/stadt/'],
-        ['Speaker', '/speaker/'],
+        ['Cities', '/en/cities/'],
+        ['Speakers', '/en/speakers/'],
         ['The App', '/en/app/'],
       ],
     },
@@ -132,13 +132,25 @@ const en = {
 
 const c = lang === 'de' ? de : en;
 const homeHref = lang === 'de' ? '/de/' : '/en/';
+
+const cta = {
+  de: { eyebrow: 'Stay curious', headA: 'Die nächste Idee beginnt', headB: 'heute Nacht.', btn: 'Nächste AI Night ↗', href: '/de/tickets/' },
+  en: { eyebrow: 'Stay curious', headA: 'The next idea starts', headB: 'tonight.', btn: 'Next AI Night ↗', href: '/en/tickets/' },
+}[lang];
+
+// Bereiche, die es nur auf Deutsch gibt (Blog, Events, Speaker-Profile,
+// Sessions, Sponsoren). Von einer englischen Seite aus werden Links dorthin
+// mit hreflang="de" ausgezeichnet.
+const DE_ONLY = ['/blog/', '/events/', '/speaker/', '/sessions/', '/sponsor/', '/stadt/', '/tools/', '/de/'];
+const linkLang = (href: string) =>
+  lang === 'en' && DE_ONLY.some((prefix) => href.startsWith(prefix)) ? 'de' : undefined;
 ---
 
 <footer class="site-footer">
   <div class="container">
     <div class="footer-cta">
-      <div><p class="eyebrow">Stay curious</p><h2 class="display-font">Die nächste Idee beginnt <span>heute Nacht.</span></h2></div>
-      <a href={lang === 'de' ? '/de/tickets/' : '/de/tickets/'} class="btn btn-primary">Nächste AI Night ↗</a>
+      <div><p class="eyebrow">{cta.eyebrow}</p><h2 class="display-font">{cta.headA} <span>{cta.headB}</span></h2></div>
+      <a href={cta.href} class="btn btn-primary">{cta.btn}</a>
     </div>
     <div class="grid">
       <div class="brand">
@@ -149,8 +161,8 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
           <a href="http://tiktok.com/@ainights.ai" aria-label="TikTok" target="_blank" rel="noopener">TikTok</a>
         </div>
         <div class="lang-switch">
-          <a href="/de/" class={lang === 'de' ? 'active' : ''}>Deutsch</a>
-          <a href="/en/" class={lang === 'en' ? 'active' : ''}>English</a>
+          <a href="/de/" hreflang="de" class={lang === 'de' ? 'active' : ''}>Deutsch</a>
+          <a href="/en/" hreflang="en" class={lang === 'en' ? 'active' : ''}>English</a>
         </div>
       </div>
 
@@ -164,7 +176,7 @@ const homeHref = lang === 'de' ? '/de/' : '/en/';
                   <li class="divider" aria-hidden="true"><hr /></li>
                 ) : (
                   <li>
-                    <a href={href}>{label}</a>
+                    <a href={href} hreflang={linkLang(href)}>{label}</a>
                   </li>
                 )
               ))}

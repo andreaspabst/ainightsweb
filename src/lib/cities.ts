@@ -6,6 +6,8 @@ export type CityStatus = 'active' | 'soon';
 export type City = {
   slug: string;
   name: string;
+  /** Englischer Städtename, falls er abweicht (Nürnberg → Nuremberg) */
+  nameEn?: string;
   status: CityStatus;
   lat: number;
   lon: number;
@@ -15,8 +17,8 @@ export type City = {
 };
 
 export const CITIES: City[] = [
-  { slug: 'nuernberg', name: 'Nürnberg', status: 'active', lat: 49.45, lon: 11.08, onOverview: true, labelPos: 'left' },
-  { slug: 'muenchen', name: 'München', status: 'active', lat: 48.14, lon: 11.58, onOverview: true, labelPos: 'right' },
+  { slug: 'nuernberg', name: 'Nürnberg', nameEn: 'Nuremberg', status: 'active', lat: 49.45, lon: 11.08, onOverview: true, labelPos: 'left' },
+  { slug: 'muenchen', name: 'München', nameEn: 'Munich', status: 'active', lat: 48.14, lon: 11.58, onOverview: true, labelPos: 'right' },
   { slug: 'erlangen', name: 'Erlangen', status: 'active', lat: 49.6, lon: 11.0, onOverview: false, labelPos: 'left' },
   { slug: 'hamburg', name: 'Hamburg', status: 'active', lat: 53.55, lon: 9.99, onOverview: true, labelPos: 'left' },
   { slug: 'leipzig', name: 'Leipzig', status: 'soon', lat: 51.34, lon: 12.37, onOverview: true, labelPos: 'right' },
@@ -55,4 +57,16 @@ const CITY_COLORS: Record<string, string> = {
 export function cityColor(city?: string): string {
   if (!city) return '#dc2777';
   return CITY_COLORS[city.trim().toLowerCase()] ?? '#dc2777';
+}
+
+/**
+ * Anzeigename einer Stadt in der jeweiligen Sprache. Für Filter und Vergleiche
+ * (z. B. event.city) immer den deutschen `name` verwenden — dieser Helfer ist
+ * ausschließlich für die Ausgabe gedacht.
+ */
+export function cityLabel(slugOrName: string, lang: 'de' | 'en'): string {
+  const key = slugOrName.trim().toLowerCase();
+  const city = CITIES.find((c) => c.slug === key || c.name.toLowerCase() === key);
+  if (!city) return slugOrName;
+  return lang === 'en' ? (city.nameEn ?? city.name) : city.name;
 }

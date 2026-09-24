@@ -1,8 +1,9 @@
 ---
-import { cityColor } from '../lib/cities';
+import { cityColor, cityLabel } from '../lib/cities';
 import { imgVariant } from '../lib/images';
 import AftershowBadge from './AftershowBadge.astro';
 import CoOrganizerBadge from './CoOrganizerBadge.astro';
+import { foreignLang } from '../lib/i18n';
 
 export interface Props {
   slug: string;
@@ -27,19 +28,25 @@ function fmtDate(d?: string) {
   if (!d) return null;
   const parsed = new Date(d.replace(' ', 'T'));
   if (isNaN(parsed.getTime())) return d;
-  return parsed.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+  return parsed.toLocaleDateString(lang === 'en' ? 'en-GB' : 'de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 const dateLabel = fmtDate(eventDate);
+
+// Event-Detailseiten gibt es nur auf Deutsch — von einer englischen Seite aus
+// den Sprachwechsel am Link auszeichnen statt ihn stillschweigend zu vollziehen.
+const eventHreflang = foreignLang(lang);
+const cityBadge = city ? cityLabel(city, lang) : undefined;
+const detailsLabel = lang === 'en' ? 'Details' : 'Details';
 ---
 
 <article class="event-card card">
-  <a href={`/events/${slug}/`} class="cover">
+  <a href={`/events/${slug}/`} class="cover" hreflang={eventHreflang}>
     {image?.src && <img src={imgVariant(image.src, 640)} alt={image.alt ?? title} loading="lazy" width="640" height="400" />}
-    {city && <span class="city-badge" style={`background: ${cityColor(city)}`}>{city}</span>}
+    {city && <span class="city-badge" style={`background: ${cityColor(city)}`}>{cityBadge}</span>}
   </a>
   <div class="body">
     {dateLabel && <p class="date">{dateLabel}</p>}
-    <h3><a href={`/events/${slug}/`}>{title}</a></h3>
+    <h3><a href={`/events/${slug}/`} hreflang={eventHreflang}>{title}</a></h3>
     {locationName && <p class="loc">📍 {locationName}</p>}
     {excerpt && <p class="excerpt">{excerpt}</p>}
     {aftershow?.cardNote && (
@@ -47,7 +54,7 @@ const dateLabel = fmtDate(eventDate);
     )}
     {coOrganizer && <CoOrganizerBadge label={coOrganizer.label} name={coOrganizer.name} city={city} logo={coOrganizer.logo} lang={lang} />}
     <div class="actions">
-      <a href={`/events/${slug}/`} class="btn btn-ghost">Details</a>
+      <a href={`/events/${slug}/`} class="btn btn-ghost" hreflang={eventHreflang}>{detailsLabel}</a>
       {ticketUrl && <a href={ticketUrl} data-btn-pos={btnPos} class="btn btn-primary">Tickets</a>}
     </div>
   </div>

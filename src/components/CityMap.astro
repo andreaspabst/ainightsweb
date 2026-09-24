@@ -1,13 +1,21 @@
 ---
-import { CITIES, mapPosition, cityColor } from '../lib/cities';
+import { CITIES, mapPosition, cityColor, cityLabel } from '../lib/cities';
+import { cityHref, type Lang } from '../lib/i18n';
 
 export interface Props {
   /** Slug der hervorgehobenen Stadt (pink), z. B. auf Stadt-Detailseiten */
   highlight?: string;
   /** Legende anzeigen */
   legend?: boolean;
+  /** Sprache der aufrufenden Seite — steuert Beschriftung und Stadt-Links */
+  lang?: Lang;
 }
-const { highlight, legend = true } = Astro.props;
+const { highlight, legend = true, lang = 'de' } = Astro.props;
+
+const t = {
+  de: { mapAlt: 'Europakarte mit den AI Nights Städten', active: 'Aktiv', soon: 'Bald', here: 'Du bist hier' },
+  en: { mapAlt: 'Map of Europe showing the AI Nights cities', active: 'Active', soon: 'Soon', here: 'You are here' },
+}[lang];
 
 // Übersichts-Städte plus (falls nicht enthalten) die hervorgehobene Stadt
 const shown = CITIES.filter((c) => c.onOverview || c.slug === highlight);
@@ -26,24 +34,24 @@ const markers = shown.map((c) => {
 
 <div class="citymap">
   <div class="map">
-    <img src="/img/europe-map.svg" alt="Europakarte mit den AI Nights Städten" width="800" height="730" loading="lazy" />
+    <img src="/img/europe-map.svg" alt={t.mapAlt} width="800" height="730" loading="lazy" />
     {markers.map((c) => (
       <a
-        href={`/stadt/${c.slug}/`}
+        href={cityHref(c.slug, lang)}
         class:list={['marker', c.status, `label-${c.labelPos ?? 'right'}`, { highlight: c.isHighlight }]}
         style={`left: ${c.x}%; top: ${c.y}%; --dot-color: ${c.color}`}
         aria-current={c.isHighlight ? 'page' : undefined}
       >
         <span class="dot"></span>
-        <span class="label">{c.name}</span>
+        <span class="label">{cityLabel(c.slug, lang)}</span>
       </a>
     ))}
   </div>
   {legend && (
     <div class="legend">
-      <span class="legend-item"><span class="ldot" style="background:#e5484d"></span> Aktiv</span>
-      <span class="legend-item"><span class="ldot" style="background:#8b8b9e"></span> Bald</span>
-      {highlight && <span class="legend-item"><span class="ldot" style="background:#ff2d7a"></span> Du bist hier</span>}
+      <span class="legend-item"><span class="ldot" style="background:#e5484d"></span> {t.active}</span>
+      <span class="legend-item"><span class="ldot" style="background:#8b8b9e"></span> {t.soon}</span>
+      {highlight && <span class="legend-item"><span class="ldot" style="background:#ff2d7a"></span> {t.here}</span>}
     </div>
   )}
 </div>

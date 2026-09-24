@@ -1,0 +1,269 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { isUpcoming, isPastEvent } from '../../lib/eventDates';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import EventCard from '../EventCard.astro';
+import CityMap from '../CityMap.astro';
+import { cityHref, type Lang } from '../../lib/i18n';
+import { cityLabel } from '../../lib/cities';
+
+export interface Props {
+  lang: Lang;
+  c: CollectionEntry<'stadt'>;
+}
+const { lang, c } = Astro.props;
+const d = c.data;
+// cityName bleibt der deutsche Name — danach werden die Events gefiltert
+// (event.city). Für die Ausgabe zählt cityDisplay (englisch: Nuremberg, Munich).
+const cityName = d.title;
+const cityDisplay = cityLabel(d.slug, lang);
+
+const t = {
+  de: {
+    title: `AI Nights ${cityDisplay} — KI-Afterworks in ${cityDisplay}`,
+    description: `AI Nights in ${cityDisplay}: Afterwork-Abende rund um Künstliche Intelligenz mit Talks, Live-Demos und Community.`,
+    eyebrow: 'AI Nights vor Ort',
+    h1: 'AI\u00a0Nights KI-Events in',
+    upcoming: `Kommende Events in ${cityDisplay}`,
+    past: `Vergangene Events in ${cityDisplay}`,
+    emptyBefore: `Termine für ${cityDisplay} werden bald bekanntgegeben. `,
+    emptyLink: 'Newsletter abonnieren',
+    emptyHref: '/de/newsletter/',
+    emptyAfter: ' und nichts verpassen.',
+    mapHead: `AI\u00a0Nights in ${cityDisplay} & Europa`,
+    mapCredit: 'Kartenbasis: Natural Earth (Public Domain)',
+    otherCities: 'AI Nights in anderen Städten:',
+    otherCity: (n: string) => `AI Events in ${n}`,
+    hostEyebrow: 'Du suchst eine andere Location?',
+    hostHead: 'Hol dir deine eigene AI\u00a0Night!',
+    hostText:
+      'Wir unterstützen dich mit Branding, Organisation, Reichweite, Speaker-Management und mehr. Schreib uns – und gemeinsam machen wir den nächsten Schritt Richtung AI\u00a0Nights in deiner Stadt.',
+    hostCta: 'Eigenes Event anfragen',
+    hostHref: '/de/sponsoring/',
+  },
+  en: {
+    title: `AI Nights ${cityDisplay} — AI afterwork events in ${cityDisplay}`,
+    description: `AI Nights in ${cityDisplay}: afterwork evenings all about artificial intelligence, with talks, live demos and community.`,
+    eyebrow: 'AI Nights on the ground',
+    h1: 'AI\u00a0Nights AI events in',
+    upcoming: `Upcoming events in ${cityDisplay}`,
+    past: `Past events in ${cityDisplay}`,
+    emptyBefore: `Dates for ${cityDisplay} will be announced soon. `,
+    emptyLink: 'Subscribe to the newsletter',
+    emptyHref: '/en/newsletter/',
+    emptyAfter: ' so you do not miss a thing.',
+    mapHead: `AI\u00a0Nights in ${cityDisplay} & Europe`,
+    mapCredit: 'Map data: Natural Earth (public domain)',
+    otherCities: 'AI Nights in other cities:',
+    otherCity: (n: string) => `AI events in ${n}`,
+    hostEyebrow: 'Looking for another location?',
+    hostHead: 'Get your own AI\u00a0Night!',
+    hostText:
+      'We support you with branding, organisation, reach, speaker management and more. Drop us a line — and together we take the next step towards AI\u00a0Nights in your city.',
+    hostCta: 'Request your own event',
+    hostHref: '/en/become-sponsor/',
+  },
+}[lang];
+
+
+const otherCities = (await getCollection('stadt')).filter((x) => x.data.slug !== d.slug);
+
+
+const events = (await getCollection('events')).filter(
+  (e) => e.data.city && e.data.city.toLowerCase() === cityName.toLowerCase(),
+);
+const upcoming = events
+  .filter((e) => isUpcoming(e.data.eventDate))
+  .sort((a, b) => new Date(a.data.eventDate!).getTime() - new Date(b.data.eventDate!).getTime());
+const past = events
+  .filter((e) => !e.data.eventDate || isPastEvent(e.data.eventDate))
+  .sort((a, b) => new Date(b.data.eventDate ?? 0).getTime() - new Date(a.data.eventDate ?? 0).getTime());
+---
+
+<Layout
+  lang={lang}
+  title={(lang === 'de' && d.seo?.title) || t.title}
+  description={(lang === 'de' && (d.seo?.description ?? d.excerpt)) || t.description}
+  path={cityHref(d.slug, lang)}
+  alternates={{ de: cityHref(d.slug, 'de'), en: cityHref(d.slug, 'en') }}
+  image={d.image?.src}
+>
+  <Header lang={lang} switchHref={cityHref(d.slug, lang === 'de' ? 'en' : 'de')} />
+  <main>
+    <section class="hero">
+      {d.image?.src && <img class="hero-bg" src={d.image.src} alt={d.image.alt ?? cityDisplay} />}
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
+        <p class="eyebrow">{t.eyebrow}</p>
+        <h1 class="display-font">{t.h1} <span class="gradient-text">{cityDisplay}</span></h1>
+        {lang === 'de' && d.excerpt && <p class="lead">{d.excerpt}</p>}
+      </div>
+    </section>
+
+    <div class="container section">
+      {lang === 'de' && d.contentHtml && <div class="prose city-content" set:html={d.contentHtml} />}
+
+      {upcoming.length > 0 && (
+        <>
+          <h2 class="group display-font">{t.upcoming}</h2>
+          <div class="grid">
+            {upcoming.map((e) => (
+              <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} ticketUrl={e.data.ticketUrl} aftershow={e.data.aftershow} coOrganizer={e.data.coOrganizer} btnPos="STADT_EVENTCARD" lang={lang} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {past.length > 0 && (
+        <>
+          <h2 class="group display-font">{t.past}</h2>
+          <div class="grid">
+            {past.map((e) => (
+              <EventCard slug={e.data.slug} title={e.data.title} city={e.data.city} eventDate={e.data.eventDate} locationName={e.data.locationName} image={e.data.image} excerpt={e.data.excerpt} lang={lang} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {events.length === 0 && (
+        <p class="empty">{t.emptyBefore}<a href={t.emptyHref}>{t.emptyLink}</a>{t.emptyAfter}</p>
+      )}
+
+      <section class="map-section">
+        <h2 class="group display-font">{t.mapHead}</h2>
+        <div class="map-wrap card">
+          <CityMap highlight={d.slug} lang={lang} />
+        </div>
+        <p class="map-credit">{t.mapCredit}</p>
+      </section>
+
+      {otherCities.length > 0 && (
+        <div class="other-cities">
+          <span>{t.otherCities}</span>
+          {otherCities.map((x) => (
+            <a href={cityHref(x.data.slug, lang)} class="city-pill">{t.otherCity(cityLabel(x.data.slug, lang))}</a>
+          ))}
+        </div>
+      )}
+
+      <section class="host card">
+        <p class="eyebrow">{t.hostEyebrow}</p>
+        <h2 class="display-font">{t.hostHead}</h2>
+        <p>{t.hostText}</p>
+        <a href={t.hostHref} class="btn btn-primary">{t.hostCta}</a>
+      </section>
+    </div>
+  </main>
+  <Footer lang={lang} />
+</Layout>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(4rem, 10vw, 7rem);
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+    text-align: center;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.52;
+    filter: saturate(.85) contrast(1.08);
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 1, 24, 0.38), var(--bg-base) 94%), linear-gradient(100deg,rgba(50,107,255,.24),rgba(220,39,119,.22));
+  }
+  .hero-inner {
+    position: relative;
+  }
+  h1 {
+    font-size: clamp(3.2rem, 8vw, 6.6rem);
+    line-height: .96;
+    letter-spacing: -.06em;
+    margin: 0.5rem 0 1rem;
+  }
+  .lead {
+    max-width: 56ch;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+  .city-content {
+    max-width: 760px;
+    margin-bottom: 3rem;
+  }
+  .group {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1.3rem;
+    color: var(--text-primary);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    row-gap: 2.5rem;
+    column-gap: 1.5rem;
+  }
+  .empty {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+  }
+  .map-section {
+    margin-top: 3rem;
+  }
+  .map-wrap {
+    padding: 1.5rem;
+    overflow: hidden;
+    border-radius: 30px;
+    border-color: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  .map-credit {
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .other-cities {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .city-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .city-pill:hover {
+    border-color: var(--magenta-bright);
+    color: var(--text-primary);
+  }
+  .host {
+    margin-top: 3rem;
+    padding: 3rem;
+    text-align: center;
+    border-radius: 30px;
+    border-color: var(--glass-border);
+  }
+  .host h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0.4rem 0 1rem;
+  }
+  .host p {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin: 0 auto 1.5rem;
+  }
+</style>

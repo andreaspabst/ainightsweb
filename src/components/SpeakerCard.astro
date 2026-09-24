@@ -5,14 +5,16 @@ export interface Props {
   jobTitle?: string;
   image?: { src?: string; alt?: string };
   excerpt?: string;
+  /** "de", wenn von einer englischen Seite auf das deutsche Profil verlinkt wird */
+  hreflang?: 'de' | 'en';
 }
 import { imgVariant } from '../lib/images';
 
-const { slug, name, jobTitle, image, excerpt } = Astro.props;
+const { slug, name, jobTitle, image, excerpt, hreflang } = Astro.props;
 const placeholder = '/wp-content/uploads/2026/01/speaker01-4043248_avatar_female_portrait_woman_icon-1.png';
 ---
 
-<a href={`/speaker/${slug}/`} class="speaker-card card">
+<a href={`/speaker/${slug}/`} class="speaker-card card" hreflang={hreflang}>
   <div class="photo">
     <img src={imgVariant(image?.src ?? placeholder, 640)} alt={image?.alt ?? name} loading="lazy" width="400" height="400" />
   </div>

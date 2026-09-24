@@ -1,8 +1,7 @@
 ---
-// Deutsche Stadt-Detailseite. URL bleibt /stadt/<slug>/ (WordPress-Bestand);
-// die englische Fassung liegt unter /en/cities/<slug>/.
+// Englische Stadt-Detailseite — gleiche Komponente wie /stadt/<slug>/.
 import { getCollection } from 'astro:content';
-import CityPage from '../../components/pages/CityPage.astro';
+import CityPage from '../../../components/pages/CityPage.astro';
 
 export async function getStaticPaths() {
   const cities = await getCollection('stadt');
@@ -12,4 +11,4 @@ export async function getStaticPaths() {
 const { c } = Astro.props;
 ---
 
-<CityPage lang="de" c={c} />
+<CityPage lang="en" c={c} />

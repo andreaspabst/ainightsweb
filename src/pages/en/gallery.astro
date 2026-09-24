@@ -59,7 +59,7 @@ const chunk = <T,>(arr: T[], size: number): T[][] => {
                 <h2 class="display-font">{title}</h2>
                 {date && <p class="gal-date">{date} · {g.images.length} photos</p>}
               </div>
-              <a href={`/events/${g.event}/`} class="btn btn-ghost">Go to event</a>
+              <a href={`/events/${g.event}/`} class="btn btn-ghost" hreflang="de">Go to event</a>
             </div>
             {pages.map((pageImages, pi) => (
               <div class="masonry" data-page={pi} hidden={pi > 0}>
