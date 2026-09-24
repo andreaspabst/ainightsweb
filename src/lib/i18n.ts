@@ -18,9 +18,13 @@ export const cityHref = (slug: string, lang: Lang) =>
 /** Speaker-Übersicht */
 export const speakersHref = (lang: Lang) => (lang === 'en' ? '/en/speakers/' : '/speaker/');
 
+/** Einzelnes Speaker-Profil */
+export const speakerHref = (slug: string, lang: Lang) =>
+  lang === 'en' ? `/en/speakers/${slug}/` : `/speaker/${slug}/`;
+
 /**
- * Seiten, die es nur auf Deutsch gibt (Speaker-Profile, Sessions, Events,
- * Sponsoren, Blog) — die Inhalte selbst sind deutsch verfasst. Von einer
+ * Seiten, die es nur auf Deutsch gibt (Sessions, Events, Sponsoren, Blog) —
+ * die Inhalte selbst sind deutsch verfasst. Von einer
  * englischen Seite aus werden solche Links mit hreflang="de" ausgezeichnet,
  * damit Sprachwechsel für Browser, Screenreader und Suchmaschinen erkennbar
  * ist, statt unangekündigt zu passieren.

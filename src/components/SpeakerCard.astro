@@ -5,16 +5,17 @@ export interface Props {
   jobTitle?: string;
   image?: { src?: string; alt?: string };
   excerpt?: string;
-  /** "de", wenn von einer englischen Seite auf das deutsche Profil verlinkt wird */
-  hreflang?: 'de' | 'en';
+  /** Sprache der aufrufenden Seite — steuert das Ziel des Profil-Links */
+  lang?: 'de' | 'en';
 }
 import { imgVariant } from '../lib/images';
+import { speakerHref } from '../lib/i18n';
 
-const { slug, name, jobTitle, image, excerpt, hreflang } = Astro.props;
+const { slug, name, jobTitle, image, excerpt, lang = 'de' } = Astro.props;
 const placeholder = '/wp-content/uploads/2026/01/speaker01-4043248_avatar_female_portrait_woman_icon-1.png';
 ---
 
-<a href={`/speaker/${slug}/`} class="speaker-card card" hreflang={hreflang}>
+<a href={speakerHref(slug, lang)} class="speaker-card card">
   <div class="photo">
     <img src={imgVariant(image?.src ?? placeholder, 640)} alt={image?.alt ?? name} loading="lazy" width="400" height="400" />
   </div>

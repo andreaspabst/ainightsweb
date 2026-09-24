@@ -6,7 +6,7 @@ import Footer from '../Footer.astro';
 import SpeakerCard from '../SpeakerCard.astro';
 import { isPlaceholderSpeaker } from '../../lib/speakers';
 import { imgVariant } from '../../lib/images';
-import { speakersHref, foreignLang, type Lang } from '../../lib/i18n';
+import { speakersHref, speakerHref, type Lang } from '../../lib/i18n';
 import { mediaExists } from '../../lib/media';
 
 export interface Props {
@@ -116,8 +116,6 @@ const t = {
   },
 }[lang];
 
-// Speaker-Profile sind deutsch verfasst und liegen nur unter /speaker/<slug>/.
-const deLink = foreignLang(lang);
 ---
 
 <Layout
@@ -156,9 +154,9 @@ const deLink = foreignLang(lang);
           class="speaker-item"
           data-role={s.data.role ?? 'speaker'}
           data-topic={s.data.topicArea ?? ''}
-          data-search={`${s.data.title} ${s.data.jobTitle ?? ''} ${s.data.excerpt ?? ''}`.toLowerCase()}
+          data-search={`${s.data.title} ${(lang === 'en' && s.data.en?.jobTitle) || s.data.jobTitle || ''} ${(lang === 'en' && s.data.en?.excerpt) || s.data.excerpt || ''}`.toLowerCase()}
         >
-          <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={s.data.jobTitle} image={s.data.image} excerpt={s.data.excerpt} hreflang={deLink} />
+          <SpeakerCard slug={s.data.slug} name={s.data.title} jobTitle={(lang === 'en' && s.data.en?.jobTitle) || s.data.jobTitle} image={s.data.image} excerpt={(lang === 'en' && s.data.en?.excerpt) || s.data.excerpt} lang={lang} />
         </div>
       ))}
     </div>
@@ -178,7 +176,7 @@ const deLink = foreignLang(lang);
                 <img src={imgVariant(c.square, 640)} alt={cardAlt(c.d)} loading="lazy" width="1080" height="1080" />
               </a>
               <figcaption>
-                <a class="sp-name" href={`/speaker/${c.d.slug}/`} hreflang={deLink}>{c.d.title}</a>
+                <a class="sp-name" href={speakerHref(c.d.slug, lang)}>{c.d.title}</a>
                 <span class="sp-dl">
                   <a href={c.square} download={`ai-nights-${c.d.slug}.png`}>{t.square}</a>
                   <a href={c.wide} download={`ai-nights-${c.d.slug}-linkedin.png`}>{t.wide}</a>

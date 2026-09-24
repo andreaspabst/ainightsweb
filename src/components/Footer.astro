@@ -121,8 +121,8 @@ const en = {
         DIVIDER,
         ['AI Woman Nights: Oct 27 in Nuremberg', '/events/ai-woman-nights-01/'],
         ['AI Woman Nights: Jan 12 at The Cloud One', '/events/ai-woman-nights-02/'],
-        ['Andreas Pabst', '/speaker/der-pabst/'],
-        ['Andrea Reindel', '/speaker/andrea-reindel/'],
+        ['Andreas Pabst', '/en/speakers/der-pabst/'],
+        ['Andrea Reindel', '/en/speakers/andrea-reindel/'],
       ],
     },
   ],
@@ -142,6 +142,8 @@ const cta = {
 // Sessions, Sponsoren). Von einer englischen Seite aus werden Links dorthin
 // mit hreflang="de" ausgezeichnet.
 const DE_ONLY = ['/blog/', '/events/', '/speaker/', '/sessions/', '/sponsor/', '/stadt/', '/tools/', '/de/'];
+// (/speaker/ bleibt gelistet: die deutschen Profile sind weiterhin deutsch —
+//  englische Seiten verlinken aber auf /en/speakers/<slug>/.)
 const linkLang = (href: string) =>
   lang === 'en' && DE_ONLY.some((prefix) => href.startsWith(prefix)) ? 'de' : undefined;
 ---

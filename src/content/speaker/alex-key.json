@@ -10,6 +10,20 @@
     "alt": "Alex Key"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "AI Engineer and Product Management Coach",
+    "excerpt": "Alex is an AI engineer and product management coach. He helps B2B software companies make the leap to the next generation of AI-native business software, working directly with CEOs and CTOs to turn traditional SaaS products into agent-native applications — not by bolting on a chatbot, but by rethinking the product itself.",
+    "bioHtml": "<p>Alex is an AI engineer and product management coach. He helps B2B software companies make the leap to the next generation of AI-native business software, working directly with CEOs and CTOs to turn traditional SaaS products into agent-native applications — not by bolting on a chatbot, but by rethinking the product itself.</p>",
+    "topics": [
+      "Don't Panic: Why Product Fundamentals Still Win in the Age of AI"
+    ],
+    "keyTakeaways": [
+      "“AI-powered” features often fail because they inherit every constraint of the old system",
+      "Great products still start with understanding the user's real problem — not with the technology",
+      "Production data and observability are no longer optional — they are the foundation you build on",
+      "The companies that move fast and stay close to their users will win, regardless of team size"
+    ]
+  },
   "date": "2026-03-08 08:36:12",
   "modified": "2026-03-12 09:38:45",
   "socials": {

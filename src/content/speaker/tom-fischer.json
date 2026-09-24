@@ -8,6 +8,17 @@
     "alt": "Tom Fischer"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "AI Manager @ VNP | Verlag Nürnberger Presse",
+    "bioHtml": "<p>Tom Fischer joined the Nürnberger Nachrichten as a working student in digital transformation management – and stayed. Today, four years on, he is AI manager and asks himself daily how AI systems actually land in the everyday work of colleagues and customers. His master's in Innovation &amp; Entrepreneurship at Ansbach University of Applied Sciences taught him one thing above all: good ideas and use cases need more than enthusiasm — they need someone who pushes them forward and stays stubborn.</p>",
+    "topics": [
+      "AI-supported newsletter production",
+      "AI-voiced articles as audio formats",
+      "A topic radar for identifying stories from council information systems",
+      "Building a dialogue-based press archive as a knowledge platform",
+      "Guardrails for quality, credibility and responsible use of AI in journalism"
+    ]
+  },
   "date": "2026-07-06 13:03:46",
   "modified": "2026-07-06 13:03:46",
   "socials": {

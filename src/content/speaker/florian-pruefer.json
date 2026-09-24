@@ -10,6 +10,19 @@
     "alt": "Florian Prüfer"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Global Program Manager for Artificial Intelligence at Siemens",
+    "excerpt": "Florian is an experienced expert at the intersection of artificial intelligence and corporate innovation. In his role at Siemens as Global Program Manager for Artificial Intelligence, and as team lead for software and technology experts, he drives the practical application of AI in enterprises.",
+    "bioHtml": "<p>Florian is an experienced expert at the intersection of artificial intelligence and corporate innovation. In his role at Siemens as Global Program Manager for Artificial Intelligence, and as team lead for software and technology experts, he drives the practical application of AI in enterprises.</p><p>With a background as an early architect of Telekom's cloud business and as an innovation manager, Florian combines technological expertise with strategic foresight. He bridges what technology makes possible and what actually gets built, actively shaping a future in which AI and human creativity advance digital transformation together.</p>",
+    "topics": [
+      "The Wave of AI – Three hints to ride the wave"
+    ],
+    "keyTakeaways": [
+      "Three practical tips on “how to pull this off yourself” — personally and in your organisation",
+      "How evo/Siemens reached 90% Copilot adoption",
+      "The metaphor of surfing the AI wave"
+    ]
+  },
   "date": "2026-02-12 10:25:03",
   "modified": "2026-03-16 20:30:43",
   "socials": {

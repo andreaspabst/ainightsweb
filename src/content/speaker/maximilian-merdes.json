@@ -10,6 +10,23 @@
     "alt": "Speaker AI Nights Maximilian Merdes"
   },
   "homeFeatured": true,
+  "en": {
+    "jobTitle": "Account Director & Head of Account Management, arsmedium",
+    "excerpt": "Maximilian Merdes is Account Director and Head of Account Management at arsmedium. Alongside leading account management, he works intensively on AI, automation and process optimisation in agency life.",
+    "bioHtml": "<p>Maximilian Merdes is Account Director and Head of Account Management at arsmedium. Alongside leading account management, he works intensively on AI, automation and process optimisation in agency life.</p>",
+    "topics": [
+      "Why most AI projects fail on decisions, not on technology",
+      "A mental model for honestly testing whether a process suits AI",
+      "Drawing on a real client project: which patterns repeat predictably",
+      "When “no AI” is genuinely the better answer"
+    ],
+    "keyTakeaways": [
+      "Three recurring patterns that sink AI projects before they even start",
+      "A simple mental model for testing processes for AI suitability",
+      "Clear signals for when “no AI” is the better answer",
+      "A perspective that protects you from expensive investments in the wrong direction"
+    ]
+  },
   "date": "2026-09-16 09:00:00",
   "modified": "2026-09-16 09:00:00",
   "socials": {

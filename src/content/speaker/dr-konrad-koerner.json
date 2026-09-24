@@ -11,6 +11,11 @@
   },
   "homeFeatured": true,
   "sortNumber": 100,
+  "en": {
+    "jobTitle": "Member of the German Bundestag, lawyer",
+    "excerpt": "As a lawyer and directly elected member of the German Bundestag, he works on digital legislation, legal certainty and the conditions under which innovation stays possible without getting stuck in red tape. His view combines legal clarity with political practice — a perspective often missing from the AI debate, yet decisive if AI is to make a real difference at work or in business.",
+    "bioHtml": "<p>As a lawyer and directly elected member of the German Bundestag, he works on digital legislation, legal certainty and the conditions under which innovation stays possible without getting stuck in red tape. His view combines <strong>legal clarity</strong> with <strong>political practice</strong> – a perspective often missing from the AI debate, yet decisive if AI is to make a real difference at work or in business.</p>"
+  },
   "date": "2026-01-01 20:42:59",
   "modified": "2026-02-19 14:13:56",
   "role": "speaker",

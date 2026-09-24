@@ -29,6 +29,26 @@
     "Wie man eine QA-Pipeline für das eigene Agenten-Team baut",
     "Wie Orchestrierung in der Praxis läuft — und was realistisch zu erwarten ist"
   ],
+  "en": {
+    "jobTitle": "Head of Technology, dasistweb GmbH",
+    "excerpt": "Head of Technology at the e-commerce agency dasistweb GmbH, focusing on software and systems architecture, automation, QA and modern AI systems.",
+    "bioHtml": "<p>Christian is Head of Technology at the e-commerce agency dasistweb GmbH. He focuses on software and systems architecture, automation, QA and modern AI systems, working to connect company knowledge, processes and software development more intelligently and sustainably. He is also managing director of Live Score GmbH, a scoreboard playout software for sports broadcasts. Christian builds tools for Docker, testing and AI orchestration, writes books and technical articles, runs training courses and speaks regularly in webinars and at conferences on software quality, architecture and modern development processes.</p>",
+    "topics": [
+      "Orchestrating AI agents in everyday development",
+      "Instructions and personas for agents",
+      "QA pipelines and quality gates",
+      "Working in parallel and delegating",
+      "Documentation-driven development",
+      "Software and systems architecture, automation, testing"
+    ],
+    "keyTakeaways": [
+      "What you need to prepare so a team of agents can work autonomously",
+      "What good agent instructions look like",
+      "How to work with different agent personas and delegate tasks",
+      "How to build a QA pipeline for your own agent team",
+      "How orchestration plays out in practice — and what to realistically expect"
+    ]
+  },
   "date": "2026-08-24 00:00:00",
   "modified": "2026-08-24 00:00:00",
   "role": "speaker",
