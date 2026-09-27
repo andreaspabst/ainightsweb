@@ -57,6 +57,9 @@ const speaker = defineCollection({
     // Hat die Person einen Talk-Slot, wird dieses Feld ignoriert.
     moderatorLabel: z.string().optional(),
     topicArea: z.enum(['tech', 'non-tech']).optional(),
+    // #speakerintro-Karte (Instagram): Nachname pink statt weiß, wenn er
+    // auf hellem Foto-Hintergrund (z. B. weißer Kleidung) nicht lesbar ist.
+    introLastNamePink: z.boolean().optional(),
     seo,
     // Englische Fassung des redaktionellen Teils für /en/speakers/<slug>/.
     // Fehlt ein Feld, fällt die englische Seite auf das deutsche Original

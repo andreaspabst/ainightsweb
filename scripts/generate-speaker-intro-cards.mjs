@@ -151,7 +151,8 @@ async function portraitCard(kit, speaker, logo) {
   const tag = await textImg('#speakerintro', { family: 'Inter Black', size: 58, color: '#ffffff', maxWidth: W - MARGIN * 2 });
   layers.push({ input: tag.data, top: 74, left: W - MARGIN - tag.info.width });
 
-  // Name unten links: Zeile 1 auf Pink-Block, Zeile 2 weiß
+  // Name unten links: Zeile 1 auf Pink-Block, Zeile 2 weiß — oder pink, wenn
+  // das Foto dort hell ist (weiße Kleidung) und Weiß darauf untergeht.
   const [line1, line2] = nameLines(speaker.title);
   const padX = 34;
   const padY = 18;
@@ -162,7 +163,8 @@ async function portraitCard(kit, speaker, logo) {
   let n2 = null;
   let block2H = 0;
   if (line2) {
-    n2 = await textImg(line2, { family: 'Inter Black', size: 104, color: '#ffffff', maxWidth: W - MARGIN * 2 });
+    const line2Color = speaker.introLastNamePink ? PINK : '#ffffff';
+    n2 = await textImg(line2, { family: 'Inter Black', size: 104, color: line2Color, maxWidth: W - MARGIN * 2 });
     block2H = n2.info.height + 14;
   }
   const block1Y = nameBottom - block2H - block1H;
