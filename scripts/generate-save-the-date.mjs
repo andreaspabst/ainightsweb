@@ -218,7 +218,7 @@ const LAYOUT = {
   instagram: {
     margin: 82, dateTop: 470, dateSize: 136, blockSize: 82, blockGap: 230, padX: 16, padY: 8,
     stroke: 9, ringX: 48, ringY: 110, stampWidth: 640, stampAngle: 13, stampTop: 205, stampRight: 20,
-    logoBottom: 70, colRight: 20,
+    logoBottom: 70, colRight: 150,
   },
   linkedin: {
     margin: 64, dateTop: 200, dateSize: 80, blockSize: 46, blockGap: 110, padX: 12, padY: 6,
