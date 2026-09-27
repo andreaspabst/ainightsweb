@@ -58,7 +58,7 @@ Reichweite auf, ohne dass wir doppelt posten müssen.
 | Stadt | Instagram-Account | gilt für |
 |---|---|---|
 | Nürnberg | `ainights.ai_nuernberg` | AI Nights Nürnberg **und** AI Woman Nights |
-| München | — (noch keiner) | kein Collab |
+| München | `ainights.ai_muenchen` | AI Nights München |
 
 ```json
 "instagramData": {
