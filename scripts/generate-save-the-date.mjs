@@ -85,7 +85,7 @@ async function pickGalleryImage(seed) {
 /** Foto vollflächig, leicht abgedunkelt — Text muss lesbar bleiben. Im
  *  Landscape-Zuschnitt zusätzlich links abgedunkelt, damit der Textblock
  *  auf ruhigem Grund steht und das Publikum rechts sichtbar bleibt. */
-async function photoLayer(rel, W, H, wide = false) {
+async function photoLayer(rel, W, H, wide = false, focus = null) {
   const side = wide
     ? `<linearGradient id="s" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0%" stop-color="#0f0122" stop-opacity=".72"/>
@@ -108,8 +108,9 @@ async function photoLayer(rel, W, H, wide = false) {
   </svg>`);
   return sharp(path.join(PUBLIC, rel))
     // Landscape schneidet ein Hochformat-Foto stark zu — 'attention' landet
-    // dann gern auf Beinen/Taschen. Oben ansetzen hält die Gesichter im Bild.
-    .resize(W, H, { fit: 'cover', position: wide ? 'north' : 'attention' })
+    // dann gern auf Beinen/Taschen. Oben ansetzen hält meist die Gesichter im
+    // Bild; sonst per --focus (z. B. center, south) nachsteuern.
+    .resize(W, H, { fit: 'cover', position: wide ? (focus ?? 'north') : 'attention' })
     .composite([{ input: overlay, top: 0, left: 0 }])
     .png()
     .toBuffer();
@@ -272,20 +273,21 @@ async function card(fmt, kit, imageRel, logo, label) {
   layers.push({ input: st.plate, top: L.stampTop, left: stLeft });
   layers.push({ input: st.stamp, top: L.stampTop, left: stLeft });
 
-  return sharp(await photoLayer(imageRel, W, H, wide)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
+  return sharp(await photoLayer(imageRel, W, H, wide, focusArg)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 }
 
 const args = process.argv.slice(2);
-const valueOf = new Set(['--image', '--seed', '--label', '--publish'].map((f) => args.indexOf(f) + 1).filter((i) => i > 0));
+const valueOf = new Set(['--image', '--seed', '--label', '--publish', '--focus'].map((f) => args.indexOf(f) + 1).filter((i) => i > 0));
 const slugs = args.filter((a, i) => !a.startsWith('--') && !valueOf.has(i));
 const imageArg = args.includes('--image') ? args[args.indexOf('--image') + 1] : null;
 const seedArg = args.includes('--seed') ? args[args.indexOf('--seed') + 1] : null;
+const focusArg = args.includes('--focus') ? args[args.indexOf('--focus') + 1] : null;
 const labelArg = args.includes('--label') ? args[args.indexOf('--label') + 1] : null;
 // Veröffentlichungstag (Standard: heute) — daraus entsteht „IN EINEM MONAT“ o. Ä.
 const publishArg = args.includes('--publish') ? args[args.indexOf('--publish') + 1] : new Date().toISOString().slice(0, 10);
 
 if (slugs.length === 0) {
-  console.error('Aufruf: node scripts/generate-save-the-date.mjs <event-slug> [...] [--image <pfad>] [--seed <wert>] [--publish YYYY-MM-DD] [--label TEXT]');
+  console.error('Aufruf: node scripts/generate-save-the-date.mjs <event-slug> [...] [--image <pfad>] [--seed <wert>] [--publish YYYY-MM-DD] [--label TEXT] [--focus north|center|south]');
   process.exit(1);
 }
 
