@@ -36,19 +36,26 @@ const PINK = C.magentaDeep;
 
 /**
  * Foto auf w×h „cover“-skalieren. Standard: sharps automatischer
- * Bildausschnitt ('attention'). Passt der nicht (Person zu weit am Rand),
- * kann pro Speaker in der JSON `image.cropX` (0 = linker Rand … 1 = rechter
- * Rand, 0.5 = mittig) und optional `image.cropY` gesetzt werden – dann wird
- * der Ausschnitt genau dort gewählt.
+ * Bildausschnitt ('attention'). Passt der nicht (Person zu weit am Rand,
+ * oder — bei Querformat-Fotos fürs Hochformat-Card — zu wenig Luft
+ * zwischen Kinn und dem Namens-Balken), kann pro Speaker in der JSON
+ * `image.cropX` (0 = linker Rand … 1 = rechter Rand, 0.5 = mittig),
+ * `image.cropY` (0 = oberer Rand … 1 = unterer Rand) und optional
+ * `image.zoom` (>1, Standard 1 = kein Zoom) gesetzt werden. Ohne `zoom`
+ * ist bei einem Querformat-Foto im Hochformat-Card die Höhe bereits die
+ * bindende Kante (kein vertikaler Spielraum, `cropY` wirkungslos) — `zoom`
+ * skaliert über das Minimum hinaus und schafft dadurch erst den Spielraum,
+ * den `cropY` dann zum gezielten Ausschnitt nutzt.
  */
 async function coverPhoto(src, image = {}, w, h) {
-  const hasManual = typeof image.cropX === 'number' || typeof image.cropY === 'number';
+  const hasManual = typeof image.cropX === 'number' || typeof image.cropY === 'number' || typeof image.zoom === 'number';
   if (!hasManual) {
     return sharp(src).resize(w, h, { fit: 'cover', position: 'attention' }).png().toBuffer();
   }
   const clamp = (v, d) => (typeof v === 'number' ? Math.min(1, Math.max(0, v)) : d);
+  const zoom = typeof image.zoom === 'number' ? Math.max(1, image.zoom) : 1;
   const meta = await sharp(src).metadata();
-  const scale = Math.max(w / meta.width, h / meta.height);
+  const scale = Math.max(w / meta.width, h / meta.height) * zoom;
   const sw = Math.max(w, Math.round(meta.width * scale));
   const sh = Math.max(h, Math.round(meta.height * scale));
   const left = Math.round(clamp(image.cropX, 0.5) * (sw - w));
