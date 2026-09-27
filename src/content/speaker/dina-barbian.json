@@ -7,7 +7,9 @@
   "bioHtml": "<p>Dr. Dina Barbian ist Geschäftsführerin des eco2050 Instituts für Nachhaltigkeit in Nürnberg und promovierte Diplom-Wirtschaftsingenieurin. Sie verfügt über mehr als 30 Jahre Erfahrung in Wirtschaftsinformatik, Nachhaltigkeits- und Umweltmanagement. Sie lehrt an deutschen und internationalen Hochschulen. Als Autorin und Beraterin beschäftigt sie sich insbesondere mit Nachhaltigkeitstransformation, Digitalisierung, KI, Dekarbonisierung sowie europäischer Nachhaltigkeits- und Digitalregulierung.</p>",
   "image": {
     "src": "/wp-content/uploads/2026/08/dina-barbian.jpg",
-    "alt": "Dr. Dina Barbian"
+    "alt": "Dr. Dina Barbian",
+    "zoom": 1.2,
+    "cropY": 1
   },
   "socials": {
     "linkedin": "https://www.linkedin.com/in/dr-dina-barbian-175b681a/",
