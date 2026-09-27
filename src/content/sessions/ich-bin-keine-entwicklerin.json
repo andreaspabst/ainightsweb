@@ -1,0 +1,16 @@
+{
+  "id": 1507,
+  "title": "Ich bin keine Entwicklerin. Trotzdem läuft dieses Dashboard.",
+  "slug": "ich-bin-keine-entwicklerin",
+  "excerpt": "Ich bin Marketing-Analystin, keine Entwicklerin, und baue mit KI gerade unsere komplette Analytics-Infrastruktur. Ein Zwischenbericht aus der Beta, inklusive der Fehler, die dabei fast alles ruiniert hätten.",
+  "contentHtml": "<p>Vor einem Jahr hätte ich für ein Dashboard, das CRM, ERP, Google Analytics und Search Console zusammenführt, ein Entwicklerteam und ein Budget gebraucht. Inzwischen steht eine funktionierende Beta, gebaut von mir, mit KI als Entwicklungspartner.</p><p>Ich zeige live, was bisher entstanden ist: automatisierte Datenpipelines, eine Funnel-Visualisierung über alle Vertriebsstufen hinweg, automatische MRR- und ARR-Berechnung aus Rechnungsdaten, ein Rollen- und Rechtekonzept. Und ich zeige, wie es entsteht, welche Arbeitsweise mit KI funktioniert und welche in unwartbarem Code endet.</p><p>Der ehrlichste Teil des Vortrags sind die Fehler: Umsätze, die doppelt gezählt wurden. Zeitzonen, die Monatsabschlüsse verschoben haben. Gutschriften, die niemand eingeplant hatte. Genau an diesen Stellen entscheidet sich, ob KI-gestützte Entwicklung im Alltag trägt oder nur im Demo-Video funktioniert.</p><p>Kein fertiges Erfolgsprojekt also, sondern ein Zwischenstand. Am Ende weiß das Publikum, was ohne Entwicklerteam wirklich machbar ist, wo die Grenze verläuft und was noch offen ist.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/09/anni-schramm-talk-cover.png",
+    "alt": "Talk-Cover „Ich bin keine Entwicklerin.“ von Anni Schramm, AI Woman Nights Nürnberg"
+  },
+  "speakerIds": [1506],
+  "type": "talk",
+  "duration": 30,
+  "room": "Main Stage",
+  "date": "2026-09-27 00:00:00"
+}

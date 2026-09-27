@@ -1,0 +1,25 @@
+{
+  "id": 1506,
+  "title": "Anni Schramm",
+  "slug": "anni-schramm",
+  "jobTitle": "Marketing Performance & Data Analyst, Smart City System",
+  "excerpt": "Marketing Performance & Data Analyst bei Smart City System in Fürth. Sie verantwortet Marketing-Analytics und Data Engineering und baut mit KI die interne Analytics-Plattform des Unternehmens von Grund auf.",
+  "bioHtml": "<p>Anni Schramm ist Marketing Performance &amp; Data Analyst bei Smart City System in Fürth, einem Anbieter für digitales Parkraummanagement. Sie verantwortet dort Marketing-Analytics und Data Engineering und baut aktuell die interne Analytics-Plattform des Unternehmens von Grund auf auf, von den Datenpipelines über die Funnel-Logik bis zur automatisierten Umsatzberechnung. Ihr Schwerpunkt: KI praktisch einsetzen.</p>",
+  "image": {
+    "src": "/wp-content/uploads/2026/09/anni-schramm.jpg",
+    "alt": "Anni Schramm"
+  },
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/anni-schramm/",
+    "website": "https://smart-city-system.com/"
+  },
+  "en": {
+    "jobTitle": "Marketing Performance & Data Analyst, Smart City System",
+    "excerpt": "Marketing Performance & Data Analyst at Smart City System in Fürth. She is responsible for marketing analytics and data engineering and is building the company's internal analytics platform from scratch with AI.",
+    "bioHtml": "<p>Anni Schramm is Marketing Performance &amp; Data Analyst at Smart City System in Fürth, a provider of digital parking management. She is responsible for marketing analytics and data engineering and is currently building the company's internal analytics platform from the ground up, from data pipelines and funnel logic to automated revenue calculation. Her focus: putting AI to practical use.</p>"
+  },
+  "date": "2026-09-27 00:00:00",
+  "modified": "2026-09-27 00:00:00",
+  "role": "speaker",
+  "topicArea": "tech"
+}
