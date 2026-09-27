@@ -137,11 +137,11 @@ async function speakerCards(layers, speakers, { x0, width, top, gap, R, nameSize
   const photoR = Math.min(R, Math.floor(cardW * 0.42));
   const border = Math.max(4, Math.round(photoR * 0.05));
   const cardTop = top + photoR;
-  let maxBottom = 0;
+  // Erst alle Texte setzen, dann zeichnen: alle Karten bekommen die Höhe der
+  // längsten, damit die Reihe auch mit fehlendem Jobtitel ruhig aussieht.
+  const cards = [];
   for (let i = 0; i < n; i++) {
     const s = speakers[i];
-    const x = x0 + i * (cardW + gap);
-    const cx = x + cardW / 2;
     const name = await textImg(s.title, {
       family: DISPLAY_BOLD, size: nameSize, color: '#ffffff', maxWidth: cardW - pad * 2, maxHeight: nameSize * 2.6, wrap: true, align: 'center', minSize: 14,
     });
@@ -152,9 +152,14 @@ async function speakerCards(layers, speakers, { x0, width, top, gap, R, nameSize
       : null;
     const nameY = top + photoR * 2 + border + Math.round(pad * 0.7);
     const jobY = nameY + name.info.height + Math.round(pad * 0.25);
-    const bottom = (job ? jobY + job.info.height : nameY + name.info.height) + pad;
-    maxBottom = Math.max(maxBottom, bottom);
-    layers.push({ input: svg(cardW, bottom - cardTop, `<rect width="${cardW}" height="${bottom - cardTop}" rx="${radius}" fill="${PINK}"/>`), top: cardTop, left: x });
+    cards.push({ s, name, job, nameY, jobY, bottom: (job ? jobY + job.info.height : nameY + name.info.height) + pad });
+  }
+  const maxBottom = Math.max(...cards.map((c) => c.bottom));
+  for (let i = 0; i < n; i++) {
+    const { s, name, job, nameY, jobY } = cards[i];
+    const x = x0 + i * (cardW + gap);
+    const cx = x + cardW / 2;
+    layers.push({ input: svg(cardW, maxBottom - cardTop, `<rect width="${cardW}" height="${maxBottom - cardTop}" rx="${radius}" fill="${PINK}"/>`), top: cardTop, left: x });
     const ring = svg(photoR * 2 + border * 2, photoR * 2 + border * 2, `<circle cx="${photoR + border}" cy="${photoR + border}" r="${photoR + border}" fill="#c9c9cf"/>`);
     layers.push({ input: ring, top: top - border, left: Math.round(cx - photoR - border) });
     layers.push({ input: await circlePhoto(s, photoR * 2), top, left: Math.round(cx - photoR) });
