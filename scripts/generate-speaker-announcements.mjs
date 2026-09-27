@@ -9,6 +9,8 @@
  * Aufbau: Logo „AI Nights by AXDN“, rundes Portrait mit Verlaufsring,
  * Sprech-Pill, Name, Rolle und eine Fußzeile mit Termin, ainights.ai und
  * Hashtag. Speaker ohne kommendes Event bekommen die neutrale Pill-Variante.
+ * Bei AI-Woman-Nights-Events: Woman-Lockup, „… bei den AI Woman Nights …“
+ * und #AIWOMANNIGHTS.
  *
  * Aufruf:
  *   node scripts/generate-speaker-announcements.mjs             # alle
@@ -27,6 +29,10 @@ const ROOT = process.cwd();
 const PUBLIC = path.join(ROOT, 'public');
 const OUT_DIR = path.join(PUBLIC, 'media/speaker-announcements');
 const LOGO = path.join(PUBLIC, 'wp-content/uploads/2026/07/AI-Nights-Logo-wAXDN.svg');
+const WOMAN_LOGO = path.join(PUBLIC, 'wp-content/uploads/2026/09/AI-Woman-Nights-Logo-w.png');
+const isWoman = (event) => Boolean(event?.slug?.startsWith('ai-woman-nights'));
+const series = (event) => (isWoman(event) ? 'AI Woman Nights' : 'AI Nights');
+const hashtag = (event) => (isWoman(event) ? '#AIWOMANNIGHTS' : '#AINIGHTS');
 const FONT_DIR = path.join(ROOT, 'scripts/fonts');
 /** Schnittfamilie → Datei. Wird an sharp übergeben, damit nichts installiert sein muss. */
 const FONT_FILES = {
@@ -203,7 +209,7 @@ const fmtDate = (iso) => {
 };
 
 const pillLabel = (event, upcoming) =>
-  (upcoming ? `Ich spreche bei den AI Nights ${event?.city ?? ''}` : 'Speaker bei den AI Nights').trim().toUpperCase();
+  (upcoming ? `Ich spreche bei den ${series(event)} ${event?.city ?? ''}` : `Speaker bei den ${series(event)}`).trim().toUpperCase();
 
 const footLeft = (event, upcoming) =>
   (upcoming && event?.eventDate
@@ -222,7 +228,7 @@ async function square(speaker, event, logo) {
 
   layers.push({ input: ring(W, H, CX, CY, R + 7, 10), top: 0, left: 0 });
   layers.push({ input: await circlePhoto(speaker, R * 2), top: CY - R, left: CX - R });
-  layers.push({ input: logo.square, top: 62, left: 72 });
+  layers.push({ input: (isWoman(event) && logo.woman ? logo.woman : logo).square, top: 62, left: 72 });
 
   const pill = await textImg(pillLabel(event, upcoming), {
     family: 'Inter ExtraBold', size: 30, color: '#ffffff', maxWidth: W - 300, letterSpacing: 1.2,
@@ -247,7 +253,7 @@ async function square(speaker, event, logo) {
   const footY = lineY + 32;
   const l = await textImg(footLeft(event, upcoming), { family: 'Inter ExtraBold', size: 20, color: C.muted, maxWidth: 330, letterSpacing: 0.8 });
   const m = await textImg('ainights.ai', { family: 'Inter SemiBold', size: 20, color: C.text, maxWidth: 200 });
-  const r = await textImg('#AINIGHTS', { family: 'Inter ExtraBold', size: 20, color: C.magenta, maxWidth: 200, letterSpacing: 0.8 });
+  const r = await textImg(hashtag(event), { family: 'Inter ExtraBold', size: 20, color: C.magenta, maxWidth: 200, letterSpacing: 0.8 });
   layers.push({ input: l.data, top: footY, left: 72 });
   layers.push({ input: m.data, top: footY, left: Math.round((W - m.info.width) / 2) });
   layers.push({ input: r.data, top: footY, left: W - 72 - r.info.width });
@@ -268,7 +274,7 @@ async function landscape(speaker, event, talkTitle, logo) {
 
   layers.push({ input: ring(W, H, CX, CY, R + 6, 9), top: 0, left: 0 });
   layers.push({ input: await circlePhoto(speaker, R * 2), top: CY - R, left: CX - R });
-  layers.push({ input: logo.landscape, top: 46, left: 64 });
+  layers.push({ input: (isWoman(event) && logo.woman ? logo.woman : logo).landscape, top: 46, left: 64 });
 
   const pill = await textImg(pillLabel(event, upcoming), {
     family: 'Inter ExtraBold', size: 22, color: '#ffffff', maxWidth: colW - 60, letterSpacing: 1,
@@ -302,7 +308,7 @@ async function landscape(speaker, event, talkTitle, logo) {
   const footY = lineY + 26;
   const l = await textImg(footLeft(event, upcoming), { family: 'Inter ExtraBold', size: 19, color: C.muted, maxWidth: 380, letterSpacing: 0.8 });
   const m = await textImg('ainights.ai', { family: 'Inter SemiBold', size: 19, color: C.text, maxWidth: 200 });
-  const r = await textImg('#AINIGHTS', { family: 'Inter ExtraBold', size: 19, color: C.magenta, maxWidth: 200, letterSpacing: 0.8 });
+  const r = await textImg(hashtag(event), { family: 'Inter ExtraBold', size: 19, color: C.magenta, maxWidth: 200, letterSpacing: 0.8 });
   layers.push({ input: l.data, top: footY, left: 64 });
   layers.push({ input: m.data, top: footY, left: Math.round((W - m.info.width) / 2) });
   layers.push({ input: r.data, top: footY, left: W - 64 - r.info.width });
@@ -357,6 +363,13 @@ const logo = {
   square: await sharp(logoSvg, { density: 600 }).resize({ width: 330 }).png().toBuffer(),
   landscape: await sharp(logoSvg, { density: 600 }).resize({ width: 270 }).png().toBuffer(),
 };
+try {
+  const womanPng = await fs.readFile(WOMAN_LOGO);
+  logo.woman = {
+    square: await sharp(womanPng).resize({ width: 400 }).png().toBuffer(),
+    landscape: await sharp(womanPng).resize({ width: 330 }).png().toBuffer(),
+  };
+} catch {}
 
 let count = 0;
 for (const s of speakers) {
