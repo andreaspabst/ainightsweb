@@ -114,7 +114,7 @@ Suffix `-instagram` / `-linkedin` im Dateinamen:
 |---|---|---|---|
 | Save the Date | `/media/save-the-date/<event-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
 | #speakerintro | `/media/speaker-intro-cards/<event-slug>/<speaker-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
-| Line-up | `/media/event-lineups/<event-slug>-<fmt>.png` | 1080×1080 | 1200×627 |
+| Line-up | `/media/event-lineups/<event-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
 | Event-Tag „HEUTE" | `/media/event-day/<event-slug>-<fmt>.png` | 1080×1350 | 1200×627 |
 | Countdown „NUR NOCH" | `/media/countdown/<event-slug>-<n>-<fmt>.png` | 1080×1350 | 1200×627 |
 | Event-/Themen-Karussell | `/media/{event,topic}-carousels/<event-slug>/…-slide-<n>-<fmt>.png` | 1080×1080 | 1200×627 |

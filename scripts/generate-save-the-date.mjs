@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
  * „Save the Date“-Karten in zwei Zuschnitten — Nachbau der Instagram-Vorlage:
- * Publikumsfoto vollflächig, geschwungene Magenta-Bänder, darauf das Datum,
- * „AFTERWORK“ auf Magenta-Block, „& NETWORKING“ in Magenta, das
- * AI-Nights-Logo — dazu der gedrehte „SAVE THE DATE“-Stempel.
+ * Publikumsfoto vollflächig, das Datum mit pinkem Stift-Kringel eingekreist,
+ * darunter der Zeitraum bis zum Event („IN EINEM MONAT“, aus --publish
+ * berechnet oder per --label gesetzt) auf Magenta-Block, das Logo unten —
+ * dazu der gedrehte „SAVE THE DATE“-Stempel.
  * Schrift: Glacial Indifference Bold (Display-Schrift der AI-Nights-Postkarten).
  *
  *   instagram → Portrait 1080×1350: Text mittig, Logo mittig unten.
@@ -106,23 +107,47 @@ async function photoLayer(rel, W, H, wide = false) {
     ${wide ? `<rect width="${W}" height="${H}" fill="url(#s)"/>` : ''}
   </svg>`);
   return sharp(path.join(PUBLIC, rel))
-    .resize(W, H, { fit: 'cover', position: 'attention' })
+    // Landscape schneidet ein Hochformat-Foto stark zu — 'attention' landet
+    // dann gern auf Beinen/Taschen. Oben ansetzen hält die Gesichter im Bild.
+    .resize(W, H, { fit: 'cover', position: wide ? 'north' : 'attention' })
     .composite([{ input: overlay, top: 0, left: 0 }])
     .png()
     .toBuffer();
 }
 
-/** Geschwungenes Magenta-Band über die volle Breite, als ganzflächiger Layer
- *  (sharp erlaubt keine Composite-Layer, die über den Rand hinausragen). */
-function swoosh(W, H, y, height, bend, flip = false) {
-  const b = flip ? -bend : bend;
-  const x0 = -40;
-  const x1 = W + 40;
+/** Handgezeichneter Kringel um das Datum (wie in der Canva-Vorlage): eine
+ *  leicht gekippte Ellipse, die oben links über den Startpunkt hinaus
+ *  weitergezogen wird — dadurch wirkt sie mit dem Stift eingekreist.
+ *  Ganzflächiger Layer, weil sharp keine Layer über den Rand hinaus erlaubt. */
+function scribble(W, H, { cx, cy, rx, ry, stroke, angle = -4 }) {
+  const pts = [];
+  // Start oben links, eine volle Runde plus Überlauf (~1.18 Umdrehungen),
+  // Radius wächst minimal, damit die zweite Linie neben der ersten liegt.
+  const turns = 1.18;
+  const steps = 160;
+  for (let i = 0; i <= steps; i++) {
+    const t = Math.PI * 1.12 + (i / steps) * turns * Math.PI * 2;
+    const grow = 1 + (i / steps) * 0.07;
+    pts.push([cx + Math.cos(t) * rx * grow, cy + Math.sin(t) * ry * (1 + (i / steps) * 0.16)]);
+  }
+  const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
   return Buffer.from(`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-    <path d="M${x0} ${y + b} Q ${W / 2} ${y - b * 2} ${x1} ${y + b}
-             L ${x1} ${y + b + height} Q ${W / 2} ${y - b * 2 + height} ${x0} ${y + b + height} Z"
-          fill="${PINK}"/>
+    <path d="${d}" fill="none" stroke="${PINK}" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round"
+          transform="rotate(${angle} ${cx} ${cy})"/>
   </svg>`);
+}
+
+/** Zeitraum bis zum Event, vom Veröffentlichungstag aus („IN EINEM MONAT“). */
+function countdownLabel(eventDate, publishDate) {
+  const day = (iso) => Date.UTC(...String(iso).slice(0, 10).split('-').map((v, i) => Number(v) - (i === 1 ? 1 : 0)));
+  const days = Math.round((day(eventDate) - day(publishDate)) / 86400000);
+  if (days <= 1) return 'MORGEN';
+  if (days < 12) return `IN ${days} TAGEN`;
+  if (days < 18) return 'IN ZWEI WOCHEN';
+  if (days < 25) return 'IN DREI WOCHEN';
+  if (days < 45) return 'IN EINEM MONAT';
+  if (days < 75) return 'IN ZWEI MONATEN';
+  return 'AFTERWORK & NETWORKING';
 }
 
 /** „SAVE THE DATE“-Stempel: das Original-Asset (weiße Platte mit ausgesparter
@@ -185,93 +210,82 @@ async function stamp({ width = 620, angle = -9 } = {}) {
 }
 
 /**
- * Maße je Zuschnitt. Landscape hat nur die halbe Höhe: kleinere Schriften,
- * schmalere Textspalte (rechts bleibt das Publikum sichtbar), Logo unten
- * rechts statt mittig, kleinerer Stempel.
+ * Maße je Zuschnitt. Landscape: Datum + Kringel + Block links, Stempel oben
+ * rechts, Logo unten rechts — das Publikum bleibt rechts sichtbar.
  */
 const LAYOUT = {
   instagram: {
-    margin: 76, bandY: 336, bandH: 34, bandBend: 26, dateGap: 26, dateSize: 118,
-    padX: 30, padY: 16, blockSize: 90, blockGap: 64,
-    lowerFromBottom: 300, lowerH: 30, lowerBend: 24,
-    stampWidth: 620, stampTop: 118, stampRight: 34, colRight: 60,
+    margin: 82, dateTop: 470, dateSize: 136, blockSize: 82, blockGap: 230, padX: 16, padY: 8,
+    stroke: 9, ringX: 48, ringY: 110, stampWidth: 640, stampAngle: 13, stampTop: 205, stampRight: 20,
+    logoBottom: 70, colRight: 20,
   },
   linkedin: {
-    margin: 68, bandY: 96, bandH: 22, bandBend: 16, dateGap: 18, dateSize: 74,
-    padX: 22, padY: 12, blockSize: 62, blockGap: 34,
-    lowerFromBottom: 112, lowerH: 20, lowerBend: 16,
-    stampWidth: 330, stampTop: 42, stampRight: 40, colRight: 420,
+    margin: 64, dateTop: 200, dateSize: 80, blockSize: 46, blockGap: 110, padX: 12, padY: 6,
+    stroke: 6, ringX: 34, ringY: 64, stampWidth: 380, stampAngle: 11, stampTop: 36, stampRight: 30,
+    logoBottom: 34, colRight: 520,
   },
 };
 
-async function card(fmt, kit, imageRel, logo) {
+async function card(fmt, kit, imageRel, logo, label) {
   const { w: W, h: H } = SIZE[fmt];
   const L = LAYOUT[fmt];
-  const MARGIN = L.margin;
+  const M = L.margin;
   const wide = fmt === 'linkedin';
-  const colW = W - MARGIN * 2 - L.colRight;
+  const colW = W - M * 2 - L.colRight;
   const layers = [];
   const event = kit.event;
 
-  // Datum-Band + Datum
-  layers.push({ input: swoosh(W, H, L.bandY, L.bandH, L.bandBend), top: 0, left: 0 });
-
+  // Datum, handgezeichnet eingekreist
   const date = await textImg(dateLabel(event.eventDate) ?? event.title, {
-    family: 'Glacial Indifference Bold',
-    size: L.dateSize,
-    color: '#ffffff',
-    maxWidth: colW,
+    family: 'Glacial Indifference Bold', size: L.dateSize, color: '#ffffff', maxWidth: colW,
   });
-  const dateY = L.bandY + L.bandH + L.bandBend + L.dateGap;
-  layers.push({ input: date.data, top: dateY, left: MARGIN });
+  const dateY = L.dateTop;
+  const cx = M + date.info.width / 2;
+  const cy = dateY + date.info.height / 2;
+  layers.push({
+    input: scribble(W, H, { cx, cy, rx: date.info.width / 2 + L.ringX, ry: date.info.height / 2 + L.ringY, stroke: L.stroke }),
+    top: 0, left: 0,
+  });
+  layers.push({ input: date.data, top: dateY, left: M });
 
-  // AFTERWORK auf Magenta-Block
+  // Zeitraum auf Magenta-Block
   const { padX, padY } = L;
-  const a = await textImg('AFTERWORK', { family: 'Glacial Indifference Bold', size: L.blockSize, color: '#ffffff', maxWidth: colW - padX * 2 });
+  const a = await textImg(label, { family: 'Glacial Indifference Bold', size: L.blockSize, color: '#ffffff', maxWidth: colW - padX * 2 });
   const aY = dateY + date.info.height + L.blockGap;
-  layers.push({ input: solidRect(a.info.width + padX * 2, a.info.height + padY * 2, PINK), top: aY, left: MARGIN });
-  layers.push({ input: a.data, top: aY + padY, left: MARGIN + padX });
+  layers.push({ input: solidRect(a.info.width + padX * 2, a.info.height + padY * 2, PINK), top: aY, left: M });
+  layers.push({ input: a.data, top: aY + padY, left: M + padX });
 
-  // & NETWORKING in Magenta darunter
-  const n = await textImg('& NETWORKING', { family: 'Glacial Indifference Bold', size: L.blockSize, color: C.magenta, maxWidth: colW });
-  layers.push({ input: n.data, top: aY + a.info.height + padY * 2 + 12, left: MARGIN });
-
-  // Unteres Band + Logo
-  const lowerY = H - L.lowerFromBottom;
-  layers.push({ input: swoosh(W, H, lowerY, L.lowerH, L.lowerBend, true), top: 0, left: 0 });
-
-  // Portrait: Logo mittig unter dem Band. Landscape: unten rechts, damit die
-  // linke Textspalte frei bleibt.
-  const lg = wide ? logoFor(kit, logo).landscape : logoFor(kit, logo).portrait;
+  // Logo: Portrait mittig unten, Landscape unten rechts
+  const lg = wide ? logoFor(kit, logo).landscape : logoFor(kit, logo).big;
   const logoMeta = await sharp(lg).metadata();
   layers.push({
     input: lg,
-    top: wide
-      ? Math.min(lowerY + L.lowerH + 26, H - logoMeta.height - 22)
-      : Math.min(lowerY + 96, H - logoMeta.height - 40),
-    left: wide ? W - MARGIN - logoMeta.width : Math.round((W - logoMeta.width) / 2),
+    top: H - logoMeta.height - L.logoBottom,
+    left: wide ? W - M - logoMeta.width : Math.round((W - logoMeta.width) / 2),
   });
 
-  // Stempel oben rechts, über das Datum-Band hinweg. Die Buchstaben sind
-  // ausgespart — damit sie auf hellen Fotos lesbar bleiben, liegt die
-  // abgedunkelte Plattenfläche darunter; sichtbar wird sie nur in den Aussparungen.
-  const st = await stamp({ width: L.stampWidth });
+  // Stempel, im Uhrzeigersinn gekippt, oben rechts über dem Kringel. Die
+  // Buchstaben sind ausgespart — darunter liegt die abgedunkelte Platte.
+  const st = await stamp({ width: L.stampWidth, angle: L.stampAngle });
   const stMeta = await sharp(st.stamp).metadata();
-  const stTop = L.stampTop;
   const stLeft = Math.max(0, W - stMeta.width - L.stampRight);
-  layers.push({ input: st.plate, top: stTop, left: stLeft });
-  layers.push({ input: st.stamp, top: stTop, left: stLeft });
+  layers.push({ input: st.plate, top: L.stampTop, left: stLeft });
+  layers.push({ input: st.stamp, top: L.stampTop, left: stLeft });
 
   return sharp(await photoLayer(imageRel, W, H, wide)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 }
 
 const args = process.argv.slice(2);
-const slugs = args.filter((a) => !a.startsWith('--') && !/^\/wp-content|^\/img/.test(a));
+const valueOf = new Set(['--image', '--seed', '--label', '--publish'].map((f) => args.indexOf(f) + 1).filter((i) => i > 0));
+const slugs = args.filter((a, i) => !a.startsWith('--') && !valueOf.has(i));
 const imageArg = args.includes('--image') ? args[args.indexOf('--image') + 1] : null;
 const seedArg = args.includes('--seed') ? args[args.indexOf('--seed') + 1] : null;
+const labelArg = args.includes('--label') ? args[args.indexOf('--label') + 1] : null;
+// Veröffentlichungstag (Standard: heute) — daraus entsteht „IN EINEM MONAT“ o. Ä.
+const publishArg = args.includes('--publish') ? args[args.indexOf('--publish') + 1] : new Date().toISOString().slice(0, 10);
 
 if (slugs.length === 0) {
-  console.error('Aufruf: node scripts/generate-save-the-date.mjs <event-slug> [...] [--image <pfad>] [--seed <wert>]');
+  console.error('Aufruf: node scripts/generate-save-the-date.mjs <event-slug> [...] [--image <pfad>] [--seed <wert>] [--publish YYYY-MM-DD] [--label TEXT]');
   process.exit(1);
 }
 
@@ -281,7 +295,7 @@ for (const slug of slugs) {
   const kit = await loadEventKit(slug);
   const imageRel = imageArg ?? (await pickGalleryImage(seedArg ?? slug));
   for (const fmt of ['instagram', 'linkedin']) {
-    await fs.writeFile(path.join(OUT_DIR, `${slug}-${fmt}.png`), await card(fmt, kit, imageRel, logo));
+    await fs.writeFile(path.join(OUT_DIR, `${slug}-${fmt}.png`), await card(fmt, kit, imageRel, logo, labelArg ?? countdownLabel(kit.event.eventDate, publishArg)));
   }
   console.log(`✓ ${slug}: 2 Formate — Foto: ${imageRel}`);
 }
