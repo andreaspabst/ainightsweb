@@ -1,0 +1,14 @@
+{
+  "id": 1600,
+  "title": "Andreas Pabst",
+  "slug": "andreas-pabst",
+  "excerpt": "KI-Engineering-Beratung: Agentic Coding im Team, Agent in Produktion, Governance-Check.",
+  "logo": {
+    "src": "/wp-content/uploads/2026/09/andreaspabst-logo.svg",
+    "alt": "Andreas Pabst"
+  },
+  "website": "https://andreaspabst.com",
+  "tier": "bronce",
+  "date": "2026-09-29 12:00:00",
+  "contentHtml": "<p>Andreas Pabst bringt KI-Agenten in Software-Teams in Produktion: Agentic Coding Trainings, Agent-in-Produktion-Sprints und Governance-Checks für Engineering-Teams in der Metropolregion Nürnberg und darüber hinaus. Interim Head of Engineering bei Seobility, Gründer von AXDN und AI Nights, Speaker beim KI Navigator der DOAG.</p><p>Mehr unter <a href=\"https://andreaspabst.com\">andreaspabst.com</a>.</p>"
+}
