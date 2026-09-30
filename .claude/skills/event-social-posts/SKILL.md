@@ -105,6 +105,29 @@ Repo (nur lokal, gitignored); ein Deploy ist dafür **nicht** nötig, die Bilder
 sind sofort unter `https://media.ainights.ai/media/…` erreichbar. Das
 aktualisierte `src/data/media-manifest.json` gehört mit in den Commit.
 
+### Fallback ohne R2-Zugangsdaten: `public/social-media-posts/`
+
+Fehlen in `.env` `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`, oder schlägt
+`npm run media:push` mit einem Auth-Fehler fehl (Token abgelaufen o. ä.) —
+**nicht** auf den R2-Push warten oder den Nutzer nach Zugangsdaten fragen,
+sondern über den normalen Deploy-Weg gehen:
+
+1. Fertige Grafiken/Videos nach `public/social-media-posts/<slug>/<dateiname>`
+   legen (z. B. `public/social-media-posts/ai-woman-nights-01/slide-3-instagram.png`).
+   Anders als `public/media/` ist dieser Ordner **nicht** in `.gitignore` —
+   die Dateien werden normal committet und landen über den Build in `dist/`.
+2. Ganz normaler Git-Workflow aus diesem CLAUDE.md: Feature-Branch, committen,
+   vor dem Push kurz beim Nutzer bestätigen lassen, pushen, PR gegen `master`
+   erstellen. Den PR **nicht selbst mergen**.
+3. Nach dem Merge auf das Forge-Deploy warten, dann jede URL einzeln prüfen
+   (`curl -I https://ainights.ai/social-media-posts/<slug>/<dateiname>` →
+   muss `200` liefern) — erst danach in `createScheduledPost` als `media`
+   verwenden.
+4. Diese Dateien bleiben dauerhaft im Repo (kein Auto-Cleanup) — für einzelne
+   Sonderposts unkritisch, aber kein Ersatz für den R2-Weg bei den
+   Standard-Kartentypen oben: sobald wieder gültige R2-Zugangsdaten da sind,
+   bei denen weiter `npm run media:push` nutzen.
+
 ### Welcher Kartentyp in welchem Format
 
 Alle Kartentypen liegen in **zwei Zuschnitten** vor, unterschieden durch das
