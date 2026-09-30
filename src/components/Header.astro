@@ -26,6 +26,9 @@ const t = {
     blog: 'Blog',
     gallery: 'Galerie',
     tickets: 'Tickets',
+    app: 'App',
+    appHref: '/de/app/',
+    new: 'Neu',
     nuernberg: 'AI Nights Nürnberg',
     muenchen: 'AI Nights München',
     bayreuth: 'AI Nights Bayreuth',
@@ -45,6 +48,9 @@ const t = {
     blog: 'Blog',
     gallery: 'Gallery',
     tickets: 'Tickets',
+    app: 'App',
+    appHref: '/en/app/',
+    new: 'New',
     nuernberg: 'AI Nights Nuremberg',
     muenchen: 'AI Nights Munich',
     bayreuth: 'AI Nights Bayreuth',
@@ -67,6 +73,10 @@ const langSwitchHref = switchHref ?? t.switchHref;
     </a>
 
     <nav class="nav" aria-label="Hauptnavigation">
+      <a href={t.appHref} class="nav-app">
+        {t.app}
+        <span class="badge">{t.new}</span>
+      </a>
       <div class="dropdown">
         <button type="button" class="drop-btn" aria-haspopup="true" aria-expanded="false">
           {t.cities}
@@ -95,6 +105,10 @@ const langSwitchHref = switchHref ?? t.switchHref;
   </div>
 
   <div class="mobile-menu" hidden>
+    <a href={t.appHref} class="mobile-app">
+      {t.app}
+      <span class="badge">{t.new}</span>
+    </a>
     <a href={cityHref('nuernberg', lang)}>{t.nuernberg}</a>
     <a href={cityHref('muenchen', lang)}>{t.muenchen}</a>
     <a href={cityHref('bayreuth', lang)}>{t.bayreuth}</a>
@@ -153,6 +167,22 @@ const langSwitchHref = switchHref ?? t.switchHref;
   .nav > a:hover,
   .drop-btn:hover {
     color: var(--text-primary);
+  }
+  .nav-app,
+  .mobile-app {
+    color: var(--text-primary) !important;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    color: #fff;
+    background: linear-gradient(135deg, #ff2d7a, #326bff);
+    border-radius: 999px;
+    padding: 0.22rem 0.45rem;
   }
   .dropdown {
     position: relative;
