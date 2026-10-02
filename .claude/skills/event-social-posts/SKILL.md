@@ -19,6 +19,48 @@ terminiert im Wochenrhythmus vor dem Event, alle auf Instagram und LinkedIn.
 2. **`linkedinData` braucht `"previewIncluded": false`**, sobald ein Bild
    mitgeschickt wird *und* im Text eine URL steht (Details unten).
 
+## ⚠️ Caption-Regeln (verbindlich für jeden Post)
+
+1. **Keine Gedankenstriche.** Weder „—“ noch „–“ als Satzzeichen, nicht
+   zwischen Satzteilen, nicht in Aufzählungen. Das ist das Merkmal, an dem man
+   sofort erkennt, dass ein Text von einer KI kommt. Stattdessen Komma, Punkt
+   oder Doppelpunkt, Sätze lieber kürzer machen. Bindestriche in Wörtern
+   (Line-up, Co-Founder) sind in Ordnung. Vor dem Anlegen jeden Text einmal auf
+   „—“ und „–“ prüfen. Einzige Ausnahme ist der Abschlussblock unten, der mit
+   seinem „–“ wörtlich übernommen wird.
+2. **Jede Event-Caption schließt mit diesem Block**, mit den aktuellen Daten
+   des Events (Datum, Ort, Stadt-Hashtag):
+
+   ```
+   👉 Wenn du dabei sein willst:
+   🗓️ 17. September – ab 17 Uhr
+   📍 Design Offices Nürnberg
+   🥂 Drinks & Snacks inklusive – gute Gespräche kommen von selbst
+
+   Kommentiere mit TICKET und du bekommst deinen Platz.
+
+   #ainights #ai #event #ki #afterwork #networking #nürnberg
+   ```
+
+   - Den Stadt-Hashtag je Event tauschen (`#nürnberg`, `#münchen`,
+     `#hamburg`, `#bayreuth`). Bei AI Woman Nights zusätzlich `#aiwomannights`.
+   - **LinkedIn:** Dort gibt es den Kommentar-Trick nicht. Statt der
+     TICKET-Zeile steht „Tickets und alle Infos: <volle Event-URL>“, sonst
+     bleibt der Block gleich. `previewIncluded: false` gilt unverändert.
+   - Der Block ersetzt „Link in Bio“ und die bisherigen Datums-/Ortszeilen.
+     Davor steht nur der Einstieg (Hook plus ein bis zwei Sätze zum Inhalt).
+3. **Mehrwert statt Oberfläche.** Jede Caption beantwortet „Warum sollte ich
+   kommen, was bringt es mir?“ mit konkretem Inhalt: was man aus dem Talk
+   mitnimmt (Learnings, Zahlen, Muster, Werkzeuge), nicht nur Name, Titel und
+   Termin. Quelle sind die Speaker-Blogposts und Sessions im Repo
+   (Abschnitt „Das nimmst du mit“), nichts erfinden. Ist das Programm noch
+   offen, stattdessen das Format konkret benennen (drei Sessions à 30 Minuten,
+   Speaker bleiben den ganzen Abend, Raum für Gespräche) und die Posts
+   nachschärfen, sobald Speaker feststehen.
+4. Gilt für alle neuen Captions und für jede bestehende Caption, die in
+   Metricool angefasst wird. Die AXDN//27-Posts haben eigene Inhalte, aber
+   auch dort keine Gedankenstriche.
+
 ## Social Media läuft über Metricool
 
 **Linkrex nicht mehr verwenden.** Social-Media-Planung für die AI Nights läuft
@@ -32,10 +74,11 @@ doppelt geplante Posts gehen sonst zweimal auf denselben Kanälen raus.
   „dermannimkleid").
 - **Netzwerke pro Ankündigung: Instagram *und* LinkedIn**, als **zwei
   getrennte Posts** zur selben Zeit (so liegen die bestehenden Posts vor):
-  - Instagram: Textende „Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️",
+  - Instagram: Textende ist der Abschlussblock aus den Caption-Regeln oben
+    („Kommentiere mit TICKET und du bekommst deinen Platz.“),
     `instagramData: {"type":"POST","showReelOnFeed":true,"isAiGenerated":false}`
     plus **Collab mit dem Stadt-Account**, siehe unten
-  - LinkedIn: statt „Link in Bio" die volle Event-URL,
+  - LinkedIn: statt der TICKET-Zeile die volle Event-URL,
     `linkedinData: {"previewIncluded":false,"type":"post"}` — **`previewIncluded`
     muss `false` sein**, siehe Pflichtregel unten
 - Hashtags stehen **im Text**, nicht im separaten Feld.
@@ -221,15 +264,13 @@ das Logo, groß **HEUTE** + Uhrzeit (aus `startTime` des Events) und die Zeile
 - Textmuster (Ton wie die bestehenden Posts, keine erfundenen Fakten):
 
   ```
-  Heute ist es so weit! 🎉 <Event-Titel> — ab <Uhrzeit> Uhr im <Location>, <Stadt>.
+  Heute ist es so weit! 🎉 <Event-Titel>, ab <Uhrzeit> Uhr im <Location>, <Stadt>.
 
   <Ein Satz zum Abend: Speaker/Talks in Slot-Reihenfolge, Drinks & Networking.>
 
   Für die Spontanen: Tickets gibt es auch an der Abendkasse. 🎟️
 
-  Wir sehen uns heute Abend! <Instagram: „Alle Infos auf ainights.ai — Link in Bio!" / LinkedIn: volle Event-URL>
-
-  #ainights #ki #<stadt> #heute #afterwork
+  <Abschlussblock aus den Caption-Regeln, mit „heute“ statt Datum: 🗓️ Heute – ab 17 Uhr>
   ```
 
 ### Countdown: „NUR NOCH 14 TAGE"
@@ -272,13 +313,7 @@ Namen um.
 
   <Ein Satz zum Abend: Speaker/Talks, wenn das Line-up steht, sonst allgemein.>
 
-  🗓️ <Datum> — ab <Uhrzeit> Uhr
-  📍 <Location>, <Stadt>
-  🥂 Drinks & Snacks inklusive
-
-  Tickets & alle Infos <Instagram: „auf ainights.ai — Link in Bio!" / LinkedIn: volle Event-URL> 🎟️
-
-  #ainights #ki #<stadt> #countdown #afterwork
+  <Abschlussblock aus den Caption-Regeln mit Datum, Ort und Stadt-Hashtag>
   ```
 
 ### Reihenfolge im Vorlauf
@@ -350,12 +385,11 @@ Textmuster (Ton wie die bestehenden Posts, keine erfundenen Fakten):
 
 Sein/Ihr Talk: „<Talk-Titel>" <Emoji>
 
-Tickets & alle Infos auf ainights.ai — Link in Bio! 🎟️
-
-#ainights #ki #<stadt> #<thema1> #<thema2>
+<Abschlussblock aus den Caption-Regeln mit Datum, Ort und Stadt-Hashtag>
 ```
 
-Bei AI-Woman-Nights-Events zusätzlich `#aiwomannights` und `#womenintech`.
+Bei AI-Woman-Nights-Events zusätzlich `#aiwomannights` und `#womenintech`,
+themenbezogene Hashtags (`#<thema1>`) dürfen nach dem Abschlussblock stehen.
 
 ## Danach
 
