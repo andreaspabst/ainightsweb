@@ -49,7 +49,15 @@ terminiert im Wochenrhythmus vor dem Event, alle auf Instagram und LinkedIn.
      bleibt der Block gleich. `previewIncluded: false` gilt unverändert.
    - Der Block ersetzt „Link in Bio“ und die bisherigen Datums-/Ortszeilen.
      Davor steht nur der Einstieg (Hook plus ein bis zwei Sätze zum Inhalt).
-3. Gilt für alle neuen Captions und für jede bestehende Caption, die in
+3. **Mehrwert statt Oberfläche.** Jede Caption beantwortet „Warum sollte ich
+   kommen, was bringt es mir?“ mit konkretem Inhalt: was man aus dem Talk
+   mitnimmt (Learnings, Zahlen, Muster, Werkzeuge), nicht nur Name, Titel und
+   Termin. Quelle sind die Speaker-Blogposts und Sessions im Repo
+   (Abschnitt „Das nimmst du mit“), nichts erfinden. Ist das Programm noch
+   offen, stattdessen das Format konkret benennen (drei Sessions à 30 Minuten,
+   Speaker bleiben den ganzen Abend, Raum für Gespräche) und die Posts
+   nachschärfen, sobald Speaker feststehen.
+4. Gilt für alle neuen Captions und für jede bestehende Caption, die in
    Metricool angefasst wird. Die AXDN//27-Posts haben eigene Inhalte, aber
    auch dort keine Gedankenstriche.
 
