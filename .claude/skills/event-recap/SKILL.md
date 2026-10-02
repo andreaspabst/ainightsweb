@@ -58,8 +58,11 @@ Je Termin **zwei Posts** (Instagram + LinkedIn) — sechs insgesamt.
 
 - **Karussell:** Deckblatt + 4 Galeriemotive aus `src/data/gallery.json`,
   über die drei Recaps hinweg **nicht wiederholen**.
+- **Caption:** Es gelten die Caption-Regeln aus dem Skill `event-social-posts`
+  (keine Gedankenstriche, Abschlussblock mit Datum und Ort des **nächsten**
+  Events und der TICKET-Zeile).
 - **Instagram:** `instagramData: {"type":"POST","showReelOnFeed":true,"isAiGenerated":false}`,
-  Ticket-Hinweis „Link in Bio" — plus **Collab mit dem Stadt-Account**, wenn
+  plus **Collab mit dem Stadt-Account**, wenn
   es für die Stadt des Events einen gibt (Nürnberg: `ainights.ai_nuernberg`;
   München: keiner). Tabelle und Regeln stehen im Skill `event-social-posts`
   unter „Instagram-Collab mit dem Stadt-Account"; gepostet wird immer vom
