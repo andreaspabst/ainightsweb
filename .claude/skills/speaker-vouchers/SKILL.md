@@ -15,8 +15,14 @@ LinkedIn nur noch Copy & Paste machen.
 
 - **`S-`** für Speaker, **`P-`** für Partner. Beispiel: `S-COR-HEB-274-905`.
 - Umlaute auflösen (Grünthanner → `GRU`), alles in Großbuchstaben.
-- Standardkonditionen wie bei den bestehenden Codes: **100 %**, **max. 5
-  Einlösungen**, kein Event-Scope (gilt also auch für die nächste Ausgabe).
+- Standardkonditionen: **100 %**, **max. 5 Einlösungen**, und **immer auf das
+  Event gescopet** (`product_slug`, Slug via `list_events`). Ohne Scope gilt der
+  Code auch für alle künftigen Ausgaben — das ist nicht gewollt.
+- „5 Einlösungen" heißt **5 Bestellungen**, nicht 5 Tickets: Bei 100 % wird jede
+  Bestellung komplett kostenlos, egal wie viele Tickets darin liegen. Wer eine
+  harte Obergrenze von einem Ticket pro Einlösung braucht, nimmt statt 100 %
+  einen Festbetrag in Höhe des Ticketpreises (so sind die bestehenden
+  Partnercodes gebaut: `P-VENDCONSULTING` 23 €, `S-OLI-VOL` 25 €).
 - Bestehende Codes ohne Präfix (`ALE-KEY-…`, `AND-PAB-…`) bleiben, wie sie
   sind — das Präfix gilt für neue Codes.
 - Gruppen-Talks: pro Person ein eigener Code, damit jede:r die eigenen 5
@@ -28,7 +34,10 @@ LinkedIn nur noch Copy & Paste machen.
    läuft über das Namensschema (z. B. `COR-HEB` für Cornelia Hebrank); die
    Liste enthält alle Codes des Kontos, weitere Teams gibt es nicht.
 2. **Fehlende anlegen** — `create_voucher` mit `type: percent`, `value: 100`,
-   `max_redemptions: 5` und dem Code nach Schema.
+   `max_redemptions: 5`, `product_slug: <Event-Slug>` und dem Code nach Schema.
+   Den Slug vorher mit `list_events` holen — er ist nicht die Produkt-ID aus der
+   `ticketUrl` (z. B. Produkt `x5jehqew` →
+   Slug `ai-woman-nights-nurnberg-01-premiere`).
    **Achtung:** Das Joinify-Token hatte zeitweise nur `mcp:read`. Kommt der
    Fehler „token only has read access", nicht weiterprobieren, sondern dem
    Nutzer sagen, dass er die Joinify-Integration mit `mcp:write` neu verbinden
