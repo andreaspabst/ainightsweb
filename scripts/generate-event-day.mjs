@@ -241,8 +241,8 @@ async function richText(markup, { size, maxWidth }) {
  * kompakterer Rand.
  */
 const LAYOUT = {
-  instagram: { margin: 100, head: 204, city: 120, sub: 50, colFactor: 1, logoTop: 64, logoLeft: 56, bottom: 120, gapSub: 44, gapCity: 22 },
-  linkedin: { margin: 68, head: 116, city: 68, sub: 30, colFactor: 0.56, logoTop: 40, logoLeft: 52, bottom: 54, gapSub: 26, gapCity: 14 },
+  instagram: { margin: 100, head: 204, city: 120, sub: 50, colFactor: 1, logoW: 520, logoBottom: 56, logoGap: 44, gapSub: 44, gapCity: 22 },
+  linkedin: { margin: 68, head: 116, city: 68, sub: 30, colFactor: 0.56, logoW: 340, logoBottom: 30, logoGap: 20, gapSub: 26, gapCity: 14 },
 };
 
 async function card(fmt, kit, imageRel, logo, opts) {
@@ -254,9 +254,12 @@ async function card(fmt, kit, imageRel, logo, opts) {
   const layers = [];
   const event = kit.event;
 
-  // Logo oben links
-  const lg = logoFor(kit, logo).landscape;
-  layers.push({ input: lg, top: L.logoTop, left: L.logoLeft });
+  // Logo unten mittig und groß: im Feed muss man sofort erkennen, um welche
+  // Marke (AI Nights oder AI Woman Nights) es geht.
+  const lg = await sharp(logoFor(kit, logo).big).resize({ width: L.logoW }).png().toBuffer();
+  const lgMeta = await sharp(lg).metadata();
+  const logoTop = H - L.logoBottom - lgMeta.height;
+  layers.push({ input: lg, top: logoTop, left: Math.round((W - lgMeta.width) / 2) });
 
   // Text-Block unten: HEUTE / <Uhrzeit> UHR / Hinweiszeile — von unten nach
   // oben gesetzt, damit der Abstand zum unteren Rand konstant bleibt.
@@ -301,7 +304,7 @@ async function card(fmt, kit, imageRel, logo, opts) {
     ? { info: { height: 0 } }
     : await richText(markup, { size: L.sub, maxWidth: colW + 20 });
 
-  const bottom = H - L.bottom;
+  const bottom = logoTop - L.logoGap;
   const subTop = bottom - sub.info.height;
   const cityTop = cityLine ? subTop - (sub.info.height ? L.gapCity : 0) - cityLine.info.height : subTop;
   const timeTop = cityTop - (cityLine || sub.info.height ? L.gapSub : 0) - timeline.info.height;
