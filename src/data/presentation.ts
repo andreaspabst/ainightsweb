@@ -80,7 +80,7 @@ export const womanNightsSpotlight = {
   ticketQr: '/media/presentation/ai-woman-nights-01-tickets.svg',
   // Die drei gelieferten Fotos sind als Gruppe bestätigt. Einzelne Zuordnungen
   // sind in den numerischen Dateinamen nicht enthalten, daher eine gemeinsame Bildunterschrift.
-  speakerNames: ['Dr. Dina Barbian', 'Anni Schramm', 'Dilara Zwanzig'],
+  speakerNames: ['Dr. Dina Barbian', 'Anni Schramm', 'Dilara-Melissa Zwanzig'],
   portraits: [
     '/media/presentation/woman-speaker-1695500720118.jpeg',
     '/media/presentation/woman-speaker-1770044091000.jpeg',
