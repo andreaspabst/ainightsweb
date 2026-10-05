@@ -13,10 +13,42 @@
     "linkedin": "https://www.linkedin.com/in/anni-schramm/",
     "website": "https://smart-city-system.com/"
   },
+  "topics": [
+    "KI im Marketing",
+    "Data Analytics",
+    "Business Intelligence",
+    "Automatisierung",
+    "KI-gestützte Entwicklung (Vibe Coding)",
+    "Datenpipelines",
+    "Praxisbericht"
+  ],
+  "keyTakeaways": [
+    "Was eine einzelne Fachkraft mit KI heute realistisch aufbauen kann und was weiterhin Entwicklerkompetenz braucht",
+    "Warum die teuerste Fehlerquelle nicht der Code ist, sondern falsch verstandene Geschäftslogik",
+    "Wie sich beurteilen lässt, ob ein KI-gebautes internes Tool tragfähig ist oder ein Risiko",
+    "Eine konkrete Arbeitsweise mit KI-Coding-Tools: erst Analyse, dann Freigabe, dann Code",
+    "Die typischen Stolperfallen bei Umsatz- und Funnel-Daten, die reihenweise falsche Zahlen erzeugen"
+  ],
   "en": {
     "jobTitle": "Marketing Performance & Data Analyst, Smart City System",
     "excerpt": "Marketing Performance & Data Analyst at Smart City System in Fürth. She is responsible for marketing analytics and data engineering and is building the company's internal analytics platform from scratch with AI.",
-    "bioHtml": "<p>Anni Schramm is Marketing Performance &amp; Data Analyst at Smart City System in Fürth, a provider of digital parking management. She is responsible for marketing analytics and data engineering and is currently building the company's internal analytics platform from the ground up, from data pipelines and funnel logic to automated revenue calculation. Her focus: putting AI to practical use.</p>"
+    "bioHtml": "<p>Anni Schramm is Marketing Performance &amp; Data Analyst at Smart City System in Fürth, a provider of digital parking management. She is responsible for marketing analytics and data engineering and is currently building the company's internal analytics platform from the ground up, from data pipelines and funnel logic to automated revenue calculation. Her focus: putting AI to practical use.</p>",
+    "topics": [
+      "AI in marketing",
+      "Data analytics",
+      "Business intelligence",
+      "Automation",
+      "AI-assisted development (vibe coding)",
+      "Data pipelines",
+      "Field report"
+    ],
+    "keyTakeaways": [
+      "What a single specialist can realistically build with AI today — and what still takes developer skills",
+      "Why the most expensive source of errors is not the code but misunderstood business logic",
+      "How to judge whether an AI-built internal tool is sound or a liability",
+      "A concrete way of working with AI coding tools: analyse first, approve, then code",
+      "The typical pitfalls in revenue and funnel data that produce wrong numbers at scale"
+    ]
   },
   "date": "2026-09-27 00:00:00",
   "modified": "2026-09-27 00:00:00",

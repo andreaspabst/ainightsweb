@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../Header.astro';
 import Footer from '../Footer.astro';
 import { imgVariant } from '../../lib/images';
+import { mediaExists } from '../../lib/media';
 import { speakerHref, speakersHref, foreignLang, type Lang } from '../../lib/i18n';
 
 export interface Props {
@@ -94,10 +95,13 @@ const socialLinks = [
   ...(d.links ?? []).map((l) => [l.label, l.url]),
 ].filter(Boolean) as [string, string][];
 
+// Nur verlinken, was wirklich im Bucket liegt — sonst zeigt die Seite einen
+// Download auf eine Grafik, die es für diesen Speaker noch nicht gibt
+// (die Übersicht unter /speaker/ filtert genauso).
 const mediaDownloads = [
   { label: t.dlLinkedin, href: `/media/speaker-announcements/${d.slug}-linkedin.png` },
   { label: t.dlInstagram, href: `/media/speaker-announcements/${d.slug}-instagram.png` },
-];
+].filter((item) => mediaExists(item.href));
 ---
 
 <Layout
@@ -174,14 +178,16 @@ const mediaDownloads = [
       </section>
     )}
 
-    <section class="downloads">
-      <h2 class="display-font">{t.downloadsHead}</h2>
-      <div class="download-actions">
-        {mediaDownloads.map((item) => (
-          <a href={item.href} download class="download-btn">{item.label}</a>
-        ))}
-      </div>
-    </section>
+    {mediaDownloads.length > 0 && (
+      <section class="downloads">
+        <h2 class="display-font">{t.downloadsHead}</h2>
+        <div class="download-actions">
+          {mediaDownloads.map((item) => (
+            <a href={item.href} download class="download-btn">{item.label}</a>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="value">
       <p class="eyebrow">{t.valueEyebrow}</p>
