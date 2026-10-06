@@ -129,6 +129,33 @@ const titleTag = truncateAtWord(title, 58);
       src="https://cloud.ccm19.de/app.js?apiKey=2aba15f3f7a43396c98af77973092a78717379a6bcda94fc&domain=68751d196d9583b7070bff52"
       referrerpolicy="origin"></script>
 
+    {/* Ads-Attribution: utm_source/utm_campaign (oder li_fat_id/fbclid) für die Sitzung merken und an den
+        Joinify-jtr aller Ticket-Links anhängen, z. B. AINWEB_EVENT_HERO__LINKEDIN-HERBST. Keine Cookies, nur
+        sessionStorage. Läuft auf DOMContentLoaded, also nach dem jtr-Skript am Ende von <body>. */}
+    <script is:inline>
+      (function () {
+        try {
+          var p = new URLSearchParams(location.search);
+          var src = p.get('utm_source') || (p.get('li_fat_id') ? 'linkedin' : '') || (p.get('fbclid') ? 'meta' : '');
+          if (src) sessionStorage.setItem('ainights_src', [src, p.get('utm_campaign') || ''].filter(Boolean).join('-'));
+          var tag = (sessionStorage.getItem('ainights_src') || '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 32);
+          if (!tag) return;
+          var apply = function () {
+            document.querySelectorAll('a[href*="joinify.net"]').forEach(function (a) {
+              var u = new URL(a.href);
+              var j = u.searchParams.get('jtr');
+              if (j && j.indexOf('__') === -1) {
+                u.searchParams.set('jtr', j + '__' + tag);
+                a.href = u.toString();
+              }
+            });
+          };
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+          else apply();
+        } catch (e) {}
+      })();
+    </script>
+
     {/* Google Analytics 4 mit Consent Mode v2: Standard = abgelehnt,
         CCM19 aktualisiert den Consent-Status nach Einwilligung */}
     <script is:inline>
@@ -145,15 +172,18 @@ const titleTag = truncateAtWord(title, 58);
       });
       gtag('js', new Date());
       gtag('config', 'G-QR205Y2TEF');
+      // Google Ads (Conversion Linker): speichert ein ankommendes ?gclid= für die Attribution.
+      gtag('config', 'AW-602490803');
     </script>
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QR205Y2TEF"></script>
 
-    {/* Meta Pixel (AI Nights, ID 1575575307657537): Meta bietet keinen Consent-Mode
-        wie Google, daher blockiert CCM19 dieses Skript per type="text/x-ccm-loader"
-        und gibt es erst nach Einwilligung frei. Dazu muss im eRecht24-Projektmanager
-        beim Vendor "Meta Pixel" die "Gruppe für den Script-Loader" auf "meta-pixel"
-        gesetzt werden — ohne diesen Schritt bleibt das Skript inaktiv. */}
-    <script type="text/x-ccm-loader" data-ccm-loader-group="meta-pixel">
+    {/* Marketing-Pixel: drei getrennte Standard-Snippets. CCM19 blockiert jedes automatisch (erkennt die
+        Tracker-URL) und führt es erst aus, wenn der Besucher den passenden Dienst im Cookie-Banner freigibt.
+        Dafür müssen die Dienste „Meta Pixel“, „LinkedIn Insight Tag“, „TikTok Pixel“ im eRecht24/CCM19-Projekt
+        AI Nights eingetragen sein. Getrennt halten: ein gemeinsames Skript würde erst mit allen Einwilligungen
+        freigegeben. Kein <noscript>-Fallback, da dieser nicht consent-gesteuert werden kann. */}
+    {/* Meta Pixel: AI Nights, 1575575307657537 */}
+    <script is:inline>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -165,14 +195,8 @@ const titleTag = truncateAtWord(title, 58);
       fbq('init', '1575575307657537');
       fbq('track', 'PageView');
     </script>
-    </>}
-
-    {/* LinkedIn Insight Tag (AXDN-Werbekonto, Partner-ID 9658370): wie der
-        Meta-Pixel per CCM19-Script-Loader blockiert — in CCM19 muss die
-        Einbindung "LinkedIn Insight Tag" die Gruppe "linkedin-insight" tragen,
-        sonst bleibt das Skript inaktiv. Kein <noscript>-Fallback, da dieser
-        nicht consent-gesteuert werden kann. */}
-    <script type="text/x-ccm-loader" data-ccm-loader-group="linkedin-insight">
+    {/* LinkedIn Insight Tag: AXDN-Werbekonto, Partner-ID 9658370 */}
+    <script is:inline>
       window._linkedin_partner_id = "9658370";
       window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
       window._linkedin_data_partner_ids.push(window._linkedin_partner_id);
@@ -185,16 +209,30 @@ const titleTag = truncateAtWord(title, 58);
       b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
       s.parentNode.insertBefore(b, s);})(window.lintrk);
     </script>
-    {/* TikTok Pixel (AXDN-Werbekonto, Pixel-ID DADQL0JC77U250DBMCQG): ebenfalls
-        per CCM19-Script-Loader (Gruppe "tiktok-pixel") blockiert, bis der
-        Besucher einwilligt. */}
-    <script type="text/x-ccm-loader" data-ccm-loader-group="tiktok-pixel">
+    {/* TikTok Pixel: AXDN-Werbekonto, DADQL0JC77U250DBMCQG */}
+    <script is:inline>
       !function (w, d, t) {
       w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
       ttq.load('DADQL0JC77U250DBMCQG');
       ttq.page();
       }(window, document, 'ttq');
     </script>
+    {/* Ticket-Klick als Checkout-Signal: Der Kauf läuft extern auf Joinify, deshalb melden wir den Klick
+        zum Ticketshop an alle geladenen Pixel. Pixel ohne Einwilligung sind nicht geladen und werden übersprungen. */}
+    <script is:inline>
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[href*="joinify.net"]') : null;
+        if (!a) return;
+        var jtr = '';
+        try { jtr = new URL(a.href).searchParams.get('jtr') || ''; } catch (err) {}
+        try { if (window.gtag) gtag('event', 'begin_checkout', { currency: 'EUR', items: [{ item_name: 'AI Nights Ticket' }], jtr: jtr }); } catch (err) {}
+        try { if (window.fbq) fbq('track', 'InitiateCheckout', { currency: 'EUR', content_name: 'AI Nights Ticket' }); } catch (err) {}
+        try { if (window.ttq) ttq.track('InitiateCheckout', { currency: 'EUR', content_name: 'AI Nights Ticket' }); } catch (err) {}
+        // LinkedIn: noch keine Conversion für AI Nights im Campaign Manager angelegt. Sobald es eine gibt,
+        // hier ergänzen: try { if (window.lintrk) lintrk('track', { conversion_id: <ID> }); } catch (err) {}
+      }, true);
+    </script>
+    </>}
 
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
