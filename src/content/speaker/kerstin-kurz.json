@@ -1,0 +1,50 @@
+{
+  "id": 9201,
+  "title": "Kerstin Kurz",
+  "slug": "kerstin-kurz",
+  "jobTitle": "Sales Managerin, semvox",
+  "excerpt": "Sales Managerin bei semvox. Sie begleitet Unternehmen dabei, vorhandenes Wissen mit Hilfe von Künstlicher Intelligenz effizienter nutzbar zu machen, und verbindet über 18 Jahre Vertriebserfahrung mit dokumentenbasierter KI.",
+  "bioHtml": "<p>Kerstin Kurz ist Sales Managerin bei semvox und begleitet Unternehmen dabei, Wissen mit Hilfe von Künstlicher Intelligenz effizienter nutzbar zu machen. Nach ihrer Ausbildung zur Reiseverkehrskauffrau war sie zehn Jahre im Tourismus tätig, bevor sie über 18 Jahre im Vertrieb eines Finanzdienstleisters arbeitete. In dieser Zeit sammelte sie umfassende Erfahrung in der Kundenberatung, dem Aufbau langfristiger Geschäftsbeziehungen und der Vermittlung komplexer Themen.</p>\n<p>Heute verbindet sie ihre langjährige Vertriebsexpertise mit den Möglichkeiten moderner KI-Technologien. Sie zeigt praxisnah, wie Unternehmen durch dokumentenbasierte KI den Zugang zu Wissen vereinfachen, Onboarding-Prozesse beschleunigen und Mitarbeitende im Arbeitsalltag entlasten können.</p>",
+  "image": {
+    "src": "/img/speaker/kerstin-kurz.jpg",
+    "alt": "Kerstin Kurz",
+    "cropY": 0.1
+  },
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/kerstinkurz/",
+    "website": "https://www.semvox.de/"
+  },
+  "topics": [
+    "Dokumentenbasierte KI als Wissensinfrastruktur",
+    "Vom Dokumentenarchiv zum schnellen Wissenszugriff",
+    "EU AI Act: Transparenz, Dokumentation und Nachvollziehbarkeit",
+    "Onboarding und Wissen im Arbeitsalltag"
+  ],
+  "keyTakeaways": [
+    "Unternehmen haben kein Informationsproblem, sondern ein Zugriffsproblem auf ihr Wissen",
+    "KI muss nicht primär neue Inhalte erzeugen, sondern vorhandenes Wissen kontrolliert, compliant und sofort nutzbar machen",
+    "Der größte wirtschaftliche Hebel liegt in schnellerem Onboarding, höherer Produktivität und besseren Entscheidungen",
+    "Weniger suchen und nachfragen, schneller lernen: Unternehmenswissen ist unmittelbar in der Muttersprache verfügbar"
+  ],
+  "en": {
+    "jobTitle": "Sales Manager, semvox",
+    "excerpt": "Sales Manager at semvox. She helps companies make their existing knowledge more usable with artificial intelligence, combining more than 18 years of sales experience with document-based AI.",
+    "bioHtml": "<p>Kerstin Kurz is a Sales Manager at semvox and helps companies make knowledge more usable with the help of artificial intelligence. After training as a travel agent she worked in tourism for ten years, followed by more than 18 years in sales at a financial services provider. Along the way she gained broad experience in customer advisory work, building long-term business relationships and explaining complex topics.</p>\n<p>Today she combines her long sales expertise with the possibilities of modern AI technology. She shows in practical terms how document-based AI can make knowledge easier to reach, speed up onboarding and relieve employees in their daily work.</p>",
+    "topics": [
+      "Document-based AI as knowledge infrastructure",
+      "From document archive to fast access to knowledge",
+      "EU AI Act: transparency, documentation and traceability",
+      "Onboarding and knowledge in everyday work"
+    ],
+    "keyTakeaways": [
+      "Companies do not have an information problem, they have an access problem to their knowledge",
+      "AI should not primarily generate new content, but make existing knowledge controlled, compliant and immediately usable",
+      "The biggest economic lever lies in faster onboarding, higher productivity and better decisions",
+      "Less searching and asking, faster learning: company knowledge is available at once, in your own language"
+    ]
+  },
+  "date": "2026-10-09 00:00:00",
+  "modified": "2026-10-09 00:00:00",
+  "role": "speaker",
+  "topicArea": "tech"
+}
