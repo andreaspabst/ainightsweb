@@ -1,0 +1,25 @@
+{
+  "id": 9202,
+  "title": "Vom Dokumentenarchiv zur Wissensinfrastruktur: Wie dokumentenbasierte KI Unternehmenswissen nutzbar macht",
+  "slug": "vom-dokumentenarchiv-zur-wissensinfrastruktur",
+  "excerpt": "Unternehmen haben kein Informationsproblem, sondern ein Zugriffsproblem. Kerstin Kurz zeigt, wie dokumentenbasierte KI vorhandene Dokumente von einem reinen Archiv zu einer aktiven Wissensinfrastruktur macht, kontrollierbar, nachvollziehbar und im Arbeitsalltag nutzbar.",
+  "contentHtml": "<p>Wir erleben einen Umbruch durch generative KI, deren Einfluss nicht mehr experimentell, sondern strategisch relevant ist. Parallel verändert sich der regulatorische Rahmen: Mit dem EU AI Act rücken Transparenz, Dokumentationspflichten und Nachvollziehbarkeit stärker in den Fokus unternehmerischer Verantwortung. Unternehmen haben dabei kein Informationsproblem, sondern ein Zugriffsproblem: Das Wissen steckt in Dokumenten, Richtlinien, Handbüchern und Prozessen, ist im Arbeitsalltag aber schwer schnell verfügbar.</p>\n<p>Kerstin zeigt, wie Unternehmen ihre vorhandenen Dokumente von einem reinen Archiv zu einer aktiven Wissensinfrastruktur entwickeln. Dokumentenbasierte KI hilft, Wissen schneller verfügbar zu machen, Entscheidungen zu verbessern, Einarbeitungszeiten zu verkürzen und gleichzeitig Compliance-Anforderungen zu erfüllen. Der Schwerpunkt liegt auf kontrollierbarem, nachvollziehbarem und produktiv nutzbarem Unternehmenswissen.</p>\n<ul>\n <li>Weniger suchen, weniger nachfragen, schneller lernen und sicherer arbeiten</li>\n <li>Unternehmenswissen unmittelbar in der Muttersprache verfügbar</li>\n <li>Schnelleres Onboarding, höhere Produktivität, bessere Entscheidungen</li>\n</ul>",
+  "image": {
+    "src": "/img/speaker/kerstin-kurz.jpg",
+    "alt": "Kerstin Kurz, Speakerin bei den AI Nights Nürnberg"
+  },
+  "speakerSlugs": [
+    "kerstin-kurz"
+  ],
+  "speakerIds": [
+    9201
+  ],
+  "startTime": "19:00",
+  "time": "19:00",
+  "endTime": "19:45",
+  "type": "talk",
+  "duration": 30,
+  "level": "beginner",
+  "room": "Main Stage",
+  "date": "2026-10-09 00:00:00"
+}
