@@ -234,21 +234,17 @@ const faqItems = [
                   <h3>{s.data.title}</h3>
                   {sp.length > 0 && (
                     <div class="wn-talk-sp">
-                      <span class="wn-talk-sp-avatars">
-                        {sp.map((x: any) => (
-                          x.data.image?.src
-                            ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
-                            : <span class="wn-talk-sp-fallback">✨</span>
-                        ))}
-                      </span>
-                      <span class="wn-talk-sp-info">
-                        {sp.map((x: any) => (
-                          <span class="wn-talk-sp-person">
+                      {sp.map((x: any) => (
+                        <div class="wn-talk-sp-person">
+                          {x.data.image?.src
+                            ? <img class="wn-talk-sp-photo" src={imgVariant(x.data.image.src, 320)} alt="" loading="lazy" />
+                            : <span class="wn-talk-sp-fallback">✨</span>}
+                          <span class="wn-talk-sp-text">
                             <span class="wn-talk-sp-name">{x.data.title}</span>
                             {x.data.jobTitle && <span class="wn-talk-sp-role">{x.data.jobTitle}</span>}
                           </span>
-                        ))}
-                      </span>
+                        </div>
+                      ))}
                     </div>
                   )}
                   {s.data.excerpt && <p class="wn-talk-ex">{s.data.excerpt}</p>}
@@ -954,51 +950,64 @@ const faqItems = [
     font-size: 0.95rem;
     font-weight: 700;
   }
+  /* Speakerin im Programm: großes rundes Porträt mit Verlaufsring, Name und Rolle daneben */
   .wn-talk-sp {
     display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    margin-bottom: 0.9rem;
-  }
-  .wn-talk-sp-avatars {
-    display: inline-flex;
-    flex-shrink: 0;
-  }
-  .wn-talk-sp-avatars img,
-  .wn-talk-sp-fallback {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--bg-elevated);
-    margin-left: -14px;
-    display: grid;
-    place-items: center;
-    background: var(--wn-gradient);
-    font-size: 1rem;
-  }
-  .wn-talk-sp-avatars img:first-child,
-  .wn-talk-sp-fallback:first-child {
-    margin-left: 0;
-  }
-  .wn-talk-sp-info {
-    display: grid;
-    gap: 0.35rem;
-    min-width: 0;
+    flex-wrap: wrap;
+    gap: 1.2rem 2.4rem;
+    margin: 0.5rem 0 1.2rem;
   }
   .wn-talk-sp-person {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    min-width: 0;
+    flex: 1 1 280px;
+  }
+  .wn-talk-sp-photo,
+  .wn-talk-sp-fallback {
+    width: 104px;
+    height: 104px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 22%;
+    padding: 3px;
+    background: var(--wn-gradient);
+    box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.7);
     display: grid;
-    gap: 0.1rem;
+    place-items: center;
+    font-size: 1.8rem;
+  }
+  .wn-talk-sp-text {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
   }
   .wn-talk-sp-name {
-    color: var(--wn-gold);
-    font-size: 0.9rem;
-    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.25;
   }
   .wn-talk-sp-role {
-    color: var(--text-muted);
-    font-size: 0.82rem;
-    line-height: 1.35;
+    color: var(--wn-gold);
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  @media (max-width: 640px) {
+    .wn-talk-sp-photo,
+    .wn-talk-sp-fallback {
+      width: 84px;
+      height: 84px;
+    }
+    .wn-talk-sp-person {
+      gap: 0.9rem;
+    }
+    .wn-talk-sp-name {
+      font-size: 1.05rem;
+    }
   }
   .wn-talk-ex {
     color: var(--text-secondary);
