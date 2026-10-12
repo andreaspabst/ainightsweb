@@ -365,7 +365,7 @@ const faqItems = [
               </div>
             </div>
             <div class="wn-loc-info">
-              {d.locationAddress && <p class="wn-location-text">{d.locationAddress}</p>}
+              {d.locationAddress && <p class="wn-location-text wn-loc-address">{d.locationAddress}</p>}
               <ul class="wn-loc-perks">
                 {club199Perks.map((p) => (
                   <li><span class="wn-loc-perk-icon">{p.icon}</span>{p.text}</li>
@@ -1336,6 +1336,14 @@ const faqItems = [
     border-radius: 24px;
     background: var(--wn-surface);
     border: 1px solid var(--wn-surface-border);
+  }
+  /* Adresse direkt sichtbar, ohne dass man erst auf Google Maps klicken muss */
+  .wn-loc-info .wn-loc-address {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 1.1rem;
   }
   .wn-loc-perks {
     list-style: none;
