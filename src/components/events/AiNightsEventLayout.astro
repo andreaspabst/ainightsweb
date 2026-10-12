@@ -305,21 +305,17 @@ const facts: { icon: string; label: string }[] = [
                   <h3>{s.data.title}</h3>
                   {sp.length > 0 && (
                     <div class="talk-sp">
-                      <span class="talk-sp-avatars">
-                        {sp.map((x: any) => (
-                          x.data.image?.src
-                            ? <img src={imgVariant(x.data.image.src, 80)} alt="" loading="lazy" />
-                            : <span class="talk-sp-fallback">✨</span>
-                        ))}
-                      </span>
-                      <span class="talk-sp-info">
-                        {sp.map((x: any) => (
-                          <span class="talk-sp-person">
+                      {sp.map((x: any) => (
+                        <div class="talk-sp-person">
+                          {x.data.image?.src
+                            ? <img class="talk-sp-photo" src={imgVariant(x.data.image.src, 320)} alt="" loading="lazy" />
+                            : <span class="talk-sp-fallback">✨</span>}
+                          <span class="talk-sp-text">
                             <span class="talk-sp-name">{x.data.title}</span>
                             {x.data.jobTitle && <span class="talk-sp-role">{x.data.jobTitle}</span>}
                           </span>
-                        ))}
-                      </span>
+                        </div>
+                      ))}
                     </div>
                   )}
                   {s.data.excerpt && <p class="talk-ex">{s.data.excerpt}</p>}
@@ -1446,51 +1442,65 @@ const facts: { icon: string; label: string }[] = [
     font-size: 0.95rem;
     font-weight: 700;
   }
+  /* Speaker im Programm: großes rundes Porträt mit Verlaufsring, Name und Rolle daneben.
+     Mehrere Speaker einer Session stehen nebeneinander und brechen bei wenig Platz um. */
   .talk-sp {
     display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    margin-bottom: 0.9rem;
-  }
-  .talk-sp-avatars {
-    display: inline-flex;
-    flex-shrink: 0;
-  }
-  .talk-sp-avatars img,
-  .talk-sp-fallback {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--bg-elevated);
-    margin-left: -14px;
-    display: grid;
-    place-items: center;
-    background: var(--gradient-accent);
-    font-size: 1.1rem;
-  }
-  .talk-sp-avatars img:first-child,
-  .talk-sp-fallback:first-child {
-    margin-left: 0;
-  }
-  .talk-sp-info {
-    display: grid;
-    gap: 0.35rem;
-    min-width: 0;
+    flex-wrap: wrap;
+    gap: 1.2rem 2.4rem;
+    margin: 0.5rem 0 1.2rem;
   }
   .talk-sp-person {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    min-width: 0;
+    flex: 1 1 280px;
+  }
+  .talk-sp-photo,
+  .talk-sp-fallback {
+    width: 104px;
+    height: 104px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 22%;
+    padding: 3px;
+    background: var(--gradient-accent);
+    box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.7);
     display: grid;
-    gap: 0.1rem;
+    place-items: center;
+    font-size: 1.8rem;
+  }
+  .talk-sp-text {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
   }
   .talk-sp-name {
-    color: var(--blue-bright);
-    font-size: 0.9rem;
-    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.25;
   }
   .talk-sp-role {
-    color: var(--text-muted);
-    font-size: 0.82rem;
-    line-height: 1.35;
+    color: var(--blue-bright);
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  @media (max-width: 640px) {
+    .talk-sp-photo,
+    .talk-sp-fallback {
+      width: 84px;
+      height: 84px;
+    }
+    .talk-sp-person {
+      gap: 0.9rem;
+    }
+    .talk-sp-name {
+      font-size: 1.05rem;
+    }
   }
   .talk-ex {
     color: var(--text-secondary);
