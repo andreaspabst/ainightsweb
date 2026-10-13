@@ -1,0 +1,83 @@
+---
+/**
+ * Auf- und zuklappbare Kategorie der Tools-Seite. Im Kopf steht nur der Titel
+ * und „Vollständig“ bzw. „Nicht vollständig“. Der Inhalt lädt keine Medien,
+ * solange das Pane zu ist: Bilder und Videos tragen `data-src` (statt `src`),
+ * das Skript in tools/index.astro setzt es beim ersten Öffnen.
+ */
+interface Props {
+  title: string;
+  complete: boolean;
+}
+const { title, complete } = Astro.props;
+---
+
+<details class="pane" data-pane>
+  <summary>
+    <span class="pane-title">{title}</span>
+    <span class={`pane-status ${complete ? 'ok' : 'todo'}`}>{complete ? 'Vollständig' : 'Nicht vollständig'}</span>
+  </summary>
+  <div class="pane-body">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .pane {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-glass);
+    margin-bottom: 0.6rem;
+  }
+  .pane summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .pane summary::-webkit-details-marker {
+    display: none;
+  }
+  .pane summary::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid var(--text-secondary);
+    border-bottom: 2px solid var(--text-secondary);
+    transform: rotate(-45deg);
+    margin-right: 0.8rem;
+    flex: none;
+    transition: transform 0.15s ease;
+  }
+  .pane[open] summary::before {
+    transform: rotate(45deg);
+  }
+  .pane-title {
+    flex: 1;
+  }
+  .pane-status {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pane-status.ok {
+    background: rgba(46, 204, 113, 0.16);
+    color: #4ade80;
+  }
+  .pane-status.todo {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+  }
+  .pane-body {
+    padding: 0.4rem 1rem 1.1rem;
+  }
+</style>

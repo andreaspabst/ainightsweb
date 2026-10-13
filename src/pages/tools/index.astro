@@ -5,12 +5,15 @@ import Layout from '../../layouts/Layout.astro';
 import { mediaExists, mediaList } from '../../lib/media';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import ToolPane from '../../components/ToolPane.astro';
 
 // Interne Übersicht über pro Event generierte Produktionsmedien (Speaker-
 // Fotos, Speaker-Intro-Videos, Announcement-Grafiken, Sponsor-Logos) — kein
 // Content für Besucher:innen, deshalb noindex und nirgends verlinkt.
 
 const exists = (p: string) => mediaExists(p);
+// Erwartete Countdown-Stufen (Skill event-social-posts: --countdown 14,10,2).
+const COUNTDOWN_LEVELS = [14, 10, 2];
 
 const [events, speakers, sponsors] = await Promise.all([
   getCollection('events'),
@@ -131,6 +134,24 @@ const rows = orderedEvents.map((e) => {
     topicCarousels: topicCarouselsFor(e.data.slug, people.map((p) => p.slug)).map((t) => ({ ...t, name: speakerName(t.slug) })),
     isUpcoming: (e.data.eventDate ?? '') >= today,
   };
+}).map((r) => {
+  // „Vollständig“ je Kategorie: alles da, was die Skills pro Event erzeugen.
+  // Kategorien ohne jeden Inhalt gelten als „Nicht vollständig“.
+  const speakersOnly = r.people.filter((p) => p.role !== 'moderator');
+  const all = <T,>(list: T[], ok: (x: T) => boolean) => list.length > 0 && list.every(ok);
+  const both = (x: { instagram: string | null; linkedin: string | null }) => Boolean(x.instagram && x.linkedin);
+  const status = {
+    saveTheDate: both(r.saveTheDate),
+    countdown: COUNTDOWN_LEVELS.every((d) => r.countdown.some((c) => c.days === d && c.linkedin)),
+    eventDay: both(r.eventDay),
+    lineup: both(r.lineup),
+    carousel: r.carousel.instagram.length > 0 && r.carousel.linkedin.length > 0,
+    topics: all(speakersOnly, (p) => r.topicCarousels.some((t) => t.slug === p.slug && t.linkedin.length > 0)),
+    intro: all(speakersOnly, (p) => both(p.introCard)),
+    people: all(r.people, (p) => Boolean(p.image?.src && p.media.introVideo && p.media.instagram && p.media.linkedin)),
+    sponsors: all(r.sponsors, (s) => Boolean(s.logo?.src)),
+  };
+  return { ...r, status };
 });
 ---
 
@@ -145,172 +166,177 @@ const rows = orderedEvents.map((e) => {
   <main class="tools">
     <div class="container">
       <h1 class="display-font">Produktionsmedien</h1>
-      <p class="lead">Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.</p>
+      <p class="lead">
+        Pro Event: Speaker-/Sponsor-Material, das für Ankündigungen und den Talk-Screen gebraucht wird.
+        Die Kategorien sind zugeklappt und laden erst beim Öffnen ihre Bilder und Videos.
+      </p>
 
-      {rows.map(({ event, people, sponsors, lineup, saveTheDate, eventDay, countdown, carousel, topicCarousels, isUpcoming }) => (
-        <section class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'}>
-          <h2>
-            {event.title}
-            {event.eventDate && <span class="date">{event.eventDate}</span>}
-            {!isUpcoming && <span class="badge">vergangen</span>}
-          </h2>
+      {rows.map(({ event, people, sponsors, lineup, saveTheDate, eventDay, countdown, carousel, topicCarousels, status, isUpcoming }, idx) => (
+        <details class="event-block" data-status={isUpcoming ? 'upcoming' : 'past'} open={idx === 0}>
+          <summary>
+            <h2>
+              {event.title}
+              {event.eventDate && <span class="date">{event.eventDate}</span>}
+              {!isUpcoming && <span class="badge">vergangen</span>}
+            </h2>
+          </summary>
 
-          {(saveTheDate.instagram || saveTheDate.linkedin) && (
-            <div class="lineup">
-              {saveTheDate.instagram && (
-                <a href={saveTheDate.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
-                  <img src={saveTheDate.instagram} alt="" loading="lazy" />
-                  <span>Save the Date · Instagram (1080×1350)</span>
+          <ToolPane title="Save the Date" complete={status.saveTheDate}>
+            {(saveTheDate.instagram || saveTheDate.linkedin) ? (
+              <div class="lineup">
+                {saveTheDate.instagram && (
+                  <a href={saveTheDate.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
+                    <img data-src={saveTheDate.instagram} alt="" decoding="async" />
+                    <span>Instagram (1080×1350)</span>
+                  </a>
+                )}
+                {saveTheDate.linkedin && (
+                  <a href={saveTheDate.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                    <img data-src={saveTheDate.linkedin} alt="" decoding="async" />
+                    <span>LinkedIn (1200×627)</span>
+                  </a>
+                )}
+              </div>
+            ) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
+
+          <ToolPane title="Countdown „NUR NOCH … TAGE“" complete={status.countdown}>
+            {countdown.length > 0 ? countdown.map((c) => (
+              <div class="lineup">
+                <a href={c.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
+                  <img data-src={c.instagram} alt="" decoding="async" />
+                  <span>T-{c.days} · Instagram laden</span>
                 </a>
-              )}
-              {saveTheDate.linkedin && (
-                <a href={saveTheDate.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
-                  <img src={saveTheDate.linkedin} alt="" loading="lazy" />
-                  <span>Save the Date · LinkedIn (1200×627)</span>
-                </a>
-              )}
-            </div>
-          )}
+                {c.linkedin && (
+                  <a href={c.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                    <img data-src={c.linkedin} alt="" decoding="async" />
+                    <span>T-{c.days} · LinkedIn laden</span>
+                  </a>
+                )}
+              </div>
+            )) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
 
-          {countdown.map((c) => (
-            <div class="lineup">
-              <a href={c.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
-                <img src={c.instagram} alt="" loading="lazy" />
-                <span>Countdown T-{c.days} · Instagram laden</span>
-              </a>
-              {c.linkedin && (
-                <a href={c.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
-                  <img src={c.linkedin} alt="" loading="lazy" />
-                  <span>Countdown T-{c.days} · LinkedIn laden</span>
-                </a>
-              )}
-            </div>
-          ))}
+          <ToolPane title="Event-Tag „HEUTE“" complete={status.eventDay}>
+            {(eventDay.instagram || eventDay.linkedin) ? (
+              <div class="lineup">
+                {eventDay.instagram && (
+                  <a href={eventDay.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
+                    <img data-src={eventDay.instagram} alt="" decoding="async" />
+                    <span>Instagram (1080×1350)</span>
+                  </a>
+                )}
+                {eventDay.linkedin && (
+                  <a href={eventDay.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                    <img data-src={eventDay.linkedin} alt="" decoding="async" />
+                    <span>LinkedIn (1200×627)</span>
+                  </a>
+                )}
+              </div>
+            ) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
 
-          {(eventDay.instagram || eventDay.linkedin) && (
-            <div class="lineup">
-              {eventDay.instagram && (
-                <a href={eventDay.instagram} target="_blank" class="lineup-preview lineup-preview-tall">
-                  <img src={eventDay.instagram} alt="" loading="lazy" />
-                  <span>Event-Tag „HEUTE“ · Instagram (1080×1350)</span>
-                </a>
-              )}
-              {eventDay.linkedin && (
-                <a href={eventDay.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
-                  <img src={eventDay.linkedin} alt="" loading="lazy" />
-                  <span>Event-Tag „HEUTE“ · LinkedIn (1200×627)</span>
-                </a>
-              )}
-            </div>
-          )}
+          <ToolPane title="Line-up" complete={status.lineup}>
+            {(lineup.instagram || lineup.linkedin) ? (
+              <div class="lineup">
+                {lineup.instagram && (
+                  <a href={lineup.instagram} target="_blank" class="lineup-preview">
+                    <img data-src={lineup.instagram} alt="" decoding="async" />
+                    <span>Instagram laden</span>
+                  </a>
+                )}
+                {lineup.linkedin && (
+                  <a href={lineup.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
+                    <img data-src={lineup.linkedin} alt="" decoding="async" />
+                    <span>LinkedIn laden</span>
+                  </a>
+                )}
+              </div>
+            ) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
 
-          {(lineup.instagram || lineup.linkedin) && (
-            <div class="lineup">
-              {lineup.instagram && (
-                <a href={lineup.instagram} target="_blank" class="lineup-preview">
-                  <img src={lineup.instagram} alt="" loading="lazy" />
-                  <span>Line-up · Instagram laden</span>
-                </a>
-              )}
-              {lineup.linkedin && (
-                <a href={lineup.linkedin} target="_blank" class="lineup-preview lineup-preview-wide">
-                  <img src={lineup.linkedin} alt="" loading="lazy" />
-                  <span>Line-up · LinkedIn laden</span>
-                </a>
-              )}
-            </div>
-          )}
+          <ToolPane title="Event-Karussell (Line-up → Talks → Follow)" complete={status.carousel}>
+            {carousel.instagram.length > 0 ? (['instagram', 'linkedin'] as const).map((fmt) => (
+              <div class="strip">
+                <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
+                {carousel[fmt].map((src, i) => (
+                  <a href={src} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : ''}`}>
+                    <img data-src={src} alt="" decoding="async" />
+                    <span>Slide {i + 1}</span>
+                  </a>
+                ))}
+              </div>
+            )) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
 
-          {carousel.instagram.length > 0 && (
-            <>
-              <h3 class="subheading">Event-Karussell (Line-up → Talks → Follow)</h3>
-              {(['instagram', 'linkedin'] as const).map((fmt) => (
-                <div class="strip">
-                  <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
-                  {carousel[fmt].map((src, i) => (
-                    <a href={src} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : ''}`}>
-                      <img src={src} alt="" loading="lazy" />
-                      <span>Slide {i + 1}</span>
-                    </a>
-                  ))}
-                </div>
-              ))}
-            </>
-          )}
-
-          {topicCarousels.length > 0 && (
-            <>
-              <h3 class="subheading">Themen-Karussells (Hook → Inhalt → Speaker → Follow)</h3>
-              {topicCarousels.map((t) => (
-                <div>
-                  <p class="strip-title">{t.name}</p>
-                  {(['instagram', 'linkedin'] as const).map((fmt) => (
-                    <div class="strip">
-                      <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
-                      {t[fmt].map((src, i) => (
-                        <a href={src} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : ''}`}>
-                          <img src={src} alt="" loading="lazy" />
-                          <span>Slide {i + 1}</span>
-                        </a>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </>
-          )}
-
-          {people.some((p) => p.introCard.instagram || p.introCard.linkedin) && (
-            <>
-              <h3 class="subheading">#speakerintro-Karten (Instagram 1080×1350 · LinkedIn 1200×627)</h3>
-              {(['instagram', 'linkedin'] as const).map((fmt) => (
-                people.some((p) => p.introCard[fmt]) && (
+          <ToolPane title="Themen-Karussells (Hook → Inhalt → Speaker → Follow)" complete={status.topics}>
+            {topicCarousels.length > 0 ? topicCarousels.map((t) => (
+              <div>
+                <p class="strip-title">{t.name}</p>
+                {(['instagram', 'linkedin'] as const).map((fmt) => (
                   <div class="strip">
                     <span class="strip-label">{fmt === 'instagram' ? 'Instagram' : 'LinkedIn'}</span>
-                    {people.filter((p) => p.introCard[fmt]).map((p) => (
-                      <a href={p.introCard[fmt]} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : 'slide-tall'}`}>
-                        <img src={p.introCard[fmt]} alt="" loading="lazy" />
-                        <span>{p.title}</span>
+                    {t[fmt].map((src, i) => (
+                      <a href={src} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : ''}`}>
+                        <img data-src={src} alt="" decoding="async" />
+                        <span>Slide {i + 1}</span>
                       </a>
                     ))}
                   </div>
-                )
-              ))}
-            </>
-          )}
+                ))}
+              </div>
+            )) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
 
-          {people.length > 0 && (
-            <div class="grid">
-              {people.map((p) => (
-                <article class="card">
-                  {p.image?.src && <img src={p.image.src} alt={p.title} loading="lazy" />}
-                  <h3>{p.title}</h3>
-                  <p class="role">{p.role === 'moderator' ? 'Moderator:in' : 'Speaker'}</p>
-                  <div class="links">
-                    {p.image?.src && <a href={p.image.src} target="_blank">Foto</a>}
-                    {p.media.introVideo && <a href={p.media.introVideo} target="_blank">Video ansehen</a>}
-                    {p.media.introVideo && <a href={p.media.introVideo} download={`${p.slug}-intro.mp4`}>Video laden (1080p)</a>}
-                    {p.media.instagram && <a href={p.media.instagram} target="_blank">Instagram-Grafik</a>}
-                    {p.media.linkedin && <a href={p.media.linkedin} target="_blank">LinkedIn-Grafik</a>}
-                    {!p.media.introVideo && !p.media.instagram && !p.media.linkedin && (
-                      <span class="missing">noch nichts generiert</span>
+          <ToolPane title="#speakerintro-Karten" complete={status.intro}>
+            {people.some((p) => p.introCard.instagram || p.introCard.linkedin) ? (['instagram', 'linkedin'] as const).map((fmt) => (
+              people.some((p) => p.introCard[fmt]) && (
+                <div class="strip">
+                  <span class="strip-label">{fmt === 'instagram' ? 'Instagram 1080×1350' : 'LinkedIn 1200×627'}</span>
+                  {people.filter((p) => p.introCard[fmt]).map((p) => (
+                    <a href={p.introCard[fmt]} target="_blank" class={`slide ${fmt === 'linkedin' ? 'slide-wide' : 'slide-tall'}`}>
+                      <img data-src={p.introCard[fmt]} alt="" decoding="async" />
+                      <span>{p.title}</span>
+                    </a>
+                  ))}
+                </div>
+              )
+            )) : <p class="empty">Noch nichts generiert.</p>}
+          </ToolPane>
+
+          <ToolPane title="Speaker & Moderation" complete={status.people}>
+            {people.length > 0 ? (
+              <div class="grid">
+                {people.map((p) => (
+                  <article class="card">
+                    {p.image?.src && <img data-src={p.image.src} alt={p.title} decoding="async" />}
+                    <h3>{p.title}</h3>
+                    <p class="role">{p.role === 'moderator' ? 'Moderator:in' : 'Speaker'}</p>
+                    <div class="links">
+                      {p.image?.src && <a href={p.image.src} target="_blank">Foto</a>}
+                      {p.media.introVideo && <a href={p.media.introVideo} target="_blank">Video ansehen</a>}
+                      {p.media.introVideo && <a href={p.media.introVideo} download={`${p.slug}-intro.mp4`}>Video laden (1080p)</a>}
+                      {p.media.instagram && <a href={p.media.instagram} target="_blank">Instagram-Grafik</a>}
+                      {p.media.linkedin && <a href={p.media.linkedin} target="_blank">LinkedIn-Grafik</a>}
+                      {!p.media.introVideo && !p.media.instagram && !p.media.linkedin && (
+                        <span class="missing">noch nichts generiert</span>
+                      )}
+                    </div>
+                    {p.media.introVideo && (
+                      <video data-src={p.media.introVideo} controls muted preload="none"></video>
                     )}
-                  </div>
-                  {p.media.introVideo && (
-                    <video src={p.media.introVideo} controls muted preload="metadata"></video>
-                  )}
-                </article>
-              ))}
-            </div>
-          )}
+                  </article>
+                ))}
+              </div>
+            ) : <p class="empty">Noch kein Line-up hinterlegt.</p>}
+          </ToolPane>
 
-          {sponsors.length > 0 && (
-            <>
-              <h3 class="subheading">Sponsoren</h3>
+          <ToolPane title="Sponsoren" complete={status.sponsors}>
+            {sponsors.length > 0 ? (
               <div class="grid">
                 {sponsors.map((s) => (
                   <article class="card card-sponsor">
-                    {s.logo?.src && <img src={s.logo.src} alt={s.title} loading="lazy" />}
+                    {s.logo?.src && <img data-src={s.logo.src} alt={s.title} decoding="async" />}
                     <h3>{s.title}</h3>
                     <div class="links">
                       {s.logo?.src && <a href={s.logo.src} target="_blank">Logo</a>}
@@ -318,16 +344,33 @@ const rows = orderedEvents.map((e) => {
                   </article>
                 ))}
               </div>
-            </>
-          )}
-
-          {people.length === 0 && sponsors.length === 0 && <p class="empty">Noch kein Line-up hinterlegt.</p>}
-        </section>
+            ) : <p class="empty">Keine Sponsoren hinterlegt.</p>}
+          </ToolPane>
+        </details>
       ))}
     </div>
   </main>
   <Footer lang="de" />
 </Layout>
+
+<script>
+  // Medien erst beim ersten Öffnen eines Panes laden: In den zugeklappten
+  // Kategorien tragen <img>/<video> nur data-src, damit die Seite beim Laden
+  // keine Bilder und keine Videos vom Server zieht.
+  document.addEventListener(
+    'toggle',
+    (e) => {
+      const el = e.target as HTMLElement;
+      if (!(el instanceof HTMLDetailsElement) || !el.hasAttribute('data-pane') || !el.open) return;
+      el.querySelectorAll<HTMLElement>('[data-src]').forEach((m) => {
+        m.setAttribute('src', m.dataset.src!);
+        m.removeAttribute('data-src');
+        if (m instanceof HTMLVideoElement) m.load();
+      });
+    },
+    true,
+  );
+</script>
 
 <style>
   .tools {
@@ -351,9 +394,35 @@ const rows = orderedEvents.map((e) => {
     margin-bottom: 2.5rem;
   }
   .event-block {
-    margin-bottom: 3.5rem;
-    padding-bottom: 2.5rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1.2rem;
     border-bottom: 1px solid var(--border);
+  }
+  .event-block > summary {
+    cursor: pointer;
+    list-style: none;
+    margin-bottom: 0.9rem;
+  }
+  .event-block > summary::-webkit-details-marker {
+    display: none;
+  }
+  .event-block > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .event-block > summary::before {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    border-right: 2px solid var(--text-secondary);
+    border-bottom: 2px solid var(--text-secondary);
+    transform: rotate(-45deg);
+    flex: none;
+    transition: transform 0.15s ease;
+  }
+  .event-block[open] > summary::before {
+    transform: rotate(45deg);
   }
   .event-block h2 {
     display: flex;
@@ -362,7 +431,7 @@ const rows = orderedEvents.map((e) => {
     flex-wrap: wrap;
     font-size: 1.4rem;
     color: var(--text-primary);
-    margin-bottom: 1.2rem;
+    margin: 0;
   }
   .date {
     font-size: 0.85rem;
