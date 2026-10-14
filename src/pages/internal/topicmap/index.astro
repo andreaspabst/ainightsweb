@@ -1,0 +1,858 @@
+---
+import { getCollection } from 'astro:content';
+import { todayBerlin } from '../../../lib/eventDates';
+import { CLUSTERS, TOPICS, CURATION } from '../../../data/topicmap';
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+
+// Interne Themenlandkarte: Speaker, Themen, Jobtitel, Branchen und Events der
+// bisherigen AI Nights als Kräfte-Graph. Die Daten kommen aus src/content
+// (Events, Speaker); Themen-Tags, normalisierte Jobtitel, Branchen und Cluster
+// pflegt src/data/topicmap.ts. Kein Besucher-Content: noindex, nirgends verlinkt.
+
+const [events, speakers] = await Promise.all([getCollection('events'), getCollection('speaker')]);
+const speakerById = new Map(speakers.map((s) => [s.data.id, s.data]));
+const today = todayBerlin();
+
+const pastEvents = events
+  .map((e) => e.data)
+  .filter((e) => e.eventDate && e.eventDate < today && !e.slug.startsWith('ai-woman-nights-test'))
+  .sort((a, b) => (a.eventDate ?? '').localeCompare(b.eventDate ?? ''));
+
+type NodeType = 'speaker' | 'topic' | 'role' | 'industry' | 'event' | 'cluster';
+interface GNode {
+  id: string;
+  type: NodeType;
+  label: string;
+  cluster?: string;
+  meta?: Record<string, unknown>;
+}
+const nodes = new Map<string, GNode>();
+const links = new Set<string>();
+const link = (a: string, b: string) => links.add(a < b ? `${a}|${b}` : `${b}|${a}`);
+const monthFmt = new Intl.DateTimeFormat('de-DE', { month: 'short', year: 'numeric', timeZone: 'Europe/Berlin' });
+
+// Cluster-Knoten zuerst, damit die Hubs im Graphen immer existieren.
+for (const c of CLUSTERS) nodes.set(`cl:${c.id}`, { id: `cl:${c.id}`, type: 'cluster', label: c.label, cluster: c.id });
+
+const rows: {
+  event: string;
+  speaker: string;
+  jobTitle: string;
+  roles: string[];
+  industries: string[];
+  topics: string[];
+  talk: string;
+  curated: boolean;
+}[] = [];
+
+for (const e of pastEvents) {
+  const nr = e.slug.match(/(\d+)$/)?.[1] ?? '';
+  const when = e.eventDate ? monthFmt.format(new Date(`${e.eventDate}T12:00:00+01:00`)) : '';
+  const eventId = `ev:${e.slug}`;
+  const eventLabel = `${e.city ?? 'AI Nights'} #${nr}`;
+  nodes.set(eventId, { id: eventId, type: 'event', label: eventLabel, meta: { when, title: e.title } });
+
+  for (const id of e.speakerIds ?? []) {
+    const s = speakerById.get(id);
+    if (!s || s.slug.startsWith('ai-nights-speaker')) continue;
+    const cur = CURATION[s.slug];
+    const sid = `sp:${s.slug}`;
+    const existing = nodes.get(sid);
+    if (existing) {
+      (existing.meta!.events as string[]).push(eventLabel);
+    } else {
+      nodes.set(sid, {
+        id: sid,
+        type: 'speaker',
+        label: s.title,
+        meta: {
+          jobTitle: s.jobTitle ?? '',
+          org: cur?.org ?? '',
+          talk: cur?.talk ?? '',
+          events: [eventLabel],
+          curated: Boolean(cur),
+          url: `/speaker/${s.slug}/`,
+        },
+      });
+    }
+    link(eventId, sid);
+
+    const roles = cur?.roles ?? (s.jobTitle ? [s.jobTitle] : []);
+    for (const r of roles) {
+      nodes.set(`rl:${r}`, { id: `rl:${r}`, type: 'role', label: r });
+      link(sid, `rl:${r}`);
+    }
+    for (const i of cur?.industries ?? []) {
+      nodes.set(`in:${i}`, { id: `in:${i}`, type: 'industry', label: i });
+      link(sid, `in:${i}`);
+    }
+    for (const t of cur?.topics ?? []) {
+      const topic = TOPICS[t];
+      nodes.set(`tp:${t}`, { id: `tp:${t}`, type: 'topic', label: topic.label, cluster: topic.cluster });
+      link(sid, `tp:${t}`);
+      link(`tp:${t}`, `cl:${topic.cluster}`);
+    }
+    rows.push({
+      event: eventLabel,
+      speaker: s.title,
+      jobTitle: s.jobTitle ?? '',
+      roles,
+      industries: cur?.industries ?? [],
+      topics: (cur?.topics ?? []).map((t) => TOPICS[t].label),
+      talk: cur?.talk ?? '',
+      curated: Boolean(cur),
+    });
+  }
+}
+
+// Cluster ohne Themen (noch nichts gesprochen) nicht zeigen.
+const usedClusters = new Set([...nodes.values()].filter((n) => n.type === 'topic').map((n) => n.cluster));
+for (const c of CLUSTERS) if (!usedClusters.has(c.id)) nodes.delete(`cl:${c.id}`);
+
+const graph = {
+  nodes: [...nodes.values()],
+  links: [...links].map((l) => l.split('|')),
+  clusters: CLUSTERS.filter((c) => usedClusters.has(c.id)),
+};
+const count = (t: NodeType) => graph.nodes.filter((n) => n.type === t).length;
+const uncurated = [...nodes.values()].filter((n) => n.type === 'speaker' && !n.meta?.curated).length;
+---
+
+<Layout
+  lang="de"
+  title="Themenlandkarte der AI Nights"
+  description="Interne Übersicht: Themen, Speaker, Jobtitel und Branchen der bisherigen AI Nights als Kräfte-Graph mit Themen-Clustern."
+  path="/internal/topicmap/"
+  noindex={true}
+>
+  <Header lang="de" />
+  <main class="topicmap">
+    <div class="container">
+      <h1 class="display-font">Themenlandkarte</h1>
+      <p class="lead">
+        {count('speaker')} Speaker-Einträge aus {count('event')} AI Nights, verbunden über {count('topic')} Themen,
+        {count('role')} Jobtitel und {count('industry')} Branchen. Die Verbindungen sind Federn: Knoten ziehen,
+        Hintergrund verschieben, mit dem Mausrad zoomen. Die Themen-Cluster ziehen verwandte Themen zusammen.
+      </p>
+
+      <div class="toolbar" role="group" aria-label="Graph-Steuerung">
+        <div class="chips" id="chips"></div>
+        <input type="search" id="search" placeholder="Suchen: Speaker, Thema, Branche …" aria-label="Im Graphen suchen" />
+        <div class="buttons">
+          <button type="button" id="btn-physics" aria-pressed="true">Physik an</button>
+          <button type="button" id="btn-shuffle">Neu mischen</button>
+          <button type="button" id="btn-fit">Zentrieren</button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <canvas id="graph" aria-label="Kräfte-Graph der Themen, Speaker, Jobtitel und Branchen"></canvas>
+        <aside class="detail" id="detail" aria-live="polite">
+          <p class="hint">Knoten anfahren oder anklicken für Details. Doppelklick pinnt einen Knoten fest.</p>
+        </aside>
+      </div>
+
+      {uncurated > 0 && (
+        <p class="note">
+          {uncurated} Speaker sind noch nicht in <code>src/data/topicmap.ts</code> eingeordnet (grau, ohne Themen und Branche).
+        </p>
+      )}
+
+      <h2 class="table-title">Alle Talks im Überblick</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Event</th><th>Speaker</th><th>Jobtitel</th><th>Branche</th><th>Themen</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr class={r.curated ? '' : 'uncurated'}>
+                <td>{r.event}</td>
+                <td>
+                  <strong>{r.speaker}</strong>
+                  {r.talk && <span class="talk">{r.talk}</span>}
+                </td>
+                <td>{r.roles.join(', ')}</td>
+                <td>{r.industries.join(', ')}</td>
+                <td>{r.topics.join(', ')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <Footer lang="de" />
+
+  <script type="application/json" id="graph-data" is:inline set:html={JSON.stringify(graph)} />
+  <script is:inline>
+    (() => {
+      const data = JSON.parse(document.getElementById('graph-data').textContent);
+      const canvas = document.getElementById('graph');
+      const ctx = canvas.getContext('2d');
+      const detail = document.getElementById('detail');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ---- Darstellung je Knotentyp ----------------------------------------
+      const TYPES = {
+        speaker: { label: 'Speaker', color: '#ff2d7a', r: 9, charge: 1.7, font: 12.5 },
+        topic: { label: 'Themen', color: '#4f86ff', r: 7, charge: 1.1, font: 11.5 },
+        role: { label: 'Jobtitel', color: '#2ea3f2', r: 5.5, charge: 0.8, font: 10.5 },
+        industry: { label: 'Branchen', color: '#f5b942', r: 8, charge: 1.4, font: 11.5 },
+        event: { label: 'Events', color: '#d7cfe6', r: 11, charge: 2.2, font: 12 },
+        cluster: { label: 'Cluster', color: '#a97fd0', r: 14, charge: 3, font: 12.5 },
+      };
+      const clusterColor = Object.fromEntries(data.clusters.map((c) => [c.id, c.color]));
+      const REST = { 'speaker-topic': 96, 'speaker-role': 72, 'speaker-industry': 130, 'event-speaker': 140, 'cluster-topic': 84 };
+      const pairKey = (a, b) => [a.type, b.type].sort().join('-');
+
+      // ---- Knoten und Federn ----------------------------------------------
+      const nodes = data.nodes.map((n, i) => ({
+        ...n,
+        on: true,
+        x: Math.cos(i * 2.399) * (90 + i * 3),
+        y: Math.sin(i * 2.399) * (90 + i * 3),
+        vx: 0,
+        vy: 0,
+        pinned: false,
+      }));
+      const byId = new Map(nodes.map((n) => [n.id, n]));
+      const links = data.links
+        .map(([a, b]) => ({ a: byId.get(a), b: byId.get(b) }))
+        .filter((l) => l.a && l.b)
+        .map((l) => ({ ...l, rest: REST[pairKey(l.a, l.b)] ?? 90 }));
+      const adj = new Map(nodes.map((n) => [n.id, new Set()]));
+      for (const l of links) {
+        adj.get(l.a.id).add(l.b);
+        adj.get(l.b.id).add(l.a);
+      }
+      for (const n of nodes) {
+        n.deg = adj.get(n.id).size;
+        n.r = TYPES[n.type].r + Math.min(7, Math.sqrt(n.deg) * (n.type === 'speaker' ? 0.6 : 1.5));
+      }
+      // Cluster-Hubs starten gleichmäßig verteilt, damit sich Cluster nicht ineinander verhaken.
+      nodes
+        .filter((n) => n.type === 'cluster')
+        .forEach((n, i, all) => {
+          const ang = (i / all.length) * Math.PI * 2;
+          n.x = Math.cos(ang) * 260;
+          n.y = Math.sin(ang) * 260;
+        });
+      nodes
+        .filter((n) => n.type === 'topic')
+        .forEach((n) => {
+          const hub = byId.get(`cl:${n.cluster}`);
+          if (hub) {
+            n.x = hub.x + (Math.random() - 0.5) * 80;
+            n.y = hub.y + (Math.random() - 0.5) * 80;
+          }
+        });
+
+      // ---- Zustand --------------------------------------------------------
+      const state = { physics: !reduceMotion, alpha: 1, hover: null, selected: null, drag: null, pan: null, query: '', touched: false };
+      const view = { x: 0, y: 0, k: 1 };
+      let W = 0;
+      let H = 0;
+      let dpr = 1;
+
+      const resize = () => {
+        const r = canvas.getBoundingClientRect();
+        dpr = Math.min(2, window.devicePixelRatio || 1);
+        W = r.width;
+        H = r.height;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+      };
+      const toWorld = (px, py) => ({ x: (px - view.x) / view.k, y: (py - view.y) / view.k });
+      const active = () => nodes.filter((n) => n.on);
+      const activeLinks = () => links.filter((l) => l.a.on && l.b.on);
+
+      const fitTarget = () => {
+        const list = active();
+        if (!list.length) return null;
+        const xs = list.map((n) => n.x);
+        const ys = list.map((n) => n.y);
+        const minX = Math.min(...xs) - 90;
+        const maxX = Math.max(...xs) + 90;
+        const minY = Math.min(...ys) - 70;
+        const maxY = Math.max(...ys) + 70;
+        const k = Math.max(0.3, Math.min(1.5, Math.min(W / (maxX - minX), H / (maxY - minY))));
+        return { k, x: W / 2 - ((minX + maxX) / 2) * k, y: H / 2 - ((minY + maxY) / 2) * k };
+      };
+      const fit = () => {
+        const t = fitTarget();
+        if (t) Object.assign(view, t);
+      };
+
+      // ---- Physik ---------------------------------------------------------
+      // Abstoßung zwischen allen Knoten, Federn entlang der Verbindungen,
+      // leichte Schwerkraft zur Mitte, Dämpfung und langsames Abkühlen.
+      const step = () => {
+        const list = active();
+        const REP = 4200;
+        for (let i = 0; i < list.length; i++) {
+          const p = list[i];
+          for (let j = i + 1; j < list.length; j++) {
+            const q = list[j];
+            let dx = q.x - p.x;
+            let dy = q.y - p.y;
+            let d2 = dx * dx + dy * dy;
+            if (d2 > 250000) continue;
+            if (d2 < 36) {
+              dx = Math.random() - 0.5;
+              dy = Math.random() - 0.5;
+              d2 = 36;
+            }
+            const d = Math.sqrt(d2);
+            const f = (REP * TYPES[p.type].charge * TYPES[q.type].charge) / d2;
+            const fx = (f * dx) / d;
+            const fy = (f * dy) / d;
+            p.vx -= fx;
+            p.vy -= fy;
+            q.vx += fx;
+            q.vy += fy;
+          }
+        }
+        for (const l of activeLinks()) {
+          const dx = l.b.x - l.a.x;
+          const dy = l.b.y - l.a.y;
+          const d = Math.sqrt(dx * dx + dy * dy) || 1;
+          const strong = l.a.type === 'cluster' || l.b.type === 'cluster';
+          const k = strong ? 0.06 : 0.03;
+          const f = k * (d - l.rest);
+          const fx = (f * dx) / d;
+          const fy = (f * dy) / d;
+          l.a.vx += fx;
+          l.a.vy += fy;
+          l.b.vx -= fx;
+          l.b.vy -= fy;
+        }
+        for (const n of list) {
+          n.vx -= n.x * 0.0018;
+          n.vy -= n.y * 0.0018;
+          if (n.pinned || state.drag === n) {
+            n.vx = 0;
+            n.vy = 0;
+            continue;
+          }
+          n.vx *= 0.82;
+          n.vy *= 0.82;
+          const sp = Math.hypot(n.vx, n.vy);
+          if (sp > 14) {
+            n.vx = (n.vx / sp) * 14;
+            n.vy = (n.vy / sp) * 14;
+          }
+          n.x += n.vx * state.alpha;
+          n.y += n.vy * state.alpha;
+        }
+        state.alpha = Math.max(0.12, state.alpha * 0.996);
+      };
+
+      // ---- Zeichnen -------------------------------------------------------
+      const hex = (c, a) => {
+        const v = parseInt(c.slice(1), 16);
+        return `rgba(${v >> 16}, ${(v >> 8) & 255}, ${v & 255}, ${a})`;
+      };
+      const matchSet = () => {
+        const q = state.query.trim().toLowerCase();
+        if (!q) return null;
+        const hit = new Set(nodes.filter((n) => n.on && n.label.toLowerCase().includes(q)));
+        for (const n of [...hit]) for (const m of adj.get(n.id)) hit.add(m);
+        return hit;
+      };
+      const focusSet = () => {
+        const f = state.hover ?? state.selected;
+        if (f) return new Set([f, ...adj.get(f.id)].filter((n) => n.on));
+        return matchSet();
+      };
+
+      const draw = () => {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        ctx.translate(view.x, view.y);
+        ctx.scale(view.k, view.k);
+        const focus = focusSet();
+        const dim = (n) => (focus && !focus.has(n) ? 0.14 : 1);
+
+        // Cluster-Hüllen: Kreis um die Themen eines Clusters
+        const hubOn = nodes.some((n) => n.type === 'cluster' && n.on);
+        if (hubOn) {
+          for (const c of data.clusters) {
+            const members = nodes.filter((n) => n.on && n.cluster === c.id);
+            if (members.length < 2) continue;
+            const cx = members.reduce((s, n) => s + n.x, 0) / members.length;
+            const cy = members.reduce((s, n) => s + n.y, 0) / members.length;
+            const rad = Math.max(...members.map((n) => Math.hypot(n.x - cx, n.y - cy) + n.r)) + 34;
+            const fade = focus && !members.some((m) => focus.has(m)) ? 0.35 : 1;
+            ctx.beginPath();
+            ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+            ctx.fillStyle = hex(c.color, 0.07 * fade);
+            ctx.fill();
+            ctx.setLineDash([6, 6]);
+            ctx.strokeStyle = hex(c.color, 0.4 * fade);
+            ctx.lineWidth = 1.2 / view.k;
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+
+        // Federn
+        for (const l of activeLinks()) {
+          const a = dim(l.a) * dim(l.b);
+          const strong = l.a.type === 'cluster' || l.b.type === 'cluster';
+          ctx.beginPath();
+          ctx.moveTo(l.a.x, l.a.y);
+          ctx.lineTo(l.b.x, l.b.y);
+          ctx.strokeStyle = strong ? hex(clusterColor[l.a.cluster ?? l.b.cluster] ?? '#a97fd0', 0.55 * a) : `rgba(200, 190, 225, ${0.26 * a})`;
+          ctx.lineWidth = (strong ? 1.8 : 1.1) / Math.sqrt(view.k);
+          ctx.stroke();
+        }
+
+        // Knoten
+        for (const n of active()) {
+          const t = TYPES[n.type];
+          const a = dim(n);
+          const base = n.type === 'topic' && n.cluster ? clusterColor[n.cluster] : t.color;
+          const grey = n.type === 'speaker' && !n.meta?.curated;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = hex(grey ? '#8f849e' : base, a);
+          ctx.fill();
+          if (n === state.hover || n === state.selected || n.pinned) {
+            ctx.lineWidth = 2.2 / view.k;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+          }
+        }
+
+        // Beschriftung (Jobtitel erst ab etwas Zoom, damit es nicht zuläuft)
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (const n of active()) {
+          const t = TYPES[n.type];
+          const isFocus = focus && focus.has(n);
+          if (n.type === 'role' && view.k < 0.85 && !isFocus) continue;
+          const a = dim(n);
+          ctx.font = `${n.type === 'speaker' || n.type === 'cluster' ? 600 : 500} ${t.font / Math.max(0.8, Math.min(1.2, view.k))}px Inter, system-ui, sans-serif`;
+          const text = n.label.length > 38 ? `${n.label.slice(0, 36)}…` : n.label;
+          ctx.fillStyle = `rgba(243, 238, 250, ${a})`;
+          ctx.fillText(text, n.x, n.y + n.r + 3);
+        }
+      };
+
+      let raf = 0;
+      const loop = () => {
+        if (!document.hidden) {
+          if (state.physics) step();
+          if (!state.touched) {
+            const t = fitTarget();
+            if (t) {
+              view.k += (t.k - view.k) * 0.08;
+              view.x += (t.x - view.x) * 0.08;
+              view.y += (t.y - view.y) * 0.08;
+            }
+          }
+          draw();
+        }
+        raf = requestAnimationFrame(loop);
+      };
+
+      // ---- Interaktion ----------------------------------------------------
+      const pick = (px, py) => {
+        const w = toWorld(px, py);
+        let best = null;
+        let bestD = Infinity;
+        for (const n of active()) {
+          const d = Math.hypot(n.x - w.x, n.y - w.y);
+          if (d <= n.r + 5 / view.k && d < bestD) {
+            best = n;
+            bestD = d;
+          }
+        }
+        return best;
+      };
+      const local = (e) => {
+        const r = canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      };
+      const names = (set, type) =>
+        [...set]
+          .filter((n) => n.type === type)
+          .map((n) => n.label)
+          .sort((a, b) => a.localeCompare(b, 'de'));
+      const li = (items) => (items.length ? `<ul>${items.map((i) => `<li>${i}</li>`).join('')}</ul>` : '<p class="none">–</p>');
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+      const showDetail = (n) => {
+        if (!n) {
+          detail.innerHTML = '<p class="hint">Knoten anfahren oder anklicken für Details. Doppelklick pinnt einen Knoten fest.</p>';
+          return;
+        }
+        const nb = adj.get(n.id);
+        const t = TYPES[n.type];
+        let html = `<p class="kind" style="color:${n.type === 'topic' && n.cluster ? clusterColor[n.cluster] : t.color}">${t.label}</p><h3>${esc(n.label)}</h3>`;
+        if (n.type === 'speaker') {
+          const m = n.meta;
+          html += `<p class="sub">${esc(m.jobTitle)}</p>`;
+          if (m.talk) html += `<p class="talk">„${esc(m.talk)}“</p>`;
+          html += `<p class="k">Event</p>${li(m.events.map(esc))}<p class="k">Themen</p>${li(names(nb, 'topic').map(esc))}`;
+          html += `<p class="k">Branche</p>${li(names(nb, 'industry').map(esc))}`;
+          if (!m.curated) html += '<p class="none">Noch nicht in topicmap.ts eingeordnet.</p>';
+          html += `<p><a href="${esc(m.url)}" target="_blank" rel="noopener">Speaker-Profil</a></p>`;
+        } else if (n.type === 'topic') {
+          const c = data.clusters.find((x) => x.id === n.cluster);
+          if (c) html += `<p class="sub">Cluster: ${esc(c.label)}</p>`;
+          html += `<p class="k">Gesprochen von</p>${li(names(nb, 'speaker').map(esc))}`;
+        } else if (n.type === 'cluster') {
+          html += `<p class="k">Themen</p>${li(names(nb, 'topic').map(esc))}`;
+          const sp = new Set();
+          for (const tn of nb) for (const m of adj.get(tn.id)) if (m.type === 'speaker') sp.add(m);
+          html += `<p class="k">Speaker</p>${li(names(sp, 'speaker').map(esc))}`;
+        } else {
+          if (n.meta?.when) html += `<p class="sub">${esc(n.meta.when)}</p>`;
+          html += `<p class="k">Speaker</p>${li(names(nb, 'speaker').map(esc))}`;
+        }
+        detail.innerHTML = html;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        state.touched = true;
+        const p = local(e);
+        const n = pick(p.x, p.y);
+        canvas.setPointerCapture(e.pointerId);
+        if (n) {
+          state.drag = n;
+          state.selected = n;
+          state.alpha = Math.max(state.alpha, 0.7);
+          showDetail(n);
+        } else {
+          state.pan = { x: p.x - view.x, y: p.y - view.y };
+          state.selected = null;
+          showDetail(null);
+        }
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        const p = local(e);
+        if (state.drag) {
+          const w = toWorld(p.x, p.y);
+          state.drag.x = w.x;
+          state.drag.y = w.y;
+          state.alpha = Math.max(state.alpha, 0.5);
+        } else if (state.pan) {
+          view.x = p.x - state.pan.x;
+          view.y = p.y - state.pan.y;
+        } else {
+          const n = pick(p.x, p.y);
+          if (n !== state.hover) {
+            state.hover = n;
+            canvas.style.cursor = n ? 'grab' : 'default';
+            showDetail(n ?? state.selected);
+          }
+        }
+      });
+      const release = () => {
+        state.drag = null;
+        state.pan = null;
+      };
+      canvas.addEventListener('pointerup', release);
+      canvas.addEventListener('pointercancel', release);
+      canvas.addEventListener('pointerleave', () => {
+        if (!state.drag && !state.pan) {
+          state.hover = null;
+          showDetail(state.selected);
+        }
+      });
+      canvas.addEventListener('dblclick', (e) => {
+        const p = local(e);
+        const n = pick(p.x, p.y);
+        if (n) n.pinned = !n.pinned;
+      });
+      canvas.addEventListener(
+        'wheel',
+        (e) => {
+          e.preventDefault();
+          state.touched = true;
+          const p = local(e);
+          const before = toWorld(p.x, p.y);
+          view.k = Math.max(0.3, Math.min(3, view.k * Math.exp(-e.deltaY * 0.0012)));
+          view.x = p.x - before.x * view.k;
+          view.y = p.y - before.y * view.k;
+        },
+        { passive: false },
+      );
+
+      // ---- Steuerung ------------------------------------------------------
+      const chips = document.getElementById('chips');
+      for (const [type, t] of Object.entries(TYPES)) {
+        const count = nodes.filter((n) => n.type === type).length;
+        if (!count) continue;
+        const label = document.createElement('label');
+        label.className = 'chip';
+        label.innerHTML = `<input type="checkbox" checked data-type="${type}" /><span class="dot" style="background:${t.color}"></span>${t.label} <em>${count}</em>`;
+        chips.appendChild(label);
+      }
+      chips.addEventListener('change', (e) => {
+        const type = e.target.dataset.type;
+        for (const n of nodes) if (n.type === type) n.on = e.target.checked;
+        state.alpha = 1;
+      });
+      document.getElementById('search').addEventListener('input', (e) => {
+        state.query = e.target.value;
+      });
+      const btnPhysics = document.getElementById('btn-physics');
+      btnPhysics.addEventListener('click', () => {
+        state.physics = !state.physics;
+        btnPhysics.setAttribute('aria-pressed', String(state.physics));
+        btnPhysics.textContent = state.physics ? 'Physik an' : 'Physik aus';
+      });
+      document.getElementById('btn-shuffle').addEventListener('click', () => {
+        nodes.forEach((n, i) => {
+          n.pinned = false;
+          n.x = (Math.random() - 0.5) * 700;
+          n.y = (Math.random() - 0.5) * 500;
+          n.vx = n.vy = 0;
+        });
+        state.alpha = 1;
+        state.physics = true;
+        btnPhysics.setAttribute('aria-pressed', 'true');
+        btnPhysics.textContent = 'Physik an';
+      });
+      document.getElementById('btn-fit').addEventListener('click', () => {
+        state.touched = false;
+        fit();
+      });
+
+      // ---- Start ----------------------------------------------------------
+      // Startansicht folgt der echten Canvas-Größe, bis jemand selbst zoomt oder verschiebt.
+      new ResizeObserver(() => {
+        resize();
+        if (!state.touched) fit();
+      }).observe(canvas);
+      resize();
+      if (reduceMotion) {
+        for (let i = 0; i < 400; i++) step();
+        document.getElementById('btn-physics').textContent = 'Physik aus';
+        document.getElementById('btn-physics').setAttribute('aria-pressed', 'false');
+      } else {
+        for (let i = 0; i < 120; i++) step();
+      }
+      fit();
+      state.alpha = 0.6;
+      loop();
+      window.addEventListener('pagehide', () => cancelAnimationFrame(raf));
+    })();
+  </script>
+</Layout>
+
+<style>
+  .topicmap {
+    padding: 7rem 0 4rem;
+  }
+  .container {
+    max-width: 1240px;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--text-primary);
+  }
+  .lead {
+    color: var(--text-secondary);
+    max-width: 75ch;
+    margin: 0.5rem 0 1.4rem;
+  }
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem 1rem;
+    margin-bottom: 0.8rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .chips :global(.chip) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: var(--bg-glass);
+  }
+  .chips :global(.chip input) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chips :global(.chip:has(input:not(:checked))) {
+    opacity: 0.45;
+  }
+  .chips :global(.chip:has(input:focus-visible)) {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+  }
+  .chips :global(.dot) {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+  }
+  .chips :global(em) {
+    font-style: normal;
+    color: var(--text-muted);
+  }
+  #search {
+    flex: 1 1 220px;
+    min-width: 0;
+    max-width: 340px;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.88rem;
+  }
+  .buttons {
+    display: flex;
+    gap: 0.4rem;
+    margin-left: auto;
+  }
+  .buttons button {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .buttons button:hover,
+  .buttons button:focus-visible {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .stage {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(220, 39, 119, 0.08), transparent 45%),
+      radial-gradient(circle at 80% 80%, rgba(50, 107, 255, 0.1), transparent 45%),
+      rgba(10, 2, 24, 0.6);
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: clamp(460px, 74vh, 780px);
+    touch-action: none;
+    cursor: default;
+  }
+  .detail {
+    position: absolute;
+    left: 0.8rem;
+    bottom: 0.8rem;
+    width: min(290px, calc(100% - 1.6rem));
+    max-height: 60%;
+    overflow: auto;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(18, 7, 39, 0.9);
+    backdrop-filter: blur(10px);
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+  }
+  .detail :global(h3) {
+    font-size: 1.02rem;
+    color: var(--text-primary);
+    margin: 0.1rem 0 0.2rem;
+  }
+  .detail :global(.kind) {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .detail :global(.sub) {
+    margin: 0 0 0.4rem;
+  }
+  .detail :global(.talk) {
+    margin: 0 0 0.4rem;
+    color: var(--text-primary);
+    font-style: italic;
+  }
+  .detail :global(.k) {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0.6rem 0 0.15rem;
+  }
+  .detail :global(ul) {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+  .detail :global(.none),
+  .detail :global(.hint) {
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .detail :global(a) {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+  .note {
+    margin: 0.8rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .table-title {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin: 2.5rem 0 0.8rem;
+  }
+  .tablewrap {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+  }
+  th,
+  td {
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text-secondary);
+  }
+  th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+  }
+  td strong {
+    color: var(--text-primary);
+    display: block;
+  }
+  .talk {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  tr.uncurated td {
+    opacity: 0.6;
+  }
+</style>
